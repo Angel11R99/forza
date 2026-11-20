@@ -1,15 +1,290 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/widgets/feature_placeholder_view.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_radius.dart';
+import '../../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/app_surface_card.dart';
+import '../data/exercise_catalog.dart';
+import '../models/exercise.dart';
+import '../models/exercise_filter_selection.dart';
+import '../widgets/exercise_list_card.dart';
+import 'exercise_detail_page.dart';
+import 'exercise_filters_page.dart';
 
-class ExercisesView extends StatelessWidget {
+class ExercisesView extends StatefulWidget {
   const ExercisesView({super.key});
 
   @override
-  Widget build(BuildContext context) => const FeaturePlaceholderView(
-    icon: Icons.fitness_center_outlined,
-    eyebrow: 'BIBLIOTECA',
-    title: 'Ejercicios',
-    description: 'Encuentra movimientos para tu rutina y descubre nuevas formas de entrenar.',
-  );
+  State<ExercisesView> createState() => _ExercisesViewState();
+}
+
+class _ExercisesViewState extends State<ExercisesView> {
+  final _searchController = TextEditingController();
+  ExerciseFilterSelection _filters = const ExerciseFilterSelection();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Exercise> get _results {
+    final query = _searchQuery.trim().toLowerCase();
+    return ExerciseCatalog.entries
+        .where((exercise) {
+          final matchesQuery =
+              query.isEmpty ||
+              exercise.name.toLowerCase().contains(query) ||
+              exercise.muscleGroup.toLowerCase().contains(query) ||
+              exercise.equipment.toLowerCase().contains(query);
+          final matchesMuscle =
+              _filters.muscleGroups.isEmpty ||
+              _filters.muscleGroups.contains(exercise.muscleGroup);
+          final matchesEquipment =
+              _filters.equipment.isEmpty ||
+              _filters.equipment.contains(exercise.equipment);
+
+          return matchesQuery && matchesMuscle && matchesEquipment;
+        })
+        .toList(growable: false);
+  }
+
+  Future<void> _openFilters() async {
+    final selection = await Navigator.of(context).push<ExerciseFilterSelection>(
+      MaterialPageRoute<ExerciseFilterSelection>(
+        builder: (_) => ExerciseFiltersPage(
+          initialSelection: _filters,
+          searchQuery: _searchQuery,
+        ),
+      ),
+    );
+    if (!mounted || selection == null) return;
+    setState(() => _filters = selection);
+  }
+
+  void _openExercise(Exercise exercise) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => ExerciseDetailPage(exercise: exercise),
+      ),
+    );
+  }
+
+  void _clearSearchAndFilters() {
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+      _filters = const ExerciseFilterSelection();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final results = _results;
+    final horizontalPadding = MediaQuery.sizeOf(context).width < 380
+        ? AppSpacing.x4
+        : AppSpacing.x6;
+
+    return CustomScrollView(
+      key: const PageStorageKey<String>('exercises-scroll'),
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            AppSpacing.x6,
+            horizontalPadding,
+            AppSpacing.x8,
+          ),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'BIBLIOTECA DE MOVIMIENTOS',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    letterSpacing: 1.3,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                Text(
+                  'Explorar ejercicios',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  'Encuentra movimientos para tu próxima sesión.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: AppSpacing.x4),
+                const _DemoBadge(),
+                const SizedBox(height: AppSpacing.x6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) =>
+                            setState(() => _searchQuery = value),
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: 'Ejercicio, músculo o equipo',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          suffixIcon: _searchQuery.isEmpty
+                              ? null
+                              : IconButton(
+                                  tooltip: 'Borrar búsqueda',
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _searchQuery = '');
+                                  },
+                                  icon: const Icon(Icons.close_rounded),
+                                ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.x2),
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: _filters.isEmpty
+                            ? AppColors.surface
+                            : AppColors.surfaceMuted,
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
+                        border: Border.all(
+                          color: _filters.isEmpty
+                              ? AppColors.divider
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                      child: IconButton(
+                        tooltip: _filters.count == 0
+                            ? 'Abrir filtros'
+                            : 'Filtros activos: ${_filters.count}',
+                        onPressed: _openFilters,
+                        icon: Badge(
+                          isLabelVisible: _filters.count > 0,
+                          label: Text('${_filters.count}'),
+                          child: const Icon(Icons.tune_rounded),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _searchQuery.trim().isNotEmpty
+                            ? 'Resultados de búsqueda'
+                            : 'Todos los ejercicios',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    Text(
+                      '${results.length}',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (results.isEmpty)
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            sliver: SliverToBoxAdapter(
+              child: _EmptyResults(onClear: _clearSearchAndFilters),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              0,
+              horizontalPadding,
+              AppSpacing.x8,
+            ),
+            sliver: SliverGrid.builder(
+              itemCount: results.length,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 460,
+                mainAxisExtent: 164,
+                crossAxisSpacing: AppSpacing.x3,
+                mainAxisSpacing: AppSpacing.x3,
+              ),
+              itemBuilder: (context, index) => ExerciseListCard(
+                exercise: results[index],
+                onTap: () => _openExercise(results[index]),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _EmptyResults extends StatelessWidget {
+  const _EmptyResults({required this.onClear});
+
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppSurfaceCard(
+      padding: const EdgeInsets.all(AppSpacing.x8),
+      child: Column(
+        children: [
+          const Icon(Icons.search_off_rounded, size: 32),
+          const SizedBox(height: AppSpacing.x3),
+          Text(
+            'No encontramos ejercicios',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: AppSpacing.x2),
+          Text(
+            'Prueba otra búsqueda o quita algunos filtros.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.x4),
+          OutlinedButton.icon(
+            onPressed: onClear,
+            icon: const Icon(Icons.refresh_rounded),
+            label: const Text('Limpiar búsqueda y filtros'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemoBadge extends StatelessWidget {
+  const _DemoBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.x3,
+        vertical: AppSpacing.x2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
+      child: Text(
+        'CATÁLOGO DE EJEMPLO',
+        style: Theme.of(context).textTheme.labelLarge
+            ?.copyWith(fontSize: 10, letterSpacing: 1),
+      ),
+    );
+  }
 }
