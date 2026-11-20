@@ -25,9 +25,9 @@ Antes de añadir cada paquete:
 3. Añadir solo la dependencia necesaria; fijar una restricción compatible y registrar por qué se eligió.
 4. Encapsular el paquete bajo un widget/adaptador de FORZA para facilitar reemplazarlo sin reescribir pantallas.
 
-## Dataset de ejercicios (uso futuro)
+## Dataset de ejercicios
 
-Repositorio indicado: [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset). El README consultado informa 1.324 registros con categorías, equipos, músculos, instrucciones en varios idiomas y rutas a miniaturas de 180×180 y GIFs. Incluye `data/exercises.json` y un JSON Schema.
+Fuente integrada: [jlfernandezfernandez/exercises-dataset-es](https://github.com/jlfernandezfernandez/exercises-dataset-es), derivada de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) y fijada en `5a5dd652f102c34bb09fcb0db3c2f3ae4dd53cbe`. Proporciona 1.324 ejercicios con nombres e instrucciones en español. La importación conserva texto y metadatos, mapea equipo/grupo a etiquetas FORZA y elimina referencias y archivos multimedia. El transformador está en `tool/import_exercise_dataset.py`; la licencia y procedencia están en `third_party/exercises-dataset/`.
 
 ### Licencia: separar datos de medios
 

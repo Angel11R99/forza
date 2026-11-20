@@ -134,11 +134,11 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 3 · Datos
 
-- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y `DemoExerciseRepository` carga el fixture JSON local de forma asíncrona. La biblioteca muestra carga/error y búsqueda, filtros, detalle y alternativas consultan el repositorio; no hay API ni persistencia.
+- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y repositorio asíncrono carga el dataset local fijado en un commit, con 1.324 nombres/instrucciones en español y sin medios. La biblioteca muestra carga/error; búsqueda, filtros, detalle y alternativas consultan el repositorio. No hay API ni persistencia.
 - [x] Definir modelo `Exercise` y contrato `ExerciseRepository` separados de widgets.
-- [x] Usar fixtures locales para el catálogo actual.
-- [ ] Conectar una API/dataset solo cuando la fuente y sus condiciones de uso estén aprobadas.
-- [ ] Tras conectar catálogo real, resolver búsqueda/filtros en el origen de datos y paginar; no cargar todos los GIFs de golpe.
+- [x] Incluir el dataset de texto aprobado como asset local; omitir imágenes y GIFs.
+- [ ] Conectar una API solo si aparece un servicio remoto aprobado y necesario.
+- [ ] Si el catálogo pasa a una API, paginar y resolver búsqueda/filtros en el origen; no cargar todos los GIFs de golpe.
 
 ### Fase 4 · Medios animados y pulido
 
