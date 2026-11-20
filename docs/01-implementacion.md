@@ -142,7 +142,7 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 4 · Medios animados y pulido
 
-- **Estado:** la biblioteca y la pantalla de alternativas usan tarjetas que aumentan de alto con `TextScaler`; el calendario mensual adapta las filas y el círculo del día al escalado de texto y al ancho disponible; el nombre, correo y descripciones en Perfil pueden ocupar varias líneas. La búsqueda ignora tildes y anuncia los resultados a tecnologías de asistencia. `flutter analyze` y la compilación Windows pasan. Pendiente de una pasada en Android/iOS con texto grande y de validar el HEX de acento en Figma; esos dispositivos no están disponibles en el entorno actual. Los medios siguen fuera hasta resolver su licencia.
+- **Estado:** la biblioteca y la pantalla de alternativas usan tarjetas que aumentan de alto con `TextScaler`; el calendario mensual adapta las filas y el círculo del día al escalado de texto; Perfil y los datos de sesión, medición y valores de Progreso pueden ocupar varias líneas sin truncamiento. La búsqueda ignora tildes y anuncia los resultados a tecnologías de asistencia. `flutter analyze` y la compilación Windows pasan. Pendiente de una pasada en Android/iOS con texto grande y de validar el HEX de acento en Figma; esos dispositivos no están disponibles en el entorno actual. Los medios siguen fuera hasta resolver su licencia.
 - Solo tras aprobación de licencia: crear un widget de media que acepte miniatura, URL/asset, estado de carga y fallback.
 - Revisar rendimiento, accesibilidad, contraste y layouts largos en Android/iOS.
 
