@@ -1,15 +1,569 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/widgets/feature_placeholder_view.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_radius.dart';
+import '../../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/section_heading.dart';
 
-class ActivityView extends StatelessWidget {
+class ActivityView extends StatefulWidget {
   const ActivityView({super.key});
 
   @override
-  Widget build(BuildContext context) => const FeaturePlaceholderView(
-    icon: Icons.calendar_month_outlined,
-    eyebrow: 'TU RITMO, A TU MANERA',
-    title: 'Actividad',
-    description: 'Aquí podrás organizar tus sesiones y consultar tu calendario de entrenamiento.',
-  );
+  State<ActivityView> createState() => _ActivityViewState();
+}
+
+class _ActivityViewState extends State<ActivityView> {
+  static const _months = <String>[
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre',
+  ];
+
+  static const _weekdayNames = <String>[
+    'lunes',
+    'martes',
+    'miércoles',
+    'jueves',
+    'viernes',
+    'sábado',
+    'domingo',
+  ];
+
+  static const _weekdayInitials = <String>['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
+  late DateTime _selectedDate;
+  late DateTime _visibleMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    final today = DateTime.now();
+    _selectedDate = _dateOnly(today);
+    _visibleMonth = DateTime(today.year, today.month);
+  }
+
+  void _moveMonth(int offset) {
+    final nextMonth = DateTime(
+      _visibleMonth.year,
+      _visibleMonth.month + offset,
+    );
+    final lastDay = DateTime(nextMonth.year, nextMonth.month + 1, 0).day;
+
+    setState(() {
+      _visibleMonth = nextMonth;
+      _selectedDate = DateTime(
+        nextMonth.year,
+        nextMonth.month,
+        _selectedDate.day.clamp(1, lastDay).toInt(),
+      );
+    });
+  }
+
+  void _selectDate(DateTime date) {
+    setState(() => _selectedDate = _dateOnly(date));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final session = _sessionForDate(_selectedDate);
+
+    return CustomScrollView(
+      key: const PageStorageKey<String>('activity-scroll'),
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.x6,
+            AppSpacing.x6,
+            AppSpacing.x6,
+            AppSpacing.x8,
+          ),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TU PLAN DE ENTRENAMIENTO',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    letterSpacing: 1.3,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                Text(
+                  'Actividad',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  'Organiza tus sesiones y días de recuperación.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: AppSpacing.x4),
+                const _DemoBadge(),
+                const SizedBox(height: AppSpacing.x8),
+                AppSurfaceCard(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.x4,
+                    AppSpacing.x2,
+                    AppSpacing.x4,
+                    AppSpacing.x4,
+                  ),
+                  child: Column(
+                    children: [
+                      _MonthHeader(
+                        month: _visibleMonth,
+                        monthNames: _months,
+                        onPrevious: () => _moveMonth(-1),
+                        onNext: () => _moveMonth(1),
+                      ),
+                      const SizedBox(height: AppSpacing.x2),
+                      _CalendarGrid(
+                        month: _visibleMonth,
+                        selectedDate: _selectedDate,
+                        weekdayInitials: _weekdayInitials,
+                        hasSession: (date) => _sessionForDate(date) != null,
+                        onSelectDate: _selectDate,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x8),
+                SectionHeading(
+                  title: 'Detalle del día',
+                  actionLabel: _isSameDay(_selectedDate, DateTime.now())
+                      ? null
+                      : 'Hoy',
+                  onAction: _isSameDay(_selectedDate, DateTime.now())
+                      ? null
+                      : () => _selectDate(DateTime.now()),
+                ),
+                _DayDetailCard(
+                  date: _selectedDate,
+                  weekdayNames: _weekdayNames,
+                  monthNames: _months,
+                  session: session,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _TrainingSession? _sessionForDate(DateTime date) {
+    return switch (date.weekday) {
+      DateTime.monday => const _TrainingSession(
+        title: 'Fuerza de tren superior',
+        detail: 'Pecho, espalda y hombros',
+        duration: '45 min',
+        exerciseCount: 6,
+        icon: Icons.fitness_center_rounded,
+      ),
+      DateTime.wednesday => const _TrainingSession(
+        title: 'Piernas y core',
+        detail: 'Fuerza y estabilidad',
+        duration: '50 min',
+        exerciseCount: 7,
+        icon: Icons.directions_run_rounded,
+      ),
+      DateTime.friday => const _TrainingSession(
+        title: 'Fuerza total',
+        detail: 'Trabajo de cuerpo completo',
+        duration: '45 min',
+        exerciseCount: 6,
+        icon: Icons.bolt_rounded,
+      ),
+      _ => null,
+    };
+  }
+
+  static DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
+
+  static bool _isSameDay(DateTime first, DateTime second) =>
+      first.year == second.year &&
+      first.month == second.month &&
+      first.day == second.day;
+}
+
+class _MonthHeader extends StatelessWidget {
+  const _MonthHeader({
+    required this.month,
+    required this.monthNames,
+    required this.onPrevious,
+    required this.onNext,
+  });
+
+  final DateTime month;
+  final List<String> monthNames;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          tooltip: 'Mes anterior',
+          onPressed: onPrevious,
+          icon: const Icon(Icons.chevron_left_rounded),
+        ),
+        Expanded(
+          child: Text(
+            '${monthNames[month.month - 1]} ${month.year}',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+        IconButton(
+          tooltip: 'Mes siguiente',
+          onPressed: onNext,
+          icon: const Icon(Icons.chevron_right_rounded),
+        ),
+      ],
+    );
+  }
+}
+
+class _CalendarGrid extends StatelessWidget {
+  const _CalendarGrid({
+    required this.month,
+    required this.selectedDate,
+    required this.weekdayInitials,
+    required this.hasSession,
+    required this.onSelectDate,
+  });
+
+  final DateTime month;
+  final DateTime selectedDate;
+  final List<String> weekdayInitials;
+  final bool Function(DateTime date) hasSession;
+  final ValueChanged<DateTime> onSelectDate;
+
+  @override
+  Widget build(BuildContext context) {
+    final firstDay = DateTime(month.year, month.month);
+    final leadingDays = firstDay.weekday - DateTime.monday;
+    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
+    final cellCount = ((leadingDays + daysInMonth + 6) ~/ 7) * 7;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            for (final initial in weekdayInitials)
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                    child: Text(
+                      initial,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: cellCount,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 7,
+            mainAxisExtent: 52,
+          ),
+          itemBuilder: (context, index) {
+            final dayNumber = index - leadingDays + 1;
+            if (dayNumber < 1 || dayNumber > daysInMonth) {
+              return const SizedBox.shrink();
+            }
+
+            final date = DateTime(month.year, month.month, dayNumber);
+            return _CalendarDayButton(
+              date: date,
+              isSelected: _isSameDay(date, selectedDate),
+              isToday: _isSameDay(date, DateTime.now()),
+              hasSession: hasSession(date),
+              onPressed: () => onSelectDate(date),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  static bool _isSameDay(DateTime first, DateTime second) =>
+      first.year == second.year &&
+      first.month == second.month &&
+      first.day == second.day;
+}
+
+class _CalendarDayButton extends StatelessWidget {
+  const _CalendarDayButton({
+    required this.date,
+    required this.isSelected,
+    required this.isToday,
+    required this.hasSession,
+    required this.onPressed,
+  });
+
+  final DateTime date;
+  final bool isSelected;
+  final bool isToday;
+  final bool hasSession;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = isSelected
+        ? AppColors.inverseText
+        : AppColors.textPrimary;
+
+    return Center(
+      child: Semantics(
+        button: true,
+        selected: isSelected,
+        label: '${date.day}${hasSession ? ', sesión programada' : ''}',
+        child: ExcludeSemantics(
+          child: InkWell(
+            onTap: onPressed,
+            customBorder: const CircleBorder(),
+            child: SizedBox(
+              width: 42,
+              height: 48,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.textPrimary
+                          : AppColors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isToday && !isSelected
+                            ? AppColors.textPrimary
+                            : Colors.transparent,
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      '${date.day}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: foreground,
+                        fontWeight: isSelected || isToday
+                            ? FontWeight.w700
+                            : FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: hasSession
+                          ? isSelected
+                                ? AppColors.inverseText
+                                : AppColors.textPrimary
+                          : Colors.transparent,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DayDetailCard extends StatelessWidget {
+  const _DayDetailCard({
+    required this.date,
+    required this.weekdayNames,
+    required this.monthNames,
+    required this.session,
+  });
+
+  final DateTime date;
+  final List<String> weekdayNames;
+  final List<String> monthNames;
+  final _TrainingSession? session;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateLabel =
+        '${weekdayNames[date.weekday - 1]}, ${date.day} de ${monthNames[date.month - 1]}';
+
+    if (session == null) {
+      return AppSurfaceCard(
+        padding: const EdgeInsets.all(AppSpacing.x6),
+        child: Row(
+          children: [
+            const _SessionIcon(icon: Icons.self_improvement_rounded),
+            const SizedBox(width: AppSpacing.x4),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dateLabel,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    'Día de recuperación',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    'No hay sesión programada para este día.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return AppSurfaceCard(
+      padding: const EdgeInsets.all(AppSpacing.x6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _SessionIcon(icon: session!.icon),
+              const SizedBox(width: AppSpacing.x4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dateLabel,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.x1),
+                    Text(
+                      session!.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.x1),
+                    Text(
+                      session!.detail,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.x4),
+          const Divider(height: 1),
+          const SizedBox(height: AppSpacing.x4),
+          Row(
+            children: [
+              const Icon(Icons.schedule_rounded, size: 18),
+              const SizedBox(width: AppSpacing.x2),
+              Text(
+                session!.duration,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(width: AppSpacing.x6),
+              const Icon(Icons.fitness_center_rounded, size: 18),
+              const SizedBox(width: AppSpacing.x2),
+              Text(
+                '${session!.exerciseCount} ejercicios',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SessionIcon extends StatelessWidget {
+  const _SessionIcon({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 48,
+      height: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppRadius.small),
+      ),
+      child: Icon(icon, size: 22, color: AppColors.textPrimary),
+    );
+  }
+}
+
+class _DemoBadge extends StatelessWidget {
+  const _DemoBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.x3,
+        vertical: AppSpacing.x2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
+      child: Text(
+        'DATOS DE EJEMPLO',
+        style: Theme.of(context).textTheme.labelLarge
+            ?.copyWith(fontSize: 10, letterSpacing: 1),
+      ),
+    );
+  }
+}
+
+class _TrainingSession {
+  const _TrainingSession({
+    required this.title,
+    required this.detail,
+    required this.duration,
+    required this.exerciseCount,
+    required this.icon,
+  });
+
+  final String title;
+  final String detail;
+  final String duration;
+  final int exerciseCount;
+  final IconData icon;
 }
