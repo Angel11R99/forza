@@ -340,27 +340,42 @@ class _CalendarGrid extends StatelessWidget {
               ),
           ],
         ),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: cellCount,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7,
-            mainAxisExtent: 52,
-          ),
-          itemBuilder: (context, index) {
-            final dayNumber = index - leadingDays + 1;
-            if (dayNumber < 1 || dayNumber > daysInMonth) {
-              return const SizedBox.shrink();
-            }
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final textScale = MediaQuery.textScalerOf(context).scale(1);
+            final cellWidth = constraints.maxWidth / 7;
+            final desiredCircleSize =
+                34 + ((textScale - 1).clamp(0, 2) * 6).toDouble();
+            final circleSize = desiredCircleSize > cellWidth
+                ? cellWidth
+                : desiredCircleSize;
+            final rowExtent = 52 + ((textScale - 1).clamp(0, 2) * 12);
 
-            final date = DateTime(month.year, month.month, dayNumber);
-            return _CalendarDayButton(
-              date: date,
-              isSelected: _isSameDay(date, selectedDate),
-              isToday: _isSameDay(date, DateTime.now()),
-              hasSession: hasSession(date),
-              onPressed: () => onSelectDate(date),
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: cellCount,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                mainAxisExtent: rowExtent.toDouble(),
+              ),
+              itemBuilder: (context, index) {
+                final dayNumber = index - leadingDays + 1;
+                if (dayNumber < 1 || dayNumber > daysInMonth) {
+                  return const SizedBox.shrink();
+                }
+
+                final date = DateTime(month.year, month.month, dayNumber);
+                return _CalendarDayButton(
+                  date: date,
+                  isSelected: _isSameDay(date, selectedDate),
+                  isToday: _isSameDay(date, DateTime.now()),
+                  hasSession: hasSession(date),
+                  circleSize: circleSize,
+                  rowExtent: rowExtent.toDouble(),
+                  onPressed: () => onSelectDate(date),
+                );
+              },
             );
           },
         ),
@@ -380,6 +395,8 @@ class _CalendarDayButton extends StatelessWidget {
     required this.isSelected,
     required this.isToday,
     required this.hasSession,
+    required this.circleSize,
+    required this.rowExtent,
     required this.onPressed,
   });
 
@@ -387,6 +404,8 @@ class _CalendarDayButton extends StatelessWidget {
   final bool isSelected;
   final bool isToday;
   final bool hasSession;
+  final double circleSize;
+  final double rowExtent;
   final VoidCallback onPressed;
 
   @override
@@ -405,14 +424,14 @@ class _CalendarDayButton extends StatelessWidget {
             onTap: onPressed,
             customBorder: const CircleBorder(),
             child: SizedBox(
-              width: 42,
-              height: 48,
+              width: double.infinity,
+              height: rowExtent,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 34,
-                    height: 34,
+                    width: circleSize,
+                    height: circleSize,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
