@@ -6,7 +6,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 | Área sugerida | Frames relacionados | Responsabilidad UI |
 |---|---|---|
-| Inicio / onboarding | A1–A4, B1–B5, C1–C8 | Bienvenida, creación/configuración inicial y pantallas de preparación/entrada según el prototipo. Validar los nombres exactos de cada frame. |
+| Acceso / onboarding | A1–A4, B1–B5, C1–C8 | Bienvenida, acceso, creación/recuperación de cuenta y preparación/confirmación del plan. |
 | Actividad | D1–D4 | Calendario mensual, detalle de día y reprogramación. |
 | Ejercicios | E1–E5 | Resultados, filtros, biblioteca, detalle y alternativas de ejercicio. |
 | Progreso | F1–F6 | Historial, detalle de sesión, evolución de fuerza y corporal, medidas y récords personales. |
@@ -14,7 +14,8 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 ## Estado de implementación
 
-- **Inicio / onboarding (A–C):** configurador inicial local de tres pasos para objetivo, experiencia y frecuencia/duración de entrenamiento. Se abre desde Perfil y devuelve la configuración elegida a la sesión actual. Es una interpretación funcional del grupo; los nombres y el mapeo exacto de A1–C8 siguen pendientes de confirmación contra frames individuales.
+- **Acceso (A1–A4):** bienvenida, crear cuenta, iniciar sesión y recuperar contraseña, disponibles desde Perfil. Los formularios validan datos localmente y muestran que la acción es solo de demostración: no crean cuentas, no inician sesión ni envían correos.
+- **Configuración de plan (B1–B5):** flujo local para objetivo, experiencia y ritmo semanal que termina en una pantalla de confirmación titulada como B5 en el prototipo. El mapeo de los pasos intermedios B1–B4 y C1–C8 sigue pendiente de confirmar.
 - **Actividad (D2–D4):** calendario mensual, detalle del día y flujo de reprogramación implementados con datos de ejemplo locales. El cambio de fecha se conserva durante la sesión abierta de la app, sin persistencia.
 - **Ejercicios (E1–E5):** biblioteca de demostración con búsqueda por ejercicio/músculo/equipo, filtros combinables, detalle con instrucciones y selección de alternativas. Catálogo local sin imágenes/GIFs; no hay datos persistentes.
 - **Progreso (F1–F6):** historial, detalle de sesión, evolución de fuerza/corporal, formulario temporal de medidas y récords personales implementados con datos de ejemplo.
@@ -22,6 +23,11 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 ## Inventario legible del panel de capas
 
+- `A1 - Bienvenida`.
+- `A2 - Crear cuenta`.
+- `A3 - Iniciar sesión`.
+- `A4 - Recuperar contraseña`.
+- `B5 - Confirmacion del plan`.
 - `D2 - Calendario mensual` (se observan capas `Actividad D` y `Día D`).
 - `D3 - Detalle de día`.
 - `D4 - Reprogramar sesión`.
@@ -43,7 +49,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 - `G5 - Privacidad y cuenta`.
 - `G6 - Confirmacion de cuenta`.
 
-Los nombres de A1–C8 se leen parcialmente en la vista general; deben confirmarse directamente en cada frame antes de asignar rutas definitivas. El configurador actual es un flujo provisional de UI, no una reproducción confirmada de todas esas pantallas. No inferir una función sensible (por ejemplo, autenticación real o borrado de cuenta) solo a partir de un frame.
+Los nombres de B1–B4 y C1–C8 deben confirmarse directamente en cada frame antes de asignar rutas definitivas. El flujo de configuración actual enlaza con el frame B5 confirmado, pero no se presenta como reproducción de los frames intermedios aún no inspeccionados. No inferir que la autenticación es real ni añadir borrado de cuenta solo por la presencia de esos frames.
 
 ## Componentes candidatos compartidos
 
