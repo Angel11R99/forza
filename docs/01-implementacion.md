@@ -142,6 +142,7 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 4 · Medios animados y pulido
 
+- **Estado:** la biblioteca usa tarjetas de dos líneas que aumentan de alto con `TextScaler`, la búsqueda ignora tildes y anuncia los resultados a tecnologías de asistencia. Pendiente de una pasada en Android/iOS con texto grande y de validar el HEX de acento en Figma. Los medios siguen fuera hasta resolver su licencia.
 - Solo tras aprobación de licencia: crear un widget de media que acepte miniatura, URL/asset, estado de carga y fallback.
 - Revisar rendimiento, accesibilidad, contraste y layouts largos en Android/iOS.
 
