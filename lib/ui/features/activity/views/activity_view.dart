@@ -5,6 +5,34 @@ import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
+import 'reschedule_session_page.dart';
+
+const _months = <String>[
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
+];
+
+const _weekdayNames = <String>[
+  'lunes',
+  'martes',
+  'miércoles',
+  'jueves',
+  'viernes',
+  'sábado',
+  'domingo',
+];
+
+const _weekdayInitials = <String>['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 class ActivityView extends StatefulWidget {
   const ActivityView({super.key});
@@ -14,35 +42,10 @@ class ActivityView extends StatefulWidget {
 }
 
 class _ActivityViewState extends State<ActivityView> {
-  static const _months = <String>[
-    'enero',
-    'febrero',
-    'marzo',
-    'abril',
-    'mayo',
-    'junio',
-    'julio',
-    'agosto',
-    'septiembre',
-    'octubre',
-    'noviembre',
-    'diciembre',
-  ];
-
-  static const _weekdayNames = <String>[
-    'lunes',
-    'martes',
-    'miércoles',
-    'jueves',
-    'viernes',
-    'sábado',
-    'domingo',
-  ];
-
-  static const _weekdayInitials = <String>['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-
   late DateTime _selectedDate;
   late DateTime _visibleMonth;
+  final Map<DateTime, _TrainingSession> _movedSessions = {};
+  final Set<DateTime> _removedDefaultSessions = {};
 
   @override
   void initState() {
@@ -71,6 +74,36 @@ class _ActivityViewState extends State<ActivityView> {
 
   void _selectDate(DateTime date) {
     setState(() => _selectedDate = _dateOnly(date));
+  }
+
+  Future<void> _reschedule() async {
+    final source = _dateOnly(_selectedDate);
+    final session = _sessionForDate(source);
+    if (session == null) return;
+    final options = _availableDatesAfter(source);
+    final target = await Navigator.of(context).push<DateTime>(
+      MaterialPageRoute<DateTime>(
+        builder: (_) => RescheduleSessionPage(
+          sessionDate: source,
+          sessionTitle: session.title,
+          sessionIcon: session.icon,
+          availableDates: options,
+        ),
+      ),
+    );
+    if (!mounted || target == null) return;
+
+    setState(() {
+      _movedSessions.remove(source);
+      _removedDefaultSessions.add(source);
+      _movedSessions[target] = session;
+      _selectedDate = target;
+      _visibleMonth = DateTime(target.year, target.month);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Sesión movida al ${_formatDate(target)}.')),
+    );
   }
 
   @override
@@ -150,9 +183,8 @@ class _ActivityViewState extends State<ActivityView> {
                 ),
                 _DayDetailCard(
                   date: _selectedDate,
-                  weekdayNames: _weekdayNames,
-                  monthNames: _months,
                   session: session,
+                  onReschedule: _reschedule,
                 ),
               ],
             ),
@@ -163,6 +195,11 @@ class _ActivityViewState extends State<ActivityView> {
   }
 
   _TrainingSession? _sessionForDate(DateTime date) {
+    final normalizedDate = _dateOnly(date);
+    final movedSession = _movedSessions[normalizedDate];
+    if (movedSession != null) return movedSession;
+    if (_removedDefaultSessions.contains(normalizedDate)) return null;
+
     return switch (date.weekday) {
       DateTime.monday => const _TrainingSession(
         title: 'Fuerza de tren superior',
@@ -187,6 +224,15 @@ class _ActivityViewState extends State<ActivityView> {
       ),
       _ => null,
     };
+  }
+
+  List<DateTime> _availableDatesAfter(DateTime date) {
+    final dates = <DateTime>[];
+    for (var offset = 1; offset <= 14 && dates.length < 4; offset++) {
+      final candidate = DateTime(date.year, date.month, date.day + offset);
+      if (_sessionForDate(candidate) == null) dates.add(candidate);
+    }
+    return dates;
   }
 
   static DateTime _dateOnly(DateTime date) =>
@@ -402,20 +448,17 @@ class _CalendarDayButton extends StatelessWidget {
 class _DayDetailCard extends StatelessWidget {
   const _DayDetailCard({
     required this.date,
-    required this.weekdayNames,
-    required this.monthNames,
     required this.session,
+    required this.onReschedule,
   });
 
   final DateTime date;
-  final List<String> weekdayNames;
-  final List<String> monthNames;
   final _TrainingSession? session;
+  final VoidCallback onReschedule;
 
   @override
   Widget build(BuildContext context) {
-    final dateLabel =
-        '${weekdayNames[date.weekday - 1]}, ${date.day} de ${monthNames[date.month - 1]}';
+    final dateLabel = _formatDate(date);
 
     if (session == null) {
       return AppSurfaceCard(
@@ -503,6 +546,15 @@ class _DayDetailCard extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.x3),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: onReschedule,
+              icon: const Icon(Icons.event_repeat_rounded, size: 18),
+              label: const Text('Reprogramar sesión'),
+            ),
+          ),
         ],
       ),
     );
@@ -567,3 +619,6 @@ class _TrainingSession {
   final int exerciseCount;
   final IconData icon;
 }
+
+String _formatDate(DateTime date) =>
+    '${_weekdayNames[date.weekday - 1]}, ${date.day} de ${_months[date.month - 1]}';
