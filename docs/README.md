@@ -1,6 +1,6 @@
 # FORZA · Guía de implementación
 
-> Guía basada en el archivo `FORZA — Premium Fitness Experience.fig` y el starter Flutter que existe en `C:\Users\User\Documents\forza` al 20-11-2026.
+> Guía basada en el archivo [`FORZA — Premium Fitness Experience.fig`](figma/FORZA%20%E2%80%94%20Premium%20Fitness%20Experience.fig) y el starter Flutter que existe en `C:\Users\User\Documents\forza` al 20-11-2026.
 
 ## En una frase
 
@@ -32,3 +32,4 @@ El árbol `lib/` contiene solo `main.dart`; `pubspec.yaml` declara Flutter SDK y
 2. Confirmar el alcance del primer hito: demo navegable, UI lista para API, o producto conectado.
 3. Conseguir una licencia adecuada para GIFs/imágenes del dataset si se desean distribuir en la app.
 4. Resolver y fijar el color de acento exacto desde el archivo editable; el tono menta se aprecia visualmente, pero la inspección disponible no verificó su HEX.
+

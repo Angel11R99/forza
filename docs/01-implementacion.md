@@ -110,3 +110,7 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 ## Notas sobre el repo existente
 
 El proyecto revisado es un starter Flutter: `lib/main.dart` es la única fuente de app y `pubspec.yaml` solo incluye Flutter y `cupertino_icons`. A la hora de iniciar el desarrollo, confirmar si esa inspección sigue vigente, porque puede haber cambios después de esta guía. El SDK declarado es `^3.13.7`; verificar compatibilidad real de cada paquete con ese SDK antes de fijarlo.
+
+## Archivo fuente de diseño
+
+Usa el archivo versionado en [docs/figma/FORZA — Premium Fitness Experience.fig](figma/FORZA%20%E2%80%94%20Premium%20Fitness%20Experience.fig) como referencia visual del proyecto.
