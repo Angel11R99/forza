@@ -1,0 +1,72 @@
+# Pantallas y módulos observados en Figma
+
+El archivo muestra frames agrupados por letra (A–G). A continuación se conserva el nombre visible en el panel Layers cuando fue legible y se traduce a una agrupación de producto. La clasificación es una propuesta; no implica que cada pantalla tenga lógica funcional definida.
+
+## Módulos de navegación principal
+
+| Área sugerida | Frames relacionados | Responsabilidad UI |
+|---|---|---|
+| Inicio / onboarding | A1–A4, B1–B5, C1–C8 | Bienvenida, creación/configuración inicial y pantallas de preparación/entrada según el prototipo. Validar los nombres exactos de cada frame. |
+| Actividad | D1–D4 | Calendario mensual, detalle de día y reprogramación. |
+| Ejercicios | E1–E5 | Resultados, filtros, biblioteca, detalle y alternativas de ejercicio. |
+| Progreso | F1–F6 | Historial, detalle de sesión, evolución de fuerza y corporal, medidas y récords personales. |
+| Cuenta y ajustes | G1–G6 | Editar perfil, configuración de entrenamiento, preferencias, notificaciones, privacidad/cuenta y confirmación de cuenta. |
+
+## Inventario legible del panel de capas
+
+- `D2 - Calendario mensual` (se observan capas `Actividad D` y `Día D`).
+- `D3 - Detalle de día`.
+- `D4 - Reprogramar sesión`.
+- `E1 - Resultados de busqueda`.
+- `E2 - Filtros de explorar`.
+- `E3 - Biblioteca de ejercicios`.
+- `E4 - Detalle de ejercicio`.
+- `E5 - Alternativas de ejercicio`.
+- `F1 - Historial de entrenamientos`.
+- `F2 - Detalle de sesión anterior`.
+- `F3 - Evolución de fuerza`.
+- `F4 - Evolución corporal`.
+- `F5 - Registrar medidas`.
+- `F6 - Records personales`.
+- `G1 - Editar perfil`.
+- `G2 - Configuracion de entrenamiento`.
+- `G3 - Preferencias`.
+- `G4 - Notificaciones`.
+- `G5 - Privacidad y cuenta`.
+- `G6 - Confirmacion de cuenta`.
+
+Los nombres de A1–C8 se leen parcialmente en la vista general; deben confirmarse directamente en el archivo antes de asignar rutas definitivas. No inferir una función sensible (por ejemplo, autenticación real o borrado de cuenta) solo a partir de un frame.
+
+## Componentes candidatos compartidos
+
+- Navegación inferior persistente para las cinco áreas principales.
+- Cabecera de pantalla, secciones, tarjetas de resumen, botones primarios/ secundarios.
+- Tarjeta/listado de ejercicio, etiqueta de músculo/equipo, búsqueda y filtros.
+- Selector/calendario y tarjeta de sesión.
+- Gráfico de progreso y tarjeta de métrica.
+- Filas y controles de preferencias, toggles, campos de perfil.
+
+Reusar el paquete que ya se eligió para iconos y navbar. Esta lista describe sus espacios visuales, no exige dibujar glifos ni construir una barra propietaria.
+
+## Estructura de rutas ilustrativa
+
+```text
+/                         inicio
+/onboarding/...           pasos iniciales
+/activity                 calendario
+/activity/day/:date       detalle del día
+/activity/reschedule/:id  reprogramar
+/exercises                explorar/biblioteca
+/exercises/search         resultados
+/exercises/filters        filtros
+/exercises/:id            detalle
+/exercises/:id/alternatives alternativas
+/progress                 resumen de progreso
+/progress/history         historial
+/progress/sessions/:id    detalle de sesión
+/progress/measurements    registrar medidas
+/profile                  perfil
+/settings/...             preferencias y cuenta
+```
+
+Ajustar la ruta inicial y el mapa final al prototipo completo y a la navegación del proyecto.
