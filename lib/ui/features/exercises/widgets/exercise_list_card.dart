@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../models/exercise.dart';
+import '../../../../domain/models/exercise.dart';
 
 class ExerciseListCard extends StatelessWidget {
   const ExerciseListCard({

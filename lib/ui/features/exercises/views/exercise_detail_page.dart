@@ -1,17 +1,24 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../data/repositories/demo_exercise_repository.dart';
+import '../../../../domain/models/exercise.dart';
+import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
-import '../models/exercise.dart';
 import '../widgets/exercise_list_card.dart';
 import 'exercise_alternatives_page.dart';
 
 class ExerciseDetailPage extends StatelessWidget {
-  const ExerciseDetailPage({super.key, required this.exercise});
+  const ExerciseDetailPage({
+    super.key,
+    required this.exercise,
+    this.repository = const DemoExerciseRepository(),
+  });
 
   final Exercise exercise;
+  final ExerciseRepository repository;
 
   @override
   Widget build(BuildContext context) {
@@ -117,14 +124,18 @@ class ExerciseDetailPage extends StatelessWidget {
   Future<void> _openAlternatives(BuildContext context) async {
     final selected = await Navigator.of(context).push<Exercise>(
       MaterialPageRoute<Exercise>(
-        builder: (_) => ExerciseAlternativesPage(exercise: exercise),
+        builder: (_) => ExerciseAlternativesPage(
+          exercise: exercise,
+          repository: repository,
+        ),
       ),
     );
     if (!context.mounted || selected == null) return;
 
     Navigator.of(context).pushReplacement<void, void>(
       MaterialPageRoute<void>(
-        builder: (_) => ExerciseDetailPage(exercise: selected),
+        builder: (_) =>
+            ExerciseDetailPage(exercise: selected, repository: repository),
       ),
     );
   }

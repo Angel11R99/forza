@@ -1,8 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../data/repositories/demo_exercise_repository.dart';
+import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../data/exercise_catalog.dart';
 import '../models/exercise_filter_selection.dart';
 
 class ExerciseFiltersPage extends StatefulWidget {
@@ -10,10 +11,12 @@ class ExerciseFiltersPage extends StatefulWidget {
     super.key,
     required this.initialSelection,
     required this.searchQuery,
+    this.repository = const DemoExerciseRepository(),
   });
 
   final ExerciseFilterSelection initialSelection;
   final String searchQuery;
+  final ExerciseRepository repository;
 
   @override
   State<ExerciseFiltersPage> createState() => _ExerciseFiltersPageState();
@@ -26,19 +29,13 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
   late final Set<String> _equipment = {...widget.initialSelection.equipment};
 
   int get _matchingCount {
-    final query = widget.searchQuery.trim().toLowerCase();
-    return ExerciseCatalog.entries.where((exercise) {
-      final matchesQuery =
-          query.isEmpty ||
-          exercise.name.toLowerCase().contains(query) ||
-          exercise.muscleGroup.toLowerCase().contains(query) ||
-          exercise.equipment.toLowerCase().contains(query);
-      final matchesMuscle =
-          _muscleGroups.isEmpty || _muscleGroups.contains(exercise.muscleGroup);
-      final matchesEquipment =
-          _equipment.isEmpty || _equipment.contains(exercise.equipment);
-      return matchesQuery && matchesMuscle && matchesEquipment;
-    }).length;
+    return widget.repository
+        .search(
+          query: widget.searchQuery,
+          muscleGroups: _muscleGroups,
+          equipment: _equipment,
+        )
+        .length;
   }
 
   void _apply() {
@@ -90,14 +87,14 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
               const SizedBox(height: AppSpacing.x8),
               _FilterSection(
                 title: 'Grupo muscular',
-                options: ExerciseCatalog.muscleGroups,
+                options: widget.repository.muscleGroups,
                 selected: _muscleGroups,
                 onSelected: (value) => _toggle(_muscleGroups, value),
               ),
               const SizedBox(height: AppSpacing.x8),
               _FilterSection(
                 title: 'Equipo',
-                options: ExerciseCatalog.equipmentTypes,
+                options: widget.repository.equipmentTypes,
                 selected: _equipment,
                 onSelected: (value) => _toggle(_equipment, value),
               ),

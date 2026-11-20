@@ -1,7 +1,10 @@
-import '../models/exercise.dart';
+import '../../domain/models/exercise.dart';
+import '../../domain/repositories/exercise_repository.dart';
 
-abstract final class ExerciseCatalog {
-  static const entries = <Exercise>[
+class DemoExerciseRepository implements ExerciseRepository {
+  const DemoExerciseRepository();
+
+  static const _entries = <Exercise>[
     Exercise(
       id: 'press-banca',
       name: 'Press de banca',
@@ -155,7 +158,7 @@ abstract final class ExerciseCatalog {
     ),
   ];
 
-  static const muscleGroups = <String>[
+  static const _muscleGroups = <String>[
     'Pecho',
     'Espalda',
     'Piernas',
@@ -163,28 +166,60 @@ abstract final class ExerciseCatalog {
     'Core',
   ];
 
-  static const equipmentTypes = <String>[
+  static const _equipmentTypes = <String>[
     'Barra',
     'Mancuernas',
     'Polea',
     'Peso corporal',
   ];
 
-  static Exercise? findById(String id) {
-    for (final exercise in entries) {
+  @override
+  List<String> get muscleGroups => _muscleGroups;
+
+  @override
+  List<String> get equipmentTypes => _equipmentTypes;
+
+  @override
+  List<Exercise> search({
+    String query = '',
+    Set<String> muscleGroups = const {},
+    Set<String> equipment = const {},
+  }) {
+    final normalizedQuery = query.trim().toLowerCase();
+    return _entries
+        .where((exercise) {
+          final matchesQuery =
+              normalizedQuery.isEmpty ||
+              exercise.name.toLowerCase().contains(normalizedQuery) ||
+              exercise.muscleGroup.toLowerCase().contains(normalizedQuery) ||
+              exercise.equipment.toLowerCase().contains(normalizedQuery);
+          final matchesMuscle =
+              muscleGroups.isEmpty ||
+              muscleGroups.contains(exercise.muscleGroup);
+          final matchesEquipment =
+              equipment.isEmpty || equipment.contains(exercise.equipment);
+          return matchesQuery && matchesMuscle && matchesEquipment;
+        })
+        .toList(growable: false);
+  }
+
+  @override
+  Exercise? findById(String id) {
+    for (final exercise in _entries) {
       if (exercise.id == id) return exercise;
     }
     return null;
   }
 
-  static List<Exercise> alternativesFor(Exercise exercise) {
+  @override
+  List<Exercise> alternativesFor(Exercise exercise) {
     final byId = exercise.alternativeIds
         .map(findById)
         .whereType<Exercise>()
         .toList(growable: false);
     if (byId.isNotEmpty) return byId;
 
-    return entries
+    return _entries
         .where(
           (candidate) =>
               candidate.id != exercise.id &&

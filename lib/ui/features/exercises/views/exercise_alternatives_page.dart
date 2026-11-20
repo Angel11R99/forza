@@ -1,19 +1,25 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../data/repositories/demo_exercise_repository.dart';
+import '../../../../domain/models/exercise.dart';
+import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../data/exercise_catalog.dart';
-import '../models/exercise.dart';
 import '../widgets/exercise_list_card.dart';
 
 class ExerciseAlternativesPage extends StatelessWidget {
-  const ExerciseAlternativesPage({super.key, required this.exercise});
+  const ExerciseAlternativesPage({
+    super.key,
+    required this.exercise,
+    this.repository = const DemoExerciseRepository(),
+  });
 
   final Exercise exercise;
+  final ExerciseRepository repository;
 
   @override
   Widget build(BuildContext context) {
-    final alternatives = ExerciseCatalog.alternativesFor(exercise);
+    final alternatives = repository.alternativesFor(exercise);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Alternativas')),

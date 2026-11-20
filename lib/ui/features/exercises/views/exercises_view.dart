@@ -1,18 +1,24 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../data/repositories/demo_exercise_repository.dart';
+import '../../../../domain/models/exercise.dart';
+import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
-import '../data/exercise_catalog.dart';
-import '../models/exercise.dart';
 import '../models/exercise_filter_selection.dart';
 import '../widgets/exercise_list_card.dart';
 import 'exercise_detail_page.dart';
 import 'exercise_filters_page.dart';
 
 class ExercisesView extends StatefulWidget {
-  const ExercisesView({super.key});
+  const ExercisesView({
+    super.key,
+    this.repository = const DemoExerciseRepository(),
+  });
+
+  final ExerciseRepository repository;
 
   @override
   State<ExercisesView> createState() => _ExercisesViewState();
@@ -30,24 +36,11 @@ class _ExercisesViewState extends State<ExercisesView> {
   }
 
   List<Exercise> get _results {
-    final query = _searchQuery.trim().toLowerCase();
-    return ExerciseCatalog.entries
-        .where((exercise) {
-          final matchesQuery =
-              query.isEmpty ||
-              exercise.name.toLowerCase().contains(query) ||
-              exercise.muscleGroup.toLowerCase().contains(query) ||
-              exercise.equipment.toLowerCase().contains(query);
-          final matchesMuscle =
-              _filters.muscleGroups.isEmpty ||
-              _filters.muscleGroups.contains(exercise.muscleGroup);
-          final matchesEquipment =
-              _filters.equipment.isEmpty ||
-              _filters.equipment.contains(exercise.equipment);
-
-          return matchesQuery && matchesMuscle && matchesEquipment;
-        })
-        .toList(growable: false);
+    return widget.repository.search(
+      query: _searchQuery,
+      muscleGroups: _filters.muscleGroups,
+      equipment: _filters.equipment,
+    );
   }
 
   Future<void> _openFilters() async {
@@ -56,6 +49,7 @@ class _ExercisesViewState extends State<ExercisesView> {
         builder: (_) => ExerciseFiltersPage(
           initialSelection: _filters,
           searchQuery: _searchQuery,
+          repository: widget.repository,
         ),
       ),
     );
@@ -66,7 +60,10 @@ class _ExercisesViewState extends State<ExercisesView> {
   void _openExercise(Exercise exercise) {
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => ExerciseDetailPage(exercise: exercise),
+        builder: (_) => ExerciseDetailPage(
+          exercise: exercise,
+          repository: widget.repository,
+        ),
       ),
     );
   }
