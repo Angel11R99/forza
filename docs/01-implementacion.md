@@ -10,7 +10,7 @@
 
 ## Arquitectura sugerida (ligera, feature-first)
 
-No introducir capas/paquetes de arquitectura hasta que la necesidad lo justifique. Separar módulos por feature y compartir piezas de UI:
+Organizar la presentación por feature y reservar `data/` y `domain/` para cuando existan datos o reglas que lo necesiten. Así se mantiene la separación UI/lógica/datos recomendada para Flutter sin crear ViewModels, repositorios ni casos de uso vacíos para una entrega inicialmente visual.
 
 ```text
 lib/
@@ -22,29 +22,28 @@ lib/
       app_colors.dart
       app_spacing.dart
       app_radius.dart
-  core/
-    widgets/                 # botones, superficies, campos, estados vacíos
-    utils/
-  features/
-    onboarding/
-      presentation/
-    home/
-      presentation/
-    activity/
-      presentation/
-    exercises/
-      data/                  # DTO, fuente de datos y repositorio al integrar datos
-      domain/                # modelos/contratos solo si hacen falta
-      presentation/
-    progress/
-      presentation/
-    profile/
-      presentation/
-    settings/
-      presentation/
+  ui/
+    core/
+      widgets/               # botones, superficies, campos, estados vacíos
+    features/
+      home/
+        views/
+        view_models/         # solo si la vista necesita estado/lógica
+      activity/
+        views/
+      exercises/
+        views/
+      progress/
+        views/
+      profile/
+        views/
+  data/                      # servicios/repositorios al integrar fuentes
+  domain/                    # modelos/casos de uso cuando haya reglas reales
 ```
 
 Una pantalla debería ensamblar componentes del design system y widgets del módulo. Evitar un único `main.dart` gigante y también evitar crear una abstracción compartida para una sola aparición.
+
+En esta primera entrega, `ViewModel` se añade únicamente cuando una vista tenga estado que deba sobrevivir o coordinarse fuera de un widget (por ejemplo, filtros aplicados o selección persistente). Para interacción local, breve y puramente visual, el estado puede permanecer en el widget. Al conectar datos, mover el acceso a servicios y repositorios; introducir casos de uso solo si una regla de negocio resulta compleja o compartida.
 
 ## Navegación
 
@@ -72,15 +71,58 @@ El diseño usa superficies claras, texto oscuro, secundarios grises, bloques fot
 
 ### Fase 0 · Reconocimiento
 
-- Revisar `pubspec.yaml`, `pubspec.lock`, `lib/` y el paquete real de navbar/iconos del equipo.
-- Inspeccionar frames y prototipos en Figma; extraer el HEX del acento y tipografías si el fichero fuente lo permite.
-- Acordar alcance y dependencias. No añadir una dependencia que duplique lo que ya usa el proyecto.
+- **Dependencias resueltas:** `pubspec.yaml` usa `native_glass_navbar: ^1.2.0` y `flutter pub get` completó correctamente; `pubspec.lock` fija `1.2.0`. Esta versión mantiene compatibilidad con el starter basado en `package:flutter/material.dart`; la rama 2.x usa los nuevos paquetes UI de Flutter y su documentación recomienda 1.x para proyectos que aún usan las APIs Material/Cupertino tradicionales. El SDK declarado por el paquete 1.2.0 (`Dart ^3.9.2`, Flutter `>=3.3.0`) es compatible con el entorno declarado por FORZA (`Dart ^3.13.7`). Referencia: [pub.dev](https://pub.dev/packages/native_glass_navbar).
+- **Navbar seleccionada:** usar `native_glass_navbar` en iOS, con fallback Flutter de estilo FORZA en Android. El plugin soporta hasta cinco pestañas, que coincide con las cinco áreas principales. Para la barra iOS, el paquete documenta Xcode 27 o posterior; esto queda como requisito del build iOS. Se evita añadir un segundo paquete de navbar.
+- **Router seleccionado:** conservar `Navigator`/`MaterialApp` de Flutter para el primer hito y gestionar las cinco pestañas con estado persistente de vistas; no añadir `go_router` todavía porque el alcance actual no requiere deep links ni redirecciones de autenticación.
+- **Alcance acordado para el primer hito:** demo navegable de UI con contenido de presentación. API, autenticación, persistencia y medios animados no entran en este hito.
+- **Referencia visual:** las superficies y textos base están registrados en `03-sistema-visual.md`. El HEX de acento, tipografía y medidas exactas de forma/espaciado no están confirmados en la inspección existente; deben permanecer como tokens provisionales pendientes de validar contra el archivo Figma antes de cerrar el tema visual.
 
-### Fase 1 · Cimientos visuales
+### Fase 1 · Cimientos visuales (primer hito)
 
-- Añadir tema/tokens y definir `AppScaffold` integrando el navbar existente.
-- Crear estados, botones, tarjetas y campos comunes.
-- Preparar navegación y tamaños adaptativos.
+El primer cambio de producto debe dejar una base FORZA visible y navegable, antes de construir todas las pantallas. En el starter actual esto reemplaza la pantalla de contador de Flutter.
+
+#### Orden de implementación
+
+1. **Usar el marco de navegación elegido.** Mantener `Navigator`/`MaterialApp` para rutas y cinco pestañas con estado persistente. Integrar `native_glass_navbar ^1.2.0` para iOS y un fallback Flutter alineado visualmente para Android; la dependencia ya está resuelta en `pubspec.lock`.
+2. **Crear la entrada de app.** Mover la configuración de `MaterialApp` fuera de `main.dart`, fijar el título FORZA y dejar `main()` como punto de arranque pequeño. Mantener rutas semánticas para Inicio, Actividad, Ejercicios, Progreso y Perfil; onboarding y detalles quedan fuera de las pestañas principales.
+3. **Definir los tokens confirmados.** Crear `AppColors`, `AppSpacing` y `AppRadius` a partir de `03-sistema-visual.md`. Usar únicamente HEX verificados. El acento queda sin asignar hasta medirlo en el archivo fuente; no crear un verde provisional que parezca definitivo.
+4. **Configurar el tema claro.** Conectar los tokens a `ThemeData`/`ColorScheme` y tipografía del sistema mientras la familia tipográfica de Figma no esté confirmada. Fijar estilos de superficies, texto, divisores y botones sin copiar estilos del starter.
+5. **Construir el scaffold compartido.** Implementar safe areas, área de contenido adaptable y navbar elegido. La barra mantiene selección coherente al navegar entre las cinco áreas; las rutas de detalle la ocultan cuando el flujo de diseño así lo requiera.
+6. **Añadir solo componentes base necesarios.** Empezar con botón primario, encabezado de sección, superficie/tarjeta y campo de búsqueda. Crear estados vacío/carga/error cuando la primera pantalla los consuma; no construir un catálogo de componentes sin uso.
+7. **Entregar la primera vista conectada.** Usar Inicio como ruta inicial y componerla con el scaffold, tokens y componentes anteriores. Poblarla con contenido de presentación claramente identificable como fixture; no simular datos reales ni persistencia.
+
+#### Archivos esperados
+
+```text
+lib/
+  main.dart
+  app/
+    app.dart
+    router.dart
+    theme/
+      app_theme.dart
+      app_colors.dart
+      app_spacing.dart
+      app_radius.dart
+  ui/
+    core/widgets/app_scaffold.dart
+    features/home/views/home_view.dart
+    features/activity/views/activity_view.dart
+    features/exercises/views/exercises_view.dart
+    features/progress/views/progress_view.dart
+    features/profile/views/profile_view.dart
+```
+
+Este árbol es una guía de salida, no exige crear pantallas vacías de todos los módulos en el mismo cambio. Si el primer incremento solo implementa Inicio, las rutas restantes pueden añadirse con su primera pantalla real. Mantener `data/` y `domain/` fuera hasta que una feature consuma datos o reglas de negocio.
+
+#### Criterios para cerrar el primer hito
+
+- La app abre Inicio con identidad FORZA y ya no muestra el contador del starter.
+- La vista utiliza el tema y tokens centrales; no hay colores ni espaciados globales duplicados en línea.
+- Navbar y router tienen una sola decisión documentada, compatible con el SDK declarado, y permiten llegar a las áreas principales.
+- El contenido respeta safe areas, puede desplazarse y no depende de un frame de 393 × 852 fijo.
+- Los textos/iconos funcionales tienen nombres accesibles y controles con targets táctiles adecuados.
+- El acento continúa pendiente hasta medirlo; no se empaquetan medios del dataset durante este hito.
 
 ### Fase 2 · Flujos de UI
 
@@ -109,7 +151,7 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ## Notas sobre el repo existente
 
-El proyecto revisado es un starter Flutter: `lib/main.dart` es la única fuente de app y `pubspec.yaml` solo incluye Flutter y `cupertino_icons`. A la hora de iniciar el desarrollo, confirmar si esa inspección sigue vigente, porque puede haber cambios después de esta guía. El SDK declarado es `^3.13.7`; verificar compatibilidad real de cada paquete con ese SDK antes de fijarlo.
+El proyecto revisado sigue siendo un starter Flutter: `lib/main.dart` es la única fuente de app. `pubspec.yaml` declara Flutter, `cupertino_icons` y `native_glass_navbar: ^1.2.0`; `pubspec.lock` fija el plugin en 1.2.0. El SDK Dart declarado es `^3.13.7`, compatible con el rango del paquete. Para compilar iOS con la barra nativa se necesita Xcode 27 o posterior.
 
 ## Archivo fuente de diseño
 

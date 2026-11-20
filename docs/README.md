@@ -17,19 +17,18 @@ Implementar las pantallas y el lenguaje visual FORZA en Flutter, reutilizando pa
 ## Alcance que se asume
 
 - El proyecto objetivo es Flutter y el repositorio consultado es `C:\Users\User\Documents\forza`.
-- Se conserva el paquete de iconos/navbar que el equipo elija; el diseño no obliga a dibujar esos elementos desde cero.
+- La navegación del primer hito usa `Navigator`/`MaterialApp`; en iOS se integra `native_glass_navbar ^1.2.0` y en Android su fallback visual Flutter.
 - El foco de esta guía es estructura visual, color, espaciado, componentes de interfaz y rutas.
 - Animaciones de ejercicios: integrarlas en otra fase, después de resolver derechos de uso de cada medio.
 - Las páginas de ajustes y perfil aparecen en el Figma; su backend y lógica de cuenta no forman parte de una primera entrega visual.
 
 ## Estado del proyecto consultado
 
-El árbol `lib/` contiene solo `main.dart`; `pubspec.yaml` declara Flutter SDK y `cupertino_icons`. La guía propone una arquitectura inicial para ese starter, no afirma que esos módulos o paquetes ya estén implementados.
+El árbol `lib/` contiene solo `main.dart`. `native_glass_navbar ^1.2.0` ya está declarado y resuelto en `pubspec.lock`; se eligió la rama 1.x para mantener la integración con el `package:flutter/material.dart` que usa el starter. La guía propone una arquitectura inicial y no afirma que los módulos ya estén implementados.
 
-## Decisiones pendientes antes de construir
+## Decisiones de la primera entrega
 
-1. Confirmar cuál paquete de navbar/iconos ya usa el equipo y su versión actual.
-2. Confirmar el alcance del primer hito: demo navegable, UI lista para API, o producto conectado.
-3. Conseguir una licencia adecuada para GIFs/imágenes del dataset si se desean distribuir en la app.
-4. Resolver y fijar el color de acento exacto desde el archivo editable; el tono menta se aprecia visualmente, pero la inspección disponible no verificó su HEX.
+1. Entregar una demo navegable de UI con contenido de presentación; datos reales, persistencia y autenticación quedan fuera.
+2. Usar cinco pestañas: Inicio, Actividad, Ejercicios, Progreso y Perfil. El plugin iOS admite cinco y Android usa fallback Flutter.
+3. Mantener sin HEX el acento hasta validarlo en Figma. No distribuir imágenes o GIFs de terceros hasta confirmar sus términos de licencia.
 

@@ -6,13 +6,14 @@ Consulta siempre pub.dev y el `pubspec.lock` antes de instalar: las versiones pu
 
 | Necesidad | Opción para evaluar | Cuándo encaja |
 |---|---|---|
-| Rutas / navegación declarativa | [go_router](https://pub.dev/packages/go_router) (`18.1.4` consultado) | Rutas anidadas, deep links, redirecciones y `ShellRoute` para mantener una barra entre tabs. |
-| Navbar lista configurable | [persistent_bottom_nav_bar_v2](https://pub.dev/packages/persistent_bottom_nav_bar_v2) | Si aún no hay barra elegida y se busca un componente con estilos predefinidos y personalización. Revisar compatibilidad con la versión de Flutter y su integración con el router. |
+| Rutas | `Navigator`/`MaterialApp` de Flutter | Seleccionado para el primer hito; no se agrega `go_router` mientras no haya necesidad de deep links o redirecciones. |
+| Navbar iOS | [native_glass_navbar](https://pub.dev/packages/native_glass_navbar) (`^1.2.0`, resuelto en lockfile) | Seleccionado porque el starter usa `package:flutter/material.dart`. La rama 2.x usa `material_ui`/`cupertino_ui` y recomienda 1.x para proyectos con las APIs tradicionales. El plugin iOS admite hasta cinco pestañas; usar un fallback Flutter para Android. iOS requiere Xcode 27 o posterior. |
+| Navbar lista configurable | [persistent_bottom_nav_bar_v2](https://pub.dev/packages/persistent_bottom_nav_bar_v2) | Alternativa si aún no hay barra elegida y se busca un componente personalizable multiplataforma. Revisar compatibilidad con la versión de Flutter y su integración con el router. |
 | Iconos | [lucide_flutter](https://pub.dev/packages/lucide_flutter) o [phosphor_icons](https://pub.dev/packages/phosphor_icons) | Elegir una sola familia coherente con el Figma. Confirmar versión, mantenimiento y licencia; no cambiar una dependencia existente sin razón. |
 | Gráficos | [fl_chart](https://pub.dev/packages/fl_chart) (`1.3.1` consultado) | Líneas y barras para evolución/actividad; envolver en un widget FORZA para que el paquete no se filtre por todo el código. |
 | Dibujar SVG | [flutter_svg](https://pub.dev/packages/flutter_svg) (`2.5.0` consultado) | Solo si el diseño incluye vectores SVG propios y no se cubre con el paquete iconográfico existente. |
 
-`go_router` y un navbar visual resuelven responsabilidades diferentes; se pueden combinar, pero no añadir dos soluciones de navbar. Si el proyecto ya usa otro router, documentar la decisión y seguir con él.
+El router y la barra resuelven responsabilidades diferentes. En el primer hito FORZA usa navegación Flutter nativa y un paquete de barra únicamente para la presentación iOS; Android recibe el fallback propio. No se añade otro paquete de navbar.
 
 ## Criterio de adopción
 
