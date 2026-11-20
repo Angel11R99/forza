@@ -130,6 +130,8 @@ Este árbol es una guía de salida, no exige crear pantallas vacías de todos lo
 
 Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca y detalle → Progreso → Perfil/ajustes. Implementar los frames A–G por grupos, manteniendo cada vista en su feature.
 
+**Estado:** el flujo de Actividad (D2–D4) ya tiene calendario mensual navegable, selección y detalle del día, y reprogramación local con datos de demostración. El cambio desaparece al cerrar la app. Ejercicios, Progreso y Perfil/ajustes siguen pendientes de sus flujos completos.
+
 ### Fase 3 · Datos
 
 - Definir modelo `Exercise` y contrato `ExerciseRepository` separado de widgets.
