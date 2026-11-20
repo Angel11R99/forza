@@ -246,8 +246,6 @@ class _SessionHistoryCard extends StatelessWidget {
                         const SizedBox(height: AppSpacing.x1),
                         Text(
                           '${_formatShortDate(session.date)}  ·  ${session.durationMinutes} min  ·  ${session.exerciseCount} ejercicios',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],

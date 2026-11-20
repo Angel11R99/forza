@@ -714,8 +714,6 @@ class _MeasurementSummaryCard extends StatelessWidget {
                 const SizedBox(height: AppSpacing.x1),
                 Text(
                   details.isEmpty ? 'Peso corporal' : details.join('  ·  '),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -753,12 +751,7 @@ class _ValueCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.x3),
           Text(label, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: AppSpacing.x1),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text(value, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );
