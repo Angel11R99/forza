@@ -1,0 +1,29 @@
+import 'package:material_ui/material_ui.dart';
+
+import '../ui/core/widgets/app_scaffold.dart';
+
+abstract final class AppRoutes {
+  static const home = '/';
+  static const activity = '/activity';
+  static const exercises = '/exercises';
+  static const progress = '/progress';
+  static const profile = '/profile';
+}
+
+abstract final class AppRouter {
+  static Route<void> onGenerateRoute(RouteSettings settings) {
+    final initialIndex = switch (settings.name) {
+      AppRoutes.home => 0,
+      AppRoutes.activity => 1,
+      AppRoutes.exercises => 2,
+      AppRoutes.progress => 3,
+      AppRoutes.profile => 4,
+      _ => 0,
+    };
+
+    return MaterialPageRoute<void>(
+      settings: settings,
+      builder: (_) => AppScaffold(initialIndex: initialIndex),
+    );
+  }
+}
