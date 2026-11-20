@@ -28,6 +28,9 @@ class ExerciseAlternativesPage extends StatelessWidget {
             final horizontalPadding = constraints.maxWidth < 380
                 ? AppSpacing.x4
                 : AppSpacing.x6;
+            final textScale = MediaQuery.textScalerOf(context).scale(1);
+            final cardExtent =
+                164 + ((textScale - 1).clamp(0, 2) * 52).toDouble();
 
             return CustomScrollView(
               slivers: [
@@ -75,13 +78,12 @@ class ExerciseAlternativesPage extends StatelessWidget {
                   ),
                   sliver: SliverGrid.builder(
                     itemCount: alternatives.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 460,
-                          mainAxisExtent: 164,
-                          crossAxisSpacing: AppSpacing.x3,
-                          mainAxisSpacing: AppSpacing.x3,
-                        ),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 460,
+                      mainAxisExtent: cardExtent,
+                      crossAxisSpacing: AppSpacing.x3,
+                      mainAxisSpacing: AppSpacing.x3,
+                    ),
                     itemBuilder: (context, index) => ExerciseListCard(
                       exercise: alternatives[index],
                       onTap: () =>
