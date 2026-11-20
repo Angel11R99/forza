@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../onboarding/views/onboarding_view.dart';
 import '../models/profile_settings.dart';
 import 'profile_settings_pages.dart';
 
@@ -62,6 +63,13 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppSpacing.x4),
                 const _DemoBadge(),
+                const SizedBox(height: AppSpacing.x8),
+                _ProfileOption(
+                  icon: Icons.rocket_launch_outlined,
+                  title: 'Configurar plan inicial',
+                  subtitle: 'Objetivo, experiencia y ritmo semanal',
+                  onTap: _configurePlan,
+                ),
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   padding: const EdgeInsets.all(AppSpacing.x6),
@@ -167,6 +175,23 @@ class _ProfileViewState extends State<ProfileView> {
         ),
       ],
     );
+  }
+
+  Future<void> _configurePlan() async {
+    final updated = await Navigator.of(context).push<TrainingSettings>(
+      MaterialPageRoute<TrainingSettings>(
+        builder: (_) => const OnboardingView(),
+      ),
+    );
+    if (updated == null || !mounted) return;
+    setState(() {
+      _trainingSettings = updated;
+      _profile = ForzaProfile(
+        fullName: _profile.fullName,
+        email: _profile.email,
+        goal: updated.goal,
+      );
+    });
   }
 
   Future<void> _editProfile() async {
