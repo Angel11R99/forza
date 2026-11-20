@@ -13,12 +13,9 @@ import 'exercise_detail_page.dart';
 import 'exercise_filters_page.dart';
 
 class ExercisesView extends StatefulWidget {
-  const ExercisesView({
-    super.key,
-    this.repository = const DemoExerciseRepository(),
-  });
+  const ExercisesView({super.key, this.repository});
 
-  final ExerciseRepository repository;
+  final ExerciseRepository? repository;
 
   @override
   State<ExercisesView> createState() => _ExercisesViewState();
@@ -28,6 +25,38 @@ class _ExercisesViewState extends State<ExercisesView> {
   final _searchController = TextEditingController();
   ExerciseFilterSelection _filters = const ExerciseFilterSelection();
   String _searchQuery = '';
+  bool _isLoading = true;
+  bool _loadFailed = false;
+
+  ExerciseRepository get _repository =>
+      widget.repository ?? DemoExerciseRepository.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_repository.isLoaded) {
+      _isLoading = false;
+    } else {
+      _loadCatalog();
+    }
+  }
+
+  Future<void> _loadCatalog() async {
+    setState(() {
+      _isLoading = true;
+      _loadFailed = false;
+    });
+    try {
+      await _repository.load();
+      if (mounted) setState(() => _isLoading = false);
+    } on Object {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -36,7 +65,7 @@ class _ExercisesViewState extends State<ExercisesView> {
   }
 
   List<Exercise> get _results {
-    return widget.repository.search(
+    return _repository.search(
       query: _searchQuery,
       muscleGroups: _filters.muscleGroups,
       equipment: _filters.equipment,
@@ -49,7 +78,7 @@ class _ExercisesViewState extends State<ExercisesView> {
         builder: (_) => ExerciseFiltersPage(
           initialSelection: _filters,
           searchQuery: _searchQuery,
-          repository: widget.repository,
+          repository: _repository,
         ),
       ),
     );
@@ -60,10 +89,8 @@ class _ExercisesViewState extends State<ExercisesView> {
   void _openExercise(Exercise exercise) {
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => ExerciseDetailPage(
-          exercise: exercise,
-          repository: widget.repository,
-        ),
+        builder: (_) =>
+            ExerciseDetailPage(exercise: exercise, repository: _repository),
       ),
     );
   }
@@ -78,6 +105,35 @@ class _ExercisesViewState extends State<ExercisesView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_loadFailed) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.x8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 36),
+              const SizedBox(height: AppSpacing.x3),
+              Text(
+                'No pudimos cargar los ejercicios.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: AppSpacing.x3),
+              OutlinedButton.icon(
+                onPressed: _loadCatalog,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final results = _results;
     final horizontalPadding = MediaQuery.sizeOf(context).width < 380
         ? AppSpacing.x4

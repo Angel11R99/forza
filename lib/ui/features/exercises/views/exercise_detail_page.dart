@@ -1,6 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../data/repositories/demo_exercise_repository.dart';
 import '../../../../domain/models/exercise.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
@@ -14,7 +13,7 @@ class ExerciseDetailPage extends StatelessWidget {
   const ExerciseDetailPage({
     super.key,
     required this.exercise,
-    this.repository = const DemoExerciseRepository(),
+    required this.repository,
   });
 
   final Exercise exercise;

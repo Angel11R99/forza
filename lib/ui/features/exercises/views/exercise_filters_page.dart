@@ -1,6 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../data/repositories/demo_exercise_repository.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
@@ -11,7 +10,7 @@ class ExerciseFiltersPage extends StatefulWidget {
     super.key,
     required this.initialSelection,
     required this.searchQuery,
-    this.repository = const DemoExerciseRepository(),
+    required this.repository,
   });
 
   final ExerciseFilterSelection initialSelection;

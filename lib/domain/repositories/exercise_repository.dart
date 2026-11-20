@@ -1,6 +1,10 @@
 import '../models/exercise.dart';
 
 abstract interface class ExerciseRepository {
+  bool get isLoaded;
+
+  Future<void> load();
+
   List<String> get muscleGroups;
 
   List<String> get equipmentTypes;
