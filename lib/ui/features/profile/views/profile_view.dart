@@ -105,15 +105,11 @@ class _ProfileViewState extends State<ProfileView> {
                           children: [
                             Text(
                               _profile.fullName,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: AppSpacing.x1),
                             Text(
                               _profile.email,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             const SizedBox(height: AppSpacing.x2),
@@ -305,8 +301,6 @@ class _ProfileOption extends StatelessWidget {
                         const SizedBox(height: AppSpacing.x1),
                         Text(
                           subtitle,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
