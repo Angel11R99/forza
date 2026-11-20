@@ -5,6 +5,7 @@ import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
+import '../../onboarding/views/training_session_flow.dart';
 import 'reschedule_session_page.dart';
 
 const _months = <String>[
@@ -106,6 +107,18 @@ class _ActivityViewState extends State<ActivityView> {
     );
   }
 
+  Future<void> _startSession() async {
+    final completed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(builder: (_) => const TrainingSessionFlow()),
+    );
+    if (!mounted || completed != true) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Demo completada. No se guardó en tu historial.'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = _sessionForDate(_selectedDate);
@@ -185,6 +198,7 @@ class _ActivityViewState extends State<ActivityView> {
                   date: _selectedDate,
                   session: session,
                   onReschedule: _reschedule,
+                  onStart: _startSession,
                 ),
               ],
             ),
@@ -450,11 +464,13 @@ class _DayDetailCard extends StatelessWidget {
     required this.date,
     required this.session,
     required this.onReschedule,
+    required this.onStart,
   });
 
   final DateTime date;
   final _TrainingSession? session;
   final VoidCallback onReschedule;
+  final VoidCallback onStart;
 
   @override
   Widget build(BuildContext context) {
@@ -547,6 +563,15 @@ class _DayDetailCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.x3),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onStart,
+              icon: const Icon(Icons.play_arrow_rounded, size: 18),
+              label: const Text('Iniciar sesión de demostración'),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.x2),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
