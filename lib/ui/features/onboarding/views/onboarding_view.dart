@@ -52,7 +52,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: padding),
-                      child: _StepProgress(step: _step),
+                      child: _StepProgress(step: _step.clamp(0, 2)),
                     ),
                     Expanded(
                       child: SingleChildScrollView(
@@ -75,11 +75,11 @@ class _OnboardingViewState extends State<OnboardingView> {
                       child: SizedBox(
                         width: double.infinity,
                         child: FilledButton(
-                          onPressed: _step == 2 ? _finish : _next,
+                          onPressed: _step == 3 ? _finish : _next,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 13),
                             child: Text(
-                              _step == 2 ? 'Guardar mi plan' : 'Continuar',
+                              _step == 3 ? 'Confirmar plan' : 'Continuar',
                             ),
                           ),
                         ),
@@ -99,8 +99,65 @@ class _OnboardingViewState extends State<OnboardingView> {
     return switch (_step) {
       0 => _buildGoalStep(context),
       1 => _buildExperienceStep(context),
-      _ => _buildScheduleStep(context),
+      2 => _buildScheduleStep(context),
+      _ => _buildConfirmationStep(context),
     };
+  }
+
+  Widget _buildConfirmationStep(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _StepEyebrow(label: 'B5 · CONFIRMACIÓN DEL PLAN'),
+        const SizedBox(height: AppSpacing.x3),
+        Text(
+          'Tu plan está listo',
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppSpacing.x2),
+        Text(
+          'Revisa tu punto de partida. Puedes ajustar estos datos más adelante desde tu perfil.',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const SizedBox(height: AppSpacing.x6),
+        AppSurfaceCard(
+          padding: const EdgeInsets.all(AppSpacing.x6),
+          child: Column(
+            children: [
+              _PlanSummaryRow(
+                icon: Icons.flag_outlined,
+                label: 'Objetivo',
+                value: _goal,
+              ),
+              const Divider(height: AppSpacing.x8),
+              _PlanSummaryRow(
+                icon: Icons.trending_up_rounded,
+                label: 'Experiencia',
+                value: _experience,
+              ),
+              const Divider(height: AppSpacing.x8),
+              _PlanSummaryRow(
+                icon: Icons.calendar_month_outlined,
+                label: 'Frecuencia',
+                value:
+                    '$_daysPerWeek ${_daysPerWeek == 1 ? 'día' : 'días'} por semana',
+              ),
+              const Divider(height: AppSpacing.x8),
+              _PlanSummaryRow(
+                icon: Icons.schedule_rounded,
+                label: 'Duración',
+                value: '$_sessionMinutes minutos por sesión',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.x4),
+        Text(
+          'Esta confirmación solo guarda los valores en la sesión actual de la demo.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
   }
 
   Widget _buildGoalStep(BuildContext context) {
@@ -319,6 +376,38 @@ class _StepEyebrow extends StatelessWidget {
         letterSpacing: 1.2,
         fontSize: 11,
       ),
+    );
+  }
+}
+
+class _PlanSummaryRow extends StatelessWidget {
+  const _PlanSummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 21),
+        const SizedBox(width: AppSpacing.x3),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: AppSpacing.x1),
+              Text(value, style: Theme.of(context).textTheme.titleMedium),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

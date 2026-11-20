@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../onboarding/views/account_access_pages.dart';
 import '../../onboarding/views/onboarding_view.dart';
 import '../models/profile_settings.dart';
 import 'profile_settings_pages.dart';
@@ -64,6 +65,14 @@ class _ProfileViewState extends State<ProfileView> {
                 const SizedBox(height: AppSpacing.x4),
                 const _DemoBadge(),
                 const SizedBox(height: AppSpacing.x8),
+                _ProfileOption(
+                  icon: Icons.login_rounded,
+                  title: 'Acceso y cuenta',
+                  subtitle:
+                      'Crear cuenta, iniciar sesión o recuperar acceso · demo',
+                  onTap: _openAccountAccess,
+                ),
+                const SizedBox(height: AppSpacing.x3),
                 _ProfileOption(
                   icon: Icons.rocket_launch_outlined,
                   title: 'Configurar plan inicial',
@@ -174,6 +183,12 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ),
       ],
+    );
+  }
+
+  void _openAccountAccess() {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(builder: (_) => const AccountWelcomePage()),
     );
   }
 
