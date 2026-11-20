@@ -17,14 +17,14 @@ Implementar las pantallas y el lenguaje visual FORZA en Flutter, reutilizando pa
 ## Alcance que se asume
 
 - El proyecto objetivo es Flutter y el repositorio consultado es `C:\Users\User\Documents\forza`.
-- La navegación del primer hito usa `Navigator`/`MaterialApp`; en iOS se integra `native_glass_navbar ^1.2.0` y en Android su fallback visual Flutter.
+- La navegación del primer hito usa `Navigator`/`MaterialApp`; en iOS se integra `native_glass_navbar ^2.0.0` y en Android su fallback visual Flutter.
 - El foco de esta guía es estructura visual, color, espaciado, componentes de interfaz y rutas.
 - Animaciones de ejercicios: integrarlas en otra fase, después de resolver derechos de uso de cada medio.
 - Las páginas de ajustes y perfil aparecen en el Figma; su backend y lógica de cuenta no forman parte de una primera entrega visual.
 
 ## Estado del proyecto consultado
 
-El árbol `lib/` contiene solo `main.dart`. `native_glass_navbar ^1.2.0` ya está declarado y resuelto en `pubspec.lock`; se eligió la rama 1.x para mantener la integración con el `package:flutter/material.dart` que usa el starter. La guía propone una arquitectura inicial y no afirma que los módulos ya estén implementados.
+El árbol `lib/` contiene la base inicial FORZA y las cinco áreas de navegación. `material_ui ^1.11.1` y `native_glass_navbar ^2.0.0` están declarados y resueltos en `pubspec.lock`. La guía propone una arquitectura inicial y no afirma que las features estén completamente implementadas.
 
 ## Decisiones de la primera entrega
 

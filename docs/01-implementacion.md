@@ -71,8 +71,8 @@ El diseño usa superficies claras, texto oscuro, secundarios grises, bloques fot
 
 ### Fase 0 · Reconocimiento
 
-- **Dependencias resueltas:** `pubspec.yaml` usa `native_glass_navbar: ^1.2.0` y `flutter pub get` completó correctamente; `pubspec.lock` fija `1.2.0`. Esta versión mantiene compatibilidad con el starter basado en `package:flutter/material.dart`; la rama 2.x usa los nuevos paquetes UI de Flutter y su documentación recomienda 1.x para proyectos que aún usan las APIs Material/Cupertino tradicionales. El SDK declarado por el paquete 1.2.0 (`Dart ^3.9.2`, Flutter `>=3.3.0`) es compatible con el entorno declarado por FORZA (`Dart ^3.13.7`). Referencia: [pub.dev](https://pub.dev/packages/native_glass_navbar).
-- **Navbar seleccionada:** usar `native_glass_navbar` en iOS, con fallback Flutter de estilo FORZA en Android. El plugin soporta hasta cinco pestañas, que coincide con las cinco áreas principales. Para la barra iOS, el paquete documenta Xcode 27 o posterior; esto queda como requisito del build iOS. Se evita añadir un segundo paquete de navbar.
+- **Dependencias resueltas:** `pubspec.yaml` declara `material_ui: ^1.11.1` y `native_glass_navbar: ^2.0.0`; `flutter pub get` completó correctamente y fijó ambas versiones en `pubspec.lock`. La app usa `package:material_ui/material_ui.dart`, API alineada con Flutter 3.50.1 y con la rama 2.x del plugin.
+- **Navbar seleccionada:** `native_glass_navbar` en iOS, con fallback Flutter de estilo FORZA en Android. El plugin admite hasta cinco pestañas, coincidente con las cinco áreas principales. Para compilar iOS requiere Xcode 27 o posterior. Se evita añadir un segundo paquete de navbar. Referencia: [pub.dev](https://pub.dev/packages/native_glass_navbar).
 - **Router seleccionado:** conservar `Navigator`/`MaterialApp` de Flutter para el primer hito y gestionar las cinco pestañas con estado persistente de vistas; no añadir `go_router` todavía porque el alcance actual no requiere deep links ni redirecciones de autenticación.
 - **Alcance acordado para el primer hito:** demo navegable de UI con contenido de presentación. API, autenticación, persistencia y medios animados no entran en este hito.
 - **Referencia visual:** las superficies y textos base están registrados en `03-sistema-visual.md`. El HEX de acento, tipografía y medidas exactas de forma/espaciado no están confirmados en la inspección existente; deben permanecer como tokens provisionales pendientes de validar contra el archivo Figma antes de cerrar el tema visual.
@@ -81,9 +81,11 @@ El diseño usa superficies claras, texto oscuro, secundarios grises, bloques fot
 
 El primer cambio de producto debe dejar una base FORZA visible y navegable, antes de construir todas las pantallas. En el starter actual esto reemplaza la pantalla de contador de Flutter.
 
+**Estado:** implementada en `lib/`. La app tiene tema claro y tokens centrales, Inicio con contenido marcado como ejemplo, cinco destinos con estado de pestaña conservado, barra nativa iOS y fallback Flutter para el resto de plataformas. Actividad, Ejercicios, Progreso y Perfil tienen pantallas de entrada; sus flujos completos pertenecen a Fase 2. El color de acento y la tipografía siguen pendientes de validar en Figma.
+
 #### Orden de implementación
 
-1. **Usar el marco de navegación elegido.** Mantener `Navigator`/`MaterialApp` para rutas y cinco pestañas con estado persistente. Integrar `native_glass_navbar ^1.2.0` para iOS y un fallback Flutter alineado visualmente para Android; la dependencia ya está resuelta en `pubspec.lock`.
+1. **Usar el marco de navegación elegido.** Mantener `Navigator`/`MaterialApp` para rutas y cinco pestañas con estado persistente. Integrar `native_glass_navbar ^2.0.0` para iOS y un fallback Flutter alineado visualmente para Android; la dependencia ya está resuelta en `pubspec.lock`.
 2. **Crear la entrada de app.** Mover la configuración de `MaterialApp` fuera de `main.dart`, fijar el título FORZA y dejar `main()` como punto de arranque pequeño. Mantener rutas semánticas para Inicio, Actividad, Ejercicios, Progreso y Perfil; onboarding y detalles quedan fuera de las pestañas principales.
 3. **Definir los tokens confirmados.** Crear `AppColors`, `AppSpacing` y `AppRadius` a partir de `03-sistema-visual.md`. Usar únicamente HEX verificados. El acento queda sin asignar hasta medirlo en el archivo fuente; no crear un verde provisional que parezca definitivo.
 4. **Configurar el tema claro.** Conectar los tokens a `ThemeData`/`ColorScheme` y tipografía del sistema mientras la familia tipográfica de Figma no esté confirmada. Fijar estilos de superficies, texto, divisores y botones sin copiar estilos del starter.
@@ -151,7 +153,7 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ## Notas sobre el repo existente
 
-El proyecto revisado sigue siendo un starter Flutter: `lib/main.dart` es la única fuente de app. `pubspec.yaml` declara Flutter, `cupertino_icons` y `native_glass_navbar: ^1.2.0`; `pubspec.lock` fija el plugin en 1.2.0. El SDK Dart declarado es `^3.13.7`, compatible con el rango del paquete. Para compilar iOS con la barra nativa se necesita Xcode 27 o posterior.
+El starter ya cuenta con la base inicial FORZA en `lib/`. `pubspec.yaml` declara Flutter, `cupertino_icons`, `material_ui: ^1.11.1` y `native_glass_navbar: ^2.0.0`; `pubspec.lock` los resuelve. El SDK declarado es Dart `^3.13.7`; la máquina de desarrollo usa Flutter 3.50.1/Dart 3.14. Para compilar iOS con la barra nativa se necesita Xcode 27 o posterior.
 
 ## Archivo fuente de diseño
 
