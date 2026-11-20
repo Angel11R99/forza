@@ -24,7 +24,7 @@ Implementar las pantallas y el lenguaje visual FORZA en Flutter, reutilizando pa
 
 ## Estado del proyecto consultado
 
-El árbol `lib/` contiene la base FORZA, las cinco áreas de navegación y los flujos de Actividad D2–D4 y Ejercicios E1–E5 con datos locales de demostración. `material_ui ^1.11.1` y `native_glass_navbar ^2.0.0` están declarados y resueltos en `pubspec.lock`. Progreso y Cuenta tienen pantallas de entrada, aún sin sus flujos completos.
+El árbol `lib/` contiene la base FORZA, las cinco áreas de navegación y los flujos de Actividad D2–D4, Ejercicios E1–E5 y Progreso F1–F6 con datos locales de demostración. `material_ui ^1.11.1` y `native_glass_navbar ^2.0.0` están declarados y resueltos en `pubspec.lock`. Cuenta tiene una pantalla de entrada, aún sin sus flujos completos.
 
 ## Decisiones de la primera entrega
 

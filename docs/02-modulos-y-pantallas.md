@@ -16,7 +16,8 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 - **Actividad (D2–D4):** calendario mensual, detalle del día y flujo de reprogramación implementados con datos de ejemplo locales. El cambio de fecha se conserva durante la sesión abierta de la app, sin persistencia.
 - **Ejercicios (E1–E5):** biblioteca de demostración con búsqueda por ejercicio/músculo/equipo, filtros combinables, detalle con instrucciones y selección de alternativas. Catálogo local sin imágenes/GIFs; no hay datos persistentes.
-- **Progreso y Cuenta:** sus pantallas de entrada están creadas; los flujos F1–F6 y G1–G6 faltan por implementar.
+- **Progreso (F1–F6):** historial, detalle de sesión, evolución de fuerza/corporal, formulario temporal de medidas y récords personales implementados con datos de ejemplo.
+- **Cuenta (G1–G6):** la pantalla de entrada está creada; los flujos completos faltan por implementar.
 
 ## Inventario legible del panel de capas
 

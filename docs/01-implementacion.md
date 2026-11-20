@@ -81,7 +81,7 @@ El diseño usa superficies claras, texto oscuro, secundarios grises, bloques fot
 
 El primer cambio de producto debe dejar una base FORZA visible y navegable, antes de construir todas las pantallas. En el starter actual esto reemplaza la pantalla de contador de Flutter.
 
-**Estado:** implementada en `lib/`. La app tiene tema claro y tokens centrales, Inicio con contenido marcado como ejemplo, cinco destinos con estado de pestaña conservado, barra nativa iOS y fallback Flutter para el resto de plataformas. Actividad, Ejercicios, Progreso y Perfil tienen pantallas de entrada; sus flujos completos pertenecen a Fase 2. El color de acento y la tipografía siguen pendientes de validar en Figma.
+**Estado:** implementada en `lib/`. La app tiene tema claro y tokens centrales, Inicio con contenido marcado como ejemplo, cinco destinos con estado de pestaña conservado, barra nativa iOS y fallback Flutter para el resto de plataformas. Progreso y Perfil tienen pantallas de entrada; el flujo de Perfil sigue pendiente. El color de acento y la tipografía siguen pendientes de validar en Figma.
 
 #### Orden de implementación
 
@@ -130,7 +130,7 @@ Este árbol es una guía de salida, no exige crear pantallas vacías de todos lo
 
 Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca y detalle → Progreso → Perfil/ajustes. Implementar los frames A–G por grupos, manteniendo cada vista en su feature.
 
-**Estado:** Actividad (D2–D4) incluye calendario mensual navegable, selección y detalle del día, y reprogramación local de demostración. Ejercicios (E1–E5) incluye biblioteca, búsqueda, filtros combinables, detalle e identificación de alternativas, con catálogo de ejemplo. El catálogo no incluye imágenes ni GIFs. Los cambios y datos son locales a la sesión; no hay persistencia. Progreso y Perfil/ajustes siguen pendientes de sus flujos completos.
+**Estado:** Actividad (D2–D4) incluye calendario mensual navegable, selección y detalle del día, y reprogramación local de demostración. Ejercicios (E1–E5) incluye biblioteca, búsqueda, filtros combinables, detalle e identificación de alternativas, con catálogo de ejemplo. Progreso (F1–F6) incluye historial y detalle de sesión, gráficos de evolución de fuerza y corporal, registro temporal de medidas y récords personales. Los datos son locales de demostración; no hay persistencia ni medios de ejercicio. Perfil/ajustes siguen pendientes de sus flujos completos.
 
 ### Fase 3 · Datos
 
