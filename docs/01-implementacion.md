@@ -134,7 +134,7 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 3 · Datos
 
-- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y `DemoExerciseRepository` implementado sobre el catálogo local. La biblioteca, filtros, detalle y alternativas consultan el repositorio; la fuente sigue siendo de demostración y no hay API ni persistencia.
+- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y `DemoExerciseRepository` carga el fixture JSON local de forma asíncrona. La biblioteca muestra carga/error y búsqueda, filtros, detalle y alternativas consultan el repositorio; no hay API ni persistencia.
 - [x] Definir modelo `Exercise` y contrato `ExerciseRepository` separados de widgets.
 - [x] Usar fixtures locales para el catálogo actual.
 - [ ] Conectar una API/dataset solo cuando la fuente y sus condiciones de uso estén aprobadas.
