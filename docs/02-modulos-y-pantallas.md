@@ -14,6 +14,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 ## Estado de implementación
 
+- **Inicio / onboarding (A–C):** configurador inicial local de tres pasos para objetivo, experiencia y frecuencia/duración de entrenamiento. Se abre desde Perfil y devuelve la configuración elegida a la sesión actual. Es una interpretación funcional del grupo; los nombres y el mapeo exacto de A1–C8 siguen pendientes de confirmación contra frames individuales.
 - **Actividad (D2–D4):** calendario mensual, detalle del día y flujo de reprogramación implementados con datos de ejemplo locales. El cambio de fecha se conserva durante la sesión abierta de la app, sin persistencia.
 - **Ejercicios (E1–E5):** biblioteca de demostración con búsqueda por ejercicio/músculo/equipo, filtros combinables, detalle con instrucciones y selección de alternativas. Catálogo local sin imágenes/GIFs; no hay datos persistentes.
 - **Progreso (F1–F6):** historial, detalle de sesión, evolución de fuerza/corporal, formulario temporal de medidas y récords personales implementados con datos de ejemplo.
@@ -42,7 +43,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 - `G5 - Privacidad y cuenta`.
 - `G6 - Confirmacion de cuenta`.
 
-Los nombres de A1–C8 se leen parcialmente en la vista general; deben confirmarse directamente en el archivo antes de asignar rutas definitivas. No inferir una función sensible (por ejemplo, autenticación real o borrado de cuenta) solo a partir de un frame.
+Los nombres de A1–C8 se leen parcialmente en la vista general; deben confirmarse directamente en cada frame antes de asignar rutas definitivas. El configurador actual es un flujo provisional de UI, no una reproducción confirmada de todas esas pantallas. No inferir una función sensible (por ejemplo, autenticación real o borrado de cuenta) solo a partir de un frame.
 
 ## Componentes candidatos compartidos
 
