@@ -9,22 +9,7 @@ class DemoExerciseRepository implements ExerciseRepository {
   DemoExerciseRepository._();
 
   static final instance = DemoExerciseRepository._();
-  static const _assetPath = 'assets/data/exercises_demo.json';
-
-  static const _muscleGroups = <String>[
-    'Pecho',
-    'Espalda',
-    'Piernas',
-    'Hombros',
-    'Core',
-  ];
-
-  static const _equipmentTypes = <String>[
-    'Barra',
-    'Mancuernas',
-    'Polea',
-    'Peso corporal',
-  ];
+  static const _assetPath = 'assets/data/exercises.json';
 
   List<Exercise>? _entries;
   Future<void>? _loadOperation;
@@ -77,10 +62,14 @@ class DemoExerciseRepository implements ExerciseRepository {
   }
 
   @override
-  List<String> get muscleGroups => _muscleGroups;
+  List<String> get muscleGroups =>
+      _loadedEntries.map((exercise) => exercise.muscleGroup).toSet().toList()
+        ..sort();
 
   @override
-  List<String> get equipmentTypes => _equipmentTypes;
+  List<String> get equipmentTypes =>
+      _loadedEntries.map((exercise) => exercise.equipment).toSet().toList()
+        ..sort();
 
   @override
   List<Exercise> search({
@@ -128,6 +117,7 @@ class DemoExerciseRepository implements ExerciseRepository {
               candidate.id != exercise.id &&
               candidate.muscleGroup == exercise.muscleGroup,
         )
+        .take(12)
         .toList(growable: false);
   }
 }

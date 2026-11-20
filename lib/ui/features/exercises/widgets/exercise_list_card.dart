@@ -17,10 +17,16 @@ class ExerciseListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accessibilityLabel = [
+      exercise.name,
+      exercise.muscleGroup,
+      exercise.equipment,
+      exercise.level,
+    ].whereType<String>().join(', ');
+
     return Semantics(
       button: true,
-      label:
-          '${exercise.name}, ${exercise.muscleGroup}, ${exercise.equipment}, ${exercise.level}',
+      label: accessibilityLabel,
       child: ExcludeSemantics(
         child: Material(
           color: AppColors.surface,
@@ -91,5 +97,7 @@ IconData exerciseGroupIcon(String group) => switch (group) {
   'Piernas' => Icons.directions_run_rounded,
   'Hombros' => Icons.sports_martial_arts_rounded,
   'Core' => Icons.self_improvement_rounded,
+  'Cuello' || 'Brazos' => Icons.accessibility_new_rounded,
+  'Cardio' => Icons.favorite_border_rounded,
   _ => Icons.fitness_center_rounded,
 };

@@ -334,7 +334,7 @@ class _DemoBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
-        'CATÁLOGO DE EJEMPLO',
+        'CATÁLOGO DE REFERENCIA',
         style: Theme.of(context).textTheme.labelLarge
             ?.copyWith(fontSize: 10, letterSpacing: 1),
       ),

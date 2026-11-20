@@ -53,11 +53,13 @@ class ExerciseDetailPage extends StatelessWidget {
                               exercise.name,
                               style: Theme.of(context).textTheme.displaySmall,
                             ),
-                            const SizedBox(height: AppSpacing.x2),
-                            Text(
-                              exercise.summary,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                            if (exercise.summary case final summary?) ...[
+                              const SizedBox(height: AppSpacing.x2),
+                              Text(
+                                summary,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
                             const SizedBox(height: AppSpacing.x4),
                             Wrap(
                               spacing: AppSpacing.x2,
@@ -65,7 +67,8 @@ class ExerciseDetailPage extends StatelessWidget {
                               children: [
                                 _InfoChip(label: exercise.muscleGroup),
                                 _InfoChip(label: exercise.equipment),
-                                _InfoChip(label: exercise.level),
+                                if (exercise.level case final level?)
+                                  _InfoChip(label: level),
                               ],
                             ),
                             const SizedBox(height: AppSpacing.x8),
