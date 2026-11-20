@@ -6,7 +6,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 | Área sugerida | Frames relacionados | Responsabilidad UI |
 |---|---|---|
-| Acceso / onboarding | A1–A4, B1–B5, C1–C8 | Bienvenida, acceso, creación/recuperación de cuenta y preparación/confirmación del plan. |
+| Acceso y entrenamiento | A1–A4, B1–B5, C1–C8 | Acceso a cuenta, personalización de plan y flujo de una sesión de entrenamiento. |
 | Actividad | D1–D4 | Calendario mensual, detalle de día y reprogramación. |
 | Ejercicios | E1–E5 | Resultados, filtros, biblioteca, detalle y alternativas de ejercicio. |
 | Progreso | F1–F6 | Historial, detalle de sesión, evolución de fuerza y corporal, medidas y récords personales. |
@@ -15,7 +15,8 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 ## Estado de implementación
 
 - **Acceso (A1–A4):** bienvenida, crear cuenta, iniciar sesión y recuperar contraseña, disponibles desde Perfil. Los formularios validan datos localmente y muestran que la acción es solo de demostración: no crean cuentas, no inician sesión ni envían correos.
-- **Configuración de plan (B1–B5):** flujo local para objetivo, experiencia y ritmo semanal que termina en una pantalla de confirmación titulada como B5 en el prototipo. El mapeo de los pasos intermedios B1–B4 y C1–C8 sigue pendiente de confirmar.
+- **Configuración de plan (B1–B5):** resumen de personalización, preparación local del plan, selección de día, detalle de ejercicios y confirmación final. La rutina se arma con ejemplos locales, sin generar ni persistir un plan remoto. Los nombres están confirmados; la comparación visual detallada queda pendiente.
+- **Sesión de entrenamiento (C1, C3–C8):** preparación, descanso temporizado, lista de ejercicios, pausa, confirmación de abandono, finalización y resumen, accesibles desde una sesión programada en Actividad. Se conserva solo durante el flujo y no se agrega al historial. C2 no aparece en el panel de capas.
 - **Actividad (D2–D4):** calendario mensual, detalle del día y flujo de reprogramación implementados con datos de ejemplo locales. El cambio de fecha se conserva durante la sesión abierta de la app, sin persistencia.
 - **Ejercicios (E1–E5):** biblioteca de demostración con búsqueda por ejercicio/músculo/equipo, filtros combinables, detalle con instrucciones y selección de alternativas. Catálogo local sin imágenes/GIFs; no hay datos persistentes.
 - **Progreso (F1–F6):** historial, detalle de sesión, evolución de fuerza/corporal, formulario temporal de medidas y récords personales implementados con datos de ejemplo.
@@ -27,7 +28,18 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 - `A2 - Crear cuenta`.
 - `A3 - Iniciar sesión`.
 - `A4 - Recuperar contraseña`.
+- `B1 - Resumen de personalización`.
+- `B2 - Preparando el plan`.
+- `B3 - Mi plan personalizado`.
+- `B4 - Detalle de día del plan`.
 - `B5 - Confirmacion del plan`.
+- `C1 - Preparación del entrenamiento`.
+- `C3 - Descanso`.
+- `C4 - Lista de ejercicios`.
+- `C5 - Entrenamiento pausado`.
+- `C6 - Confirmar abandono`.
+- `C7 - Entrenamiento completado`.
+- `C8 - Resumen de sesión`.
 - `D2 - Calendario mensual` (se observan capas `Actividad D` y `Día D`).
 - `D3 - Detalle de día`.
 - `D4 - Reprogramar sesión`.
@@ -49,7 +61,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 - `G5 - Privacidad y cuenta`.
 - `G6 - Confirmacion de cuenta`.
 
-Los nombres de B1–B4 y C1–C8 deben confirmarse directamente en cada frame antes de asignar rutas definitivas. El flujo de configuración actual enlaza con el frame B5 confirmado, pero no se presenta como reproducción de los frames intermedios aún no inspeccionados. No inferir que la autenticación es real ni añadir borrado de cuenta solo por la presencia de esos frames.
+El panel no mostró ninguna capa C2; se conserva ese hueco de numeración sin inventar una pantalla. Las etiquetas de B y C ya se verificaron en el panel, pero aún falta una comparación visual detallada de sus contenidos. No inferir que la autenticación es real ni añadir borrado de cuenta solo por la presencia de esos frames.
 
 ## Componentes candidatos compartidos
 
