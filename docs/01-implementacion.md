@@ -134,9 +134,11 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 3 · Datos
 
-- Definir modelo `Exercise` y contrato `ExerciseRepository` separado de widgets.
-- Empezar con fixtures locales para verificar layouts; luego conectar API/dataset aprobado.
-- Paginación/búsqueda/filtros deben resolverse en el origen de datos cuando exista catálogo real; no cargar todos los GIFs de golpe.
+- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y `DemoExerciseRepository` implementado sobre el catálogo local. La biblioteca, filtros, detalle y alternativas consultan el repositorio; la fuente sigue siendo de demostración y no hay API ni persistencia.
+- [x] Definir modelo `Exercise` y contrato `ExerciseRepository` separados de widgets.
+- [x] Usar fixtures locales para el catálogo actual.
+- [ ] Conectar una API/dataset solo cuando la fuente y sus condiciones de uso estén aprobadas.
+- [ ] Tras conectar catálogo real, resolver búsqueda/filtros en el origen de datos y paginar; no cargar todos los GIFs de golpe.
 
 ### Fase 4 · Medios animados y pulido
 
