@@ -77,14 +77,14 @@ class DemoExerciseRepository implements ExerciseRepository {
     Set<String> muscleGroups = const {},
     Set<String> equipment = const {},
   }) {
-    final normalizedQuery = query.trim().toLowerCase();
+    final normalizedQuery = _foldForSearch(query);
     return _loadedEntries
         .where((exercise) {
           final matchesQuery =
               normalizedQuery.isEmpty ||
-              exercise.name.toLowerCase().contains(normalizedQuery) ||
-              exercise.muscleGroup.toLowerCase().contains(normalizedQuery) ||
-              exercise.equipment.toLowerCase().contains(normalizedQuery);
+              _foldForSearch(exercise.name).contains(normalizedQuery) ||
+              _foldForSearch(exercise.muscleGroup).contains(normalizedQuery) ||
+              _foldForSearch(exercise.equipment).contains(normalizedQuery);
           final matchesMuscle =
               muscleGroups.isEmpty ||
               muscleGroups.contains(exercise.muscleGroup);
@@ -121,3 +121,13 @@ class DemoExerciseRepository implements ExerciseRepository {
         .toList(growable: false);
   }
 }
+
+String _foldForSearch(String value) => value
+    .trim()
+    .toLowerCase()
+    .replaceAll(RegExp('[áàäâ]'), 'a')
+    .replaceAll(RegExp('[éèëê]'), 'e')
+    .replaceAll(RegExp('[íìïî]'), 'i')
+    .replaceAll(RegExp('[óòöô]'), 'o')
+    .replaceAll(RegExp('[úùüû]'), 'u')
+    .replaceAll('ñ', 'n');

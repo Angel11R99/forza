@@ -70,7 +70,7 @@ class ExerciseListCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     exercise.name,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),

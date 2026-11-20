@@ -135,6 +135,8 @@ class _ExercisesViewState extends State<ExercisesView> {
     }
 
     final results = _results;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final cardExtent = 164 + ((textScale - 1).clamp(0, 2) * 52).toDouble();
     final horizontalPadding = MediaQuery.sizeOf(context).width < 380
         ? AppSpacing.x4
         : AppSpacing.x6;
@@ -238,10 +240,16 @@ class _ExercisesViewState extends State<ExercisesView> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    Text(
-                      '${results.length}',
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(color: AppColors.textSecondary),
+                    Semantics(
+                      liveRegion: true,
+                      label: '${results.length} ejercicios encontrados',
+                      child: ExcludeSemantics(
+                        child: Text(
+                          '${results.length}',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(color: AppColors.textSecondary),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -266,9 +274,9 @@ class _ExercisesViewState extends State<ExercisesView> {
             ),
             sliver: SliverGrid.builder(
               itemCount: results.length,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 460,
-                mainAxisExtent: 164,
+                mainAxisExtent: cardExtent,
                 crossAxisSpacing: AppSpacing.x3,
                 mainAxisSpacing: AppSpacing.x3,
               ),
