@@ -284,9 +284,24 @@ class _WeeklyProgressCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.x6),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [for (final day in _days) _WeekdayMark(day: day)],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final markSize = (constraints.maxWidth / _days.length).clamp(
+                24.0,
+                34.0,
+              );
+
+              return Row(
+                children: [
+                  for (final day in _days)
+                    Expanded(
+                      child: Center(
+                        child: _WeekdayMark(day: day, markSize: markSize),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -295,9 +310,10 @@ class _WeeklyProgressCard extends StatelessWidget {
 }
 
 class _WeekdayMark extends StatelessWidget {
-  const _WeekdayMark({required this.day});
+  const _WeekdayMark({required this.day, required this.markSize});
 
   final ({String label, bool completed, bool today}) day;
+  final double markSize;
 
   @override
   Widget build(BuildContext context) {
@@ -313,8 +329,8 @@ class _WeekdayMark extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 34,
-          height: 34,
+          width: markSize,
+          height: markSize,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: background,
