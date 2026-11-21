@@ -7,8 +7,10 @@ import '../../../app/theme/app_spacing.dart';
 import '../../features/activity/views/activity_view.dart';
 import '../../features/exercises/views/exercises_view.dart';
 import '../../features/home/views/home_view.dart';
+import '../../features/profile/models/profile_settings.dart';
 import '../../features/profile/views/profile_view.dart';
 import '../../features/progress/views/progress_view.dart';
+import '../../features/onboarding/views/training_session_flow.dart';
 import 'forza_brand.dart';
 
 class AppScaffold extends StatefulWidget {
@@ -22,6 +24,7 @@ class AppScaffold extends StatefulWidget {
 
 class _AppScaffoldState extends State<AppScaffold> {
   late int _selectedIndex;
+  TrainingSettings _trainingSettings = const TrainingSettings();
 
   static const _destinations = <_AppDestination>[
     _AppDestination(
@@ -82,11 +85,22 @@ class _AppScaffoldState extends State<AppScaffold> {
                     onShowActivity: () => _selectDestination(1),
                     onExploreExercises: () => _selectDestination(2),
                     onShowProfile: () => _selectDestination(4),
+                    settings: _trainingSettings,
+                    onStartWorkout: () => Navigator.of(context).push<void>(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            TrainingSessionFlow(settings: _trainingSettings),
+                      ),
+                    ),
                   ),
-                  const ActivityView(),
+                  ActivityView(settings: _trainingSettings),
                   const ExercisesView(),
                   const ProgressView(),
-                  const ProfileView(),
+                  ProfileView(
+                    trainingSettings: _trainingSettings,
+                    onTrainingSettingsChanged: (settings) =>
+                        setState(() => _trainingSettings = settings),
+                  ),
                 ],
               ),
             ),

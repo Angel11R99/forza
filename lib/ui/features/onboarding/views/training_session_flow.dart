@@ -7,16 +7,19 @@ import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
+import '../../profile/models/profile_settings.dart';
 
 class TrainingSessionFlow extends StatefulWidget {
-  const TrainingSessionFlow({super.key});
+  const TrainingSessionFlow({super.key, required this.settings});
+
+  final TrainingSettings settings;
 
   @override
   State<TrainingSessionFlow> createState() => _TrainingSessionFlowState();
 }
 
 class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
-  static const _exercises = <_SessionExercise>[
+  static const _allExercises = <_SessionExercise>[
     _SessionExercise(
       name: 'Press con mancuernas',
       detail: 'Pecho · 3 series · 8–12 repeticiones',
@@ -37,7 +40,31 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       detail: 'Piernas · 3 series · 8–10 repeticiones',
       icon: Icons.fitness_center_rounded,
     ),
+    _SessionExercise(
+      name: 'Press de hombros',
+      detail: 'Hombros · 3 series · 8–12 repeticiones',
+      icon: Icons.fitness_center_rounded,
+    ),
+    _SessionExercise(
+      name: 'Plancha',
+      detail: 'Core · 3 series · 30–45 segundos',
+      icon: Icons.accessibility_new_rounded,
+    ),
+    _SessionExercise(
+      name: 'Puente de glúteos',
+      detail: 'Glúteos · 3 series · 10–15 repeticiones',
+      icon: Icons.sports_gymnastics_rounded,
+    ),
+    _SessionExercise(
+      name: 'Elevación de pantorrillas',
+      detail: 'Piernas · 3 series · 12–15 repeticiones',
+      icon: Icons.fitness_center_rounded,
+    ),
   ];
+
+  List<_SessionExercise> get _exercises => _allExercises
+      .take((widget.settings.sessionMinutes / 8).round().clamp(4, 8))
+      .toList(growable: false);
 
   _SessionScreen _screen = _SessionScreen.preparation;
   _SessionScreen _resumeScreen = _SessionScreen.exerciseList;
@@ -167,7 +194,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Fuerza total',
+                widget.settings.goal,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppSpacing.x3),
@@ -177,7 +204,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               ),
               const SizedBox(height: AppSpacing.x2),
               Text(
-                '45 min · ${_exercises.length} ejercicios',
+                '${widget.settings.sessionMinutes} min · ${_exercises.length} ejercicios',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -421,10 +448,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                 value: '${_exercises.length}',
               ),
               const Divider(height: AppSpacing.x6),
-              const _SummaryMetric(
+              _SummaryMetric(
                 icon: Icons.bolt_rounded,
                 label: 'Tipo de sesión',
-                value: 'Fuerza total',
+                value: widget.settings.goal,
               ),
             ],
           ),

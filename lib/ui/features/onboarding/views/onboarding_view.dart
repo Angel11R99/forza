@@ -8,7 +8,12 @@ import '../../../core/widgets/forza_brand.dart';
 import '../../profile/models/profile_settings.dart';
 
 class OnboardingView extends StatefulWidget {
-  const OnboardingView({super.key});
+  const OnboardingView({
+    super.key,
+    this.initialSettings = const TrainingSettings(),
+  });
+
+  final TrainingSettings initialSettings;
 
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
@@ -16,10 +21,10 @@ class OnboardingView extends StatefulWidget {
 
 class _OnboardingViewState extends State<OnboardingView> {
   int _step = 0;
-  String _goal = 'Ganar fuerza';
-  String _experience = 'Estoy empezando';
-  int _daysPerWeek = 3;
-  int _sessionMinutes = 45;
+  late String _goal = widget.initialSettings.goal;
+  late String _experience = widget.initialSettings.experience;
+  late int _daysPerWeek = widget.initialSettings.daysPerWeek;
+  late int _sessionMinutes = widget.initialSettings.sessionMinutes;
   int _selectedDay = 0;
 
   static const _goals = ['Ganar fuerza', 'Ganar músculo', 'Crear el hábito'];
@@ -36,7 +41,9 @@ class _OnboardingViewState extends State<OnboardingView> {
         title: Text(_step < 3 ? 'Configura tu plan' : 'Tu plan FORZA'),
         leading: IconButton(
           tooltip: _step == 0 ? 'Volver' : 'Paso anterior',
-          onPressed: _step == 0 ? null : () => setState(() => _step--),
+          onPressed: _step == 0
+              ? () => Navigator.of(context).maybePop()
+              : () => setState(() => _step--),
           icon: const Icon(Icons.arrow_back_rounded),
         ),
       ),
@@ -560,6 +567,8 @@ class _OnboardingViewState extends State<OnboardingView> {
         daysPerWeek: _daysPerWeek,
         sessionMinutes: _sessionMinutes,
         goal: _goal,
+        experience: _experience,
+        equipment: widget.initialSettings.equipment,
       ),
     );
   }

@@ -156,6 +156,7 @@ class _TrainingSettingsPageState extends State<TrainingSettingsPage> {
   late int _daysPerWeek = widget.settings.daysPerWeek;
   late int _sessionMinutes = widget.settings.sessionMinutes;
   late String _goal = widget.settings.goal;
+  late String _experience = widget.settings.experience;
   late final Set<String> _equipment = {...widget.settings.equipment};
 
   @override
@@ -222,6 +223,25 @@ class _TrainingSettingsPageState extends State<TrainingSettingsPage> {
               ],
             ),
             const SizedBox(height: AppSpacing.x6),
+            SectionHeading(title: 'Experiencia'),
+            Wrap(
+              spacing: AppSpacing.x2,
+              runSpacing: AppSpacing.x2,
+              children: [
+                for (final level in [
+                  'Estoy empezando',
+                  'Tengo algo de experiencia',
+                  'Entreno hace tiempo',
+                ])
+                  ChoiceChip(
+                    label: Text(level),
+                    selected: level == _experience,
+                    selectedColor: AppColors.surfaceMuted,
+                    onSelected: (_) => setState(() => _experience = level),
+                  ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.x6),
             SectionHeading(title: 'Equipo disponible'),
             Wrap(
               spacing: AppSpacing.x2,
@@ -252,6 +272,7 @@ class _TrainingSettingsPageState extends State<TrainingSettingsPage> {
             daysPerWeek: _daysPerWeek,
             sessionMinutes: _sessionMinutes,
             goal: _goal,
+            experience: _experience,
             equipment: Set.unmodifiable(_equipment),
           ),
         ),

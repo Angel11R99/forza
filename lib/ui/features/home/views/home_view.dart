@@ -7,6 +7,7 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
+import '../../profile/models/profile_settings.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({
@@ -14,11 +15,15 @@ class HomeView extends StatelessWidget {
     required this.onShowActivity,
     required this.onExploreExercises,
     required this.onShowProfile,
+    required this.settings,
+    required this.onStartWorkout,
   });
 
   final VoidCallback onShowActivity;
   final VoidCallback onExploreExercises;
   final VoidCallback onShowProfile;
+  final TrainingSettings settings;
+  final VoidCallback onStartWorkout;
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +54,23 @@ class HomeView extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: const ForzaWordmark(),
-                    ),
-                    IconButton.filledTonal(
-                      onPressed: onShowProfile,
-                      tooltip: 'Abrir perfil',
-                      icon: const Icon(Icons.person_outline_rounded),
+                      child: SizedBox(
+                        height: 48,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            const ForzaWordmark(),
+                            Positioned(
+                              right: 0,
+                              child: IconButton.filledTonal(
+                                onPressed: onShowProfile,
+                                tooltip: 'Abrir perfil',
+                                icon: const Icon(Icons.person_outline_rounded),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -71,7 +87,10 @@ class HomeView extends StatelessWidget {
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                _TodayWorkoutCard(onPressed: onShowActivity),
+                _TodayWorkoutCard(
+                  settings: settings,
+                  onPressed: onStartWorkout,
+                ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
                   title: 'Esta semana',
@@ -96,8 +115,9 @@ class HomeView extends StatelessWidget {
 }
 
 class _TodayWorkoutCard extends StatelessWidget {
-  const _TodayWorkoutCard({required this.onPressed});
+  const _TodayWorkoutCard({required this.settings, required this.onPressed});
 
+  final TrainingSettings settings;
   final VoidCallback onPressed;
 
   @override
@@ -131,13 +151,13 @@ class _TodayWorkoutCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.x4),
           Text(
-            'Fuerza total',
+            settings.goal,
             style: Theme.of(context).textTheme.headlineSmall
                 ?.copyWith(color: AppColors.inverseText),
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
-            '45 min   ·   6 ejercicios',
+            '${settings.sessionMinutes} min   ·   ${_exerciseCount(settings.sessionMinutes)} ejercicios',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.inverseText.withValues(alpha: 0.82),
             ),
@@ -159,6 +179,8 @@ class _TodayWorkoutCard extends StatelessWidget {
       ),
     );
   }
+
+  int _exerciseCount(int minutes) => (minutes / 8).round().clamp(4, 8);
 }
 
 class _WeeklySummary extends StatelessWidget {

@@ -10,7 +10,14 @@ import '../models/profile_settings.dart';
 import 'profile_settings_pages.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+  const ProfileView({
+    super.key,
+    required this.trainingSettings,
+    required this.onTrainingSettingsChanged,
+  });
+
+  final TrainingSettings trainingSettings;
+  final ValueChanged<TrainingSettings> onTrainingSettingsChanged;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -22,7 +29,6 @@ class _ProfileViewState extends State<ProfileView> {
     email: 'atleta@example.com',
     goal: 'Ganar fuerza',
   );
-  TrainingSettings _trainingSettings = const TrainingSettings();
   AppPreferences _preferences = const AppPreferences();
   NotificationSettings _notifications = const NotificationSettings();
   PrivacySettings _privacy = const PrivacySettings();
@@ -129,7 +135,7 @@ class _ProfileViewState extends State<ProfileView> {
                       icon: Icons.fitness_center_outlined,
                       title: 'Preferencias de entrenamiento',
                       subtitle:
-                          '${_trainingSettings.daysPerWeek} días · ${_trainingSettings.sessionMinutes} min · ${_trainingSettings.goal}',
+                          '${widget.trainingSettings.daysPerWeek} días · ${widget.trainingSettings.sessionMinutes} min · ${widget.trainingSettings.goal}',
                       onTap: _editTrainingSettings,
                     ),
                   ],
@@ -180,12 +186,13 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _configurePlan() async {
     final updated = await Navigator.of(context).push<TrainingSettings>(
       MaterialPageRoute<TrainingSettings>(
-        builder: (_) => const OnboardingView(),
+        builder: (_) =>
+            OnboardingView(initialSettings: widget.trainingSettings),
       ),
     );
     if (updated == null || !mounted) return;
     setState(() {
-      _trainingSettings = updated;
+      widget.onTrainingSettingsChanged(updated);
       _profile = ForzaProfile(
         fullName: _profile.fullName,
         email: _profile.email,
@@ -207,11 +214,11 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _editTrainingSettings() async {
     final updated = await Navigator.of(context).push<TrainingSettings>(
       MaterialPageRoute<TrainingSettings>(
-        builder: (_) => TrainingSettingsPage(settings: _trainingSettings),
+        builder: (_) => TrainingSettingsPage(settings: widget.trainingSettings),
       ),
     );
     if (updated == null || !mounted) return;
-    setState(() => _trainingSettings = updated);
+    widget.onTrainingSettingsChanged(updated);
   }
 
   Future<void> _editPreferences() async {

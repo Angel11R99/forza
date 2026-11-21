@@ -10,10 +10,13 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../onboarding/views/training_session_flow.dart';
+import '../../profile/models/profile_settings.dart';
 import 'reschedule_session_page.dart';
 
 class ActivityView extends StatefulWidget {
-  const ActivityView({super.key});
+  const ActivityView({super.key, required this.settings});
+
+  final TrainingSettings settings;
 
   @override
   State<ActivityView> createState() => _ActivityViewState();
@@ -89,7 +92,9 @@ class _ActivityViewState extends State<ActivityView> {
 
   Future<void> _startSession() async {
     final completed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(builder: (_) => const TrainingSessionFlow()),
+      MaterialPageRoute<bool>(
+        builder: (_) => TrainingSessionFlow(settings: widget.settings),
+      ),
     );
     if (!mounted || completed != true) return;
     ScaffoldMessenger.of(context).showSnackBar(
