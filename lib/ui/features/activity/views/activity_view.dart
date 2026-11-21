@@ -1,4 +1,8 @@
+import 'dart:math' as math;
+
+import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
@@ -7,33 +11,6 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../onboarding/views/training_session_flow.dart';
 import 'reschedule_session_page.dart';
-
-const _months = <String>[
-  'enero',
-  'febrero',
-  'marzo',
-  'abril',
-  'mayo',
-  'junio',
-  'julio',
-  'agosto',
-  'septiembre',
-  'octubre',
-  'noviembre',
-  'diciembre',
-];
-
-const _weekdayNames = <String>[
-  'lunes',
-  'martes',
-  'miércoles',
-  'jueves',
-  'viernes',
-  'sábado',
-  'domingo',
-];
-
-const _weekdayInitials = <String>['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 class ActivityView extends StatefulWidget {
   const ActivityView({super.key});
@@ -74,7 +51,10 @@ class _ActivityViewState extends State<ActivityView> {
   }
 
   void _selectDate(DateTime date) {
-    setState(() => _selectedDate = _dateOnly(date));
+    setState(() {
+      _selectedDate = _dateOnly(date);
+      _visibleMonth = DateTime(date.year, date.month);
+    });
   }
 
   Future<void> _reschedule() async {
@@ -157,7 +137,6 @@ class _ActivityViewState extends State<ActivityView> {
                   'Organiza tus sesiones y días de recuperación.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: AppSpacing.x4),
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   padding: const EdgeInsets.fromLTRB(
@@ -170,17 +149,107 @@ class _ActivityViewState extends State<ActivityView> {
                     children: [
                       _MonthHeader(
                         month: _visibleMonth,
-                        monthNames: _months,
                         onPrevious: () => _moveMonth(-1),
                         onNext: () => _moveMonth(1),
                       ),
                       const SizedBox(height: AppSpacing.x2),
-                      _CalendarGrid(
-                        month: _visibleMonth,
-                        selectedDate: _selectedDate,
-                        weekdayInitials: _weekdayInitials,
-                        hasSession: (date) => _sessionForDate(date) != null,
-                        onSelectDate: _selectDate,
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final textScale = MediaQuery.textScalerOf(context)
+                              .scale(1);
+                          final desiredRowHeight =
+                              44 + (textScale - 1).clamp(0, 1) * 16;
+                          final rowHeight = math
+                              .min(desiredRowHeight, constraints.maxWidth / 7)
+                              .clamp(44.0, 60.0)
+                              .toDouble();
+
+                          return TableCalendar<bool>(
+                            firstDay: DateTime(2000, 1, 1),
+                            lastDay: DateTime(2100, 12, 31),
+                            focusedDay: _visibleMonth,
+                            locale: 'es_DO',
+                            startingDayOfWeek: StartingDayOfWeek.monday,
+                            calendarFormat: CalendarFormat.month,
+                            headerVisible: false,
+                            daysOfWeekHeight: 24 * textScale,
+                            rowHeight: rowHeight,
+                            sixWeekMonthsEnforced: true,
+                            selectedDayPredicate: (day) =>
+                                _isSameDay(day, _selectedDate),
+                            eventLoader: (day) => _sessionForDate(day) == null
+                                ? const []
+                                : const [true],
+                            onDaySelected: (selectedDay, focusedDay) {
+                              setState(() {
+                                _selectedDate = _dateOnly(selectedDay);
+                                _visibleMonth = DateTime(
+                                  focusedDay.year,
+                                  focusedDay.month,
+                                );
+                              });
+                            },
+                            onPageChanged: (focusedDay) {
+                              setState(() {
+                                _visibleMonth = DateTime(
+                                  focusedDay.year,
+                                  focusedDay.month,
+                                );
+                              });
+                            },
+                            daysOfWeekStyle: DaysOfWeekStyle(
+                              weekdayStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(color: AppColors.textSecondary),
+                              weekendStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(color: AppColors.textSecondary),
+                              dowTextFormatter: (date, locale) =>
+                                  DateFormat.E(locale)
+                                      .format(date)
+                                      .substring(0, 1)
+                                      .toUpperCase(),
+                            ),
+                            calendarStyle: CalendarStyle(
+                              outsideDaysVisible: false,
+                              cellMargin: const EdgeInsets.all(2),
+                              markerSize: 4,
+                              markersAnchor: 0.78,
+                              markerDecoration: const BoxDecoration(
+                                color: AppColors.textPrimary,
+                                shape: BoxShape.circle,
+                              ),
+                              defaultTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!,
+                              weekendTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!,
+                              todayTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                              todayDecoration: BoxDecoration(
+                                border: Border.all(
+                                  color: AppColors.textPrimary,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              selectedTextStyle: const TextStyle(
+                                color: AppColors.inverseText,
+                              ),
+                              selectedDecoration: const BoxDecoration(
+                                color: AppColors.textPrimary,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -262,13 +331,11 @@ class _ActivityViewState extends State<ActivityView> {
 class _MonthHeader extends StatelessWidget {
   const _MonthHeader({
     required this.month,
-    required this.monthNames,
     required this.onPrevious,
     required this.onNext,
   });
 
   final DateTime month;
-  final List<String> monthNames;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
@@ -283,7 +350,7 @@ class _MonthHeader extends StatelessWidget {
         ),
         Expanded(
           child: Text(
-            '${monthNames[month.month - 1]} ${month.year}',
+            DateFormat.yMMMM('es_DO').format(month),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
@@ -294,187 +361,6 @@ class _MonthHeader extends StatelessWidget {
           icon: const Icon(Icons.chevron_right_rounded),
         ),
       ],
-    );
-  }
-}
-
-class _CalendarGrid extends StatelessWidget {
-  const _CalendarGrid({
-    required this.month,
-    required this.selectedDate,
-    required this.weekdayInitials,
-    required this.hasSession,
-    required this.onSelectDate,
-  });
-
-  final DateTime month;
-  final DateTime selectedDate;
-  final List<String> weekdayInitials;
-  final bool Function(DateTime date) hasSession;
-  final ValueChanged<DateTime> onSelectDate;
-
-  @override
-  Widget build(BuildContext context) {
-    final firstDay = DateTime(month.year, month.month);
-    final leadingDays = firstDay.weekday - DateTime.monday;
-    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
-    final cellCount = ((leadingDays + daysInMonth + 6) ~/ 7) * 7;
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            for (final initial in weekdayInitials)
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                    child: Text(
-                      initial,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final textScale = MediaQuery.textScalerOf(context).scale(1);
-            final cellWidth = constraints.maxWidth / 7;
-            final desiredCircleSize =
-                34 + ((textScale - 1).clamp(0, 2) * 6).toDouble();
-            final circleSize = desiredCircleSize > cellWidth
-                ? cellWidth
-                : desiredCircleSize;
-            final rowExtent = 52 + ((textScale - 1).clamp(0, 2) * 12);
-
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: cellCount,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                mainAxisExtent: rowExtent.toDouble(),
-              ),
-              itemBuilder: (context, index) {
-                final dayNumber = index - leadingDays + 1;
-                if (dayNumber < 1 || dayNumber > daysInMonth) {
-                  return const SizedBox.shrink();
-                }
-
-                final date = DateTime(month.year, month.month, dayNumber);
-                return _CalendarDayButton(
-                  date: date,
-                  isSelected: _isSameDay(date, selectedDate),
-                  isToday: _isSameDay(date, DateTime.now()),
-                  hasSession: hasSession(date),
-                  circleSize: circleSize,
-                  rowExtent: rowExtent.toDouble(),
-                  onPressed: () => onSelectDate(date),
-                );
-              },
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  static bool _isSameDay(DateTime first, DateTime second) =>
-      first.year == second.year &&
-      first.month == second.month &&
-      first.day == second.day;
-}
-
-class _CalendarDayButton extends StatelessWidget {
-  const _CalendarDayButton({
-    required this.date,
-    required this.isSelected,
-    required this.isToday,
-    required this.hasSession,
-    required this.circleSize,
-    required this.rowExtent,
-    required this.onPressed,
-  });
-
-  final DateTime date;
-  final bool isSelected;
-  final bool isToday;
-  final bool hasSession;
-  final double circleSize;
-  final double rowExtent;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = isSelected
-        ? AppColors.inverseText
-        : AppColors.textPrimary;
-
-    return Center(
-      child: Semantics(
-        button: true,
-        selected: isSelected,
-        label: '${date.day}${hasSession ? ', sesión programada' : ''}',
-        child: ExcludeSemantics(
-          child: InkWell(
-            onTap: onPressed,
-            customBorder: const CircleBorder(),
-            child: SizedBox(
-              width: double.infinity,
-              height: rowExtent,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: circleSize,
-                    height: circleSize,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.textPrimary
-                          : AppColors.surface,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isToday && !isSelected
-                            ? AppColors.textPrimary
-                            : Colors.transparent,
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${date.day}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: foreground,
-                        fontWeight: isSelected || isToday
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Container(
-                    width: 4,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: hasSession
-                          ? isSelected
-                                ? AppColors.inverseText
-                                : AppColors.textPrimary
-                          : Colors.transparent,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -643,4 +529,4 @@ class _TrainingSession {
 }
 
 String _formatDate(DateTime date) =>
-    '${_weekdayNames[date.weekday - 1]}, ${date.day} de ${_months[date.month - 1]}';
+    DateFormat("EEEE, d 'de' MMMM", 'es_DO').format(date);

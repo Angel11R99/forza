@@ -7,6 +7,7 @@ Consulta siempre pub.dev y el `pubspec.lock` antes de instalar: las versiones pu
 | Necesidad | Opción para evaluar | Cuándo encaja |
 |---|---|---|
 | Componentes Material | [material_ui](https://pub.dev/packages/material_ui) (`^1.11.1`, resuelto en lockfile) | API Material desacoplada de Flutter SDK para Flutter 3.47+; requerida por `native_glass_navbar` 2.x. |
+| Calendario | [table_calendar](https://pub.dev/packages/table_calendar) (`^3.3.0`, resuelto en lockfile) | Calendario mensual con selección, marcadores de sesiones, gestos y estilos FORZA; configurado con locale `es_DO` y semana desde lunes. |
 | Rutas | `Navigator`/`MaterialApp` de Flutter | Seleccionado para el primer hito; no se agrega `go_router` mientras no haya necesidad de deep links o redirecciones. |
 | Navbar iOS | [native_glass_navbar](https://pub.dev/packages/native_glass_navbar) (`^2.0.0`, resuelto en lockfile) | Seleccionado junto con `material_ui ^1.11.1`, la API vigente en Flutter 3.50.1. El plugin iOS admite hasta cinco pestañas; Android usa el fallback Flutter. iOS requiere Xcode 27 o posterior. |
 | Navbar lista configurable | [persistent_bottom_nav_bar_v2](https://pub.dev/packages/persistent_bottom_nav_bar_v2) | Alternativa si aún no hay barra elegida y se busca un componente personalizable multiplataforma. Revisar compatibilidad con la versión de Flutter y su integración con el router. |
