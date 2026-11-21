@@ -145,7 +145,7 @@ class _TodayWorkoutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSurfaceCard(
-      padding: const EdgeInsets.all(AppSpacing.x5),
+      padding: const EdgeInsets.all(AppSpacing.x4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
