@@ -6,6 +6,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../widgets/exercise_list_card.dart';
 import '../widgets/exercise_animation.dart';
 import 'exercise_alternatives_page.dart';
 
@@ -161,6 +162,7 @@ class _ExercisePreview extends StatelessWidget {
           child: ExerciseAnimationView(
             animation: exercise.animation,
             label: exercise.name,
+            fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
           ),
         ),
       ),

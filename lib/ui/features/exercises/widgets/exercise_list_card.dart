@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../domain/models/exercise.dart';
+import 'exercise_animation.dart';
 
 class ExerciseListCard extends StatelessWidget {
   const ExerciseListCard({
@@ -46,14 +47,12 @@ class ExerciseListCard extends StatelessWidget {
                   Row(
                     children: [
                       SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(
-                            exerciseGroupIcon(exercise.muscleGroup),
-                            color: AppColors.textPrimary,
-                            size: 21,
-                          ),
+                        width: 64,
+                        height: 64,
+                        child: ExerciseAnimationView(
+                          animation: exercise.animation,
+                          label: exercise.name,
+                          fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
                         ),
                       ),
                       const Spacer(),

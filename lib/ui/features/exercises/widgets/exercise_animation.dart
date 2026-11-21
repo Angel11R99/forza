@@ -11,10 +11,12 @@ class ExerciseAnimationView extends StatefulWidget {
     super.key,
     required this.animation,
     required this.label,
+    this.fallbackIcon = Icons.fitness_center_outlined,
   });
 
   final ExerciseAnimation? animation;
   final String label;
+  final IconData fallbackIcon;
 
   @override
   State<ExerciseAnimationView> createState() => _ExerciseAnimationViewState();
@@ -73,8 +75,8 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
   Widget build(BuildContext context) {
     final animation = widget.animation;
     if (animation == null || animation.frames.isEmpty) {
-      return const Icon(
-        Icons.fitness_center_outlined,
+      return Icon(
+        widget.fallbackIcon,
         size: 56,
         color: AppColors.textSecondary,
       );
@@ -84,8 +86,8 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
         ? animation.sequence.first
         : animation.sequence[_sequenceIndex % animation.sequence.length];
     if (frameIndex < 0 || frameIndex >= animation.frames.length) {
-      return const Icon(
-        Icons.fitness_center_outlined,
+      return Icon(
+        widget.fallbackIcon,
         size: 56,
         color: AppColors.textSecondary,
       );
