@@ -701,52 +701,62 @@ class _PlanDayCard extends StatelessWidget {
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
       borderColor: selected ? AppColors.textPrimary : AppColors.divider,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.x4),
-          child: Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selected
-                      ? AppColors.textPrimary
-                      : AppColors.surfaceMuted,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  '$dayNumber',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: selected
-                        ? AppColors.inverseText
-                        : AppColors.textPrimary,
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.x3),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: AppSpacing.x1),
-                    Text(
-                      '$duration min · 4 ejercicios',
-                      style: Theme.of(context).textTheme.bodyMedium,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: 'Día $dayNumber, $title, $duration minutos, 4 ejercicios',
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadius.medium),
+          child: ExcludeSemantics(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.x4),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? AppColors.textPrimary
+                          : AppColors.surfaceMuted,
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
+                    child: Text(
+                      '$dayNumber',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: selected
+                            ? AppColors.inverseText
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.x3),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.x1),
+                        Text(
+                          '$duration min · 4 ejercicios',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    selected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                  ),
+                ],
               ),
-              Icon(
-                selected
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_unchecked,
-              ),
-            ],
+            ),
           ),
         ),
       ),
