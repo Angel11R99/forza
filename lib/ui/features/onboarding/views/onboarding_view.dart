@@ -53,7 +53,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: padding),
-                      child: _StepProgress(step: _step.clamp(0, 2)),
+                      child: _StepProgress(
+                        step: _step.clamp(0, 2),
+                        reviewMode: _step > 2,
+                      ),
                     ),
                     Expanded(
                       child: SingleChildScrollView(
@@ -562,14 +565,17 @@ class _OnboardingViewState extends State<OnboardingView> {
 }
 
 class _StepProgress extends StatelessWidget {
-  const _StepProgress({required this.step});
+  const _StepProgress({required this.step, required this.reviewMode});
 
   final int step;
+  final bool reviewMode;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Paso ${step + 1} de 3',
+      label: reviewMode
+          ? 'Personalización completada. Revisión del plan'
+          : 'Paso ${step + 1} de 3',
       child: Row(
         children: [
           for (var index = 0; index < 3; index++) ...[
