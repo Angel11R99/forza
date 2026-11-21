@@ -31,10 +31,10 @@ Fuente integrada: [jlfernandezfernandez/exercises-dataset-es](https://github.com
 
 ### Licencia: separar datos de medios
 
-El README declara MIT para código, estructura de datos/texto de instrucciones, pero especifica que las imágenes y GIFs son de Gym visual y que el uso de esos medios se rige por los términos de Gym visual. El propio README pide mantener la atribución `© Gym visual — https://gymvisual.com/` y obtener licencia propia antes de reutilizar los medios. Por tanto:
+El README declara MIT para código, estructura de datos/texto de instrucciones, pero especifica que las imágenes y GIFs son de Gym visual y que el uso de esos medios se rige por los términos de Gym visual. El README pide mantener la atribución `© Gym visual — https://gymvisual.com/` y obtener licencia propia antes de reutilizar los archivos del dataset. La licencia oficial permite usar medios de alta resolución sin marca de agua que se hayan comprado para ilustrar aplicaciones iOS/Android y otros medios electrónicos. También prohíbe revender o redistribuir esos medios y asignar sus derechos a terceros; para cualquier uso dudoso, remite a soporte. [Licencia oficial](https://gymvisual.com/content/9-license). Por tanto:
 
-- No distribuir GIFs ni imágenes dentro de FORZA basándose únicamente en la licencia MIT del repositorio.
-- Verificar con Gym visual permiso comercial, redistribución en aplicación, almacenamiento/caché, atribución y límites de uso antes de integrar medios.
+- No distribuir los archivos que vienen en el dataset basándose únicamente en la licencia MIT del repositorio.
+- Antes de integrar medios comprados, confirmar con Gym visual que el empaquetado en la app, la caché/descarga bajo demanda y el alcance de distribución de FORZA cumplen la prohibición de redistribución. Conservar comprobantes de compra y la atribución pedida por el README del dataset.
 - Si no se obtiene una licencia apropiada, utilizar solo los datos cuyo uso esté cubierto y conseguir imágenes/animaciones de una fuente licenciada de forma independiente.
 - Mantener `ExerciseMedia` desacoplado del JSON: una fuente de datos no debe decidir cómo se representa el componente.
 - Las animaciones son fase futura: definir estados de carga/error, fallback y tamaño estable; cargar bajo demanda y no bajar el catálogo completo al abrir la app.
