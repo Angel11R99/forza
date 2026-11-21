@@ -119,21 +119,17 @@ class _ActivityViewState extends State<ActivityView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tu plan de entrenamiento',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                    letterSpacing: 0,
-                  ),
+                  DateFormat('EEEE, d MMMM', 'es_DO').format(DateTime.now()),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(height: AppSpacing.x2),
+                const SizedBox(height: AppSpacing.x1),
                 Text(
                   'Actividad',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Organiza tus sesiones y días de recuperación.',
+                  'Tu calendario de entrenamiento.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x8),
@@ -217,7 +213,7 @@ class _ActivityViewState extends State<ActivityView> {
                               markerSize: 4,
                               markersAnchor: 0.78,
                               markerDecoration: const BoxDecoration(
-                                color: AppColors.textPrimary,
+                                color: AppColors.accent,
                                 shape: BoxShape.circle,
                               ),
                               defaultTextStyle: Theme.of(context)
@@ -230,20 +226,18 @@ class _ActivityViewState extends State<ActivityView> {
                                   .textTheme
                                   .bodyMedium!
                                   .copyWith(
-                                    color: AppColors.textPrimary,
+                                    color: AppColors.accent,
                                     fontWeight: FontWeight.w700,
                                   ),
                               todayDecoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.textPrimary,
-                                ),
+                                border: Border.all(color: AppColors.accent),
                                 shape: BoxShape.circle,
                               ),
                               selectedTextStyle: const TextStyle(
                                 color: AppColors.inverseText,
                               ),
                               selectedDecoration: const BoxDecoration(
-                                color: AppColors.textPrimary,
+                                color: AppColors.accent,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -501,7 +495,7 @@ class _SessionIcon extends StatelessWidget {
     return SizedBox(
       width: 48,
       height: 48,
-      child: Center(child: Icon(icon, size: 22, color: AppColors.textPrimary)),
+      child: Center(child: Icon(icon, size: 22, color: AppColors.accent)),
     );
   }
 }

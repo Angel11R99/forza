@@ -8,7 +8,7 @@ class ProgressLineChart extends StatelessWidget {
     required this.values,
     required this.labels,
     required this.summary,
-    this.lineColor = AppColors.textPrimary,
+    this.lineColor = AppColors.accent,
   });
 
   final List<double> values;

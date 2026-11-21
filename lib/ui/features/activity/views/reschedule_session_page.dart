@@ -207,7 +207,7 @@ class _DateOptionCard extends StatelessWidget {
       label: '${_formatDate(date)}, fecha disponible',
       child: ExcludeSemantics(
         child: Material(
-          color: selected ? AppColors.surfaceMuted : AppColors.surface,
+          color: selected ? AppColors.accentSoft : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.medium),
           child: InkWell(
             onTap: onTap,
@@ -221,7 +221,7 @@ class _DateOptionCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.medium),
                 border: Border.all(
-                  color: selected ? AppColors.textPrimary : AppColors.divider,
+                  color: selected ? AppColors.accent : AppColors.divider,
                 ),
               ),
               child: Row(
@@ -230,7 +230,7 @@ class _DateOptionCard extends StatelessWidget {
                     selected
                         ? Icons.radio_button_checked_rounded
                         : Icons.radio_button_off_rounded,
-                    color: AppColors.textPrimary,
+                    color: AppColors.accent,
                   ),
                   const SizedBox(width: AppSpacing.x3),
                   Expanded(

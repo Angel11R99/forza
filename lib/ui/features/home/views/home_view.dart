@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/theme/app_colors.dart';
@@ -20,116 +21,70 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final horizontalPadding = constraints.maxWidth < 380
-            ? AppSpacing.x4
-            : AppSpacing.x6;
+    final horizontalPadding = MediaQuery.sizeOf(context).width < 380
+        ? AppSpacing.x4
+        : AppSpacing.x6;
+    final now = DateTime.now();
+    final greeting = switch (now.hour) {
+      < 12 => 'Buenos días',
+      < 19 => 'Buenas tardes',
+      _ => 'Buenas noches',
+    };
 
-        return CustomScrollView(
-          key: const PageStorageKey<String>('home-scroll'),
-          slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                AppSpacing.x4,
-                horizontalPadding,
-                AppSpacing.x8,
-              ),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return CustomScrollView(
+      key: const PageStorageKey<String>('home-scroll'),
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            AppSpacing.x4,
+            horizontalPadding,
+            AppSpacing.x8,
+          ),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    _BrandHeader(onShowProfile: onShowProfile),
-                    const SizedBox(height: AppSpacing.x8),
-                    Text(
-                      'Entrena a tu ritmo',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0,
-                        fontSize: 13,
+                    Expanded(
+                      child: Text(
+                        DateFormat('EEEE, d MMMM', 'es_DO').format(now),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.x2),
-                    Text(
-                      'Cada sesión\nte hace más fuerte.',
-                      style: Theme.of(context).textTheme.displaySmall,
+                    IconButton.filledTonal(
+                      onPressed: onShowProfile,
+                      tooltip: 'Abrir perfil',
+                      icon: const Icon(Icons.person_outline_rounded),
                     ),
-                    const SizedBox(height: AppSpacing.x8),
-                    _TodayWorkoutCard(onPressed: onShowActivity),
-                    const SizedBox(height: AppSpacing.x8),
-                    SectionHeading(
-                      title: 'Tu semana',
-                      actionLabel: 'Actividad',
-                      onAction: onShowActivity,
-                    ),
-                    const _WeeklyProgressCard(),
-                    const SizedBox(height: AppSpacing.x8),
-                    SectionHeading(
-                      title: 'Sigue avanzando',
-                      actionLabel: 'Explorar',
-                      onAction: onExploreExercises,
-                    ),
-                    _ExploreCard(onPressed: onExploreExercises),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.x6),
+                Text(greeting, style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  'Tu espacio para\nseguir avanzando.',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                const SizedBox(height: AppSpacing.x6),
+                _TodayWorkoutCard(onPressed: onShowActivity),
+                const SizedBox(height: AppSpacing.x8),
+                SectionHeading(
+                  title: 'Esta semana',
+                  actionLabel: 'Ver actividad',
+                  onAction: onShowActivity,
+                ),
+                const _WeeklySummary(),
+                const SizedBox(height: AppSpacing.x8),
+                SectionHeading(
+                  title: 'Biblioteca',
+                  actionLabel: 'Explorar',
+                  onAction: onExploreExercises,
+                ),
+                _LibraryLink(onPressed: onExploreExercises),
+              ],
             ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _BrandHeader extends StatelessWidget {
-  const _BrandHeader({required this.onShowProfile});
-
-  final VoidCallback onShowProfile;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ExcludeSemantics(
-          child: Container(
-            width: 36,
-            height: 36,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.textPrimary,
-              shape: BoxShape.circle,
-            ),
-            child: const Text(
-              'F',
-              style: TextStyle(
-                color: AppColors.inverseText,
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: AppSpacing.x2),
-        Text(
-          'FORZA',
-          style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(letterSpacing: 1.8, fontWeight: FontWeight.w800),
-        ),
-        const Spacer(),
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.control),
-            border: Border.all(color: AppColors.divider),
-          ),
-          child: IconButton(
-            tooltip: 'Abrir perfil',
-            onPressed: onShowProfile,
-            icon: const Icon(Icons.person_outline_rounded, size: 21),
-            color: AppColors.textPrimary,
           ),
         ),
       ],
@@ -144,53 +99,56 @@ class _TodayWorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppSurfaceCard(
-      padding: const EdgeInsets.all(AppSpacing.x4),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.x6),
+      decoration: BoxDecoration(
+        color: AppColors.inverseSurface,
+        borderRadius: BorderRadius.circular(AppRadius.large),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const SizedBox(
-                width: 44,
-                height: 44,
-                child: Icon(
-                  Icons.fitness_center_outlined,
-                  color: AppColors.textPrimary,
-                ),
+              const Icon(
+                Icons.fitness_center_rounded,
+                color: AppColors.inverseText,
+                size: 20,
               ),
-              const SizedBox(width: AppSpacing.x3),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Entrenamiento de hoy',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.x1),
-                    Text(
-                      'Fuerza total',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ],
+              const SizedBox(width: AppSpacing.x2),
+              Text(
+                'ENTRENAMIENTO DE HOY',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColors.inverseText.withValues(alpha: 0.72),
+                  fontSize: 11,
+                  letterSpacing: 0.7,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.x4),
+          const SizedBox(height: AppSpacing.x6),
           Text(
-            '45 min  ·  6 ejercicios',
-            style: Theme.of(context).textTheme.bodyMedium,
+            'Fuerza total',
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(color: AppColors.inverseText),
           ),
-          const SizedBox(height: AppSpacing.x4),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: onPressed,
-              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-              label: const Text('Ver sesión'),
+          const SizedBox(height: AppSpacing.x2),
+          Text(
+            '45 min   ·   6 ejercicios',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.inverseText.withValues(alpha: 0.72),
             ),
+          ),
+          const SizedBox(height: AppSpacing.x6),
+          FilledButton.tonalIcon(
+            onPressed: onPressed,
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.inverseText,
+              foregroundColor: AppColors.inverseSurface,
+            ),
+            icon: const Icon(Icons.play_arrow_rounded),
+            label: const Text('Ver entrenamiento'),
           ),
         ],
       ),
@@ -198,18 +156,8 @@ class _TodayWorkoutCard extends StatelessWidget {
   }
 }
 
-class _WeeklyProgressCard extends StatelessWidget {
-  const _WeeklyProgressCard();
-
-  static const _days = <({String label, bool completed, bool today})>[
-    (label: 'L', completed: true, today: false),
-    (label: 'M', completed: true, today: false),
-    (label: 'X', completed: false, today: true),
-    (label: 'J', completed: false, today: false),
-    (label: 'V', completed: false, today: false),
-    (label: 'S', completed: false, today: false),
-    (label: 'D', completed: false, today: false),
-  ];
+class _WeeklySummary extends StatelessWidget {
+  const _WeeklySummary();
 
   @override
   Widget build(BuildContext context) {
@@ -226,49 +174,45 @@ class _WeeklyProgressCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '3 de 4 sesiones',
+                      '2 de 4 sesiones',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: AppSpacing.x1),
                     Text(
-                      'Vas construyendo constancia',
+                      'Un buen ritmo',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
               ),
-              Text('75%', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                '50%',
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(color: AppColors.accent),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.x4),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.pill),
             child: const LinearProgressIndicator(
-              value: 0.75,
-              minHeight: 7,
+              value: 0.5,
+              minHeight: 6,
               backgroundColor: AppColors.surfaceMuted,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
+              valueColor: AlwaysStoppedAnimation(AppColors.accent),
             ),
           ),
           const SizedBox(height: AppSpacing.x6),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final markSize = (constraints.maxWidth / _days.length).clamp(
-                24.0,
-                34.0,
-              );
-
-              return Row(
-                children: [
-                  for (final day in _days)
-                    Expanded(
-                      child: Center(
-                        child: _WeekdayMark(day: day, markSize: markSize),
-                      ),
-                    ),
-                ],
-              );
-            },
+          const Row(
+            children: [
+              _DayMark(label: 'L', completed: true),
+              _DayMark(label: 'M', completed: true),
+              _DayMark(label: 'X', current: true),
+              _DayMark(label: 'J'),
+              _DayMark(label: 'V'),
+              _DayMark(label: 'S'),
+              _DayMark(label: 'D'),
+            ],
           ),
         ],
       ),
@@ -276,57 +220,47 @@ class _WeeklyProgressCard extends StatelessWidget {
   }
 }
 
-class _WeekdayMark extends StatelessWidget {
-  const _WeekdayMark({required this.day, required this.markSize});
+class _DayMark extends StatelessWidget {
+  const _DayMark({
+    required this.label,
+    this.completed = false,
+    this.current = false,
+  });
 
-  final ({String label, bool completed, bool today}) day;
-  final double markSize;
+  final String label;
+  final bool completed;
+  final bool current;
 
   @override
   Widget build(BuildContext context) {
-    final background = day.completed
-        ? AppColors.textPrimary
-        : day.today
-        ? AppColors.surfaceMuted
-        : AppColors.background;
-    final foreground = day.completed
-        ? AppColors.inverseText
-        : AppColors.textPrimary;
-
-    return Column(
-      children: [
-        Container(
-          width: markSize,
-          height: markSize,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: background,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: day.today ? AppColors.textPrimary : Colors.transparent,
-              width: day.today ? 1 : 0,
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: completed ? AppColors.accent : AppColors.surfaceMuted,
+              border: current
+                  ? Border.all(color: AppColors.accent, width: 1.5)
+                  : null,
             ),
+            alignment: Alignment.center,
+            child: completed
+                ? const Icon(Icons.check_rounded, size: 17, color: Colors.white)
+                : Text(label, style: Theme.of(context).textTheme.labelLarge),
           ),
-          child: day.completed
-              ? Icon(Icons.check_rounded, size: 17, color: foreground)
-              : Text(
-                  day.label,
-                  style: Theme.of(context).textTheme.labelLarge
-                      ?.copyWith(color: foreground),
-                ),
-        ),
-        const SizedBox(height: AppSpacing.x2),
-        Text(
-          day.label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
-        ),
-      ],
+          const SizedBox(height: AppSpacing.x1),
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ),
     );
   }
 }
 
-class _ExploreCard extends StatelessWidget {
-  const _ExploreCard({required this.onPressed});
+class _LibraryLink extends StatelessWidget {
+  const _LibraryLink({required this.onPressed});
 
   final VoidCallback onPressed;
 
@@ -334,43 +268,16 @@ class _ExploreCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
-      child: InkWell(
+      child: ListTile(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.x4),
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 52,
-                height: 52,
-                child: Icon(
-                  Icons.fitness_center_rounded,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.x4),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Encuentra tu próximo reto',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.x1),
-                    Text(
-                      'Explora ejercicios por grupo muscular',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppSpacing.x2),
-              const Icon(Icons.arrow_forward_rounded, size: 20),
-            ],
-          ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.x4,
+          vertical: AppSpacing.x2,
         ),
+        leading: const Icon(Icons.sports_gymnastics_outlined, size: 26),
+        title: const Text('Encuentra tu próximo movimiento'),
+        subtitle: const Text('Explora ejercicios y animaciones'),
+        trailing: const Icon(Icons.chevron_right_rounded),
       ),
     );
   }

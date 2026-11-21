@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/theme/app_colors.dart';
-import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../onboarding/views/account_access_pages.dart';
@@ -32,7 +31,6 @@ class _ProfileViewState extends State<ProfileView> {
     final horizontalPadding = MediaQuery.sizeOf(context).width < 380
         ? AppSpacing.x4
         : AppSpacing.x6;
-
     return CustomScrollView(
       key: const PageStorageKey<String>('profile-scroll'),
       slivers: [
@@ -48,48 +46,20 @@ class _ProfileViewState extends State<ProfileView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tu espacio personal',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                    letterSpacing: 0,
-                  ),
+                  'Tu cuenta',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(height: AppSpacing.x2),
-                Text('Perfil', style: Theme.of(context).textTheme.displaySmall),
                 const SizedBox(height: AppSpacing.x1),
-                Text(
-                  'Ajusta FORZA a tu manera.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: AppSpacing.x4),
-                const SizedBox(height: AppSpacing.x8),
-                _ProfileOption(
-                  icon: Icons.login_rounded,
-                  title: 'Cuenta y acceso',
-                  subtitle: 'Opciones de inicio de sesión',
-                  onTap: _openAccountAccess,
-                ),
-                const SizedBox(height: AppSpacing.x3),
-                _ProfileOption(
-                  icon: Icons.rocket_launch_outlined,
-                  title: 'Configurar plan inicial',
-                  subtitle: 'Objetivo, experiencia y ritmo semanal',
-                  onTap: _configurePlan,
-                ),
-                const SizedBox(height: AppSpacing.x8),
+                Text('Perfil', style: Theme.of(context).textTheme.displaySmall),
+                const SizedBox(height: AppSpacing.x6),
                 AppSurfaceCard(
-                  padding: const EdgeInsets.all(AppSpacing.x6),
+                  padding: const EdgeInsets.all(AppSpacing.x4),
                   child: Row(
                     children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceMuted,
-                          borderRadius: BorderRadius.circular(AppRadius.small),
-                        ),
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: AppColors.accentSoft,
+                        foregroundColor: AppColors.accent,
                         child: Text(
                           _initials(_profile.fullName),
                           style: Theme.of(context).textTheme.titleLarge,
@@ -112,7 +82,8 @@ class _ProfileViewState extends State<ProfileView> {
                             const SizedBox(height: AppSpacing.x2),
                             Text(
                               _profile.goal,
-                              style: Theme.of(context).textTheme.labelLarge,
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(color: AppColors.accent),
                             ),
                           ],
                         ),
@@ -121,55 +92,78 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.x8),
-                Text(
-                  'Cuenta y preferencias',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: AppSpacing.x3),
-                _ProfileOption(
-                  icon: Icons.badge_outlined,
-                  title: 'Editar perfil',
-                  subtitle: 'Nombre, correo y objetivo',
-                  onTap: _editProfile,
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                _ProfileOption(
-                  icon: Icons.fitness_center_outlined,
-                  title: 'Entrenamiento',
-                  subtitle:
-                      '${_trainingSettings.daysPerWeek} días · ${_trainingSettings.sessionMinutes} min · ${_trainingSettings.goal}',
-                  onTap: _editTrainingSettings,
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                _ProfileOption(
-                  icon: Icons.tune_rounded,
-                  title: 'Preferencias',
-                  subtitle:
-                      'Unidades ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()}',
-                  onTap: _editPreferences,
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                _ProfileOption(
-                  icon: Icons.notifications_none_rounded,
-                  title: 'Notificaciones',
-                  subtitle: _notifications.workoutReminders
-                      ? 'Recordatorio ${_formatTime(_notifications.reminderHour, _notifications.reminderMinute)}'
-                      : 'Recordatorios desactivados',
-                  onTap: _editNotifications,
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                _ProfileOption(
-                  icon: Icons.lock_outline_rounded,
-                  title: 'Privacidad y cuenta',
-                  subtitle: _privacy.privateProfile
-                      ? 'Perfil privado'
-                      : 'Perfil visible',
-                  onTap: _editPrivacy,
+                _ProfileSection(
+                  title: 'Cuenta',
+                  options: [
+                    _ProfileOption(
+                      icon: Icons.person_outline_rounded,
+                      title: 'Editar perfil',
+                      subtitle: 'Nombre, correo y objetivo',
+                      onTap: _editProfile,
+                    ),
+                    _ProfileOption(
+                      icon: Icons.login_rounded,
+                      title: 'Cuenta y acceso',
+                      subtitle: 'Opciones de inicio de sesión',
+                      onTap: _openAccountAccess,
+                    ),
+                    _ProfileOption(
+                      icon: Icons.lock_outline_rounded,
+                      title: 'Privacidad',
+                      subtitle: _privacy.privateProfile
+                          ? 'Perfil privado'
+                          : 'Perfil visible',
+                      onTap: _editPrivacy,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                Text(
-                  'Los cambios se mantienen mientras la app está abierta.',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                _ProfileSection(
+                  title: 'Entrenamiento',
+                  options: [
+                    _ProfileOption(
+                      icon: Icons.flag_outlined,
+                      title: 'Plan inicial',
+                      subtitle: 'Objetivo, experiencia y ritmo semanal',
+                      onTap: _configurePlan,
+                    ),
+                    _ProfileOption(
+                      icon: Icons.fitness_center_outlined,
+                      title: 'Preferencias de entrenamiento',
+                      subtitle:
+                          '${_trainingSettings.daysPerWeek} días · ${_trainingSettings.sessionMinutes} min · ${_trainingSettings.goal}',
+                      onTap: _editTrainingSettings,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x6),
+                _ProfileSection(
+                  title: 'Preferencias',
+                  options: [
+                    _ProfileOption(
+                      icon: Icons.tune_rounded,
+                      title: 'Unidades y calendario',
+                      subtitle:
+                          'Peso ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()}',
+                      onTap: _editPreferences,
+                    ),
+                    _ProfileOption(
+                      icon: Icons.notifications_none_rounded,
+                      title: 'Notificaciones',
+                      subtitle: _notifications.workoutReminders
+                          ? 'Recordatorio ${_formatTime(_notifications.reminderHour, _notifications.reminderMinute)}'
+                          : 'Recordatorios desactivados',
+                      onTap: _editNotifications,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x4),
+                Center(
+                  child: Text(
+                    'Los cambios se mantienen mientras la app está abierta.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
               ],
             ),
@@ -254,6 +248,36 @@ class _ProfileViewState extends State<ProfileView> {
   }
 }
 
+class _ProfileSection extends StatelessWidget {
+  const _ProfileSection({required this.title, required this.options});
+
+  final String title;
+  final List<_ProfileOption> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: AppSpacing.x3),
+        AppSurfaceCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (var index = 0; index < options.length; index++) ...[
+                options[index],
+                if (index < options.length - 1)
+                  const Divider(height: 1, indent: 56),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ProfileOption extends StatelessWidget {
   const _ProfileOption({
     required this.icon,
@@ -269,45 +293,20 @@ class _ProfileOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppSurfaceCard(
-      padding: EdgeInsets.zero,
-      child: Semantics(
-        button: true,
-        label: '$title, $subtitle',
-        child: ExcludeSemantics(
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.x4,
-                vertical: AppSpacing.x3,
-              ),
-              child: Row(
-                children: [
-                  Icon(icon, size: 22),
-                  const SizedBox(width: AppSpacing.x4),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: AppSpacing.x1),
-                        Text(
-                          subtitle,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.x2),
-                  const Icon(Icons.chevron_right_rounded),
-                ],
-              ),
-            ),
+    return Semantics(
+      button: true,
+      label: '$title, $subtitle',
+      child: ExcludeSemantics(
+        child: ListTile(
+          onTap: onTap,
+          minVerticalPadding: AppSpacing.x3,
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
+          leading: Icon(icon, color: AppColors.accent),
+          title: Text(title),
+          subtitle: Text(subtitle),
+          trailing: const Icon(
+            Icons.chevron_right_rounded,
+            color: AppColors.textSecondary,
           ),
         ),
       ),

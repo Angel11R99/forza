@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:material_ui/material_ui.dart';
-import 'package:native_glass_navbar/native_glass_navbar.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -24,36 +25,26 @@ class _AppScaffoldState extends State<AppScaffold> {
   static const _destinations = <_AppDestination>[
     _AppDestination(
       label: 'Inicio',
-      symbol: 'house',
-      selectedSymbol: 'house.fill',
       icon: Icons.home_outlined,
       selectedIcon: Icons.home_rounded,
     ),
     _AppDestination(
       label: 'Actividad',
-      symbol: 'calendar',
-      selectedSymbol: 'calendar',
       icon: Icons.calendar_month_outlined,
       selectedIcon: Icons.calendar_month_rounded,
     ),
     _AppDestination(
       label: 'Ejercicios',
-      symbol: 'dumbbell',
-      selectedSymbol: 'dumbbell.fill',
       icon: Icons.fitness_center_outlined,
       selectedIcon: Icons.fitness_center_rounded,
     ),
     _AppDestination(
       label: 'Progreso',
-      symbol: 'chart.bar',
-      selectedSymbol: 'chart.bar.fill',
       icon: Icons.insights_outlined,
       selectedIcon: Icons.insights_rounded,
     ),
     _AppDestination(
       label: 'Perfil',
-      symbol: 'person.crop.circle',
-      selectedSymbol: 'person.crop.circle.fill',
       icon: Icons.person_outline_rounded,
       selectedIcon: Icons.person_rounded,
     ),
@@ -122,7 +113,7 @@ class _AppScaffoldState extends State<AppScaffold> {
       selectedIndex: _selectedIndex,
       onDestinationSelected: _selectDestination,
       backgroundColor: AppColors.background,
-      indicatorColor: AppColors.surfaceMuted,
+      indicatorColor: AppColors.accentSoft,
       labelType: NavigationRailLabelType.all,
       minWidth: 84,
       groupAlignment: -0.65,
@@ -139,7 +130,7 @@ class _AppScaffoldState extends State<AppScaffold> {
               height: 40,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
-                color: AppColors.textPrimary,
+                color: AppColors.accent,
                 shape: BoxShape.circle,
               ),
               child: const Text(
@@ -166,38 +157,45 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return NativeGlassNavBar(
-      currentIndex: _selectedIndex,
-      onTap: _selectDestination,
-      tintColor: AppColors.textPrimary,
-      tabs: [
-        for (final destination in _destinations)
-          NativeGlassNavBarItem(
-            label: destination.label,
-            symbol: destination.symbol,
-            selectedSymbol: destination.selectedSymbol,
-          ),
-      ],
-      fallback: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _selectDestination,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.textPrimary,
-        unselectedItemColor: AppColors.textSecondary,
-        selectedFontSize: 11,
-        unselectedFontSize: 11,
-        showUnselectedLabels: true,
-        elevation: 0,
-        items: [
-          for (final destination in _destinations)
-            BottomNavigationBarItem(
-              icon: Icon(destination.icon),
-              activeIcon: Icon(destination.selectedIcon),
-              label: destination.label,
-              tooltip: destination.label,
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface.withValues(alpha: 0.82),
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(
+                  color: AppColors.surface.withValues(alpha: 0.8),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x12000000),
+                    blurRadius: 20,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: NavigationBar(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: _selectDestination,
+                backgroundColor: Colors.transparent,
+                destinations: [
+                  for (final destination in _destinations)
+                    NavigationDestination(
+                      icon: Icon(destination.icon),
+                      selectedIcon: Icon(destination.selectedIcon),
+                      label: destination.label,
+                    ),
+                ],
+              ),
             ),
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -206,15 +204,11 @@ class _AppScaffoldState extends State<AppScaffold> {
 class _AppDestination {
   const _AppDestination({
     required this.label,
-    required this.symbol,
-    required this.selectedSymbol,
     required this.icon,
     required this.selectedIcon,
   });
 
   final String label;
-  final String symbol;
-  final String selectedSymbol;
   final IconData icon;
   final IconData selectedIcon;
 }

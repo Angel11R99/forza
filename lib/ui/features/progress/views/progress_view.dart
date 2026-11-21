@@ -46,21 +46,17 @@ class _ProgressViewState extends State<ProgressView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tu constancia cuenta',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                    letterSpacing: 0,
-                  ),
+                  'Resumen de actividad',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(height: AppSpacing.x2),
+                const SizedBox(height: AppSpacing.x1),
                 Text(
                   'Tu progreso',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Cada entrenamiento suma.',
+                  'Tu constancia, en perspectiva.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x8),
@@ -74,9 +70,25 @@ class _ProgressViewState extends State<ProgressView> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: AppSpacing.x2),
-                      Text(
-                        '${sessions.length} sesiones',
-                        style: Theme.of(context).textTheme.headlineSmall,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${sessions.length}',
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(color: AppColors.accent),
+                          ),
+                          const SizedBox(width: AppSpacing.x2),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.x1,
+                            ),
+                            child: Text(
+                              'sesiones',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.x4),
                       Row(
@@ -219,7 +231,7 @@ class _SessionHistoryCard extends StatelessWidget {
                     height: 48,
                     child: Icon(
                       Icons.fitness_center_rounded,
-                      color: AppColors.textPrimary,
+                      color: AppColors.accent,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.x4),
@@ -279,7 +291,7 @@ class _ProgressShortcut extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.x4),
               child: Row(
                 children: [
-                  Icon(icon, size: 24),
+                  Icon(icon, size: 24, color: AppColors.accent),
                   const SizedBox(width: AppSpacing.x3),
                   Expanded(
                     child: Column(
@@ -319,7 +331,7 @@ class _SummaryValue extends StatelessWidget {
     return Expanded(
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.textSecondary),
+          Icon(icon, size: 18, color: AppColors.accent),
           const SizedBox(width: AppSpacing.x2),
           Expanded(
             child: Text(label, style: Theme.of(context).textTheme.bodyMedium),

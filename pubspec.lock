@@ -216,14 +216,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.0"
-  native_glass_navbar:
-    dependency: "direct main"
-    description:
-      name: native_glass_navbar
-      sha256: "56ef300953919ffee5ec88a4209a86f0620be829436ec744fbe0fe45de8ecdfd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   path:
     dependency: transitive
     description:

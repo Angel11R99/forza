@@ -267,7 +267,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                       value: _remainingRestSeconds / 45,
                       strokeWidth: 8,
                       backgroundColor: AppColors.surfaceMuted,
-                      color: AppColors.textPrimary,
+                      color: AppColors.accent,
                     ),
                     Center(
                       child: Text(
@@ -369,7 +369,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             children: [
               const Icon(
                 Icons.check_circle_rounded,
-                color: AppColors.textPrimary,
+                color: AppColors.accent,
                 size: 36,
               ),
               const SizedBox(width: AppSpacing.x4),
@@ -691,7 +691,7 @@ class _ExerciseSessionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSurfaceCard(
       padding: const EdgeInsets.all(AppSpacing.x4),
-      borderColor: current ? AppColors.textPrimary : AppColors.divider,
+      borderColor: current ? AppColors.accent : AppColors.divider,
       child: Row(
         children: [
           Container(
@@ -699,7 +699,7 @@ class _ExerciseSessionCard extends StatelessWidget {
             height: 42,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: current ? AppColors.textPrimary : AppColors.surfaceMuted,
+              color: current ? AppColors.accent : AppColors.surfaceMuted,
               shape: BoxShape.circle,
             ),
             child: completed

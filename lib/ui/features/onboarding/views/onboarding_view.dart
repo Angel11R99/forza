@@ -581,11 +581,13 @@ class _StepProgress extends StatelessWidget {
           for (var index = 0; index < 3; index++) ...[
             Expanded(
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 180),
                 height: 5,
                 decoration: BoxDecoration(
                   color: index <= step
-                      ? AppColors.textPrimary
+                      ? AppColors.accent
                       : AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
@@ -700,7 +702,7 @@ class _PlanDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
-      borderColor: selected ? AppColors.textPrimary : AppColors.divider,
+      borderColor: selected ? AppColors.accent : AppColors.divider,
       child: Semantics(
         button: true,
         selected: selected,
@@ -719,7 +721,7 @@ class _PlanDayCard extends StatelessWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: selected
-                          ? AppColors.textPrimary
+                          ? AppColors.accent
                           : AppColors.surfaceMuted,
                       shape: BoxShape.circle,
                     ),
@@ -783,7 +785,7 @@ class _ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
-      borderColor: selected ? AppColors.textPrimary : AppColors.divider,
+      borderColor: selected ? AppColors.accent : AppColors.divider,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.medium),

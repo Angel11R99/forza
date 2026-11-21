@@ -156,16 +156,12 @@ class _ExercisesViewState extends State<ExercisesView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Biblioteca de movimientos',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                    letterSpacing: 0,
-                  ),
+                  'Tu biblioteca',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                const SizedBox(height: AppSpacing.x2),
+                const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Explorar ejercicios',
+                  'Ejercicios',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x1),
@@ -211,7 +207,7 @@ class _ExercisesViewState extends State<ExercisesView> {
                         border: Border.all(
                           color: _filters.isEmpty
                               ? AppColors.divider
-                              : AppColors.textPrimary,
+                              : AppColors.accent,
                         ),
                       ),
                       child: IconButton(
