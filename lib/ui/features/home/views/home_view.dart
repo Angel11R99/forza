@@ -48,9 +48,28 @@ class HomeView extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        DateFormat('EEEE, d MMMM', 'es_DO').format(now),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              color: AppColors.accent,
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.pill,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.x2),
+                          Text(
+                            'FORZA',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.8,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
                     IconButton.filledTonal(
@@ -60,11 +79,16 @@ class HomeView extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  DateFormat('EEEE, d MMMM', 'es_DO').format(now),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
                 const SizedBox(height: AppSpacing.x6),
                 Text(greeting, style: Theme.of(context).textTheme.bodyLarge),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Entrena hoy.',
+                  'Hazte más fuerte.',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -99,8 +123,12 @@ class _TodayWorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppSurfaceCard(
+    return Container(
       padding: const EdgeInsets.all(AppSpacing.x6),
+      decoration: BoxDecoration(
+        color: AppColors.accent,
+        borderRadius: BorderRadius.circular(AppRadius.large),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -108,14 +136,14 @@ class _TodayWorkoutCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.fitness_center_rounded,
-                color: AppColors.accent,
+                color: AppColors.inverseText,
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.x2),
               Text(
                 'ENTRENAMIENTO DE HOY',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.accent,
+                  color: AppColors.inverseText.withValues(alpha: 0.8),
                   fontSize: 11,
                   letterSpacing: 0.7,
                 ),
@@ -125,18 +153,25 @@ class _TodayWorkoutCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.x4),
           Text(
             'Fuerza total',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(color: AppColors.inverseText),
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
             '45 min   ·   6 ejercicios',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.inverseText.withValues(alpha: 0.82),
+            ),
           ),
           const SizedBox(height: AppSpacing.x6),
           SizedBox(
             width: double.infinity,
-            child: FilledButton.icon(
+            child: FilledButton.tonalIcon(
               onPressed: onPressed,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.inverseText,
+                foregroundColor: AppColors.accent,
+              ),
               icon: const Icon(Icons.play_arrow_rounded),
               label: const Text('Ver entrenamiento'),
             ),
@@ -170,28 +205,35 @@ class _WeeklySummary extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.x1),
                     Text(
-                      'Un buen ritmo',
+                      'La mitad de tu meta semanal',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
               ),
-              Text(
-                '50%',
-                style: Theme.of(context).textTheme.titleLarge
-                    ?.copyWith(color: AppColors.accent),
+              SizedBox(
+                width: 52,
+                height: 52,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const CircularProgressIndicator(
+                      value: 0.5,
+                      strokeWidth: 4,
+                      backgroundColor: AppColors.surfaceMuted,
+                      valueColor: AlwaysStoppedAnimation(AppColors.accent),
+                    ),
+                    Center(
+                      child: Text(
+                        '50%',
+                        style: Theme.of(context).textTheme.labelLarge
+                            ?.copyWith(color: AppColors.accent, fontSize: 11),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
-          ),
-          const SizedBox(height: AppSpacing.x4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-            child: const LinearProgressIndicator(
-              value: 0.5,
-              minHeight: 6,
-              backgroundColor: AppColors.surfaceMuted,
-              valueColor: AlwaysStoppedAnimation(AppColors.accent),
-            ),
           ),
           const SizedBox(height: AppSpacing.x6),
           const Row(
