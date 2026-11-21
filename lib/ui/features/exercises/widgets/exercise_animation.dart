@@ -146,7 +146,10 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
       return;
     }
     if (_timer != null) return;
-    _timer = Timer.periodic(animation.frameDuration, (_) {
+    final frameDuration = Duration(
+      milliseconds: (animation.frameDuration.inMilliseconds / 0.75).round(),
+    );
+    _timer = Timer.periodic(frameDuration, (_) {
       if (!mounted) return;
       setState(() {
         _sequenceIndex = (_sequenceIndex + 1) % animation.sequence.length;
