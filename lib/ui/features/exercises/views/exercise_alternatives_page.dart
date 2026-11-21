@@ -4,6 +4,7 @@ import '../../../../domain/models/exercise.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../widgets/exercise_list_card.dart';
 
 class ExerciseAlternativesPage extends StatelessWidget {
@@ -45,6 +46,8 @@ class ExerciseAlternativesPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const ForzaEyebrow(label: 'Biblioteca'),
+                        const SizedBox(height: AppSpacing.x3),
                         Text(
                           'Otras opciones',
                           style: Theme.of(context).textTheme.labelLarge

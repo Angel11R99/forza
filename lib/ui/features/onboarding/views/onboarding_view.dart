@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../../profile/models/profile_settings.dart';
 
 class OnboardingView extends StatefulWidget {
@@ -608,14 +609,7 @@ class _StepEyebrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: AppColors.textSecondary,
-        letterSpacing: 1.2,
-        fontSize: 11,
-      ),
-    );
+    return ForzaEyebrow(label: label);
   }
 }
 

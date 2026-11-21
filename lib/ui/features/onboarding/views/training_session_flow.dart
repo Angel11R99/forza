@@ -6,6 +6,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 
 class TrainingSessionFlow extends StatefulWidget {
   const TrainingSessionFlow({super.key});
@@ -663,14 +664,7 @@ class _SessionEyebrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: AppColors.textSecondary,
-        fontSize: 11,
-        letterSpacing: 1.2,
-      ),
-    );
+    return ForzaEyebrow(label: label);
   }
 }
 

@@ -6,6 +6,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../widgets/exercise_list_card.dart';
 import '../widgets/exercise_animation.dart';
 import 'exercise_alternatives_page.dart';
@@ -48,6 +49,8 @@ class ExerciseDetailPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const ForzaEyebrow(label: 'Ejercicios'),
+                            const SizedBox(height: AppSpacing.x3),
                             _ExercisePreview(exercise: exercise),
                             const SizedBox(height: AppSpacing.x6),
                             Text(

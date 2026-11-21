@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 
 const _rescheduleMonths = <String>[
   'enero',
@@ -83,14 +84,7 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Elige una nueva fecha',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                          letterSpacing: 0,
-                        ),
-                      ),
+                      const ForzaEyebrow(label: 'Actividad'),
                       const SizedBox(height: AppSpacing.x2),
                       Text(
                         'Mueve tu sesión',

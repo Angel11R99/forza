@@ -5,6 +5,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 
 class HomeView extends StatelessWidget {
@@ -48,29 +49,7 @@ class HomeView extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 4,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              color: AppColors.accent,
-                              borderRadius: BorderRadius.circular(
-                                AppRadius.pill,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.x2),
-                          Text(
-                            'FORZA',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.8,
-                                ),
-                          ),
-                        ],
-                      ),
+                      child: const ForzaWordmark(),
                     ),
                     IconButton.filledTonal(
                       onPressed: onShowProfile,

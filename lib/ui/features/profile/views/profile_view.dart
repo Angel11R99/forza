@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../../onboarding/views/account_access_pages.dart';
 import '../../onboarding/views/onboarding_view.dart';
 import '../models/profile_settings.dart';
@@ -45,10 +46,7 @@ class _ProfileViewState extends State<ProfileView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Tu cuenta',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                const ForzaEyebrow(label: 'Cuenta'),
                 const SizedBox(height: AppSpacing.x1),
                 Text('Perfil', style: Theme.of(context).textTheme.displaySmall),
                 const SizedBox(height: AppSpacing.x6),

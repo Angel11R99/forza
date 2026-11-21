@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../models/exercise_filter_selection.dart';
 
 class ExerciseFiltersPage extends StatefulWidget {
@@ -74,6 +75,8 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const ForzaEyebrow(label: 'Biblioteca'),
+              const SizedBox(height: AppSpacing.x3),
               Text(
                 'Ajusta tu búsqueda',
                 style: Theme.of(context).textTheme.displaySmall,

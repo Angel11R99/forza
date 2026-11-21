@@ -9,6 +9,7 @@ import '../../features/exercises/views/exercises_view.dart';
 import '../../features/home/views/home_view.dart';
 import '../../features/profile/views/profile_view.dart';
 import '../../features/progress/views/progress_view.dart';
+import 'forza_brand.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({super.key, this.initialIndex = 0});
@@ -133,14 +134,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                 color: AppColors.accent,
                 shape: BoxShape.circle,
               ),
-              child: const Text(
-                'F',
-                style: TextStyle(
-                  color: AppColors.inverseText,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
-                ),
-              ),
+              child: const ForzaMark(color: AppColors.inverseText, size: 22),
             ),
           ),
         ),

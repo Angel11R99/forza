@@ -7,6 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../onboarding/views/training_session_flow.dart';
 import 'reschedule_session_page.dart';
@@ -118,9 +119,11 @@ class _ActivityViewState extends State<ActivityView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  DateFormat('EEEE, d MMMM', 'es_DO').format(DateTime.now()),
-                  style: Theme.of(context).textTheme.bodyMedium,
+                ForzaEyebrow(
+                  label: DateFormat(
+                    'EEEE, d MMMM',
+                    'es_DO',
+                  ).format(DateTime.now()),
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(

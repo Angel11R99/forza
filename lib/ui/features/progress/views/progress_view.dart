@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../data/progress_demo_data.dart';
 import '../models/progress_models.dart';
@@ -45,10 +46,7 @@ class _ProgressViewState extends State<ProgressView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Resumen de actividad',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                const ForzaEyebrow(label: 'Progreso'),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
                   'Tu progreso',

@@ -7,6 +7,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/forza_brand.dart';
 import '../models/exercise_filter_selection.dart';
 import '../widgets/exercise_list_card.dart';
 import 'exercise_detail_page.dart';
@@ -153,10 +154,7 @@ class _ExercisesViewState extends State<ExercisesView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Tu biblioteca',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                const ForzaEyebrow(label: 'Biblioteca'),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
                   'Ejercicios',
