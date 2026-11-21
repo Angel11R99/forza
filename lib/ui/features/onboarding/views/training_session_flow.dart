@@ -167,7 +167,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'FUERZA TOTAL',
+                'Fuerza total',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: AppColors.inverseText.withValues(alpha: 0.72),
                   letterSpacing: 1.2,

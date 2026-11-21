@@ -84,11 +84,11 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'ELIGE UNA NUEVA FECHA',
+                        'Elige una nueva fecha',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: AppColors.textSecondary,
-                          fontSize: 11,
-                          letterSpacing: 1.3,
+                          fontSize: 13,
+                          letterSpacing: 0,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.x2),
@@ -245,7 +245,7 @@ class _DateOptionCard extends StatelessWidget {
                     ),
                   ),
                   if (_isSameDay(date, DateTime.now()))
-                    Text('HOY', style: Theme.of(context).textTheme.labelLarge),
+                    Text('Hoy', style: Theme.of(context).textTheme.labelLarge),
                 ],
               ),
             ),

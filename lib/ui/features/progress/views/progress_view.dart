@@ -46,11 +46,11 @@ class _ProgressViewState extends State<ProgressView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'TU CONSTANCIA CUENTA',
+                  'Tu constancia cuenta',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.textSecondary,
-                    fontSize: 11,
-                    letterSpacing: 1.3,
+                    fontSize: 13,
+                    letterSpacing: 0,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.x2),
@@ -63,26 +63,20 @@ class _ProgressViewState extends State<ProgressView> {
                   'Cada entrenamiento suma.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: AppSpacing.x4),
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
-                  color: AppColors.textPrimary,
-                  borderColor: AppColors.textPrimary,
                   padding: const EdgeInsets.all(AppSpacing.x6),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Últimos 30 días',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.inverseText.withValues(alpha: 0.72),
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: AppSpacing.x2),
                       Text(
                         '${sessions.length} sesiones',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(color: AppColors.inverseText),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: AppSpacing.x4),
                       Row(
@@ -330,15 +324,10 @@ class _SummaryValue extends StatelessWidget {
     return Expanded(
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.inverseText),
+          Icon(icon, size: 18, color: AppColors.textSecondary),
           const SizedBox(width: AppSpacing.x2),
           Expanded(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.inverseText.withValues(alpha: 0.82),
-              ),
-            ),
+            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
       ),

@@ -4,29 +4,33 @@
 
 La hoja contiene pantallas móviles de 393 × 852 px (dimensiones de un frame de ejercicio observado) y una apariencia principalmente clara: fondo/superficies claras, texto carbón, divisores grises y fotografías de ejercicios. Se ven botones negros de ancho amplio y un acento verde/menta usado en algunas selecciones/estados.
 
-## Colores confirmados en las propiedades observadas
+## Paleta FORZA de implementación
+
+Paleta simplificada a neutrales claros a partir de la referencia compartida: fondo cálido casi blanco, superficies blancas, texto carbón y un gris neutro para bloques suaves. El verde queda fuera de la interfaz general. Estos valores son tokens de implementación; no se presentan como mediciones del archivo `.fig`.
 
 | Token provisional | HEX | Uso sugerido |
 |---|---:|---|
-| `surfaceSoft` | `#FAFAFA` | Fondo/superficie clara observada en un frame. |
-| `textPrimary` | `#111111` | Texto y elementos oscuros. |
-| `textSecondary` | `#666666` | Texto auxiliar. |
+| `surfaceSoft` | `#FAFAF8` | Fondo cálido de la app. |
+| `textPrimary` | `#1F211E` | Texto y elementos oscuros. |
+| `textSecondary` | `#686B66` | Texto auxiliar. |
 | `surface` | `#FFFFFF` | Superficies blancas. |
-| `surfaceMuted` | `#D6DED2` | Tono gris verdoso claro observado; reservar a fondo/estado suave hasta confirmar su uso exacto. |
+| `surfaceMuted` | `#F0F1EE` | Fondo neutro suave para iconos y selecciones. |
+| `divider` | `#E7E8E5` | Bordes y divisores discretos. |
 | `accent` | **Pendiente** | El prototipo muestra un acento menta/verde; no se verificó su valor HEX, por tanto no copiar un valor aproximado a producción. |
 
 La capa seleccionada también mostraba un color de página `#1E1E1E` en el editor, pero el canvas visible detrás de los teléfonos es el fondo de Figma, no necesariamente el fondo de la app. No usarlo como token de aplicación sin confirmar el nodo.
 
 ## Forma y jerarquía
 
-Observaciones cualitativas para trasladar a Flutter:
+Reglas de interfaz para trasladar a Flutter:
 
 - Diseño móvil, contenido vertical en secciones, encabezados simples y jerarquía de texto clara.
-- Tarjetas y paneles para sesiones, ejercicios, estadísticas y preferencias.
-- Botones principales oscuros y de ancho amplio en distintas pantallas.
+- Tarjetas blancas con bordes finos para sesiones, ejercicios, estadísticas y preferencias.
+- Botones de alto contraste con esquinas moderadas, sin forma de píldora.
 - Imágenes de ejercicios integradas como bloques destacados y miniaturas.
 - Navegación inferior común visible en muchos frames.
 - Gráficas de barras/líneas simples para evolución y métricas.
+- Evitar fondos saturados, gradientes, sombras decorativas, etiquetas en mayúsculas y ornamentos que no expliquen una acción.
 
 Los radios, espacios y tipografías exactos requieren revisión del frame con zoom/inspector. Como punto de partida de implementación, define escalas únicas (por ejemplo 4/8/12/16/24/32) y radios semánticos, y ajústalas comparando con Figma; no son medidas confirmadas por el archivo.
 
@@ -35,13 +39,14 @@ Los radios, espacios y tipografías exactos requieren revisión del frame con zo
 Crear constantes semánticas para:
 
 ```dart
-// Ejemplo estructural; sustituir el HEX de accent tras inspeccionarlo en Figma.
+// Tokens neutrales de FORZA; el acento sigue pendiente de revisión en Figma.
 class AppColors {
-  static const textPrimary = Color(0xFF111111);
-  static const textSecondary = Color(0xFF666666);
+  static const textPrimary = Color(0xFF1F211E);
+  static const textSecondary = Color(0xFF686B66);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceSoft = Color(0xFFFAFAFA);
-  static const surfaceMuted = Color(0xFFD6DED2);
+  static const surfaceSoft = Color(0xFFFAFAF8);
+  static const surfaceMuted = Color(0xFFF0F1EE);
+  static const divider = Color(0xFFE7E8E5);
   // static const accent = Color(...); // pendiente de verificación
 }
 ```

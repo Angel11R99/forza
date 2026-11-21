@@ -43,11 +43,11 @@ class HomeView extends StatelessWidget {
                     _BrandHeader(onShowProfile: onShowProfile),
                     const SizedBox(height: AppSpacing.x8),
                     Text(
-                      'ENTRENA A TU RITMO',
+                      'Entrena a tu ritmo',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: AppColors.textSecondary,
-                        letterSpacing: 1.4,
-                        fontSize: 11,
+                        letterSpacing: 0,
+                        fontSize: 13,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.x2),
@@ -55,7 +55,6 @@ class HomeView extends StatelessWidget {
                       'Cada sesión\nte hace más fuerte.',
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
-                    const SizedBox(height: AppSpacing.x3),
                     const SizedBox(height: AppSpacing.x8),
                     _TodayWorkoutCard(onPressed: onShowActivity),
                     const SizedBox(height: AppSpacing.x8),
@@ -123,7 +122,7 @@ class _BrandHeader extends StatelessWidget {
           height: 42,
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.control),
             border: Border.all(color: AppColors.divider),
           ),
           child: IconButton(
@@ -145,60 +144,57 @@ class _TodayWorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.x6),
-      decoration: BoxDecoration(
-        color: AppColors.textPrimary,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-      ),
+    return AppSurfaceCard(
+      padding: const EdgeInsets.all(AppSpacing.x5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  'ENTRENAMIENTO DE HOY',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppColors.inverseText.withValues(alpha: 0.72),
-                    letterSpacing: 1.2,
-                    fontSize: 11,
-                  ),
+              Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceMuted,
+                  borderRadius: BorderRadius.circular(AppRadius.small),
+                ),
+                child: const Icon(
+                  Icons.fitness_center_outlined,
+                  color: AppColors.textPrimary,
                 ),
               ),
-              const Icon(
-                Icons.bolt_rounded,
-                color: Color(0xFFD6DED2),
-                size: 22,
+              const SizedBox(width: AppSpacing.x3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Entrenamiento de hoy',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.x1),
+                    Text(
+                      'Fuerza total',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.x6),
-          Text(
-            'Fuerza total',
-            style: Theme.of(context).textTheme.headlineSmall
-                ?.copyWith(color: AppColors.inverseText),
-          ),
-          const SizedBox(height: AppSpacing.x2),
+          const SizedBox(height: AppSpacing.x4),
           Text(
             '45 min  ·  6 ejercicios',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.inverseText.withValues(alpha: 0.76),
-            ),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: AppSpacing.x6),
+          const SizedBox(height: AppSpacing.x4),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
               onPressed: onPressed,
               icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-              label: const Text('Ver mi actividad'),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.inverseText,
-                foregroundColor: AppColors.textPrimary,
-                minimumSize: const Size(48, 50),
-              ),
+              label: const Text('Ver sesión'),
             ),
           ),
         ],

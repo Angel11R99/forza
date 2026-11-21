@@ -48,11 +48,11 @@ class _ProfileViewState extends State<ProfileView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'TU ESPACIO PERSONAL',
+                  'Tu espacio personal',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.textSecondary,
-                    fontSize: 11,
-                    letterSpacing: 1.3,
+                    fontSize: 13,
+                    letterSpacing: 0,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.x2),
@@ -66,8 +66,8 @@ class _ProfileViewState extends State<ProfileView> {
                 const SizedBox(height: AppSpacing.x8),
                 _ProfileOption(
                   icon: Icons.login_rounded,
-                  title: 'Acceso y cuenta',
-                  subtitle: 'Cuenta y acceso',
+                  title: 'Cuenta y acceso',
+                  subtitle: 'Opciones de inicio de sesión',
                   onTap: _openAccountAccess,
                 ),
                 const SizedBox(height: AppSpacing.x3),
@@ -83,17 +83,16 @@ class _ProfileViewState extends State<ProfileView> {
                   child: Row(
                     children: [
                       Container(
-                        width: 64,
-                        height: 64,
+                        width: 56,
+                        height: 56,
                         alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: AppColors.textPrimary,
-                          shape: BoxShape.circle,
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceMuted,
+                          borderRadius: BorderRadius.circular(AppRadius.small),
                         ),
                         child: Text(
                           _initials(_profile.fullName),
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(color: AppColors.inverseText),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.x4),

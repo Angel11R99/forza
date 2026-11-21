@@ -46,12 +46,12 @@ class ExerciseAlternativesPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'OTRAS OPCIONES',
+                          'Otras opciones',
                           style: Theme.of(context).textTheme.labelLarge
                               ?.copyWith(
                                 color: AppColors.textSecondary,
-                                fontSize: 11,
-                                letterSpacing: 1.3,
+                                fontSize: 13,
+                                letterSpacing: 0,
                               ),
                         ),
                         const SizedBox(height: AppSpacing.x2),

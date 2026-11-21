@@ -26,29 +26,29 @@ abstract final class AppTheme {
       textTheme: const TextTheme(
         displaySmall: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 36,
-          height: 1.08,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -1.2,
+          fontSize: 32,
+          height: 1.12,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.8,
         ),
         headlineSmall: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 26,
+          fontSize: 24,
           height: 1.15,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.5,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.3,
         ),
         titleLarge: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 20,
+          fontSize: 19,
           height: 1.2,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
         titleMedium: TextStyle(
           color: AppColors.textPrimary,
           fontSize: 16,
           height: 1.25,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
         ),
         bodyLarge: TextStyle(
           color: AppColors.textPrimary,
@@ -89,7 +89,7 @@ abstract final class AppTheme {
           minimumSize: const Size(48, 52),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.control),
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -101,7 +101,7 @@ abstract final class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           side: const BorderSide(color: AppColors.divider),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.control),
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -115,19 +115,27 @@ abstract final class AppTheme {
         ),
         hintStyle: const TextStyle(color: AppColors.textSecondary),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.control),
           borderSide: const BorderSide(color: AppColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.control),
           borderSide: const BorderSide(color: AppColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+          borderRadius: BorderRadius.circular(AppRadius.control),
           borderSide: const BorderSide(
             color: AppColors.textPrimary,
             width: 1.5,
           ),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.surface,
+        selectedColor: AppColors.surfaceMuted,
+        side: const BorderSide(color: AppColors.divider),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.control),
         ),
       ),
     );

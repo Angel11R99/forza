@@ -154,41 +154,16 @@ class _ExercisePreview extends StatelessWidget {
       width: double.infinity,
       height: 208,
       decoration: BoxDecoration(
-        color: AppColors.textPrimary,
+        color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppRadius.large),
+        border: Border.all(color: AppColors.divider),
       ),
-      child: Stack(
-        children: [
-          Center(
-            child: Icon(
-              exerciseGroupIcon(exercise.muscleGroup),
-              size: 72,
-              color: AppColors.inverseText,
-            ),
-          ),
-          Positioned(
-            left: AppSpacing.x4,
-            bottom: AppSpacing.x4,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.x3,
-                vertical: AppSpacing.x2,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.inverseText.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-              ),
-              child: Text(
-                'VISTA PREVIA ILUSTRATIVA',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.inverseText,
-                  fontSize: 10,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ),
-        ],
+      child: Center(
+        child: Icon(
+          exerciseGroupIcon(exercise.muscleGroup),
+          size: 56,
+          color: AppColors.textSecondary,
+        ),
       ),
     );
   }
@@ -208,7 +183,7 @@ class _InfoChip extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
+        borderRadius: BorderRadius.circular(AppRadius.control),
       ),
       child: Text(label, style: Theme.of(context).textTheme.labelLarge),
     );
