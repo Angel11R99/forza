@@ -65,7 +65,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   AppSpacing.x8,
                 ),
                 children: [
-                  const _DemoBadge(),
                   const SizedBox(height: AppSpacing.x4),
                   Text(
                     'Tu información',
@@ -174,12 +173,11 @@ class _TrainingSettingsPageState extends State<TrainingSettingsPage> {
             AppSpacing.x8,
           ),
           children: [
-            const _DemoBadge(),
             const SizedBox(height: AppSpacing.x4),
             Text('Tu plan', style: Theme.of(context).textTheme.displaySmall),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Ajusta una propuesta de entrenamiento para la demostración.',
+              'Ajusta tu propuesta de entrenamiento.',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x8),
@@ -291,7 +289,6 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
             AppSpacing.x8,
           ),
           children: [
-            const _DemoBadge(),
             const SizedBox(height: AppSpacing.x4),
             Text(
               'A tu medida',
@@ -411,7 +408,6 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
             AppSpacing.x8,
           ),
           children: [
-            const _DemoBadge(),
             const SizedBox(height: AppSpacing.x4),
             Text(
               'Recibe solo lo útil.',
@@ -419,7 +415,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Estas preferencias son una vista de demostración; no programan notificaciones reales.',
+              'Configura tus preferencias de notificaciones.',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x6),
@@ -525,7 +521,6 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
             AppSpacing.x8,
           ),
           children: [
-            const _DemoBadge(),
             const SizedBox(height: AppSpacing.x4),
             Text(
               'Tú decides qué compartir.',
@@ -533,7 +528,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Estos controles solo muestran una preferencia local de demostración.',
+              'Tus preferencias de privacidad.',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x6),
@@ -635,7 +630,6 @@ class AccountConfirmationPage extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.x6),
               children: [
-                const _DemoBadge(),
                 const SizedBox(height: AppSpacing.x8),
                 Container(
                   width: 72,
@@ -658,7 +652,7 @@ class AccountConfirmationPage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Revisa la información antes de volver a tu perfil. Esta confirmación solo actualiza la demostración local.',
+                  'Revisa la información antes de volver a tu perfil.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -726,29 +720,6 @@ class _SaveBar extends StatelessWidget {
           AppSpacing.x4,
         ),
         child: FilledButton(onPressed: onPressed, child: Text(label)),
-      ),
-    );
-  }
-}
-
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        'DATOS DE EJEMPLO',
-        style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(fontSize: 10, letterSpacing: 1),
       ),
     );
   }

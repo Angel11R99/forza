@@ -211,7 +211,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ),
           const SizedBox(height: AppSpacing.x2),
         ],
-        const _DemoSessionNote(),
+        const _SessionSaveNote(),
       ],
     );
   }
@@ -242,7 +242,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           const SizedBox(height: AppSpacing.x3),
         ],
         const SizedBox(height: AppSpacing.x2),
-        const _DemoSessionNote(),
+        const _SessionSaveNote(),
       ],
     );
   }
@@ -315,7 +315,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'La sesión está en pausa. Puedes retomarla o terminar este entrenamiento de demostración.',
+          'La sesión está en pausa. Puedes retomarla o terminar el entrenamiento.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -349,11 +349,11 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Se cerrará esta sesión de demostración. El progreso no se guardará.',
+          'Se cerrará esta sesión. El progreso no se guardará en el historial.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
-        const _DemoSessionNote(),
+        const _SessionSaveNote(),
       ],
     );
   }
@@ -392,7 +392,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
-        const _DemoSessionNote(),
+        const _SessionSaveNote(),
       ],
     );
   }
@@ -438,7 +438,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
-        const _DemoSessionNote(),
+        const _SessionSaveNote(),
       ],
     );
   }
@@ -774,8 +774,8 @@ class _SummaryMetric extends StatelessWidget {
   }
 }
 
-class _DemoSessionNote extends StatelessWidget {
-  const _DemoSessionNote();
+class _SessionSaveNote extends StatelessWidget {
+  const _SessionSaveNote();
 
   @override
   Widget build(BuildContext context) {
@@ -789,7 +789,7 @@ class _DemoSessionNote extends StatelessWidget {
           const SizedBox(width: AppSpacing.x3),
           Expanded(
             child: Text(
-              'Sesión de demostración. Los ejercicios y resultados no se guardan en tu historial.',
+              'Los ejercicios y resultados no se guardan en el historial.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

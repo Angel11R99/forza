@@ -174,7 +174,6 @@ class _ExercisesViewState extends State<ExercisesView> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x4),
-                const _DemoBadge(),
                 const SizedBox(height: AppSpacing.x6),
                 Row(
                   children: [
@@ -322,29 +321,6 @@ class _EmptyResults extends StatelessWidget {
             label: const Text('Limpiar búsqueda y filtros'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        'CATÁLOGO DE REFERENCIA',
-        style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(fontSize: 10, letterSpacing: 1),
       ),
     );
   }

@@ -64,7 +64,7 @@ class AccountWelcomePage extends StatelessWidget {
                       Center(
                         child: TextButton(
                           onPressed: Navigator.of(context).pop,
-                          child: const Text('Seguir explorando la demo'),
+                          child: const Text('Continuar explorando'),
                         ),
                       ),
                     ],
@@ -161,7 +161,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    _showDemoMessage(context);
+    _showAccountUnavailableMessage(context);
   }
 }
 
@@ -238,7 +238,7 @@ class _SignInPageState extends State<SignInPage> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    _showDemoMessage(context);
+    _showAccountUnavailableMessage(context);
   }
 }
 
@@ -286,7 +286,7 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    _showDemoMessage(context);
+    _showAccountUnavailableMessage(context);
   }
 }
 
@@ -437,7 +437,7 @@ class _AccessNote extends StatelessWidget {
           const SizedBox(width: AppSpacing.x3),
           Expanded(
             child: Text(
-              'Flujo de demostración: no se crea una cuenta, no se inicia sesión ni se envían correos.',
+              'El acceso a la cuenta aún no está disponible.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -456,14 +456,12 @@ String? _validateEmail(String? value) {
   return null;
 }
 
-void _showDemoMessage(BuildContext context) {
+void _showAccountUnavailableMessage(BuildContext context) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(
       const SnackBar(
-        content: Text(
-          'La cuenta no se modificó: esta función es una demo local.',
-        ),
+        content: Text('El acceso a la cuenta estará disponible próximamente.'),
       ),
     );
 }

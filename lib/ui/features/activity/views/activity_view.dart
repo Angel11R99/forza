@@ -114,7 +114,9 @@ class _ActivityViewState extends State<ActivityView> {
     if (!mounted || completed != true) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Demo completada. No se guardó en tu historial.'),
+        content: Text(
+          'Entrenamiento finalizado. No se guardó en el historial.',
+        ),
       ),
     );
   }
@@ -156,7 +158,6 @@ class _ActivityViewState extends State<ActivityView> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x4),
-                const _DemoBadge(),
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   padding: const EdgeInsets.fromLTRB(
@@ -587,7 +588,7 @@ class _DayDetailCard extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: onStart,
               icon: const Icon(Icons.play_arrow_rounded, size: 18),
-              label: const Text('Iniciar sesión de demostración'),
+              label: const Text('Iniciar entrenamiento'),
             ),
           ),
           const SizedBox(height: AppSpacing.x2),
@@ -621,29 +622,6 @@ class _SessionIcon extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.small),
       ),
       child: Icon(icon, size: 22, color: AppColors.textPrimary),
-    );
-  }
-}
-
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        'DATOS DE EJEMPLO',
-        style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(fontSize: 10, letterSpacing: 1),
-      ),
     );
   }
 }

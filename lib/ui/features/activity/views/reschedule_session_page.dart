@@ -177,7 +177,7 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                       ),
                       const SizedBox(height: AppSpacing.x3),
                       Text(
-                        'Los cambios de esta demostración no se guardan al cerrar la app.',
+                        'Los cambios se mantienen mientras la app está abierta.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),

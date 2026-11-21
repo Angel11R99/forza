@@ -19,7 +19,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   ForzaProfile _profile = const ForzaProfile(
     fullName: 'Atleta FORZA',
-    email: 'atleta@forza.demo',
+    email: 'atleta@example.com',
     goal: 'Ganar fuerza',
   );
   TrainingSettings _trainingSettings = const TrainingSettings();
@@ -63,13 +63,11 @@ class _ProfileViewState extends State<ProfileView> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x4),
-                const _DemoBadge(),
                 const SizedBox(height: AppSpacing.x8),
                 _ProfileOption(
                   icon: Icons.login_rounded,
                   title: 'Acceso y cuenta',
-                  subtitle:
-                      'Crear cuenta, iniciar sesión o recuperar acceso · demo',
+                  subtitle: 'Cuenta y acceso',
                   onTap: _openAccountAccess,
                 ),
                 const SizedBox(height: AppSpacing.x3),
@@ -171,7 +169,7 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 Text(
-                  'Los cambios de demostración se mantienen solo mientras esta app permanece abierta.',
+                  'Los cambios se mantienen mientras la app está abierta.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -313,29 +311,6 @@ class _ProfileOption extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        'DATOS DE EJEMPLO',
-        style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(fontSize: 10, letterSpacing: 1),
       ),
     );
   }

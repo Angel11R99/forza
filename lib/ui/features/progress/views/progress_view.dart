@@ -64,7 +64,6 @@ class _ProgressViewState extends State<ProgressView> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x4),
-                const _DemoBadge(),
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   color: AppColors.textPrimary,
@@ -342,29 +341,6 @@ class _SummaryValue extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        'DATOS DE EJEMPLO',
-        style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(fontSize: 10, letterSpacing: 1),
       ),
     );
   }

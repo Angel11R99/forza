@@ -189,7 +189,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Usamos tus preferencias para organizar una semana de entrenamiento de ejemplo.',
+          'Organizamos una semana de entrenamiento según tus preferencias.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -210,7 +210,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               ),
               const Divider(height: AppSpacing.x6),
               const _PreparationStep(
-                title: 'Rutina de demostración lista',
+                title: 'Rutina preparada',
                 detail: 'Puedes revisar cada día antes de confirmarla',
                 icon: Icons.auto_awesome_outlined,
               ),
@@ -219,7 +219,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
         const SizedBox(height: AppSpacing.x4),
         Text(
-          'No se consulta ningún servicio externo; este plan se construye con datos locales de muestra.',
+          'Este plan se organiza según las preferencias que elegiste.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
@@ -387,7 +387,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
         const SizedBox(height: AppSpacing.x4),
         Text(
-          'Esta confirmación solo guarda los valores en la sesión actual de la demo.',
+          'Tus preferencias están listas para comenzar.',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
@@ -444,7 +444,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Usaremos tu respuesta para ajustar la carga inicial de la demostración.',
+          'Usaremos tu respuesta para ajustar la carga inicial.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -463,7 +463,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           const SizedBox(height: AppSpacing.x3),
         ],
         Text(
-          'Tu experiencia solo se usa en esta sesión de demostración.',
+          'Tu experiencia ayuda a ajustar el entrenamiento.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],

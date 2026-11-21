@@ -56,7 +56,6 @@ class HomeView extends StatelessWidget {
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                     const SizedBox(height: AppSpacing.x3),
-                    const _DemoBadge(),
                     const SizedBox(height: AppSpacing.x8),
                     _TodayWorkoutCard(onPressed: onShowActivity),
                     const SizedBox(height: AppSpacing.x8),
@@ -135,29 +134,6 @@ class _BrandHeader extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _DemoBadge extends StatelessWidget {
-  const _DemoBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        'DATOS DE EJEMPLO',
-        style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(fontSize: 10, letterSpacing: 1),
-      ),
     );
   }
 }

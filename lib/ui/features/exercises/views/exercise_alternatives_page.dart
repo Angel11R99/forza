@@ -61,7 +61,7 @@ class ExerciseAlternativesPage extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.x2),
                         Text(
-                          'Opciones de ejemplo para trabajar un grupo muscular parecido.',
+                          'Más ejercicios para trabajar un grupo muscular parecido.',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: AppSpacing.x6),
