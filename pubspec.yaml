@@ -38,6 +38,7 @@ dependencies:
   native_glass_navbar: ^2.0.0
   table_calendar: ^3.3.0
   intl: ^0.20.3
+  flutter_svg: ^2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,8 @@ flutter:
 
   assets:
     - assets/data/exercises.json
+    - assets/exercise_animations/
+    - assets/licenses/flow-exercise-dataset/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

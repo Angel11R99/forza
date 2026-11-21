@@ -48,11 +48,12 @@ class ExerciseListCard extends StatelessWidget {
                       SizedBox(
                         width: 44,
                         height: 44,
-                        alignment: Alignment.center,
-                        child: Icon(
-                          exerciseGroupIcon(exercise.muscleGroup),
-                          color: AppColors.textPrimary,
-                          size: 21,
+                        child: Center(
+                          child: Icon(
+                            exerciseGroupIcon(exercise.muscleGroup),
+                            color: AppColors.textPrimary,
+                            size: 21,
+                          ),
                         ),
                       ),
                       const Spacer(),

@@ -6,7 +6,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
-import '../widgets/exercise_list_card.dart';
+import '../widgets/exercise_animation.dart';
 import 'exercise_alternatives_page.dart';
 
 class ExerciseDetailPage extends StatelessWidget {
@@ -153,16 +153,15 @@ class _ExercisePreview extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 208,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-        border: Border.all(color: AppColors.divider),
-      ),
+      color: AppColors.surface,
       child: Center(
-        child: Icon(
-          exerciseGroupIcon(exercise.muscleGroup),
-          size: 56,
-          color: AppColors.textSecondary,
+        child: SizedBox(
+          width: 196,
+          height: 196,
+          child: ExerciseAnimationView(
+            animation: exercise.animation,
+            label: exercise.name,
+          ),
         ),
       ),
     );

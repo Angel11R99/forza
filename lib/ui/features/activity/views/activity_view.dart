@@ -5,7 +5,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../app/theme/app_colors.dart';
-import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
@@ -502,8 +501,7 @@ class _SessionIcon extends StatelessWidget {
     return SizedBox(
       width: 48,
       height: 48,
-      alignment: Alignment.center,
-      child: Icon(icon, size: 22, color: AppColors.textPrimary),
+      child: Center(child: Icon(icon, size: 22, color: AppColors.textPrimary)),
     );
   }
 }

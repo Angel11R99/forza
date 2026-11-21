@@ -103,10 +103,11 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                             SizedBox(
                               width: 48,
                               height: 48,
-                              alignment: Alignment.center,
-                              child: Icon(
-                                widget.sessionIcon,
-                                color: AppColors.textPrimary,
+                              child: Center(
+                                child: Icon(
+                                  widget.sessionIcon,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
                             ),
                             const SizedBox(width: AppSpacing.x4),
