@@ -45,14 +45,10 @@ class ExerciseListCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
+                      SizedBox(
                         width: 44,
                         height: 44,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceMuted,
-                          borderRadius: BorderRadius.circular(AppRadius.small),
-                        ),
                         child: Icon(
                           exerciseGroupIcon(exercise.muscleGroup),
                           color: AppColors.textPrimary,

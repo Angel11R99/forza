@@ -151,15 +151,10 @@ class _TodayWorkoutCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
+              const SizedBox(
                 width: 44,
                 height: 44,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceMuted,
-                  borderRadius: BorderRadius.circular(AppRadius.small),
-                ),
-                child: const Icon(
+                child: Icon(
                   Icons.fitness_center_outlined,
                   color: AppColors.textPrimary,
                 ),
@@ -346,14 +341,10 @@ class _ExploreCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.x4),
           child: Row(
             children: [
-              Container(
+              const SizedBox(
                 width: 52,
                 height: 52,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceMuted,
-                  borderRadius: BorderRadius.circular(AppRadius.small),
-                ),
-                child: const Icon(
+                child: Icon(
                   Icons.fitness_center_rounded,
                   color: AppColors.textPrimary,
                 ),

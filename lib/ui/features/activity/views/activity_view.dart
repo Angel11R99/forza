@@ -499,14 +499,10 @@ class _SessionIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 48,
       height: 48,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.small),
-      ),
       child: Icon(icon, size: 22, color: AppColors.textPrimary),
     );
   }

@@ -214,15 +214,10 @@ class _SessionHistoryCard extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.x4),
               child: Row(
                 children: [
-                  Container(
+                  const SizedBox(
                     width: 48,
                     height: 48,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceMuted,
-                      borderRadius: BorderRadius.circular(AppRadius.small),
-                    ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.fitness_center_rounded,
                       color: AppColors.textPrimary,
                     ),

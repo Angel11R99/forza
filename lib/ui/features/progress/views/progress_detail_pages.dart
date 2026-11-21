@@ -639,15 +639,10 @@ class _RecordCard extends StatelessWidget {
     return AppSurfaceCard(
       child: Row(
         children: [
-          Container(
+          const SizedBox(
             width: 42,
             height: 42,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceMuted,
-              borderRadius: BorderRadius.circular(AppRadius.small),
-            ),
-            child: const Icon(
+            child: Icon(
               Icons.emoji_events_outlined,
               color: AppColors.textPrimary,
             ),

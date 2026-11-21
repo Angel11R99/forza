@@ -100,16 +100,10 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                       AppSurfaceCard(
                         child: Row(
                           children: [
-                            Container(
+                            SizedBox(
                               width: 48,
                               height: 48,
                               alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceMuted,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadius.small,
-                                ),
-                              ),
                               child: Icon(
                                 widget.sessionIcon,
                                 color: AppColors.textPrimary,
