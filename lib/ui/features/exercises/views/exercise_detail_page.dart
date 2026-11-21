@@ -78,21 +78,25 @@ class ExerciseDetailPage extends StatelessWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: AppSpacing.x3),
-                            for (
-                              var i = 0;
-                              i < exercise.instructions.length;
-                              i++
-                            ) ...[
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: AppSpacing.x2,
-                                ),
-                                child: _InstructionCard(
-                                  index: i + 1,
-                                  text: exercise.instructions[i],
-                                ),
+                            AppSurfaceCard(
+                              padding: EdgeInsets.zero,
+                              child: Column(
+                                children: [
+                                  for (
+                                    var i = 0;
+                                    i < exercise.instructions.length;
+                                    i++
+                                  ) ...[
+                                    _InstructionCard(
+                                      index: i + 1,
+                                      text: exercise.instructions[i],
+                                    ),
+                                    if (i < exercise.instructions.length - 1)
+                                      const Divider(height: 1, indent: 66),
+                                  ],
+                                ],
                               ),
-                            ],
+                            ),
                             const SizedBox(height: AppSpacing.x4),
                           ],
                         ),
@@ -153,18 +157,40 @@ class _ExercisePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 208,
-      color: AppColors.surface,
-      child: Center(
-        child: SizedBox(
-          width: 196,
-          height: 196,
-          child: ExerciseAnimationView(
-            animation: exercise.animation,
-            label: exercise.name,
-            fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
+      height: 248,
+      padding: const EdgeInsets.all(AppSpacing.x3),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppRadius.large),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: SizedBox(
+              width: 220,
+              height: 220,
+              child: ExerciseAnimationView(
+                exerciseId: exercise.id,
+                animation: exercise.animation,
+                label: exercise.name,
+                fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
+                showControls: true,
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            left: AppSpacing.x3,
+            bottom: AppSpacing.x2,
+            child: Text(
+              'VISTA DEL MOVIMIENTO',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppColors.textSecondary,
+                letterSpacing: 0.6,
+                fontSize: 10,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -199,7 +225,7 @@ class _InstructionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppSurfaceCard(
+    return Padding(
       padding: const EdgeInsets.all(AppSpacing.x4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,13 +235,13 @@ class _InstructionCard extends StatelessWidget {
             height: 30,
             alignment: Alignment.center,
             decoration: const BoxDecoration(
-              color: AppColors.textPrimary,
+              color: AppColors.accentSoft,
               shape: BoxShape.circle,
             ),
             child: Text(
               '$index',
               style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: AppColors.inverseText),
+                  ?.copyWith(color: AppColors.accent),
             ),
           ),
           const SizedBox(width: AppSpacing.x3),

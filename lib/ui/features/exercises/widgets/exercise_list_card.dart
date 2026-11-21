@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../domain/models/exercise.dart';
+import '../../../core/widgets/app_surface_card.dart';
 import 'exercise_animation.dart';
 
 class ExerciseListCard extends StatelessWidget {
@@ -22,60 +23,60 @@ class ExerciseListCard extends StatelessWidget {
       exercise.name,
       exercise.muscleGroup,
       exercise.equipment,
-      exercise.level,
-    ].whereType<String>().join(', ');
+    ].join(', ');
 
-    return Semantics(
-      button: true,
-      label: accessibilityLabel,
-      child: ExcludeSemantics(
-        child: Material(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.medium),
+    return AppSurfaceCard(
+      padding: EdgeInsets.zero,
+      child: Semantics(
+        button: true,
+        label: accessibilityLabel,
+        child: ExcludeSemantics(
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(AppRadius.medium),
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.x4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppRadius.medium),
-                border: Border.all(color: AppColors.divider),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.x3),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 64,
-                        height: 64,
-                        child: ExerciseAnimationView(
-                          animation: exercise.animation,
-                          label: exercise.name,
-                          fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.control),
+                    child: SizedBox(
+                      width: 68,
+                      height: 68,
+                      child: ExerciseAnimationView(
+                        exerciseId: exercise.id,
+                        animation: exercise.animation,
+                        label: exercise.name,
+                        fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.x4),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          exercise.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        Icons.arrow_outward_rounded,
-                        color: AppColors.textSecondary,
-                        size: 18,
-                      ),
-                    ],
+                        const SizedBox(height: AppSpacing.x1),
+                        Text(
+                          '${exercise.muscleGroup}  ·  ${exercise.equipment}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
-                  Text(
-                    exercise.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.x1),
-                  Text(
-                    '${exercise.muscleGroup}  ·  ${exercise.equipment}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  const SizedBox(width: AppSpacing.x2),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textSecondary,
                   ),
                 ],
               ),

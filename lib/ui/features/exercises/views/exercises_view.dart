@@ -135,8 +135,6 @@ class _ExercisesViewState extends State<ExercisesView> {
     }
 
     final results = _results;
-    final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final cardExtent = 164 + ((textScale - 1).clamp(0, 2) * 52).toDouble();
     final horizontalPadding = MediaQuery.sizeOf(context).width < 380
         ? AppSpacing.x4
         : AppSpacing.x6;
@@ -267,17 +265,16 @@ class _ExercisesViewState extends State<ExercisesView> {
               horizontalPadding,
               AppSpacing.x8,
             ),
-            sliver: SliverGrid.builder(
-              itemCount: results.length,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 460,
-                mainAxisExtent: cardExtent,
-                crossAxisSpacing: AppSpacing.x3,
-                mainAxisSpacing: AppSpacing.x3,
-              ),
-              itemBuilder: (context, index) => ExerciseListCard(
-                exercise: results[index],
-                onTap: () => _openExercise(results[index]),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                  child: ExerciseListCard(
+                    exercise: results[index],
+                    onTap: () => _openExercise(results[index]),
+                  ),
+                ),
+                childCount: results.length,
               ),
             ),
           ),

@@ -64,7 +64,7 @@ class HomeView extends StatelessWidget {
                 Text(greeting, style: Theme.of(context).textTheme.bodyLarge),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Tu espacio para\nseguir avanzando.',
+                  'Es hora de\nentrenar.',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -99,13 +99,8 @@ class _TodayWorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return AppSurfaceCard(
       padding: const EdgeInsets.all(AppSpacing.x6),
-      decoration: BoxDecoration(
-        color: AppColors.inverseSurface,
-        borderRadius: BorderRadius.circular(AppRadius.large),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -113,42 +108,38 @@ class _TodayWorkoutCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.fitness_center_rounded,
-                color: AppColors.inverseText,
+                color: AppColors.accent,
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.x2),
               Text(
                 'ENTRENAMIENTO DE HOY',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.inverseText.withValues(alpha: 0.72),
+                  color: AppColors.accent,
                   fontSize: 11,
                   letterSpacing: 0.7,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.x6),
+          const SizedBox(height: AppSpacing.x4),
           Text(
             'Fuerza total',
-            style: Theme.of(context).textTheme.headlineSmall
-                ?.copyWith(color: AppColors.inverseText),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
             '45 min   ·   6 ejercicios',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.inverseText.withValues(alpha: 0.72),
-            ),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: AppSpacing.x6),
-          FilledButton.tonalIcon(
-            onPressed: onPressed,
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.inverseText,
-              foregroundColor: AppColors.inverseSurface,
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onPressed,
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: const Text('Ver entrenamiento'),
             ),
-            icon: const Icon(Icons.play_arrow_rounded),
-            label: const Text('Ver entrenamiento'),
           ),
         ],
       ),
@@ -241,15 +232,19 @@ class _DayMark extends StatelessWidget {
             height: 32,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: completed ? AppColors.accent : AppColors.surfaceMuted,
+              color: completed ? AppColors.accentSoft : AppColors.surfaceMuted,
               border: current
                   ? Border.all(color: AppColors.accent, width: 1.5)
                   : null,
             ),
             alignment: Alignment.center,
             child: completed
-                ? const Icon(Icons.check_rounded, size: 17, color: Colors.white)
-                : Text(label, style: Theme.of(context).textTheme.labelLarge),
+                ? const Icon(
+                    Icons.check_rounded,
+                    size: 17,
+                    color: AppColors.accent,
+                  )
+                : null,
           ),
           const SizedBox(height: AppSpacing.x1),
           Text(label, style: Theme.of(context).textTheme.bodySmall),
