@@ -162,29 +162,22 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ),
         const SizedBox(height: AppSpacing.x6),
         AppSurfaceCard(
-          color: AppColors.textPrimary,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Fuerza total',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.inverseText.withValues(alpha: 0.72),
-                  letterSpacing: 1.2,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppSpacing.x3),
               Text(
                 'Sesión de cuerpo completo',
-                style: Theme.of(context).textTheme.headlineSmall
-                    ?.copyWith(color: AppColors.inverseText),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: AppSpacing.x2),
               Text(
                 '45 min · ${_exercises.length} ejercicios',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.inverseText.withValues(alpha: 0.76),
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
@@ -372,20 +365,18 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ),
         const SizedBox(height: AppSpacing.x6),
         AppSurfaceCard(
-          color: AppColors.textPrimary,
           child: Row(
             children: [
               const Icon(
                 Icons.check_circle_rounded,
-                color: AppColors.inverseText,
+                color: AppColors.textPrimary,
                 size: 36,
               ),
               const SizedBox(width: AppSpacing.x4),
               Expanded(
                 child: Text(
                   '${_exercises.length} ejercicios completados',
-                  style: Theme.of(context).textTheme.titleLarge
-                      ?.copyWith(color: AppColors.inverseText),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
             ],
