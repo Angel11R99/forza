@@ -64,7 +64,7 @@ class HomeView extends StatelessWidget {
                 Text(greeting, style: Theme.of(context).textTheme.bodyLarge),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Es hora de\nentrenar.',
+                  'Entrena hoy.',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -270,8 +270,15 @@ class _LibraryLink extends StatelessWidget {
           vertical: AppSpacing.x2,
         ),
         leading: const Icon(Icons.sports_gymnastics_outlined, size: 26),
-        title: const Text('Encuentra tu próximo movimiento'),
-        subtitle: const Text('Explora ejercicios y animaciones'),
+        title: Text(
+          'Explora ejercicios',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        subtitle: Text(
+          'Guías visuales para cada movimiento',
+          style: Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
+        ),
         trailing: const Icon(Icons.chevron_right_rounded),
       ),
     );

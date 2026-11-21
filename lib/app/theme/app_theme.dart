@@ -21,6 +21,7 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: 'Manrope',
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.background,
       dividerColor: AppColors.divider,
@@ -62,6 +63,7 @@ abstract final class AppTheme {
           color: AppColors.textSecondary,
           fontSize: 14,
           height: 1.4,
+          fontWeight: FontWeight.w500,
         ),
         labelLarge: TextStyle(
           color: AppColors.textPrimary,
@@ -112,6 +114,20 @@ abstract final class AppTheme {
         unselectedIconTheme: IconThemeData(color: AppColors.textSecondary),
         selectedLabelTextStyle: TextStyle(color: AppColors.accent),
         unselectedLabelTextStyle: TextStyle(color: AppColors.textSecondary),
+      ),
+      listTileTheme: const ListTileThemeData(
+        titleTextStyle: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          height: 1.25,
+        ),
+        subtitleTextStyle: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          height: 1.3,
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.divider,
