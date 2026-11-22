@@ -62,26 +62,29 @@ flutter:
   uses-material-design: true
 
   fonts:
-    - family: Manrope
+    - family: Barlow
       fonts:
-        - asset: assets/fonts/Manrope-Variable.ttf
-          weight: 300
-        - asset: assets/fonts/Manrope-Variable.ttf
+        - asset: assets/fonts/barlow/Barlow-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Manrope-Variable.ttf
+        - asset: assets/fonts/barlow/Barlow-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Manrope-Variable.ttf
+        - asset: assets/fonts/barlow/Barlow-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Manrope-Variable.ttf
+        - asset: assets/fonts/barlow/Barlow-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Manrope-Variable.ttf
-          weight: 800
+    - family: Barlow Condensed
+      fonts:
+        - asset: assets/fonts/barlow/BarlowCondensed-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/barlow/BarlowCondensed-Bold.ttf
+          weight: 700
 
   assets:
     - assets/data/exercises.json
     - assets/exercise_animations/
     - assets/licenses/flow-exercise-dataset/
-    - assets/fonts/OFL-Manrope.txt
+    - assets/fonts/barlow/OFL-Barlow.txt
+    - assets/fonts/barlow/OFL-BarlowCondensed.txt
 
   # To add assets to your application, add an assets section, like this:
   # assets:

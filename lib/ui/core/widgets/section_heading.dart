@@ -29,8 +29,8 @@ class SectionHeading extends StatelessWidget {
             TextButton(
               onPressed: onAction,
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.textSecondary,
-                minimumSize: const Size(48, 44),
+                foregroundColor: AppColors.accent,
+                minimumSize: const Size(48, 48),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
               child: Text(actionLabel!),

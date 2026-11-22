@@ -6,4 +6,7 @@ abstract final class AppSpacing {
   static const x6 = 24.0;
   static const x8 = 32.0;
   static const x12 = 48.0;
+
+  static double pageGutter(double availableWidth) =>
+      availableWidth < 380 ? x4 : x6;
 }

@@ -14,36 +14,71 @@ abstract final class AppTheme {
       onPrimaryContainer: AppColors.accent,
       surface: AppColors.surface,
       onSurface: AppColors.textPrimary,
-      error: Color(0xFFFF3B30),
+      error: AppColors.textPrimary,
       onError: AppColors.inverseText,
     );
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: 'Manrope',
+      fontFamily: 'Barlow',
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.background,
       dividerColor: AppColors.divider,
       visualDensity: VisualDensity.standard,
+      iconTheme: const IconThemeData(color: AppColors.textPrimary),
       textTheme: const TextTheme(
-        displaySmall: TextStyle(
+        displayLarge: TextStyle(
+          fontFamily: 'Barlow Condensed',
           color: AppColors.textPrimary,
-          fontSize: 34,
+          fontSize: 32,
           height: 1.08,
           fontWeight: FontWeight.w700,
-          letterSpacing: -1.1,
+          letterSpacing: -0.8,
         ),
-        headlineSmall: TextStyle(
+        displayMedium: TextStyle(
+          fontFamily: 'Barlow Condensed',
+          color: AppColors.textPrimary,
+          fontSize: 28,
+          height: 1.1,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.65,
+        ),
+        displaySmall: TextStyle(
+          fontFamily: 'Barlow Condensed',
           color: AppColors.textPrimary,
           fontSize: 28,
           height: 1.12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.8,
+        ),
+        headlineLarge: TextStyle(
+          fontFamily: 'Barlow Condensed',
+          color: AppColors.textPrimary,
+          fontSize: 24,
+          height: 1.12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.45,
+        ),
+        headlineMedium: TextStyle(
+          fontFamily: 'Barlow Condensed',
+          color: AppColors.textPrimary,
+          fontSize: 24,
+          height: 1.15,
           fontWeight: FontWeight.w600,
-          letterSpacing: -0.65,
+          letterSpacing: -0.45,
+        ),
+        headlineSmall: TextStyle(
+          fontFamily: 'Barlow Condensed',
+          color: AppColors.textPrimary,
+          fontSize: 24,
+          height: 1.18,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.45,
         ),
         titleLarge: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 20,
+          fontSize: 18,
           height: 1.2,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.25,
@@ -52,6 +87,12 @@ abstract final class AppTheme {
           color: AppColors.textPrimary,
           fontSize: 16,
           height: 1.25,
+          fontWeight: FontWeight.w600,
+        ),
+        titleSmall: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 14,
+          height: 1.3,
           fontWeight: FontWeight.w600,
         ),
         bodyLarge: TextStyle(
@@ -65,11 +106,28 @@ abstract final class AppTheme {
           height: 1.4,
           fontWeight: FontWeight.w500,
         ),
+        bodySmall: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 12,
+          height: 1.4,
+          fontWeight: FontWeight.w500,
+        ),
+        labelMedium: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 12,
+          height: 1.25,
+          fontWeight: FontWeight.w600,
+        ),
+        labelSmall: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 12,
+          height: 1.25,
+          fontWeight: FontWeight.w600,
+        ),
         labelLarge: TextStyle(
           color: AppColors.textPrimary,
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.1,
         ),
       ),
       appBarTheme: const AppBarTheme(
@@ -80,7 +138,7 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         titleTextStyle: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 17,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           letterSpacing: -0.2,
         ),
@@ -95,7 +153,7 @@ abstract final class AppTheme {
             color: states.contains(WidgetState.selected)
                 ? AppColors.accent
                 : AppColors.textSecondary,
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w600
                 : FontWeight.w500,
@@ -125,7 +183,7 @@ abstract final class AppTheme {
         subtitleTextStyle: TextStyle(
           color: AppColors.textSecondary,
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           height: 1.3,
         ),
       ),
@@ -156,12 +214,12 @@ abstract final class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.accent,
+          foregroundColor: AppColors.textPrimary,
           minimumSize: const Size(48, 50),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          side: const BorderSide(color: AppColors.accent),
+          side: const BorderSide(color: AppColors.divider),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.control),
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -175,15 +233,15 @@ abstract final class AppTheme {
         ),
         hintStyle: const TextStyle(color: AppColors.textSecondary),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.pill),
+          borderRadius: BorderRadius.circular(AppRadius.control),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.pill),
+          borderRadius: BorderRadius.circular(AppRadius.control),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.pill),
+          borderRadius: BorderRadius.circular(AppRadius.control),
           borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
         ),
       ),
