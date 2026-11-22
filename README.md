@@ -23,3 +23,4 @@ GDK_BACKEND=x11 flutter run -d linux
 - [Pantallas y módulos](docs/02-modulos-y-pantallas.md)
 - [Sistema visual](docs/03-sistema-visual.md)
 - [Paquetes y dataset](docs/04-paquetes-y-dataset.md)
+- [Persistencia local, migraciones y contrato de API](docs/06-datos-locales-y-api.md)
