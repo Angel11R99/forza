@@ -136,9 +136,15 @@ class _ExercisesViewState extends State<ExercisesView> {
     }
 
     final results = _results;
-    final horizontalPadding = MediaQuery.sizeOf(context).width < 380
-        ? AppSpacing.x4
-        : AppSpacing.x6;
+    final horizontalPadding = AppSpacing.pageGutter(
+      MediaQuery.sizeOf(context).width,
+    );
+    final contentWidth =
+        MediaQuery.sizeOf(context).width - (horizontalPadding * 2);
+    final columns = (contentWidth / 112).floor().clamp(3, 5).toInt();
+    final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.3);
+    final cardHeight =
+        (contentWidth / columns * 1.58).clamp(176.0, 210.0) * textScale;
 
     return CustomScrollView(
       key: const PageStorageKey<String>('exercises-scroll'),
@@ -154,7 +160,7 @@ class _ExercisesViewState extends State<ExercisesView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ForzaEyebrow(label: 'Biblioteca'),
+                const ForzaEyebrow(label: 'Ejercicios'),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
                   'Ejercicios',
@@ -165,7 +171,6 @@ class _ExercisesViewState extends State<ExercisesView> {
                   'Encuentra movimientos para tu próxima sesión.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: AppSpacing.x4),
                 const SizedBox(height: AppSpacing.x6),
                 Row(
                   children: [
@@ -263,14 +268,18 @@ class _ExercisesViewState extends State<ExercisesView> {
               horizontalPadding,
               AppSpacing.x8,
             ),
-            sliver: SliverList(
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                mainAxisExtent: cardHeight,
+                crossAxisSpacing: AppSpacing.x2,
+                mainAxisSpacing: AppSpacing.x2,
+              ),
               delegate: SliverChildBuilderDelegate(
-                (context, index) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                  child: ExerciseListCard(
-                    exercise: results[index],
-                    onTap: () => _openExercise(results[index]),
-                  ),
+                (context, index) => ExerciseListCard(
+                  exercise: results[index],
+                  onTap: () => _openExercise(results[index]),
+                  compact: true,
                 ),
                 childCount: results.length,
               ),
