@@ -9,6 +9,14 @@ flutter pub get
 flutter run
 ```
 
+### Linux
+
+Para ejecutar la app en Linux usando X11:
+
+```sh
+GDK_BACKEND=x11 flutter run -d linux
+```
+
 ## Documentación
 
 - [Guía de implementación](docs/01-implementacion.md)
