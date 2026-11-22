@@ -81,26 +81,47 @@ class ExerciseListCard extends StatelessWidget {
     ],
   );
 
-  Widget _buildCompactCard(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Expanded(child: Center(child: _animation())),
-      const SizedBox(height: AppSpacing.x2),
-      Text(
-        exercise.name,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
-      const SizedBox(height: AppSpacing.x1),
-      Text(
-        exercise.muscleGroup,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-    ],
-  );
+  Widget _buildCompactCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final titleStyle = theme.textTheme.titleSmall;
+    final categoryStyle = theme.textTheme.bodySmall;
+    final titleHeight = (titleStyle?.fontSize ?? 14) * 2.8 * textScale;
+    final categoryHeight = (categoryStyle?.fontSize ?? 12) * 1.5 * textScale;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: Center(child: _animation())),
+        const SizedBox(height: AppSpacing.x2),
+        SizedBox(
+          height: titleHeight,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              exercise.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: titleStyle,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.x1),
+        SizedBox(
+          height: categoryHeight,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              exercise.muscleGroup,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: categoryStyle,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _animation() => ExerciseAnimationView(
     exerciseId: exercise.id,
