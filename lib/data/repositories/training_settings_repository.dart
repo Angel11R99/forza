@@ -1,64 +1,101 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:drift/drift.dart';
 
+import '../database/app_database.dart';
 import '../../ui/features/profile/models/profile_settings.dart';
 
 class TrainingSettingsRepository {
-  TrainingSettingsRepository({SharedPreferencesAsync? preferences})
-    : _preferences = preferences ?? SharedPreferencesAsync();
+  TrainingSettingsRepository({required this.database});
 
-  static const _completeKey = 'training_setup_complete';
-  static const _daysKey = 'training_days';
-  static const _minutesKey = 'training_session_minutes';
-  static const _goalKey = 'training_goal';
-  static const _experienceKey = 'training_experience';
-  static const _equipmentKey = 'training_equipment';
+  static const activePlanId = AppDatabase.activePlanId;
+  static const _setupCompleteKey = 'training_setup_complete';
 
-  final SharedPreferencesAsync _preferences;
+  final AppDatabase database;
 
-  Future<bool> get setupComplete async =>
-      await _preferences.getBool(_completeKey) ?? false;
+  Future<bool> get setupComplete async {
+    final saved = await (database.select(
+      database.appMetadata,
+    )..where((row) => row.key.equals(_setupCompleteKey))).getSingleOrNull();
+    return saved?.value == 'true';
+  }
 
   Future<TrainingSettings> load() async {
-    const defaults = TrainingSettings();
-    final savedDays = await _preferences.getStringList(_daysKey);
-    final trainingDays = savedDays
-        ?.map(int.tryParse)
-        .whereType<int>()
-        .where((day) => day >= DateTime.monday && day <= DateTime.sunday)
-        .toSet();
-    final savedEquipment = await _preferences.getStringList(_equipmentKey);
-    final equipment = savedEquipment?.toSet();
+    final plan = await (database.select(
+      database.trainingPlans,
+    )..where((row) => row.id.equals(activePlanId))).getSingleOrNull();
+    if (plan == null) return const TrainingSettings();
+
+    final days =
+        await (database.select(database.trainingPlanDays)
+              ..where((row) => row.planId.equals(activePlanId))
+              ..orderBy([(row) => OrderingTerm.asc(row.orderIndex)]))
+            .get();
+    final equipment = await (database.select(
+      database.trainingPlanEquipment,
+    )..where((row) => row.planId.equals(activePlanId))).get();
 
     return TrainingSettings(
-      trainingDays: trainingDays == null || trainingDays.isEmpty
-          ? defaults.trainingDays
-          : trainingDays,
-      sessionMinutes:
-          await _preferences.getInt(_minutesKey) ?? defaults.sessionMinutes,
-      goal: await _preferences.getString(_goalKey) ?? defaults.goal,
-      experience:
-          await _preferences.getString(_experienceKey) ?? defaults.experience,
-      equipment: equipment == null || equipment.isEmpty
-          ? defaults.equipment
-          : equipment,
+      trainingDays: days.map((row) => row.weekday).toSet(),
+      sessionMinutes: plan.sessionMinutes,
+      goal: plan.goal,
+      experience: plan.experience,
+      equipment: equipment.map((row) => row.equipment).toSet(),
     );
   }
 
   Future<void> save(TrainingSettings settings) async {
-    await Future.wait<void>([
-      _preferences.setStringList(
-        _daysKey,
-        settings.trainingDays.map((day) => day.toString()).toList()..sort(),
-      ),
-      _preferences.setInt(_minutesKey, settings.sessionMinutes),
-      _preferences.setString(_goalKey, settings.goal),
-      _preferences.setString(_experienceKey, settings.experience),
-      _preferences.setStringList(
-        _equipmentKey,
-        settings.equipment.toList()..sort(),
-      ),
-    ]);
+    final now = DateTime.now().toIso8601String();
+    await database.transaction(() async {
+      final existing = await (database.select(
+        database.trainingPlans,
+      )..where((row) => row.id.equals(activePlanId))).getSingleOrNull();
+
+      await database
+          .into(database.trainingPlans)
+          .insertOnConflictUpdate(
+            TrainingPlansCompanion.insert(
+              id: activePlanId,
+              goal: settings.goal,
+              experience: settings.experience,
+              sessionMinutes: settings.sessionMinutes,
+              createdAt: existing?.createdAt ?? now,
+              updatedAt: now,
+              isActive: const Value(true),
+            ),
+          );
+
+      await (database.delete(
+        database.trainingPlanDays,
+      )..where((row) => row.planId.equals(activePlanId))).go();
+      await (database.delete(
+        database.trainingPlanEquipment,
+      )..where((row) => row.planId.equals(activePlanId))).go();
+
+      final days = settings.trainingDays.toList()..sort();
+      await database.batch((batch) {
+        batch.insertAll(database.trainingPlanDays, [
+          for (var index = 0; index < days.length; index++)
+            TrainingPlanDaysCompanion.insert(
+              planId: activePlanId,
+              weekday: days[index],
+              orderIndex: index,
+            ),
+        ]);
+        batch.insertAll(database.trainingPlanEquipment, [
+          for (final item in settings.equipment.toList()..sort())
+            TrainingPlanEquipmentCompanion.insert(
+              planId: activePlanId,
+              equipment: item,
+            ),
+        ]);
+      });
+    });
   }
 
-  Future<void> completeSetup() => _preferences.setBool(_completeKey, true);
+  Future<void> completeSetup() async {
+    await database
+        .into(database.appMetadata)
+        .insertOnConflictUpdate(
+          AppMetadataCompanion.insert(key: _setupCompleteKey, value: 'true'),
+        );
+  }
 }

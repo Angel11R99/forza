@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../data/database/app_database.dart';
+import '../../../data/migrations/legacy_shared_preferences_migration.dart';
 import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/workout_log_repository.dart';
 import '../../../domain/models/workout_record.dart';
@@ -7,11 +9,20 @@ import '../../features/profile/models/profile_settings.dart';
 
 class AppShellViewModel extends ChangeNotifier {
   AppShellViewModel({
+    AppDatabase? database,
     TrainingSettingsRepository? settingsRepository,
     WorkoutLogRepository? workoutLogRepository,
-  }) : _settingsRepository = settingsRepository ?? TrainingSettingsRepository(),
-       _workoutLogRepository = workoutLogRepository ?? WorkoutLogRepository();
+  }) : _database = database ?? AppDatabase.instance,
+       _settingsRepository =
+           settingsRepository ??
+           TrainingSettingsRepository(
+             database: database ?? AppDatabase.instance,
+           ),
+       _workoutLogRepository =
+           workoutLogRepository ??
+           WorkoutLogRepository(database: database ?? AppDatabase.instance);
 
+  final AppDatabase _database;
   final TrainingSettingsRepository _settingsRepository;
   final WorkoutLogRepository _workoutLogRepository;
 
@@ -35,6 +46,11 @@ class AppShellViewModel extends ChangeNotifier {
     var setupComplete = false;
 
     try {
+      await LegacySharedPreferencesMigration(
+        database: _database,
+        settingsRepository: _settingsRepository,
+        workoutLogRepository: _workoutLogRepository,
+      ).run();
       settings = await _settingsRepository.load();
       setupComplete = await _settingsRepository.setupComplete;
     } on Object {
