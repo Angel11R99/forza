@@ -13,9 +13,7 @@ class AccountWelcomePage extends StatelessWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final padding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final padding = AppSpacing.pageGutter(constraints.maxWidth);
             return Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 560),
@@ -104,7 +102,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   Widget build(BuildContext context) {
     return _AccountFormScaffold(
       title: 'Crear cuenta',
-      eyebrow: 'A2 · NUEVA CUENTA',
+      eyebrow: 'Nueva cuenta',
       description: 'Regístrate para preparar tu espacio de entrenamiento.',
       form: Form(
         key: _formKey,
@@ -188,7 +186,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return _AccountFormScaffold(
       title: 'Iniciar sesión',
-      eyebrow: 'A3 · BIENVENIDO DE VUELTA',
+      eyebrow: 'Bienvenido de vuelta',
       description: 'Continúa con tu correo y contraseña.',
       form: Form(
         key: _formKey,
@@ -263,7 +261,7 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
   Widget build(BuildContext context) {
     return _AccountFormScaffold(
       title: 'Recuperar contraseña',
-      eyebrow: 'A4 · RECUPERACIÓN',
+      eyebrow: 'Recuperación de acceso',
       description: 'Escribe el correo asociado a tu cuenta para continuar con la recuperación.',
       form: Form(
         key: _formKey,
@@ -317,9 +315,7 @@ class _AccountFormScaffold extends StatelessWidget {
         top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final padding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final padding = AppSpacing.pageGutter(constraints.maxWidth);
             return Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 560),
@@ -335,11 +331,8 @@ class _AccountFormScaffold extends StatelessWidget {
                   children: [
                     Text(
                       eyebrow,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 11,
-                        letterSpacing: 1.2,
-                      ),
+                      style: Theme.of(context).textTheme.labelLarge
+                          ?.copyWith(color: AppColors.accent),
                     ),
                     const SizedBox(height: AppSpacing.x3),
                     Text(
