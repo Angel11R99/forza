@@ -1,7 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../data/repositories/training_settings_repository.dart';
-import '../../../data/repositories/workout_log_repository.dart';
 import '../../../domain/models/workout_record.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
@@ -15,6 +13,7 @@ import '../../features/profile/views/profile_view.dart';
 import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
 import 'forza_brand.dart';
+import '../view_models/app_shell_view_model.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({super.key, this.initialIndex = 0});
@@ -27,11 +26,7 @@ class AppScaffold extends StatefulWidget {
 
 class _AppScaffoldState extends State<AppScaffold> {
   late int _selectedIndex;
-  TrainingSettings _trainingSettings = const TrainingSettings();
-  final _settingsRepository = TrainingSettingsRepository();
-  final _workoutLogRepository = WorkoutLogRepository();
-  List<WorkoutRecord> _workoutRecords = const [];
-  bool _isReady = false;
+  final _viewModel = AppShellViewModel();
   bool _isOpeningFirstRun = false;
 
   static const _destinations = <_AppDestination>[
@@ -71,28 +66,16 @@ class _AppScaffoldState extends State<AppScaffold> {
     _restoreSettings();
   }
 
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
+
   Future<void> _restoreSettings() async {
-    var settings = const TrainingSettings();
-    var workoutRecords = const <WorkoutRecord>[];
-    var setupComplete = false;
-    try {
-      settings = await _settingsRepository.load();
-      setupComplete = await _settingsRepository.setupComplete;
-    } on Object {
-      // Keep the app available with its defaults if local storage is unavailable.
-    }
-    try {
-      workoutRecords = await _workoutLogRepository.load();
-    } on Object {
-      // An empty activity history should not block the app from opening.
-    }
+    await _viewModel.restore();
     if (!mounted) return;
-    setState(() {
-      _trainingSettings = settings;
-      _workoutRecords = workoutRecords;
-      _isReady = true;
-    });
-    if (!setupComplete) {
+    if (_viewModel.needsFirstRunSetup) {
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _startFirstRunSetup(),
       );
@@ -105,18 +88,14 @@ class _AppScaffoldState extends State<AppScaffold> {
     final settings = await Navigator.of(context).push<TrainingSettings>(
       MaterialPageRoute<TrainingSettings>(
         builder: (_) => OnboardingView(
-          initialSettings: _trainingSettings,
+          initialSettings: _viewModel.trainingSettings,
           isFirstRun: true,
         ),
       ),
     );
     if (!mounted) return;
     try {
-      if (settings != null) {
-        setState(() => _trainingSettings = settings);
-        await _settingsRepository.save(settings);
-      }
-      await _settingsRepository.completeSetup();
+      await _viewModel.completeFirstRun(settings);
     } on Object {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -136,39 +115,40 @@ class _AppScaffoldState extends State<AppScaffold> {
   Future<void> _editPlan() async {
     final updated = await Navigator.of(context).push<TrainingSettings>(
       MaterialPageRoute<TrainingSettings>(
-        builder: (_) => OnboardingView(initialSettings: _trainingSettings),
+        builder: (_) =>
+            OnboardingView(initialSettings: _viewModel.trainingSettings),
       ),
     );
     if (!mounted || updated == null) return;
-    setState(() => _trainingSettings = updated);
-    await _settingsRepository.save(updated);
+    await _saveTrainingSettings(updated);
   }
 
   Future<void> _startHomeWorkout() async {
-    final days = _trainingSettings.trainingDays.toList()..sort();
+    final trainingSettings = _viewModel.trainingSettings;
+    final days = trainingSettings.trainingDays.toList()..sort();
     final now = DateTime.now();
     final nextSessionDate = _nextTrainingDate(
-      _trainingSettings.trainingDays,
+      trainingSettings.trainingDays,
       now,
     );
     final sessionIndex = days.indexOf(nextSessionDate.weekday);
     final record = await Navigator.of(context).push<WorkoutRecord>(
       MaterialPageRoute<WorkoutRecord>(
         builder: (_) => TrainingSessionFlow(
-          settings: _trainingSettings,
+          settings: trainingSettings,
           sessionIndex: sessionIndex < 0 ? 0 : sessionIndex,
           scheduledDate: now,
         ),
       ),
     );
+    if (!mounted) return;
     if (record != null) await _saveWorkoutRecord(record);
   }
 
   Future<void> _saveWorkoutRecord(WorkoutRecord record) async {
     try {
-      final records = await _workoutLogRepository.save(record);
+      await _viewModel.recordWorkout(record);
       if (!mounted) return;
-      setState(() => _workoutRecords = records);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sesión guardada en tu actividad.')),
       );
@@ -179,10 +159,6 @@ class _AppScaffoldState extends State<AppScaffold> {
       );
     }
   }
-
-  Set<DateTime> get _completedDates => {
-    for (final record in _workoutRecords) record.date,
-  };
 
   DateTime _nextTrainingDate(Set<int> days, DateTime from) {
     final today = DateTime(from.year, from.month, from.day);
@@ -195,68 +171,81 @@ class _AppScaffoldState extends State<AppScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (!_isReady) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final useRail = constraints.maxWidth >= 840;
-        final content = Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 960),
-            child: SafeArea(
-              top: true,
-              bottom: true,
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  HomeView(
-                    onShowActivity: () => _selectDestination(1),
-                    onShowProfile: () => _selectDestination(4),
-                    settings: _trainingSettings,
-                    onEditPlan: _editPlan,
-                    onStartWorkout: _startHomeWorkout,
-                    completedDates: _completedDates,
-                  ),
-                  ActivityView(
-                    settings: _trainingSettings,
-                    records: _workoutRecords,
-                    onWorkoutCompleted: _saveWorkoutRecord,
-                  ),
-                  const ExercisesView(),
-                  ProgressView(records: _workoutRecords),
-                  ProfileView(
-                    trainingSettings: _trainingSettings,
-                    onTrainingSettingsChanged: (settings) =>
-                        _updateTrainingSettings(settings),
-                  ),
-                ],
+    return ListenableBuilder(
+      listenable: _viewModel,
+      builder: (context, _) => LayoutBuilder(
+        builder: (context, constraints) {
+          if (!_viewModel.isReady) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          final useRail = constraints.maxWidth >= 840;
+          final content = Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 960),
+              child: SafeArea(
+                top: true,
+                bottom: true,
+                child: IndexedStack(
+                  index: _selectedIndex,
+                  children: [
+                    HomeView(
+                      onShowActivity: () => _selectDestination(1),
+                      onShowProfile: () => _selectDestination(4),
+                      settings: _viewModel.trainingSettings,
+                      onEditPlan: _editPlan,
+                      onStartWorkout: _startHomeWorkout,
+                      completedDates: _viewModel.completedDates,
+                    ),
+                    ActivityView(
+                      settings: _viewModel.trainingSettings,
+                      records: _viewModel.workoutRecords,
+                      onWorkoutCompleted: _saveWorkoutRecord,
+                    ),
+                    const ExercisesView(),
+                    ProgressView(records: _viewModel.workoutRecords),
+                    ProfileView(
+                      trainingSettings: _viewModel.trainingSettings,
+                      onTrainingSettingsChanged: (settings) =>
+                          _updateTrainingSettings(settings),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
 
-        return Scaffold(
-          body: useRail
-              ? Row(
-                  children: [
-                    _buildNavigationRail(),
-                    const VerticalDivider(width: 1, thickness: 1),
-                    Expanded(child: content),
-                  ],
-                )
-              : content,
-          bottomNavigationBar: useRail ? null : _buildBottomNavigationBar(),
-        );
-      },
+          return Scaffold(
+            body: useRail
+                ? Row(
+                    children: [
+                      _buildNavigationRail(),
+                      const VerticalDivider(width: 1, thickness: 1),
+                      Expanded(child: content),
+                    ],
+                  )
+                : content,
+            bottomNavigationBar: useRail ? null : _buildBottomNavigationBar(),
+          );
+        },
+      ),
     );
   }
 
+  Future<void> _saveTrainingSettings(TrainingSettings settings) async {
+    try {
+      await _viewModel.saveTrainingSettings(settings);
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No pudimos guardar tu plan.')),
+      );
+    }
+  }
+
   void _updateTrainingSettings(TrainingSettings settings) {
-    setState(() => _trainingSettings = settings);
-    _settingsRepository.save(settings);
+    _saveTrainingSettings(settings);
   }
 
   Widget _buildNavigationRail() {
