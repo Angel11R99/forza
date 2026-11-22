@@ -35,9 +35,9 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final horizontalPadding = MediaQuery.sizeOf(context).width < 380
-        ? AppSpacing.x4
-        : AppSpacing.x6;
+    final horizontalPadding = AppSpacing.pageGutter(
+      MediaQuery.sizeOf(context).width,
+    );
     return CustomScrollView(
       key: const PageStorageKey<String>('profile-scroll'),
       slivers: [
@@ -127,16 +127,10 @@ class _ProfileViewState extends State<ProfileView> {
                   options: [
                     _ProfileOption(
                       icon: Icons.flag_outlined,
-                      title: 'Plan inicial',
-                      subtitle: 'Objetivo, experiencia y ritmo semanal',
-                      onTap: _configurePlan,
-                    ),
-                    _ProfileOption(
-                      icon: Icons.fitness_center_outlined,
-                      title: 'Preferencias de entrenamiento',
+                      title: 'Mi plan de entrenamiento',
                       subtitle:
-                          '${widget.trainingSettings.daysPerWeek} días · ${widget.trainingSettings.sessionMinutes} min · ${widget.trainingSettings.goal}',
-                      onTap: _editTrainingSettings,
+                          '${widget.trainingSettings.goal} · ${widget.trainingSettings.daysPerWeek} días · ${widget.trainingSettings.sessionMinutes} min',
+                      onTap: _configurePlan,
                     ),
                   ],
                 ),
@@ -209,16 +203,6 @@ class _ProfileViewState extends State<ProfileView> {
     );
     if (updated == null || !mounted) return;
     setState(() => _profile = updated);
-  }
-
-  Future<void> _editTrainingSettings() async {
-    final updated = await Navigator.of(context).push<TrainingSettings>(
-      MaterialPageRoute<TrainingSettings>(
-        builder: (_) => TrainingSettingsPage(settings: widget.trainingSettings),
-      ),
-    );
-    if (updated == null || !mounted) return;
-    widget.onTrainingSettingsChanged(updated);
   }
 
   Future<void> _editPreferences() async {

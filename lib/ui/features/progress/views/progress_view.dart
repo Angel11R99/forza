@@ -6,31 +6,48 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
-import '../data/progress_demo_data.dart';
+import '../../../../domain/models/workout_record.dart';
 import '../models/progress_models.dart';
 import 'progress_detail_pages.dart';
 
 class ProgressView extends StatefulWidget {
-  const ProgressView({super.key});
+  const ProgressView({super.key, required this.records});
+
+  final List<WorkoutRecord> records;
 
   @override
   State<ProgressView> createState() => _ProgressViewState();
 }
 
 class _ProgressViewState extends State<ProgressView> {
-  late final List<MeasurementEntry> _measurements =
-      ProgressDemoData.measurements(DateTime.now());
-
   @override
   Widget build(BuildContext context) {
-    final sessions = ProgressDemoData.sessions(DateTime.now());
+    final today = DateTime.now();
+    final cutoff = DateTime(today.year, today.month, today.day - 29);
+    final sessions =
+        widget.records
+            .where((record) => !record.date.isBefore(cutoff))
+            .map(
+              (record) => WorkoutHistoryEntry(
+                id: record.date.toIso8601String(),
+                title: record.title,
+                date: record.date,
+                durationMinutes: record.durationMinutes,
+                exerciseCount: record.exerciseCount,
+                totalVolumeKg: 0,
+                exercises: record.exercises,
+                completedOutsideApp: record.completedOutsideApp,
+              ),
+            )
+            .toList(growable: false)
+          ..sort((first, second) => second.date.compareTo(first.date));
     final totalMinutes = sessions.fold<int>(
       0,
       (total, session) => total + session.durationMinutes,
     );
-    final horizontalPadding = MediaQuery.sizeOf(context).width < 380
-        ? AppSpacing.x4
-        : AppSpacing.x6;
+    final horizontalPadding = AppSpacing.pageGutter(
+      MediaQuery.sizeOf(context).width,
+    );
 
     return CustomScrollView(
       key: const PageStorageKey<String>('progress-scroll'),
@@ -109,58 +126,30 @@ class _ProgressViewState extends State<ProgressView> {
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(title: 'Historial de entrenamientos'),
-                for (final session in sessions) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                    child: _SessionHistoryCard(
-                      session: session,
-                      onTap: () => _openSession(context, session),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: AppSpacing.x6),
-                SectionHeading(title: 'Evolución y marcas'),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final wide = constraints.maxWidth >= 520;
-                    final cardWidth = wide
-                        ? (constraints.maxWidth - AppSpacing.x3) / 2
-                        : constraints.maxWidth;
-                    return Wrap(
-                      spacing: AppSpacing.x3,
-                      runSpacing: AppSpacing.x3,
+                if (sessions.isEmpty)
+                  AppSurfaceCard(
+                    child: Row(
                       children: [
-                        SizedBox(
-                          width: cardWidth,
-                          child: _ProgressShortcut(
-                            icon: Icons.show_chart_rounded,
-                            title: 'Evolución de fuerza',
-                            subtitle: 'Mira tus cargas',
-                            onTap: () => _openStrength(context),
-                          ),
-                        ),
-                        SizedBox(
-                          width: cardWidth,
-                          child: _ProgressShortcut(
-                            icon: Icons.monitor_weight_outlined,
-                            title: 'Evolución corporal',
-                            subtitle: 'Peso y medidas',
-                            onTap: () => _openBody(context),
-                          ),
-                        ),
-                        SizedBox(
-                          width: cardWidth,
-                          child: _ProgressShortcut(
-                            icon: Icons.emoji_events_outlined,
-                            title: 'Récords personales',
-                            subtitle: 'Tus mejores marcas',
-                            onTap: () => _openRecords(context),
+                        const Icon(Icons.event_available_outlined, size: 26),
+                        const SizedBox(width: AppSpacing.x3),
+                        Expanded(
+                          child: Text(
+                            'Completa una sesión para ver aquí tu actividad reciente.',
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                       ],
-                    );
-                  },
-                ),
+                    ),
+                  )
+                else
+                  for (final session in sessions)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                      child: _SessionHistoryCard(
+                        session: session,
+                        onTap: () => _openSession(context, session),
+                      ),
+                    ),
               ],
             ),
           ),
@@ -174,31 +163,6 @@ class _ProgressViewState extends State<ProgressView> {
       MaterialPageRoute<void>(
         builder: (_) => SessionDetailPage(session: session),
       ),
-    );
-  }
-
-  void _openStrength(BuildContext context) {
-    Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(builder: (_) => const StrengthEvolutionPage()),
-    );
-  }
-
-  void _openBody(BuildContext context) {
-    Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(
-        builder: (_) => BodyEvolutionPage(
-          measurements: List.unmodifiable(_measurements),
-          onSaveMeasurement: (entry) {
-            setState(() => _measurements.add(entry));
-          },
-        ),
-      ),
-    );
-  }
-
-  void _openRecords(BuildContext context) {
-    Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(builder: (_) => const PersonalRecordsPage()),
     );
   }
 }
@@ -251,63 +215,6 @@ class _SessionHistoryCard extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.x2),
                   const Icon(Icons.chevron_right_rounded),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProgressShortcut extends StatelessWidget {
-  const _ProgressShortcut({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppSurfaceCard(
-      padding: EdgeInsets.zero,
-      child: Semantics(
-        button: true,
-        label: '$title, $subtitle',
-        child: ExcludeSemantics(
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(AppRadius.medium),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.x4),
-              child: Row(
-                children: [
-                  Icon(icon, size: 24, color: AppColors.accent),
-                  const SizedBox(width: AppSpacing.x3),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: AppSpacing.x1),
-                        Text(
-                          subtitle,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.arrow_forward_rounded, size: 18),
                 ],
               ),
             ),

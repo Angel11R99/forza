@@ -78,41 +78,55 @@ class SessionDetailPage extends StatelessWidget {
                     const SizedBox(width: AppSpacing.x3),
                     Expanded(
                       child: _ValueCard(
-                        label: 'Volumen',
-                        value: '${session.totalVolumeKg} kg',
+                        label: 'Ejercicios',
+                        value: '${session.exerciseCount}',
                         icon: Icons.fitness_center_rounded,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.x8),
-                SectionHeading(title: 'Ejercicios · ${session.exerciseCount}'),
-                for (var index = 0; index < session.exercises.length; index++)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                    child: AppSurfaceCard(
-                      child: Row(
-                        children: [
-                          Text(
-                            (index + 1).toString().padLeft(2, '0'),
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(color: AppColors.textSecondary),
-                          ),
-                          const SizedBox(width: AppSpacing.x4),
-                          Expanded(
-                            child: Text(
-                              session.exercises[index],
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                          const Icon(
-                            Icons.check_circle_outline_rounded,
-                            color: AppColors.textSecondary,
-                          ),
-                        ],
-                      ),
+                if (session.completedOutsideApp) ...[
+                  const SizedBox(height: AppSpacing.x4),
+                  AppSurfaceCard(
+                    color: AppColors.surfaceMuted,
+                    child: Text(
+                      'Marcaste esta sesión como realizada fuera de FORZA. No hay detalle de movimientos ni cargas.',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
+                ],
+                const SizedBox(height: AppSpacing.x8),
+                if (session.exercises.isNotEmpty) ...[
+                  SectionHeading(
+                    title: 'Ejercicios · ${session.exercises.length}',
+                  ),
+                  for (var index = 0; index < session.exercises.length; index++)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                      child: AppSurfaceCard(
+                        child: Row(
+                          children: [
+                            Text(
+                              (index + 1).toString().padLeft(2, '0'),
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(color: AppColors.textSecondary),
+                            ),
+                            const SizedBox(width: AppSpacing.x4),
+                            Expanded(
+                              child: Text(
+                                session.exercises[index],
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: AppColors.accent,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ],
             ),
           ),

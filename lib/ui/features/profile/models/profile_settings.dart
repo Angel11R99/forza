@@ -12,18 +12,25 @@ class ForzaProfile {
 
 class TrainingSettings {
   const TrainingSettings({
-    this.daysPerWeek = 4,
+    this.trainingDays = const {
+      DateTime.monday,
+      DateTime.wednesday,
+      DateTime.friday,
+      DateTime.saturday,
+    },
     this.sessionMinutes = 45,
     this.goal = 'Ganar fuerza',
     this.experience = 'Estoy empezando',
     this.equipment = const {'Mancuernas', 'Barra'},
   });
 
-  final int daysPerWeek;
+  final Set<int> trainingDays;
   final int sessionMinutes;
   final String goal;
   final String experience;
   final Set<String> equipment;
+
+  int get daysPerWeek => trainingDays.length;
 }
 
 class AppPreferences {

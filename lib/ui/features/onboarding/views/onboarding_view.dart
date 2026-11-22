@@ -4,30 +4,50 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
-import '../../../core/widgets/forza_brand.dart';
+import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../profile/models/profile_settings.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({
     super.key,
     this.initialSettings = const TrainingSettings(),
+    this.isFirstRun = false,
   });
 
   final TrainingSettings initialSettings;
+  final bool isFirstRun;
 
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
 }
 
 class _OnboardingViewState extends State<OnboardingView> {
+  static const _planBuilder = TrainingPlanBuilder();
   int _step = 0;
   late String _goal = widget.initialSettings.goal;
   late String _experience = widget.initialSettings.experience;
-  late int _daysPerWeek = widget.initialSettings.daysPerWeek;
+  late final Set<int> _trainingDays = {...widget.initialSettings.trainingDays};
   late int _sessionMinutes = widget.initialSettings.sessionMinutes;
-  int _selectedDay = 0;
+  late final Set<String> _equipment = {...widget.initialSettings.equipment};
 
   static const _goals = ['Ganar fuerza', 'Ganar músculo', 'Crear el hábito'];
+  static const _equipmentOptions = [
+    'Peso corporal',
+    'Mancuernas',
+    'Barra',
+    'Banda elástica',
+    'Polea',
+    'Máquina de palanca',
+  ];
+  static const _weekdays = <int, String>{
+    DateTime.monday: 'Lun',
+    DateTime.tuesday: 'Mar',
+    DateTime.wednesday: 'Mié',
+    DateTime.thursday: 'Jue',
+    DateTime.friday: 'Vie',
+    DateTime.saturday: 'Sáb',
+    DateTime.sunday: 'Dom',
+  };
   static const _experienceLevels = [
     'Estoy empezando',
     'Tengo algo de experiencia',
@@ -38,7 +58,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_step < 3 ? 'Configura tu plan' : 'Tu plan FORZA'),
+        title: Text(_step < 4 ? 'Crear tu plan' : 'Vista previa'),
         leading: IconButton(
           tooltip: _step == 0 ? 'Volver' : 'Paso anterior',
           onPressed: _step == 0
@@ -51,9 +71,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final padding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final padding = AppSpacing.pageGutter(constraints.maxWidth);
             return Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 640),
@@ -61,10 +79,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: padding),
-                      child: _StepProgress(
-                        step: _step.clamp(0, 2),
-                        reviewMode: _step > 2,
-                      ),
+                      child: _StepProgress(step: _step, totalSteps: 5),
                     ),
                     Expanded(
                       child: SingleChildScrollView(
@@ -84,15 +99,31 @@ class _OnboardingViewState extends State<OnboardingView> {
                         padding,
                         AppSpacing.x4,
                       ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: _step == 7 ? _finish : _next,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 13),
-                            child: Text(_actionLabel),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              onPressed: _step == 4
+                                  ? _finish
+                                  : _step == 3 && _equipment.isEmpty
+                                  ? null
+                                  : _next,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                                child: Text(_actionLabel),
+                              ),
+                            ),
                           ),
-                        ),
+                          if (widget.isFirstRun)
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Omitir por ahora'),
+                            ),
+                        ],
                       ),
                     ),
                   ],
@@ -105,299 +136,137 @@ class _OnboardingViewState extends State<OnboardingView> {
     );
   }
 
-  String get _actionLabel => switch (_step) {
-    0 || 1 => 'Continuar',
-    2 => 'Ver resumen',
-    3 => 'Preparar plan',
-    4 => 'Ver mi plan',
-    5 => 'Ver detalle del día',
-    6 => 'Revisar y confirmar',
-    _ => 'Confirmar plan',
-  };
+  String get _actionLabel => _step == 4 ? 'Crear mi plan' : 'Continuar';
 
   Widget _buildStep(BuildContext context) {
     return switch (_step) {
       0 => _buildGoalStep(context),
       1 => _buildExperienceStep(context),
       2 => _buildScheduleStep(context),
-      3 => _buildPersonalizationSummary(context),
-      4 => _buildPreparingPlan(context),
-      5 => _buildPersonalizedPlan(context),
-      6 => _buildPlanDayDetail(context),
-      _ => _buildConfirmationStep(context),
+      3 => _buildEquipmentStep(context),
+      _ => _buildPersonalizedPlan(context),
     };
   }
 
-  Widget _buildPersonalizationSummary(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _StepEyebrow(label: 'B1 · RESUMEN DE PERSONALIZACIÓN'),
-        const SizedBox(height: AppSpacing.x3),
-        Text(
-          'Así empezamos contigo',
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
-        const SizedBox(height: AppSpacing.x2),
-        Text(
-          'Revisa tus preferencias antes de preparar una propuesta de entrenamiento.',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        const SizedBox(height: AppSpacing.x6),
-        AppSurfaceCard(
-          padding: const EdgeInsets.all(AppSpacing.x6),
-          child: Column(
-            children: [
-              _PlanSummaryRow(
-                icon: Icons.flag_outlined,
-                label: 'Tu objetivo',
-                value: _goal,
-              ),
-              const Divider(height: AppSpacing.x8),
-              _PlanSummaryRow(
-                icon: Icons.trending_up_rounded,
-                label: 'Experiencia',
-                value: _experience,
-              ),
-              const Divider(height: AppSpacing.x8),
-              _PlanSummaryRow(
-                icon: Icons.calendar_month_outlined,
-                label: 'Frecuencia',
-                value:
-                    '$_daysPerWeek ${_daysPerWeek == 1 ? 'día' : 'días'} por semana',
-              ),
-              const Divider(height: AppSpacing.x8),
-              _PlanSummaryRow(
-                icon: Icons.schedule_rounded,
-                label: 'Tiempo disponible',
-                value: '$_sessionMinutes minutos por sesión',
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.x4),
-        OutlinedButton.icon(
-          onPressed: () => setState(() => _step = 0),
-          icon: const Icon(Icons.edit_outlined),
-          label: const Text('Editar preferencias'),
-        ),
-      ],
+  Widget _buildPersonalizedPlan(BuildContext context) {
+    final sessions = _planBuilder.buildWeek(
+      trainingDays: _trainingDays,
+      sessionMinutes: _sessionMinutes,
+      goal: _goal,
+      experience: _experience,
+      equipment: _equipment,
     );
-  }
-
-  Widget _buildPreparingPlan(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StepEyebrow(label: 'B2 · PREPARANDO EL PLAN'),
-        const SizedBox(height: AppSpacing.x3),
         Text(
-          'Dando forma a tu rutina',
+          'Así queda tu semana',
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Organizamos una semana de entrenamiento según tus preferencias.',
+          'Este es un punto de partida. Podrás ajustar tu plan desde Perfil.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
         AppSurfaceCard(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PreparationStep(
-                title: 'Objetivo definido',
-                detail: _goal,
-                icon: Icons.check_circle_rounded,
+              Text(_goal, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.x2),
+              Text(
+                '${_trainingDays.length} días · $_sessionMinutes min por sesión',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const Divider(height: AppSpacing.x6),
-              _PreparationStep(
-                title: 'Ritmo semanal organizado',
-                detail:
-                    '$_daysPerWeek ${_daysPerWeek == 1 ? 'sesión' : 'sesiones'} de $_sessionMinutes min',
-                icon: Icons.check_circle_rounded,
+              const SizedBox(height: AppSpacing.x1),
+              Text(
+                'Experiencia: $_experience',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const Divider(height: AppSpacing.x6),
-              const _PreparationStep(
-                title: 'Rutina preparada',
-                detail: 'Puedes revisar cada día antes de confirmarla',
-                icon: Icons.auto_awesome_outlined,
+              const SizedBox(height: AppSpacing.x1),
+              Text(
+                'Equipo: ${_equipment.join(', ')}',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
+        for (final session in sessions) ...[
+          AppSurfaceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${_weekdays[session.weekday]} · ${session.title}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  '${session.exercises.length} ejercicios · ${session.durationMinutes} min',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                Text(
+                  session.exercises
+                      .map((exercise) => exercise.name)
+                      .join(' · '),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.x2),
+        ],
+        const SizedBox(height: AppSpacing.x2),
         Text(
-          'Este plan se organiza según las preferencias que elegiste.',
+          'Guía general. Si tienes dolor, una lesión o una condición médica, consulta con un profesional antes de entrenar.',
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );
   }
 
-  Widget _buildPersonalizedPlan(BuildContext context) {
+  Widget _buildEquipmentStep(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StepEyebrow(label: 'B3 · MI PLAN PERSONALIZADO'),
-        const SizedBox(height: AppSpacing.x3),
         Text(
-          'Tu semana de entrenamiento',
+          '¿Con qué equipo cuentas?',
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Elige un día para ver qué incluye la sesión.',
+          'Usaremos esto para elegir ejercicios que puedas hacer.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
-        for (var day = 0; day < _daysPerWeek; day++) ...[
-          _PlanDayCard(
-            dayNumber: day + 1,
-            title: _dayTitle(day),
-            duration: _sessionMinutes,
-            selected: day == _selectedDay,
-            onTap: () => setState(() => _selectedDay = day),
-          ),
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final equipment in _equipmentOptions)
+              FilterChip(
+                label: Text(equipment),
+                selected: _equipment.contains(equipment),
+                onSelected: (selected) => setState(() {
+                  if (selected) {
+                    _equipment.add(equipment);
+                  } else {
+                    _equipment.remove(equipment);
+                  }
+                }),
+              ),
+          ],
+        ),
+        if (_equipment.isEmpty) ...[
           const SizedBox(height: AppSpacing.x3),
-        ],
-        const SizedBox(height: AppSpacing.x2),
-        Text('Objetivo: $_goal', style: Theme.of(context).textTheme.bodyMedium),
-      ],
-    );
-  }
-
-  Widget _buildPlanDayDetail(BuildContext context) {
-    final exercises = _dayExercises(_selectedDay);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _StepEyebrow(label: 'B4 · DETALLE DE DÍA DEL PLAN'),
-        const SizedBox(height: AppSpacing.x3),
-        Text(
-          _dayTitle(_selectedDay),
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
-        const SizedBox(height: AppSpacing.x2),
-        Text(
-          'Día ${_selectedDay + 1} · $_sessionMinutes min · ${exercises.length} ejercicios',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        const SizedBox(height: AppSpacing.x6),
-        for (var index = 0; index < exercises.length; index++) ...[
-          AppSurfaceCard(
-            padding: const EdgeInsets.all(AppSpacing.x4),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: AppColors.surfaceMuted,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text('${index + 1}'),
-                ),
-                const SizedBox(width: AppSpacing.x3),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exercises[index],
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.x1),
-                      Text(
-                        '3 series · 8–12 repeticiones',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            'Elige al menos una opción para preparar los ejercicios.',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: AppSpacing.x3),
         ],
-      ],
-    );
-  }
-
-  String _dayTitle(int day) => switch (day % 3) {
-    0 => 'Tren superior',
-    1 => 'Tren inferior',
-    _ => 'Cuerpo completo',
-  };
-
-  List<String> _dayExercises(int day) => switch (day % 3) {
-    0 => const [
-      'Press de pecho con mancuernas',
-      'Remo con mancuerna',
-      'Press de hombros',
-      'Plancha',
-    ],
-    1 => const [
-      'Sentadilla goblet',
-      'Peso muerto rumano',
-      'Puente de glúteos',
-      'Elevación de pantorrillas',
-    ],
-    _ => const ['Sentadilla', 'Press de pecho', 'Remo', 'Peso muerto rumano'],
-  };
-
-  Widget _buildConfirmationStep(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _StepEyebrow(label: 'B5 · CONFIRMACIÓN DEL PLAN'),
-        const SizedBox(height: AppSpacing.x3),
-        Text(
-          'Tu plan está listo',
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
-        const SizedBox(height: AppSpacing.x2),
-        Text(
-          'Revisa tu punto de partida. Puedes ajustar estos datos más adelante desde tu perfil.',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        const SizedBox(height: AppSpacing.x6),
-        AppSurfaceCard(
-          padding: const EdgeInsets.all(AppSpacing.x6),
-          child: Column(
-            children: [
-              _PlanSummaryRow(
-                icon: Icons.flag_outlined,
-                label: 'Objetivo',
-                value: _goal,
-              ),
-              const Divider(height: AppSpacing.x8),
-              _PlanSummaryRow(
-                icon: Icons.trending_up_rounded,
-                label: 'Experiencia',
-                value: _experience,
-              ),
-              const Divider(height: AppSpacing.x8),
-              _PlanSummaryRow(
-                icon: Icons.calendar_month_outlined,
-                label: 'Frecuencia',
-                value:
-                    '$_daysPerWeek ${_daysPerWeek == 1 ? 'día' : 'días'} por semana',
-              ),
-              const Divider(height: AppSpacing.x8),
-              _PlanSummaryRow(
-                icon: Icons.schedule_rounded,
-                label: 'Duración',
-                value: '$_sessionMinutes minutos por sesión',
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.x4),
-        Text(
-          'Tus preferencias están listas para comenzar.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
       ],
     );
   }
@@ -406,8 +275,6 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StepEyebrow(label: 'PASO 1 DE 3'),
-        const SizedBox(height: AppSpacing.x3),
         Text(
           '¿Qué quieres lograr?',
           style: Theme.of(context).textTheme.displaySmall,
@@ -444,8 +311,6 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StepEyebrow(label: 'PASO 2 DE 3'),
-        const SizedBox(height: AppSpacing.x3),
         Text(
           '¿Cuál es tu experiencia?',
           style: Theme.of(context).textTheme.displaySmall,
@@ -479,18 +344,17 @@ class _OnboardingViewState extends State<OnboardingView> {
   }
 
   Widget _buildScheduleStep(BuildContext context) {
+    final days = _trainingDays.toList()..sort();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StepEyebrow(label: 'PASO 3 DE 3'),
-        const SizedBox(height: AppSpacing.x3),
         Text(
-          'Haz espacio para entrenar',
+          '¿Qué días puedes entrenar?',
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Define un ritmo inicial realista. Después puedes ajustar estos valores en tu perfil.',
+          'Elige los días que suelen funcionarte. Puedes cambiarlos después.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -499,58 +363,46 @@ class _OnboardingViewState extends State<OnboardingView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Días por semana',
+                '${days.length} ${days.length == 1 ? 'sesión' : 'sesiones'} por semana',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: AppSpacing.x3),
+              Wrap(
+                spacing: AppSpacing.x2,
+                runSpacing: AppSpacing.x2,
+                children: [
+                  for (final entry in _weekdays.entries)
+                    FilterChip(
+                      label: Text(entry.value),
+                      selected: _trainingDays.contains(entry.key),
+                      onSelected: (selected) => setState(() {
+                        if (selected) {
+                          _trainingDays.add(entry.key);
+                        } else if (_trainingDays.length > 1) {
+                          _trainingDays.remove(entry.key);
+                        }
+                      }),
+                    ),
+                ],
+              ),
+              const Divider(height: AppSpacing.x8),
+              Text(
+                'Tiempo por sesión',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: AppSpacing.x1),
               Text(
-                '$_daysPerWeek ${_daysPerWeek == 1 ? 'día' : 'días'}',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              Slider(
-                value: _daysPerWeek.toDouble(),
-                min: 1,
-                max: 7,
-                divisions: 6,
-                label: '$_daysPerWeek',
-                onChanged: (value) =>
-                    setState(() => _daysPerWeek = value.round()),
-              ),
-              const Divider(height: AppSpacing.x6),
-              Text(
-                'Duración por sesión',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: AppSpacing.x1),
-              Text(
-                '$_sessionMinutes minutos',
+                '$_sessionMinutes min',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Slider(
                 value: _sessionMinutes.toDouble(),
                 min: 20,
                 max: 90,
-                divisions: 7,
+                divisions: 14,
                 label: '$_sessionMinutes min',
                 onChanged: (value) =>
                     setState(() => _sessionMinutes = value.round()),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.x4),
-        AppSurfaceCard(
-          color: AppColors.surfaceMuted,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.info_outline_rounded),
-              const SizedBox(width: AppSpacing.x3),
-              Expanded(
-                child: Text(
-                  'Tu plan: $_goal · $_experience · $_daysPerWeek ${_daysPerWeek == 1 ? 'día' : 'días'} por semana.',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
               ),
             ],
           ),
@@ -564,207 +416,43 @@ class _OnboardingViewState extends State<OnboardingView> {
   void _finish() {
     Navigator.of(context).pop(
       TrainingSettings(
-        daysPerWeek: _daysPerWeek,
+        trainingDays: Set.unmodifiable(_trainingDays),
         sessionMinutes: _sessionMinutes,
         goal: _goal,
         experience: _experience,
-        equipment: widget.initialSettings.equipment,
+        equipment: Set.unmodifiable(_equipment),
       ),
     );
   }
 }
 
 class _StepProgress extends StatelessWidget {
-  const _StepProgress({required this.step, required this.reviewMode});
+  const _StepProgress({required this.step, required this.totalSteps});
 
   final int step;
-  final bool reviewMode;
+  final int totalSteps;
 
   @override
   Widget build(BuildContext context) {
+    final progress = (step + 1) / totalSteps;
     return Semantics(
-      label: reviewMode
-          ? 'Personalización completada. Revisión del plan'
-          : 'Paso ${step + 1} de 3',
-      child: Row(
+      label: 'Paso ${step + 1} de $totalSteps',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var index = 0; index < 3; index++) ...[
-            Expanded(
-              child: AnimatedContainer(
-                duration: reviewMode ||
-                        MediaQuery.disableAnimationsOf(context)
-                    ? Duration.zero
-                    : const Duration(milliseconds: 180),
-                height: 5,
-                decoration: BoxDecoration(
-                  color: index <= step
-                      ? AppColors.accent
-                      : AppColors.surfaceMuted,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-              ),
-            ),
-            if (index < 2) const SizedBox(width: AppSpacing.x2),
-          ],
+          Text(
+            'Paso ${step + 1} de $totalSteps',
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          const SizedBox(height: AppSpacing.x2),
+          LinearProgressIndicator(
+            value: progress,
+            minHeight: 4,
+            backgroundColor: AppColors.surfaceMuted,
+            color: AppColors.accent,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _StepEyebrow extends StatelessWidget {
-  const _StepEyebrow({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return ForzaEyebrow(label: label);
-  }
-}
-
-class _PlanSummaryRow extends StatelessWidget {
-  const _PlanSummaryRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 21),
-        const SizedBox(width: AppSpacing.x3),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(height: AppSpacing.x1),
-              Text(value, style: Theme.of(context).textTheme.titleMedium),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PreparationStep extends StatelessWidget {
-  const _PreparationStep({
-    required this.title,
-    required this.detail,
-    required this.icon,
-  });
-
-  final String title;
-  final String detail;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 22),
-        const SizedBox(width: AppSpacing.x3),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: AppSpacing.x1),
-              Text(detail, style: Theme.of(context).textTheme.bodyMedium),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PlanDayCard extends StatelessWidget {
-  const _PlanDayCard({
-    required this.dayNumber,
-    required this.title,
-    required this.duration,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final int dayNumber;
-  final String title;
-  final int duration;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppSurfaceCard(
-      padding: EdgeInsets.zero,
-      borderColor: selected ? AppColors.accent : AppColors.divider,
-      child: Semantics(
-        button: true,
-        selected: selected,
-        label: 'Día $dayNumber, $title, $duration minutos, 4 ejercicios',
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.medium),
-          child: ExcludeSemantics(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.x4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 42,
-                    height: 42,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: selected
-                          ? AppColors.accent
-                          : AppColors.surfaceMuted,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '$dayNumber',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: selected
-                            ? AppColors.inverseText
-                            : AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.x3),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: AppSpacing.x1),
-                        Text(
-                          '$duration min · 4 ejercicios',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    selected
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

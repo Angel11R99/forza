@@ -8,62 +8,58 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../profile/models/profile_settings.dart';
+import '../../../../domain/use_cases/training_plan_builder.dart';
+import '../../../../domain/models/workout_record.dart';
 
 class TrainingSessionFlow extends StatefulWidget {
-  const TrainingSessionFlow({super.key, required this.settings});
+  const TrainingSessionFlow({
+    super.key,
+    required this.settings,
+    this.sessionIndex = 0,
+    required this.scheduledDate,
+  });
 
   final TrainingSettings settings;
+  final int sessionIndex;
+  final DateTime scheduledDate;
 
   @override
   State<TrainingSessionFlow> createState() => _TrainingSessionFlowState();
 }
 
 class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
-  static const _allExercises = <_SessionExercise>[
-    _SessionExercise(
-      name: 'Press con mancuernas',
-      detail: 'Pecho · 3 series · 8–12 repeticiones',
-      icon: Icons.fitness_center_rounded,
-    ),
-    _SessionExercise(
-      name: 'Sentadilla goblet',
-      detail: 'Piernas · 3 series · 8–12 repeticiones',
-      icon: Icons.accessibility_new_rounded,
-    ),
-    _SessionExercise(
-      name: 'Remo con mancuerna',
-      detail: 'Espalda · 3 series · 8–12 repeticiones',
-      icon: Icons.sports_gymnastics_rounded,
-    ),
-    _SessionExercise(
-      name: 'Peso muerto rumano',
-      detail: 'Piernas · 3 series · 8–10 repeticiones',
-      icon: Icons.fitness_center_rounded,
-    ),
-    _SessionExercise(
-      name: 'Press de hombros',
-      detail: 'Hombros · 3 series · 8–12 repeticiones',
-      icon: Icons.fitness_center_rounded,
-    ),
-    _SessionExercise(
-      name: 'Plancha',
-      detail: 'Core · 3 series · 30–45 segundos',
-      icon: Icons.accessibility_new_rounded,
-    ),
-    _SessionExercise(
-      name: 'Puente de glúteos',
-      detail: 'Glúteos · 3 series · 10–15 repeticiones',
-      icon: Icons.sports_gymnastics_rounded,
-    ),
-    _SessionExercise(
-      name: 'Elevación de pantorrillas',
-      detail: 'Piernas · 3 series · 12–15 repeticiones',
-      icon: Icons.fitness_center_rounded,
-    ),
-  ];
+  static const _planBuilder = TrainingPlanBuilder();
 
-  List<_SessionExercise> get _exercises => _allExercises
-      .take((widget.settings.sessionMinutes / 8).round().clamp(4, 8))
+  PlannedTrainingSession get _plannedSession => _planBuilder.buildWeek(
+    trainingDays: widget.settings.trainingDays,
+    sessionMinutes: widget.settings.sessionMinutes,
+    goal: widget.settings.goal,
+    experience: widget.settings.experience,
+    equipment: widget.settings.equipment,
+  )[widget.sessionIndex.clamp(0, widget.settings.trainingDays.length - 1)];
+
+  List<_SessionExercise> get _exercises => _planBuilder
+      .buildSession(
+        sessionIndex: widget.sessionIndex,
+        sessionMinutes: widget.settings.sessionMinutes,
+        goal: widget.settings.goal,
+        experience: widget.settings.experience,
+        equipment: widget.settings.equipment,
+      )
+      .map(
+        (exercise) => _SessionExercise(
+          name: exercise.name,
+          focus: exercise.focus,
+          isTimed: exercise.timed,
+          detail: '${exercise.focus} · ${exercise.prescription}',
+          icon: switch (exercise.focus) {
+            'Piernas' => Icons.accessibility_new_rounded,
+            'Espalda' => Icons.sports_gymnastics_rounded,
+            'Core' => Icons.accessibility_new_rounded,
+            _ => Icons.fitness_center_rounded,
+          },
+        ),
+      )
       .toList(growable: false);
 
   _SessionScreen _screen = _SessionScreen.preparation;
@@ -107,9 +103,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final horizontalPadding = AppSpacing.pageGutter(
+              constraints.maxWidth,
+            );
             return Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 640),
@@ -177,7 +173,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C1 · PREPARACIÓN DEL ENTRENAMIENTO'),
+        const _SessionEyebrow(label: 'Preparación'),
         const SizedBox(height: AppSpacing.x3),
         Text(
           'Todo listo para empezar',
@@ -199,7 +195,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               ),
               const SizedBox(height: AppSpacing.x3),
               Text(
-                'Sesión de cuerpo completo',
+                _plannedSession.title,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: AppSpacing.x2),
@@ -241,7 +237,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C4 · LISTA DE EJERCICIOS'),
+        const _SessionEyebrow(label: 'Ejercicios'),
         const SizedBox(height: AppSpacing.x3),
         Text(
           'Sigue tu sesión',
@@ -274,7 +270,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C3 · DESCANSO'),
+        const _SessionEyebrow(label: 'Descanso'),
         const SizedBox(height: AppSpacing.x3),
         Text(
           'Tómate un respiro',
@@ -328,7 +324,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C5 · ENTRENAMIENTO PAUSADO'),
+        const _SessionEyebrow(label: 'Entrenamiento pausado'),
         const SizedBox(height: AppSpacing.x3),
         Text(
           'Pausa cuando lo necesites',
@@ -362,7 +358,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C6 · CONFIRMAR ABANDONO'),
+        const _SessionEyebrow(label: 'Salir del entrenamiento'),
         const SizedBox(height: AppSpacing.x3),
         Text(
           '¿Quieres abandonar?',
@@ -383,12 +379,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C7 · ENTRENAMIENTO COMPLETADO'),
+        const _SessionEyebrow(label: 'Entrenamiento completado'),
         const SizedBox(height: AppSpacing.x3),
         Text('Buen trabajo', style: Theme.of(context).textTheme.displaySmall),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Terminaste la sesión de fuerza total.',
+          'Terminaste tu sesión de ${_plannedSession.title.toLowerCase()}.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -421,7 +417,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'C8 · RESUMEN DE SESIÓN'),
+        const _SessionEyebrow(label: 'Resumen de sesión'),
         const SizedBox(height: AppSpacing.x3),
         Text(
           'Así fue tu sesión',
@@ -450,7 +446,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               const Divider(height: AppSpacing.x6),
               _SummaryMetric(
                 icon: Icons.bolt_rounded,
-                label: 'Tipo de sesión',
+                label: 'Objetivo',
                 value: widget.settings.goal,
               ),
             ],
@@ -543,7 +539,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   Widget _buildSummaryAction(BuildContext context) => SizedBox(
     width: double.infinity,
     child: FilledButton(
-      onPressed: () => Navigator.of(context).pop(true),
+      onPressed: _finishWithRecord,
       child: const Padding(
         padding: EdgeInsets.symmetric(vertical: 13),
         child: Text('Finalizar'),
@@ -619,6 +615,21 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     if (_resumeScreen == _SessionScreen.rest) _startRestTimer();
   }
 
+  void _finishWithRecord() {
+    final durationMinutes = (_elapsedSeconds / 60).ceil().clamp(1, 99);
+    Navigator.of(context).pop(
+      WorkoutRecord(
+        scheduledDate: widget.scheduledDate,
+        completedAt: DateTime.now(),
+        title: _plannedSession.title,
+        goal: widget.settings.goal,
+        durationMinutes: durationMinutes,
+        exerciseCount: _exercises.length,
+        exercises: _exercises.map((exercise) => exercise.name).toList(),
+      ),
+    );
+  }
+
   void _goBack() {
     switch (_screen) {
       case _SessionScreen.preparation:
@@ -634,7 +645,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       case _SessionScreen.completed:
         setState(() => _screen = _SessionScreen.summary);
       case _SessionScreen.summary:
-        Navigator.of(context).pop(true);
+        _finishWithRecord();
     }
   }
 }
@@ -652,11 +663,15 @@ enum _SessionScreen {
 class _SessionExercise {
   const _SessionExercise({
     required this.name,
-    required this.detail,
+    required this.focus,
+    this.isTimed = false,
     required this.icon,
+    this.detail = '',
   });
 
   final String name;
+  final String focus;
+  final bool isTimed;
   final String detail;
   final IconData icon;
 }
@@ -801,7 +816,7 @@ class _SessionSaveNote extends StatelessWidget {
           const SizedBox(width: AppSpacing.x3),
           Expanded(
             child: Text(
-              'Los ejercicios y resultados no se guardan en el historial.',
+              'Al terminar, esta sesión quedará registrada en tu actividad.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

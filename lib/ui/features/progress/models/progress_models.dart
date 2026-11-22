@@ -7,6 +7,7 @@ class WorkoutHistoryEntry {
     required this.exerciseCount,
     required this.totalVolumeKg,
     required this.exercises,
+    this.completedOutsideApp = false,
   });
 
   final String id;
@@ -16,6 +17,7 @@ class WorkoutHistoryEntry {
   final int exerciseCount;
   final int totalVolumeKg;
   final List<String> exercises;
+  final bool completedOutsideApp;
 }
 
 class MeasurementEntry {

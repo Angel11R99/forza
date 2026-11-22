@@ -5,24 +5,35 @@ import 'package:material_ui/material_ui.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../onboarding/views/training_session_flow.dart';
 import '../../profile/models/profile_settings.dart';
+import '../../../../domain/use_cases/training_plan_builder.dart';
+import '../../../../domain/models/workout_record.dart';
 import 'reschedule_session_page.dart';
 
 class ActivityView extends StatefulWidget {
-  const ActivityView({super.key, required this.settings});
+  const ActivityView({
+    super.key,
+    required this.settings,
+    required this.records,
+    required this.onWorkoutCompleted,
+  });
 
   final TrainingSettings settings;
+  final List<WorkoutRecord> records;
+  final Future<void> Function(WorkoutRecord) onWorkoutCompleted;
 
   @override
   State<ActivityView> createState() => _ActivityViewState();
 }
 
 class _ActivityViewState extends State<ActivityView> {
+  static const _planBuilder = TrainingPlanBuilder();
   late DateTime _selectedDate;
   late DateTime _visibleMonth;
   final Map<DateTime, _TrainingSession> _movedSessions = {};
@@ -91,17 +102,31 @@ class _ActivityViewState extends State<ActivityView> {
   }
 
   Future<void> _startSession() async {
-    final completed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => TrainingSessionFlow(settings: widget.settings),
+    final record = await Navigator.of(context).push<WorkoutRecord>(
+      MaterialPageRoute<WorkoutRecord>(
+        builder: (_) => TrainingSessionFlow(
+          settings: widget.settings,
+          sessionIndex: _sessionIndexForDate(_selectedDate),
+          scheduledDate: _selectedDate,
+        ),
       ),
     );
-    if (!mounted || completed != true) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Entrenamiento finalizado. No se guardó en el historial.',
-        ),
+    if (record == null || !mounted) return;
+    await widget.onWorkoutCompleted(record);
+  }
+
+  Future<void> _markSessionCompleted() async {
+    final session = _sessionForDate(_selectedDate);
+    if (session == null) return;
+    await widget.onWorkoutCompleted(
+      WorkoutRecord(
+        scheduledDate: _selectedDate,
+        completedAt: DateTime.now(),
+        title: session.title,
+        goal: widget.settings.goal,
+        durationMinutes: widget.settings.sessionMinutes,
+        exerciseCount: session.exerciseCount,
+        completedOutsideApp: true,
       ),
     );
   }
@@ -109,15 +134,18 @@ class _ActivityViewState extends State<ActivityView> {
   @override
   Widget build(BuildContext context) {
     final session = _sessionForDate(_selectedDate);
+    final horizontalPadding = AppSpacing.pageGutter(
+      MediaQuery.sizeOf(context).width,
+    );
 
     return CustomScrollView(
       key: const PageStorageKey<String>('activity-scroll'),
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
             AppSpacing.x6,
-            AppSpacing.x6,
-            AppSpacing.x6,
+            horizontalPadding,
             AppSpacing.x8,
           ),
           sliver: SliverToBoxAdapter(
@@ -268,8 +296,14 @@ class _ActivityViewState extends State<ActivityView> {
                 _DayDetailCard(
                   date: _selectedDate,
                   session: session,
+                  isCompleted: widget.records.any(
+                    (record) => _isSameDay(record.date, _selectedDate),
+                  ),
+                  canComplete: !_dateOnly(_selectedDate)
+                      .isAfter(_dateOnly(DateTime.now())),
                   onReschedule: _reschedule,
                   onStart: _startSession,
+                  onMarkCompleted: _markSessionCompleted,
                 ),
               ],
             ),
@@ -285,30 +319,38 @@ class _ActivityViewState extends State<ActivityView> {
     if (movedSession != null) return movedSession;
     if (_removedDefaultSessions.contains(normalizedDate)) return null;
 
-    return switch (date.weekday) {
-      DateTime.monday => const _TrainingSession(
-        title: 'Fuerza de tren superior',
-        detail: 'Pecho, espalda y hombros',
-        duration: '45 min',
-        exerciseCount: 6,
-        icon: Icons.fitness_center_rounded,
-      ),
-      DateTime.wednesday => const _TrainingSession(
-        title: 'Piernas y core',
-        detail: 'Fuerza y estabilidad',
-        duration: '50 min',
-        exerciseCount: 7,
-        icon: Icons.directions_run_rounded,
-      ),
-      DateTime.friday => const _TrainingSession(
-        title: 'Fuerza total',
-        detail: 'Trabajo de cuerpo completo',
-        duration: '45 min',
-        exerciseCount: 6,
-        icon: Icons.bolt_rounded,
-      ),
-      _ => null,
-    };
+    final plannedSessions = _planBuilder
+        .buildWeek(
+          trainingDays: widget.settings.trainingDays,
+          sessionMinutes: widget.settings.sessionMinutes,
+          goal: widget.settings.goal,
+          experience: widget.settings.experience,
+          equipment: widget.settings.equipment,
+        )
+        .where((session) => session.weekday == date.weekday)
+        .toList(growable: false);
+    final plannedSession = plannedSessions.isEmpty
+        ? null
+        : plannedSessions.first;
+    if (plannedSession == null) return null;
+
+    return _TrainingSession(
+      title: plannedSession.title,
+      detail: plannedSession.focus,
+      duration: '${plannedSession.durationMinutes} min',
+      exerciseCount: plannedSession.exercises.length,
+      icon: switch (date.weekday % 3) {
+        0 => Icons.fitness_center_rounded,
+        1 => Icons.directions_run_rounded,
+        _ => Icons.bolt_rounded,
+      },
+    );
+  }
+
+  int _sessionIndexForDate(DateTime date) {
+    final days = widget.settings.trainingDays.toList()..sort();
+    final index = days.indexOf(date.weekday);
+    return index < 0 ? 0 : index;
   }
 
   List<DateTime> _availableDatesAfter(DateTime date) {
@@ -370,14 +412,20 @@ class _DayDetailCard extends StatelessWidget {
   const _DayDetailCard({
     required this.date,
     required this.session,
+    required this.isCompleted,
+    required this.canComplete,
     required this.onReschedule,
     required this.onStart,
+    required this.onMarkCompleted,
   });
 
   final DateTime date;
   final _TrainingSession? session;
+  final bool isCompleted;
+  final bool canComplete;
   final VoidCallback onReschedule;
   final VoidCallback onStart;
+  final VoidCallback onMarkCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -469,24 +517,59 @@ class _DayDetailCard extends StatelessWidget {
               ),
             ],
           ),
+          if (isCompleted) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.x3),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(AppRadius.control),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.check_circle_rounded, size: 19),
+                  SizedBox(width: AppSpacing.x2),
+                  Text('Sesión completada'),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: AppSpacing.x3),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: onStart,
+              onPressed: canComplete ? onStart : null,
               icon: const Icon(Icons.play_arrow_rounded, size: 18),
-              label: const Text('Iniciar entrenamiento'),
+              label: Text(
+                canComplete
+                    ? isCompleted
+                          ? 'Repetir entrenamiento'
+                          : 'Empezar sesión'
+                    : 'Sesión programada',
+              ),
             ),
           ),
-          const SizedBox(height: AppSpacing.x2),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: onReschedule,
-              icon: const Icon(Icons.event_repeat_rounded, size: 18),
-              label: const Text('Reprogramar sesión'),
+          if (!isCompleted && canComplete) ...[
+            const SizedBox(height: AppSpacing.x2),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onMarkCompleted,
+                icon: const Icon(Icons.check_rounded, size: 18),
+                label: const Text('Ya entrené fuera de la app'),
+              ),
             ),
-          ),
+            const SizedBox(height: AppSpacing.x2),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton.icon(
+                onPressed: onReschedule,
+                icon: const Icon(Icons.event_repeat_rounded, size: 18),
+                label: const Text('Cambiar día'),
+              ),
+            ),
+          ],
         ],
       ),
     );

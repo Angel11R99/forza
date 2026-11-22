@@ -8,29 +8,33 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../profile/models/profile_settings.dart';
+import '../../../../domain/use_cases/training_plan_builder.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({
     super.key,
     required this.onShowActivity,
-    required this.onExploreExercises,
     required this.onShowProfile,
     required this.settings,
     required this.onStartWorkout,
+    required this.onEditPlan,
+    required this.completedDates,
   });
 
   final VoidCallback onShowActivity;
-  final VoidCallback onExploreExercises;
   final VoidCallback onShowProfile;
   final TrainingSettings settings;
   final VoidCallback onStartWorkout;
+  final VoidCallback onEditPlan;
+  final Set<DateTime> completedDates;
 
   @override
   Widget build(BuildContext context) {
-    final horizontalPadding = MediaQuery.sizeOf(context).width < 380
-        ? AppSpacing.x4
-        : AppSpacing.x6;
+    final horizontalPadding = AppSpacing.pageGutter(
+      MediaQuery.sizeOf(context).width,
+    );
     final now = DateTime.now();
+    final nextTrainingDate = _nextTrainingDate(settings.trainingDays, now);
     final greeting = switch (now.hour) {
       < 12 => 'Buenos días',
       < 19 => 'Buenas tardes',
@@ -62,9 +66,13 @@ class HomeView extends StatelessWidget {
                             const ForzaWordmark(),
                             Positioned(
                               right: 0,
-                              child: IconButton.filledTonal(
+                              child: IconButton.filled(
                                 onPressed: onShowProfile,
                                 tooltip: 'Abrir perfil',
+                                style: IconButton.styleFrom(
+                                  backgroundColor: AppColors.accent,
+                                  foregroundColor: AppColors.inverseText,
+                                ),
                                 icon: const Icon(Icons.person_outline_rounded),
                               ),
                             ),
@@ -76,35 +84,42 @@ class HomeView extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  DateFormat('EEEE, d MMMM', 'es_DO').format(now),
-                  style: Theme.of(context).textTheme.bodySmall,
+                  _capitalize(
+                    DateFormat("EEEE, d 'de' MMMM", 'es_DO').format(now),
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                Text(greeting, style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(height: AppSpacing.x1),
+                Text(greeting, style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Hazte más fuerte.',
+                  'Tu plan de entrenamiento',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
+                SectionHeading(
+                  title: _sameDate(nextTrainingDate, now)
+                      ? 'Entrenamiento de hoy'
+                      : 'Próxima sesión · ${_shortWeekday(nextTrainingDate.weekday)}',
+                  actionLabel: 'Ajustar plan',
+                  onAction: onEditPlan,
+                ),
                 _TodayWorkoutCard(
                   settings: settings,
                   onPressed: onStartWorkout,
+                  sessionDate: nextTrainingDate,
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
-                  title: 'Esta semana',
+                  title: 'Tu semana',
                   actionLabel: 'Ver actividad',
                   onAction: onShowActivity,
                 ),
-                const _WeeklySummary(),
-                const SizedBox(height: AppSpacing.x8),
-                SectionHeading(
-                  title: 'Biblioteca',
-                  actionLabel: 'Explorar',
-                  onAction: onExploreExercises,
+                _WeeklySummary(
+                  settings: settings,
+                  completedDates: completedDates,
+                  onTap: onShowActivity,
                 ),
-                _LibraryLink(onPressed: onExploreExercises),
               ],
             ),
           ),
@@ -115,13 +130,31 @@ class HomeView extends StatelessWidget {
 }
 
 class _TodayWorkoutCard extends StatelessWidget {
-  const _TodayWorkoutCard({required this.settings, required this.onPressed});
+  const _TodayWorkoutCard({
+    required this.settings,
+    required this.onPressed,
+    required this.sessionDate,
+  });
 
   final TrainingSettings settings;
   final VoidCallback onPressed;
+  final DateTime sessionDate;
+
+  static const _planBuilder = TrainingPlanBuilder();
 
   @override
   Widget build(BuildContext context) {
+    final days = settings.trainingDays.toList()..sort();
+    final todayIndex = days.indexOf(sessionDate.weekday);
+    final exerciseCount = _planBuilder
+        .buildSession(
+          sessionIndex: todayIndex < 0 ? 0 : todayIndex,
+          sessionMinutes: settings.sessionMinutes,
+          goal: settings.goal,
+          experience: settings.experience,
+          equipment: settings.equipment,
+        )
+        .length;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.x6),
       decoration: BoxDecoration(
@@ -140,11 +173,11 @@ class _TodayWorkoutCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.x2),
               Text(
-                'ENTRENAMIENTO DE HOY',
+                _sameDate(sessionDate, DateTime.now())
+                    ? 'SESIÓN DE HOY'
+                    : 'SIGUIENTE SESIÓN · ${_shortWeekday(sessionDate.weekday).toUpperCase()}',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.inverseText.withValues(alpha: 0.8),
-                  fontSize: 11,
-                  letterSpacing: 0.7,
+                  color: AppColors.inverseText.withValues(alpha: 0.82),
                 ),
               ),
             ],
@@ -157,7 +190,7 @@ class _TodayWorkoutCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
-            '${settings.sessionMinutes} min   ·   ${_exerciseCount(settings.sessionMinutes)} ejercicios',
+            '${settings.sessionMinutes} min por sesión   ·   $exerciseCount ejercicios',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.inverseText.withValues(alpha: 0.82),
             ),
@@ -172,158 +205,174 @@ class _TodayWorkoutCard extends StatelessWidget {
                 foregroundColor: AppColors.accent,
               ),
               icon: const Icon(Icons.play_arrow_rounded),
-              label: const Text('Ver entrenamiento'),
+              label: const Text('Ver sesión de hoy'),
             ),
           ),
         ],
       ),
     );
   }
-
-  int _exerciseCount(int minutes) => (minutes / 8).round().clamp(4, 8);
 }
 
 class _WeeklySummary extends StatelessWidget {
-  const _WeeklySummary();
+  const _WeeklySummary({
+    required this.settings,
+    required this.completedDates,
+    required this.onTap,
+  });
+
+  final TrainingSettings settings;
+  final Set<DateTime> completedDates;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final days = settings.trainingDays.toList()..sort();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final weekStart = today.subtract(Duration(days: today.weekday - 1));
+    final completedCount = days.where((weekday) {
+      final scheduled = weekStart.add(Duration(days: weekday - 1));
+      return completedDates.any((date) => _sameDate(date, scheduled));
+    }).length;
     return AppSurfaceCard(
-      padding: const EdgeInsets.all(AppSpacing.x6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+      padding: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.x4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '2 de 4 sesiones',
-                      style: Theme.of(context).textTheme.titleLarge,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '$completedCount de ${days.length} sesiones',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: AppSpacing.x1),
-                    Text(
-                      'La mitad de tu meta semanal',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    'Esta semana',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    const CircularProgressIndicator(
-                      value: 0.5,
-                      strokeWidth: 4,
-                      backgroundColor: AppColors.surfaceMuted,
-                      valueColor: AlwaysStoppedAnimation(AppColors.accent),
-                    ),
-                    Center(
-                      child: Text(
-                        '50%',
-                        style: Theme.of(context).textTheme.labelLarge
-                            ?.copyWith(color: AppColors.accent, fontSize: 11),
+              const SizedBox(height: AppSpacing.x1),
+              Text(
+                'Tu meta es ${days.length} ${days.length == 1 ? 'sesión' : 'sesiones'} semanales.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: AppSpacing.x4),
+              Row(
+                children: [
+                  for (final weekday in days)
+                    Expanded(
+                      child: _WeekdayProgress(
+                        weekday: weekday,
+                        date: weekStart.add(Duration(days: weekday - 1)),
+                        completedDates: completedDates,
+                        isToday: _sameDate(
+                          weekStart.add(Duration(days: weekday - 1)),
+                          today,
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.x3),
+              LinearProgressIndicator(
+                value: days.isEmpty ? 0 : completedCount / days.length,
+                minHeight: 4,
+                backgroundColor: AppColors.surfaceMuted,
+                color: AppColors.accent,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.x6),
-          const Row(
-            children: [
-              _DayMark(label: 'L', completed: true),
-              _DayMark(label: 'M', completed: true),
-              _DayMark(label: 'X', current: true),
-              _DayMark(label: 'J'),
-              _DayMark(label: 'V'),
-              _DayMark(label: 'S'),
-              _DayMark(label: 'D'),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _DayMark extends StatelessWidget {
-  const _DayMark({
-    required this.label,
-    this.completed = false,
-    this.current = false,
+class _WeekdayProgress extends StatelessWidget {
+  const _WeekdayProgress({
+    required this.weekday,
+    required this.date,
+    required this.completedDates,
+    required this.isToday,
   });
 
-  final String label;
-  final bool completed;
-  final bool current;
+  final int weekday;
+  final DateTime date;
+  final Set<DateTime> completedDates;
+  final bool isToday;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    final completed = completedDates.any((saved) => _sameDate(saved, date));
+    return Semantics(
+      label:
+          '${_shortWeekday(weekday)}: ${completed ? 'completada' : 'pendiente'}',
       child: Column(
         children: [
           Container(
             width: 32,
             height: 32,
             decoration: BoxDecoration(
+              color: completed ? AppColors.accent : Colors.transparent,
               shape: BoxShape.circle,
-              color: completed ? AppColors.accentSoft : AppColors.surfaceMuted,
-              border: current
-                  ? Border.all(color: AppColors.accent, width: 1.5)
-                  : null,
+              border: Border.all(
+                color: isToday || completed
+                    ? AppColors.accent
+                    : AppColors.divider,
+                width: isToday && !completed ? 1.5 : 1,
+              ),
             ),
             alignment: Alignment.center,
-            child: completed
-                ? const Icon(
-                    Icons.check_rounded,
-                    size: 17,
-                    color: AppColors.accent,
-                  )
-                : null,
+            child: Icon(
+              completed ? Icons.check_rounded : Icons.circle,
+              size: completed ? 18 : 6,
+              color: completed ? AppColors.inverseText : AppColors.divider,
+            ),
           ),
           const SizedBox(height: AppSpacing.x1),
-          Text(label, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            _shortWeekday(weekday),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     );
   }
 }
 
-class _LibraryLink extends StatelessWidget {
-  const _LibraryLink({required this.onPressed});
+bool _sameDate(DateTime first, DateTime second) =>
+    first.year == second.year &&
+    first.month == second.month &&
+    first.day == second.day;
 
-  final VoidCallback onPressed;
+String _capitalize(String text) =>
+    text.isEmpty ? text : '${text[0].toUpperCase()}${text.substring(1)}';
 
-  @override
-  Widget build(BuildContext context) {
-    return AppSurfaceCard(
-      padding: EdgeInsets.zero,
-      child: ListTile(
-        onTap: onPressed,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x4,
-          vertical: AppSpacing.x2,
-        ),
-        leading: const Icon(Icons.sports_gymnastics_outlined, size: 26),
-        title: Text(
-          'Explora ejercicios',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        subtitle: Text(
-          'Guías visuales para cada movimiento',
-          style: Theme.of(context).textTheme.bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        trailing: const Icon(Icons.chevron_right_rounded),
-      ),
-    );
+DateTime _nextTrainingDate(Set<int> trainingDays, DateTime from) {
+  final today = DateTime(from.year, from.month, from.day);
+  for (var offset = 0; offset < 7; offset++) {
+    final candidate = today.add(Duration(days: offset));
+    if (trainingDays.contains(candidate.weekday)) return candidate;
   }
+  return today;
 }
+
+String _shortWeekday(int weekday) => switch (weekday) {
+  DateTime.monday => 'Lun',
+  DateTime.tuesday => 'Mar',
+  DateTime.wednesday => 'Mié',
+  DateTime.thursday => 'Jue',
+  DateTime.friday => 'Vie',
+  DateTime.saturday => 'Sáb',
+  DateTime.sunday => 'Dom',
+  _ => '',
+};
