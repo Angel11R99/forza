@@ -67,9 +67,9 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final horizontalPadding = AppSpacing.pageGutter(
+              constraints.maxWidth,
+            );
 
             return Center(
               child: ConstrainedBox(

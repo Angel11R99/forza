@@ -141,7 +141,7 @@ class _ProgressChartPainter extends CustomPainter {
     final painter = TextPainter(
       text: TextSpan(
         text: label,
-        style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
+        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
       ),
       textDirection: TextDirection.ltr,
       textAlign: align,

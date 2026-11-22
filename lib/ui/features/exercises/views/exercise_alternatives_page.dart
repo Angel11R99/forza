@@ -2,7 +2,6 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../domain/models/exercise.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../widgets/exercise_list_card.dart';
@@ -26,9 +25,9 @@ class ExerciseAlternativesPage extends StatelessWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final horizontalPadding = AppSpacing.pageGutter(
+              constraints.maxWidth,
+            );
             final textScale = MediaQuery.textScalerOf(context).scale(1);
             final cardExtent =
                 164 + ((textScale - 1).clamp(0, 2) * 52).toDouble();
@@ -46,18 +45,8 @@ class ExerciseAlternativesPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const ForzaEyebrow(label: 'Biblioteca'),
+                        const ForzaEyebrow(label: 'Ejercicios'),
                         const SizedBox(height: AppSpacing.x3),
-                        Text(
-                          'Otras opciones',
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: AppColors.textSecondary,
-                                fontSize: 13,
-                                letterSpacing: 0,
-                              ),
-                        ),
-                        const SizedBox(height: AppSpacing.x2),
                         Text(
                           'Alternativas a ${exercise.name}',
                           style: Theme.of(context).textTheme.displaySmall,

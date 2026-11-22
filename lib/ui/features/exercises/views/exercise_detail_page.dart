@@ -29,9 +29,9 @@ class ExerciseDetailPage extends StatelessWidget {
         bottom: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final horizontalPadding = constraints.maxWidth < 380
-                ? AppSpacing.x4
-                : AppSpacing.x6;
+            final horizontalPadding = AppSpacing.pageGutter(
+              constraints.maxWidth,
+            );
 
             return Center(
               child: ConstrainedBox(
@@ -185,12 +185,9 @@ class _ExercisePreview extends StatelessWidget {
             left: AppSpacing.x3,
             bottom: AppSpacing.x2,
             child: Text(
-              'VISTA DEL MOVIMIENTO',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AppColors.textSecondary,
-                letterSpacing: 0.6,
-                fontSize: 10,
-              ),
+              'Animación del movimiento',
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
           ),
         ],

@@ -66,16 +66,16 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.x6,
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.pageGutter(MediaQuery.sizeOf(context).width),
             AppSpacing.x4,
-            AppSpacing.x6,
+            AppSpacing.pageGutter(MediaQuery.sizeOf(context).width),
             AppSpacing.x6,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ForzaEyebrow(label: 'Biblioteca'),
+              const ForzaEyebrow(label: 'Ejercicios'),
               const SizedBox(height: AppSpacing.x3),
               Text(
                 'Ajusta tu búsqueda',
@@ -107,10 +107,10 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.x6,
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.pageGutter(MediaQuery.sizeOf(context).width),
             AppSpacing.x3,
-            AppSpacing.x6,
+            AppSpacing.pageGutter(MediaQuery.sizeOf(context).width),
             AppSpacing.x4,
           ),
           child: FilledButton(
