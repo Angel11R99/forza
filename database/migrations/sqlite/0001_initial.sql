@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS "training_plans" ("id" TEXT NOT NULL, "goal" TEXT NOT NULL, "experience" TEXT NOT NULL, "session_minutes" INTEGER NOT NULL, "created_at" TEXT NOT NULL, "updated_at" TEXT NOT NULL, "is_active" INTEGER NOT NULL DEFAULT 1 CHECK ("is_active" IN (0, 1)), PRIMARY KEY ("id"));
+CREATE TABLE IF NOT EXISTS "training_plan_days" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "plan_id" TEXT NOT NULL REFERENCES training_plans (id) ON DELETE CASCADE, "weekday" INTEGER NOT NULL, "order_index" INTEGER NOT NULL, UNIQUE ("plan_id", "weekday"));
+CREATE TABLE IF NOT EXISTS "training_plan_equipment" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "plan_id" TEXT NOT NULL REFERENCES training_plans (id) ON DELETE CASCADE, "equipment" TEXT NOT NULL, UNIQUE ("plan_id", "equipment"));
+CREATE TABLE IF NOT EXISTS "workout_sessions" ("id" TEXT NOT NULL, "plan_id" TEXT NULL REFERENCES training_plans (id) ON DELETE SET NULL, "scheduled_date" TEXT NOT NULL, "completed_at" TEXT NOT NULL, "title" TEXT NOT NULL, "goal" TEXT NOT NULL, "duration_minutes" INTEGER NOT NULL, "exercise_count" INTEGER NOT NULL, "completed_outside_app" INTEGER NOT NULL CHECK ("completed_outside_app" IN (0, 1)), PRIMARY KEY ("id"));
+CREATE TABLE IF NOT EXISTS "workout_session_exercises" ("id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "session_id" TEXT NOT NULL REFERENCES workout_sessions (id) ON DELETE CASCADE, "position" INTEGER NOT NULL, "name" TEXT NOT NULL, UNIQUE ("session_id", "position"));
+CREATE TABLE IF NOT EXISTS "app_metadata" ("key" TEXT NOT NULL, "value" TEXT NOT NULL, PRIMARY KEY ("key"));
+CREATE INDEX workout_sessions_scheduled_date_idx ON workout_sessions (scheduled_date);
+CREATE INDEX workout_sessions_completed_at_idx ON workout_sessions (completed_at);
