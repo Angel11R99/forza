@@ -591,7 +591,8 @@ class _StepProgress extends StatelessWidget {
           for (var index = 0; index < 3; index++) ...[
             Expanded(
               child: AnimatedContainer(
-                duration: MediaQuery.disableAnimationsOf(context)
+                duration: reviewMode ||
+                        MediaQuery.disableAnimationsOf(context)
                     ? Duration.zero
                     : const Duration(milliseconds: 180),
                 height: 5,
