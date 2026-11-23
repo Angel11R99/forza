@@ -1,0 +1,21 @@
+{
+  "@@locale": "es",
+  "settingsLanguageTitle": "Idioma de la aplicación",
+  "settingsLanguageDescription": "Elige el idioma que se usa en FORZA.",
+  "settingsLanguageAutomatic": "Idioma del dispositivo",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageSpanish": "Español",
+  "settingsLanguageSystemDescription": "Usa el idioma configurado en tu dispositivo.",
+  "settingsLanguageSelection": "Idioma",
+  "settingsLanguageAutomaticDescription": "Sigue el idioma configurado en tu dispositivo.",
+  "settingsAppearanceTitle": "Apariencia",
+  "settingsThemeTitle": "Elige tu tema",
+  "settingsThemeSystem": "Según el dispositivo",
+  "settingsThemeSystemDescription": "Sigue el tema del sistema.",
+  "settingsThemeLight": "Claro",
+  "settingsThemeDark": "Oscuro",
+  "homeWelcome": "Te damos la bienvenida, {name}",
+  "@@homeWelcome": { "description": "Saludo en la pantalla de inicio", "placeholders": { "name": { "type": "String" } } },
+  "workoutCount": "{count, plural, =0{Ningún entrenamiento} =1{1 entrenamiento} other{{count} entrenamientos}}",
+  "@@workoutCount": { "description": "Cantidad de entrenamientos completados", "placeholders": { "count": { "type": "int" } } }
+}
