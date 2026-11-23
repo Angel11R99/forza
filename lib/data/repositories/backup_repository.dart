@@ -1,0 +1,476 @@
+import 'dart:convert';
+
+import 'package:drift/drift.dart';
+
+import '../../domain/models/personal_goal.dart';
+import '../../domain/models/scheduled_training_session.dart';
+import '../../domain/models/workout_record.dart';
+import '../../ui/features/profile/models/profile_settings.dart';
+import '../database/app_database.dart' as db;
+import 'personal_goal_repository.dart';
+import 'training_schedule_repository.dart';
+import 'training_settings_repository.dart';
+import 'workout_log_repository.dart';
+
+class ValidatedForzaBackup {
+  const ValidatedForzaBackup({
+    required this.exportedAt,
+    required this.settings,
+    required this.records,
+    required this.schedule,
+    required this.goals,
+    required this.appearanceMode,
+    required this.activeWorkout,
+  });
+
+  final DateTime exportedAt;
+  final TrainingSettings settings;
+  final List<WorkoutRecord> records;
+  final List<ScheduledTrainingSession> schedule;
+  final List<PersonalGoal> goals;
+  final String appearanceMode;
+  final Map<String, Object?>? activeWorkout;
+}
+
+class BackupRepository {
+  BackupRepository({
+    required this.database,
+    required this.settingsRepository,
+    required this.workoutLogRepository,
+    required this.scheduleRepository,
+    required this.goalRepository,
+  });
+
+  static const formatName = 'FORZA_BACKUP';
+  static const version = 1;
+  static const maxBackupBytes = 10 * 1024 * 1024;
+
+  final db.AppDatabase database;
+  final TrainingSettingsRepository settingsRepository;
+  final WorkoutLogRepository workoutLogRepository;
+  final TrainingScheduleRepository scheduleRepository;
+  final PersonalGoalRepository goalRepository;
+
+  Future<String> exportJson({required String appearanceMode}) async {
+    final activeDraft = await workoutLogRepository.loadActiveWorkout();
+    return const JsonEncoder.withIndent('  ').convert({
+      'format': formatName,
+      'version': version,
+      'exportedAt': DateTime.now().toIso8601String(),
+      'trainingSettings': _settingsToJson(await settingsRepository.load()),
+      'workoutRecords': [
+        for (final record in await workoutLogRepository.load())
+          record.toJson(),
+      ],
+      'scheduledSessions': [
+        for (final session in await scheduleRepository.load())
+          _scheduleToJson(session),
+      ],
+      'personalGoals': [
+        for (final goal in await goalRepository.load()) _goalToJson(goal),
+      ],
+      'appearanceMode': appearanceMode,
+      'activeWorkout': activeDraft == null ? null : jsonDecode(activeDraft),
+    });
+  }
+
+  ValidatedForzaBackup validate(String source) {
+    if (utf8.encode(source).length > maxBackupBytes) {
+      throw const FormatException('El archivo supera el límite de 10 MB.');
+    }
+    try {
+      final root = _map(jsonDecode(source), 'respaldo');
+      if (root['format'] != formatName || root['version'] != version) {
+        throw const FormatException(
+          'El archivo no es un respaldo FORZA compatible.',
+        );
+      }
+      final appearance = root['appearanceMode'];
+      if (appearance is! String ||
+          !const {'system', 'light', 'dark'}.contains(appearance)) {
+        throw const FormatException('La apariencia del respaldo no es válida.');
+      }
+      final records = _list(root['workoutRecords'], 'workoutRecords')
+          .map((value) => _record(value))
+          .toList(growable: false);
+      final recordDates = records.map((record) => _key(record.date)).toSet();
+      if (recordDates.length != records.length) {
+        throw const FormatException(
+          'El respaldo contiene sesiones repetidas en una misma fecha.',
+        );
+      }
+      final schedule = _list(root['scheduledSessions'], 'scheduledSessions')
+          .map(_schedule)
+          .toList(growable: false);
+      final scheduleDates = schedule
+          .map((session) => _key(session.scheduledDate))
+          .toSet();
+      if (scheduleDates.length != schedule.length) {
+        throw const FormatException(
+          'El respaldo contiene sesiones de agenda duplicadas.',
+        );
+      }
+      final goals = _list(root['personalGoals'], 'personalGoals')
+          .map(_goal)
+          .toList(growable: false);
+      if (goals.map((goal) => goal.id).toSet().length != goals.length) {
+        throw const FormatException('El respaldo contiene objetivos duplicados.');
+      }
+      final activeWorkout = root['activeWorkout'] == null
+          ? null
+          : _activeDraft(root['activeWorkout']);
+      return ValidatedForzaBackup(
+        exportedAt: DateTime.parse(_string(root['exportedAt'], 'exportedAt')),
+        settings: _settings(root['trainingSettings']),
+        records: records,
+        schedule: schedule,
+        goals: goals,
+        appearanceMode: appearance,
+        activeWorkout: activeWorkout,
+      );
+    } on FormatException {
+      rethrow;
+    } on Object {
+      throw const FormatException(
+        'El archivo está dañado o contiene datos que FORZA no reconoce.',
+      );
+    }
+  }
+
+  Future<void> restore(ValidatedForzaBackup backup) async {
+    final now = DateTime.now().toIso8601String();
+    await database.transaction(() async {
+      await database.delete(database.workoutSessions).go();
+      await database.delete(database.scheduledTrainingSessions).go();
+      await database.delete(database.personalGoals).go();
+      await database.delete(database.trainingPlans).go();
+
+      await database.into(database.trainingPlans).insert(
+        db.TrainingPlansCompanion.insert(
+          id: db.AppDatabase.activePlanId,
+          goal: backup.settings.goal,
+          experience: backup.settings.experience,
+          sessionMinutes: backup.settings.sessionMinutes,
+          createdAt: now,
+          updatedAt: now,
+          isActive: const Value(true),
+        ),
+      );
+      final days = backup.settings.trainingDays.toList()..sort();
+      await database.batch((batch) {
+        batch.insertAll(database.trainingPlanDays, [
+          for (var index = 0; index < days.length; index++)
+            db.TrainingPlanDaysCompanion.insert(
+              planId: db.AppDatabase.activePlanId,
+              weekday: days[index],
+              orderIndex: index,
+            ),
+        ]);
+        batch.insertAll(database.trainingPlanEquipment, [
+          for (final item in backup.settings.equipment.toList()..sort())
+            db.TrainingPlanEquipmentCompanion.insert(
+              planId: db.AppDatabase.activePlanId,
+              equipment: item,
+            ),
+        ]);
+      });
+
+      for (final record in backup.records) {
+        final id = _key(record.date);
+        await database.into(database.workoutSessions).insert(
+          db.WorkoutSessionsCompanion.insert(
+            id: id,
+            planId: const Value(db.AppDatabase.activePlanId),
+            scheduledDate: record.date.toIso8601String(),
+            completedAt: record.completedAt.toIso8601String(),
+            title: record.title,
+            goal: record.goal,
+            durationMinutes: record.durationMinutes,
+            exerciseCount: record.exerciseCount,
+            completedOutsideApp: record.completedOutsideApp,
+          ),
+        );
+        if (record.exercises.isNotEmpty) {
+          await database.batch((batch) {
+            batch.insertAll(database.workoutSessionExercises, [
+              for (var index = 0; index < record.exercises.length; index++)
+                db.WorkoutSessionExercisesCompanion.insert(
+                  sessionId: id,
+                  position: index,
+                  name: record.exercises[index],
+                ),
+            ]);
+          });
+        }
+        if (record.setResults.isNotEmpty) {
+          await database.batch((batch) {
+            batch.insertAll(database.workoutSetEntries, [
+              for (final set in record.setResults)
+                db.WorkoutSetEntriesCompanion.insert(
+                  sessionId: id,
+                  exercisePosition: set.exercisePosition,
+                  setIndex: set.setIndex,
+                  repetitions: Value(set.repetitions),
+                  loadKg: Value(set.loadKg),
+                  durationSeconds: Value(set.durationSeconds),
+                ),
+            ]);
+          });
+        }
+      }
+
+      await database.batch((batch) {
+        batch.insertAll(database.scheduledTrainingSessions, [
+          for (final session in backup.schedule)
+            db.ScheduledTrainingSessionsCompanion.insert(
+              id: _key(session.scheduledDate),
+              scheduledDate: _key(session.scheduledDate),
+              originalDate: Value(
+                session.originalDate == null
+                    ? null
+                    : _key(session.originalDate!),
+              ),
+              sessionIndex: session.sessionIndex,
+              title: session.title,
+              focus: session.focus,
+              durationMinutes: session.durationMinutes,
+              exerciseCount: session.exerciseCount,
+              status: Value(session.status),
+            ),
+        ]);
+        batch.insertAll(database.personalGoals, [
+          for (final goal in backup.goals)
+            db.PersonalGoalsCompanion.insert(
+              id: goal.id,
+              type: goal.type.name,
+              targetValue: goal.targetValue,
+              exerciseName: Value(goal.exerciseName),
+              createdAt: goal.createdAt.toIso8601String(),
+            ),
+        ]);
+      });
+
+      await database
+          .into(database.appMetadata)
+          .insertOnConflictUpdate(
+            db.AppMetadataCompanion.insert(
+              key: 'training_setup_complete',
+              value: 'true',
+            ),
+          );
+      await (database.delete(
+        database.appMetadata,
+      )..where((row) => row.key.equals('active_workout_v1'))).go();
+      if (backup.activeWorkout != null) {
+        await database.into(database.appMetadata).insertOnConflictUpdate(
+          db.AppMetadataCompanion.insert(
+            key: 'active_workout_v1',
+            value: jsonEncode(backup.activeWorkout),
+          ),
+        );
+      }
+    });
+  }
+
+  static WorkoutRecord _record(Object? value) {
+    final record = WorkoutRecord.fromJson(_map(value, 'sesión'));
+    if (record.title.trim().isEmpty ||
+        record.durationMinutes < 1 ||
+        record.durationMinutes > 1440 ||
+        record.exerciseCount < 0 ||
+        record.setResults.any(
+          (set) =>
+              set.exercisePosition < 0 ||
+              set.exercisePosition >= record.exercises.length ||
+              set.setIndex < 0 ||
+              (set.repetitions != null && set.repetitions! < 0) ||
+              (set.loadKg != null &&
+                  (!set.loadKg!.isFinite || set.loadKg! < 0)) ||
+              (set.durationSeconds != null && set.durationSeconds! < 0),
+        )) {
+      throw const FormatException('Una sesión contiene datos fuera de rango.');
+    }
+    return record;
+  }
+
+  static ScheduledTrainingSession _schedule(Object? value) {
+    final json = _map(value, 'sesión programada');
+    final date = _date(json['scheduledDate'], 'scheduledDate');
+    final original = json['originalDate'] == null
+        ? null
+        : _date(json['originalDate'], 'originalDate');
+    final status = _string(json['status'], 'status');
+    final index = _integer(json['sessionIndex'], 'sessionIndex');
+    final duration = _integer(json['durationMinutes'], 'durationMinutes');
+    final count = _integer(json['exerciseCount'], 'exerciseCount');
+    if (index < 0 || index > 20 || duration < 1 || duration > 240 || count < 0) {
+      throw const FormatException('Una sesión programada no es válida.');
+    }
+    if (!const {'pending', 'in_progress', 'completed'}.contains(status)) {
+      throw const FormatException('El estado de una sesión no es válido.');
+    }
+    return ScheduledTrainingSession(
+      id: _string(json['id'], 'id'),
+      scheduledDate: date,
+      originalDate: original,
+      sessionIndex: index,
+      title: _string(json['title'], 'title'),
+      focus: _string(json['focus'], 'focus'),
+      durationMinutes: duration,
+      exerciseCount: count,
+      status: status,
+    );
+  }
+
+  static PersonalGoal _goal(Object? value) {
+    final json = _map(value, 'objetivo');
+    final typeName = _string(json['type'], 'type');
+    final type = PersonalGoalType.values.where((item) => item.name == typeName);
+    if (type.isEmpty) throw const FormatException('El tipo de objetivo no es válido.');
+    final target = _number(json['targetValue'], 'targetValue');
+    final exercise = json['exerciseName'];
+    if (target <= 0 ||
+        (type.first == PersonalGoalType.sessionsPerWeek &&
+            (target > 7 || target != target.roundToDouble())) ||
+        (type.first == PersonalGoalType.exerciseLoad &&
+            (exercise is! String || exercise.trim().isEmpty))) {
+      throw const FormatException('Un objetivo contiene datos fuera de rango.');
+    }
+    return PersonalGoal(
+      id: _string(json['id'], 'id'),
+      type: type.first,
+      targetValue: target,
+      exerciseName: exercise as String?,
+      createdAt: _date(json['createdAt'], 'createdAt'),
+    );
+  }
+
+  static TrainingSettings _settings(Object? value) {
+    final json = _map(value, 'trainingSettings');
+    final days = _list(json['trainingDays'], 'trainingDays')
+        .map((value) => _integer(value, 'trainingDays'))
+        .toList(growable: false);
+    final equipment = _list(json['equipment'], 'equipment')
+        .map((value) => _string(value, 'equipment'))
+        .toSet();
+    final minutes = _integer(json['sessionMinutes'], 'sessionMinutes');
+    final goal = _string(json['goal'], 'goal');
+    final experience = _string(json['experience'], 'experience');
+    if (days.toSet().length != days.length ||
+        days.any((day) => day < 1 || day > 7) ||
+        minutes < 20 ||
+        minutes > 90 ||
+        goal.isEmpty ||
+        experience.isEmpty) {
+      throw const FormatException('El plan contiene valores no válidos.');
+    }
+    return TrainingSettings(
+      trainingDays: days.toSet(),
+      sessionMinutes: minutes,
+      goal: goal,
+      experience: experience,
+      equipment: equipment,
+    );
+  }
+
+  static Map<String, Object?>? _activeDraft(Object? value) {
+    final json = _map(value, 'activeWorkout');
+    _date(json['scheduledDate'], 'scheduledDate');
+    final current = _integer(json['currentExercise'], 'currentExercise');
+    final elapsed = _integer(json['elapsedSeconds'], 'elapsedSeconds');
+    final rest = _integer(json['remainingRestSeconds'], 'remainingRestSeconds');
+    final screen = _string(json['resumeScreen'], 'resumeScreen');
+    if (current < 0 || elapsed < 0 || rest < 0 || rest > 3600 ||
+        !const {
+          'preparation',
+          'warmup',
+          'exerciseList',
+          'rest',
+          'confirmAbandon',
+          'completed',
+          'summary',
+        }.contains(screen)) {
+      throw const FormatException('La sesión activa del respaldo no es válida.');
+    }
+    final sets = _list(json['sets'], 'sets');
+    for (final value in sets) {
+      final set = WorkoutSetResult.fromJson(_map(value, 'serie'));
+      if (set.exercisePosition < 0 || set.setIndex < 0 ||
+          (set.repetitions != null && set.repetitions! < 0) ||
+          (set.loadKg != null && (!set.loadKg!.isFinite || set.loadKg! < 0)) ||
+          (set.durationSeconds != null && set.durationSeconds! < 0)) {
+        throw const FormatException('Una serie de la sesión activa no es válida.');
+      }
+    }
+    return json;
+  }
+
+  static Map<String, Object?> _settingsToJson(TrainingSettings settings) => {
+    'trainingDays': settings.trainingDays.toList()..sort(),
+    'sessionMinutes': settings.sessionMinutes,
+    'goal': settings.goal,
+    'experience': settings.experience,
+    'equipment': settings.equipment.toList()..sort(),
+  };
+
+  static Map<String, Object?> _scheduleToJson(
+    ScheduledTrainingSession session,
+  ) => {
+    'id': session.id,
+    'scheduledDate': session.scheduledDate.toIso8601String(),
+    'originalDate': session.originalDate?.toIso8601String(),
+    'sessionIndex': session.sessionIndex,
+    'title': session.title,
+    'focus': session.focus,
+    'durationMinutes': session.durationMinutes,
+    'exerciseCount': session.exerciseCount,
+    'status': session.status,
+  };
+
+  static Map<String, Object?> _goalToJson(PersonalGoal goal) => {
+    'id': goal.id,
+    'type': goal.type.name,
+    'targetValue': goal.targetValue,
+    'exerciseName': goal.exerciseName,
+    'createdAt': goal.createdAt.toIso8601String(),
+  };
+
+  static Map<String, Object?> _map(Object? value, String label) {
+    if (value is! Map) throw FormatException('El campo $label debe ser un objeto.');
+    return Map<String, Object?>.from(value);
+  }
+
+  static List<Object?> _list(Object? value, String label) {
+    if (value is! List<Object?>) throw FormatException('El campo $label debe ser una lista.');
+    return value;
+  }
+
+  static String _string(Object? value, String label) {
+    if (value is! String || value.trim().isEmpty) {
+      throw FormatException('El campo $label debe ser un texto.');
+    }
+    return value;
+  }
+
+  static int _integer(Object? value, String label) {
+    if (value is! int) throw FormatException('El campo $label debe ser entero.');
+    return value;
+  }
+
+  static double _number(Object? value, String label) {
+    if (value is! num || !value.isFinite) {
+      throw FormatException('El campo $label debe ser numérico.');
+    }
+    return value.toDouble();
+  }
+
+  static DateTime _date(Object? value, String label) {
+    final string = _string(value, label);
+    final date = DateTime.tryParse(string);
+    if (date == null) throw FormatException('La fecha $label no es válida.');
+    return date;
+  }
+
+  static String _key(DateTime date) =>
+      DateTime(date.year, date.month, date.day).toIso8601String();
+}
