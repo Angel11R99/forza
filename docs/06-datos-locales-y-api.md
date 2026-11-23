@@ -9,6 +9,7 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 - Resultados por serie: repeticiones o duración y carga registrada para cada ejercicio de una sesión.
 - Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
 - Agenda: sesiones de los próximos 120 días, fecha original al reprogramar y estado pendiente, en curso o completada.
+- Objetivos personales: sesiones completadas por semana o carga máxima objetivo por ejercicio.
 - Metadatos: finalización del onboarding y control de importaciones.
 
 El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El perfil personal, medidas corporales, notificaciones y sincronización entre dispositivos todavía no son datos persistidos. La agenda mantiene 120 días de sesiones próximas y sincroniza Inicio, Actividad y la sesión activa mediante el mismo repositorio.
@@ -24,9 +25,10 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 | `workout_session_exercises` | Ejercicios guardados en cada resumen, ordenados por posición. |
 | `workout_set_entries` | Resultados registrados por ejercicio y serie. |
 | `scheduled_training_sessions` | Agenda próxima, reprogramaciones y estado de cada sesión. |
+| `personal_goals` | Metas elegidas y objetivos de sesiones o carga. |
 | `app_metadata` | Marcadores, importaciones y borrador del entrenamiento activo. |
 
-La versión actual del esquema es `3`. Las migraciones están en `database/migrations/sqlite/0001_initial.sql`, `0002_workout_set_entries.sql` y `0003_scheduled_training_sessions.sql`; las instantáneas serializadas están en `drift_schemas/schema_v1.json`, `schema_v2.json` y `schema_v3.json`. Las actualizaciones crean las tablas nuevas sin alterar el historial existente.
+La versión actual del esquema es `4`. Las migraciones están en `database/migrations/sqlite/0001_initial.sql` a `0004_personal_goals.sql`; las instantáneas serializadas están en `drift_schemas/schema_v1.json` a `schema_v4.json`. Las actualizaciones crean las tablas nuevas sin alterar el historial existente.
 
 ## Importación de instalaciones anteriores
 
