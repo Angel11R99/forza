@@ -267,7 +267,12 @@ class _AppScaffoldState extends State<AppScaffold>
                       onSessionStarted: _viewModel.markSessionStarted,
                     ),
                     const ExercisesView(),
-                    ProgressView(records: _viewModel.workoutRecords),
+                    ProgressView(
+                      records: _viewModel.workoutRecords,
+                      goals: _viewModel.personalGoals,
+                      onSaveGoal: _viewModel.savePersonalGoal,
+                      onDeleteGoal: _viewModel.deletePersonalGoal,
+                    ),
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
                       themeMode: widget.appearance.mode,

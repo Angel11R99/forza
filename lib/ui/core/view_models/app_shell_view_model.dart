@@ -2,13 +2,16 @@ import 'dart:convert';
 
 import 'package:material_ui/material_ui.dart';
 
-import '../../../data/database/app_database.dart' hide ScheduledTrainingSession;
+import '../../../data/database/app_database.dart'
+    hide PersonalGoal, ScheduledTrainingSession;
 import '../../../data/migrations/legacy_shared_preferences_migration.dart';
 import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/workout_log_repository.dart';
 import '../../../data/repositories/training_schedule_repository.dart';
+import '../../../data/repositories/personal_goal_repository.dart';
 import '../../../domain/models/workout_record.dart';
 import '../../../domain/models/scheduled_training_session.dart';
+import '../../../domain/models/personal_goal.dart';
 import '../../features/profile/models/profile_settings.dart';
 
 class AppShellViewModel extends ChangeNotifier {
@@ -17,6 +20,7 @@ class AppShellViewModel extends ChangeNotifier {
     TrainingSettingsRepository? settingsRepository,
     WorkoutLogRepository? workoutLogRepository,
     TrainingScheduleRepository? trainingScheduleRepository,
+    PersonalGoalRepository? personalGoalRepository,
   }) : _database = database ?? AppDatabase.instance,
        _settingsRepository =
            settingsRepository ??
@@ -30,16 +34,21 @@ class AppShellViewModel extends ChangeNotifier {
            trainingScheduleRepository ??
            TrainingScheduleRepository(
              database: database ?? AppDatabase.instance,
-           );
+           ),
+       _personalGoalRepository =
+           personalGoalRepository ??
+           PersonalGoalRepository(database: database ?? AppDatabase.instance);
 
   final AppDatabase _database;
   final TrainingSettingsRepository _settingsRepository;
   final WorkoutLogRepository _workoutLogRepository;
   final TrainingScheduleRepository _trainingScheduleRepository;
+  final PersonalGoalRepository _personalGoalRepository;
 
   TrainingSettings _trainingSettings = const TrainingSettings();
   List<WorkoutRecord> _workoutRecords = const [];
   List<ScheduledTrainingSession> _scheduledSessions = const [];
+  List<PersonalGoal> _personalGoals = const [];
   bool _isReady = false;
   bool _needsFirstRunSetup = false;
   bool _hasActiveWorkout = false;
@@ -48,6 +57,7 @@ class AppShellViewModel extends ChangeNotifier {
   TrainingSettings get trainingSettings => _trainingSettings;
   List<WorkoutRecord> get workoutRecords => _workoutRecords;
   List<ScheduledTrainingSession> get scheduledSessions => _scheduledSessions;
+  List<PersonalGoal> get personalGoals => _personalGoals;
   bool get isReady => _isReady;
   bool get needsFirstRunSetup => _needsFirstRunSetup;
   bool get hasActiveWorkout => _hasActiveWorkout;
@@ -121,6 +131,11 @@ class AppShellViewModel extends ChangeNotifier {
     } on Object {
       _scheduledSessions = const [];
     }
+    try {
+      _personalGoals = await _personalGoalRepository.load();
+    } on Object {
+      _personalGoals = const [];
+    }
 
     _trainingSettings = settings;
     _workoutRecords = records;
@@ -186,6 +201,18 @@ class AppShellViewModel extends ChangeNotifier {
     );
     await _trainingScheduleRepository.setStatus(date, 'in_progress');
     _scheduledSessions = await _trainingScheduleRepository.load();
+    notifyListeners();
+  }
+
+  Future<void> savePersonalGoal(PersonalGoal goal) async {
+    await _personalGoalRepository.save(goal);
+    _personalGoals = await _personalGoalRepository.load();
+    notifyListeners();
+  }
+
+  Future<void> deletePersonalGoal(String id) async {
+    await _personalGoalRepository.delete(id);
+    _personalGoals = await _personalGoalRepository.load();
     notifyListeners();
   }
 
