@@ -2,7 +2,6 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/workout_record.dart';
 import '../../../app/theme/app_colors.dart';
-import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../features/activity/views/activity_view.dart';
 import '../../features/exercises/views/exercises_view.dart';
@@ -290,51 +289,42 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   Widget _buildBottomNavigationBar() {
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.x4,
-          0,
-          AppSpacing.x4,
-          AppSpacing.x2,
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.large),
-            border: Border.all(color: AppColors.divider),
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.divider)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            indicatorColor: Colors.transparent,
+            labelTextStyle: WidgetStateProperty.resolveWith((states) {
+              final selected = states.contains(WidgetState.selected);
+              return TextStyle(
+                color: selected ? AppColors.accent : AppColors.textSecondary,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              );
+            }),
+            iconTheme: WidgetStateProperty.resolveWith((states) {
+              final selected = states.contains(WidgetState.selected);
+              return IconThemeData(
+                color: selected ? AppColors.accent : AppColors.textSecondary,
+              );
+            }),
           ),
-          child: NavigationBarTheme(
-            data: NavigationBarThemeData(
-              indicatorColor: Colors.transparent,
-              labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                final selected = states.contains(WidgetState.selected);
-                return TextStyle(
-                  color: selected ? AppColors.accent : AppColors.textSecondary,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                );
-              }),
-              iconTheme: WidgetStateProperty.resolveWith((states) {
-                final selected = states.contains(WidgetState.selected);
-                return IconThemeData(
-                  color: selected ? AppColors.accent : AppColors.textSecondary,
-                );
-              }),
-            ),
-            child: NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _selectDestination,
-              backgroundColor: Colors.transparent,
-              destinations: [
-                for (final destination in _destinations)
-                  NavigationDestination(
-                    icon: Icon(destination.icon),
-                    selectedIcon: Icon(destination.selectedIcon),
-                    label: destination.label,
-                  ),
-              ],
-            ),
+          child: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _selectDestination,
+            backgroundColor: Colors.transparent,
+            destinations: [
+              for (final destination in _destinations)
+                NavigationDestination(
+                  icon: Icon(destination.icon),
+                  selectedIcon: Icon(destination.selectedIcon),
+                  label: destination.label,
+                ),
+            ],
           ),
         ),
       ),
