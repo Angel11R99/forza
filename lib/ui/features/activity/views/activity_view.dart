@@ -14,6 +14,7 @@ import '../../onboarding/views/training_session_flow.dart';
 import '../../profile/models/profile_settings.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/workout_record.dart';
+import '../../../../data/repositories/workout_log_repository.dart';
 import 'reschedule_session_page.dart';
 
 class ActivityView extends StatefulWidget {
@@ -22,11 +23,15 @@ class ActivityView extends StatefulWidget {
     required this.settings,
     required this.records,
     required this.onWorkoutCompleted,
+    required this.onSessionClosed,
+    required this.workoutLogRepository,
   });
 
   final TrainingSettings settings;
   final List<WorkoutRecord> records;
   final Future<void> Function(WorkoutRecord) onWorkoutCompleted;
+  final Future<void> Function() onSessionClosed;
+  final WorkoutLogRepository workoutLogRepository;
 
   @override
   State<ActivityView> createState() => _ActivityViewState();
@@ -106,11 +111,13 @@ class _ActivityViewState extends State<ActivityView> {
       MaterialPageRoute<WorkoutRecord>(
         builder: (_) => TrainingSessionFlow(
           settings: widget.settings,
+          workoutLogRepository: widget.workoutLogRepository,
           sessionIndex: _sessionIndexForDate(_selectedDate),
           scheduledDate: _selectedDate,
         ),
       ),
     );
+    await widget.onSessionClosed();
     if (record == null || !mounted) return;
     await widget.onWorkoutCompleted(record);
   }

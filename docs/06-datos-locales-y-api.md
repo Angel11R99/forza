@@ -6,6 +6,8 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 
 - Preferencias del plan: objetivo, experiencia, duración por sesión, días elegidos y equipo disponible.
 - Sesiones terminadas: fecha planificada, fecha de finalización, objetivo, duración, cantidad de ejercicios, lista de ejercicios y si se marcaron como completadas fuera de la app.
+- Resultados por serie: repeticiones o duración y carga registrada para cada ejercicio de una sesión.
+- Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
 - Metadatos: finalización del onboarding y control de importaciones.
 
 El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El perfil personal, medidas corporales, notificaciones, reprogramación y sincronización entre dispositivos todavía no son datos persistidos.
@@ -19,9 +21,10 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 | `training_plan_equipment` | Equipo disponible elegido por el usuario. |
 | `workout_sessions` | Historial y resumen de sesiones terminadas. |
 | `workout_session_exercises` | Ejercicios guardados en cada resumen, ordenados por posición. |
-| `app_metadata` | Marcadores de onboarding e importaciones ya completadas. |
+| `workout_set_entries` | Resultados registrados por ejercicio y serie. |
+| `app_metadata` | Marcadores, importaciones y borrador del entrenamiento activo. |
 
-La versión actual del esquema es `1`. La definición que Drift usa para crear una instalación nueva está en `database/migrations/sqlite/0001_initial.sql`; la instantánea serializada que utiliza Drift está en `drift_schemas/schema_v1.json`.
+La versión actual del esquema es `2`. Las migraciones están en `database/migrations/sqlite/0001_initial.sql` y `0002_workout_set_entries.sql`; las instantáneas serializadas están en `drift_schemas/schema_v1.json` y `schema_v2.json`. Al actualizar desde la versión 1, Drift crea la tabla de series y conserva el historial existente.
 
 ## Importación de instalaciones anteriores
 

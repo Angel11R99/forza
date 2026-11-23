@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../../data/database/app_database.dart';
@@ -30,11 +32,16 @@ class AppShellViewModel extends ChangeNotifier {
   List<WorkoutRecord> _workoutRecords = const [];
   bool _isReady = false;
   bool _needsFirstRunSetup = false;
+  bool _hasActiveWorkout = false;
+  DateTime? _activeWorkoutDate;
 
   TrainingSettings get trainingSettings => _trainingSettings;
   List<WorkoutRecord> get workoutRecords => _workoutRecords;
   bool get isReady => _isReady;
   bool get needsFirstRunSetup => _needsFirstRunSetup;
+  bool get hasActiveWorkout => _hasActiveWorkout;
+  DateTime? get activeWorkoutDate => _activeWorkoutDate;
+  WorkoutLogRepository get workoutLogRepository => _workoutLogRepository;
 
   Set<DateTime> get completedDates => {
     for (final record in _workoutRecords) record.date,
@@ -61,6 +68,19 @@ class AppShellViewModel extends ChangeNotifier {
     } on Object {
       // An empty history should not block startup.
     }
+    try {
+      final draft = await _workoutLogRepository.loadActiveWorkout();
+      _hasActiveWorkout = draft != null;
+      _activeWorkoutDate = draft == null
+          ? null
+          : DateTime.parse(
+              (jsonDecode(draft) as Map<String, Object?>)['scheduledDate']!
+                  as String,
+            );
+    } on Object {
+      _hasActiveWorkout = false;
+      _activeWorkoutDate = null;
+    }
 
     _trainingSettings = settings;
     _workoutRecords = records;
@@ -84,6 +104,20 @@ class AppShellViewModel extends ChangeNotifier {
 
   Future<void> recordWorkout(WorkoutRecord record) async {
     _workoutRecords = await _workoutLogRepository.save(record);
+    _hasActiveWorkout = false;
+    _activeWorkoutDate = null;
+    notifyListeners();
+  }
+
+  Future<void> refreshActiveWorkout() async {
+    final draft = await _workoutLogRepository.loadActiveWorkout();
+    _hasActiveWorkout = draft != null;
+    _activeWorkoutDate = draft == null
+        ? null
+        : DateTime.parse(
+            (jsonDecode(draft) as Map<String, Object?>)['scheduledDate']!
+                as String,
+          );
     notifyListeners();
   }
 }

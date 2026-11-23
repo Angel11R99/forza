@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+import 'dart:convert';
+
 import '../database/app_database.dart';
 import '../../domain/models/workout_record.dart';
 
@@ -7,6 +9,31 @@ class WorkoutLogRepository {
   WorkoutLogRepository({required this.database});
 
   final AppDatabase database;
+  static const _activeWorkoutKey = 'active_workout_v1';
+
+  Future<String?> loadActiveWorkout() async {
+    final row = await (database.select(
+      database.appMetadata,
+    )..where((entry) => entry.key.equals(_activeWorkoutKey))).getSingleOrNull();
+    return row?.value;
+  }
+
+  Future<void> saveActiveWorkout(Map<String, Object?> state) async {
+    await database
+        .into(database.appMetadata)
+        .insertOnConflictUpdate(
+          AppMetadataCompanion.insert(
+            key: _activeWorkoutKey,
+            value: jsonEncode(state),
+          ),
+        );
+  }
+
+  Future<void> clearActiveWorkout() async {
+    await (database.delete(
+      database.appMetadata,
+    )..where((entry) => entry.key.equals(_activeWorkoutKey))).go();
+  }
 
   Future<List<WorkoutRecord>> load() async {
     final sessions = await (database.select(
@@ -20,6 +47,14 @@ class WorkoutLogRepository {
                 ..where((row) => row.sessionId.equals(session.id))
                 ..orderBy([(row) => OrderingTerm.asc(row.position)]))
               .get();
+      final sets =
+          await (database.select(database.workoutSetEntries)
+                ..where((row) => row.sessionId.equals(session.id))
+                ..orderBy([
+                  (row) => OrderingTerm.asc(row.exercisePosition),
+                  (row) => OrderingTerm.asc(row.setIndex),
+                ]))
+              .get();
       records.add(
         WorkoutRecord(
           scheduledDate: DateTime.parse(session.scheduledDate),
@@ -30,6 +65,17 @@ class WorkoutLogRepository {
           exerciseCount: session.exerciseCount,
           exercises: exercises.map((row) => row.name).toList(growable: false),
           completedOutsideApp: session.completedOutsideApp,
+          setResults: sets
+              .map(
+                (set) => WorkoutSetResult(
+                  exercisePosition: set.exercisePosition,
+                  setIndex: set.setIndex,
+                  repetitions: set.repetitions,
+                  loadKg: set.loadKg,
+                  durationSeconds: set.durationSeconds,
+                ),
+              )
+              .toList(growable: false),
         ),
       );
     }
@@ -73,6 +119,21 @@ class WorkoutLogRepository {
                 sessionId: id,
                 position: index,
                 name: exerciseNames[index],
+              ),
+          ]);
+        });
+      }
+      if (record.setResults.isNotEmpty) {
+        await database.batch((batch) {
+          batch.insertAll(database.workoutSetEntries, [
+            for (final set in record.setResults)
+              WorkoutSetEntriesCompanion.insert(
+                sessionId: id,
+                exercisePosition: set.exercisePosition,
+                setIndex: set.setIndex,
+                repetitions: Value(set.repetitions),
+                loadKg: Value(set.loadKg),
+                durationSeconds: Value(set.durationSeconds),
               ),
           ]);
         });

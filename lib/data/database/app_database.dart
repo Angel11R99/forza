@@ -78,6 +78,22 @@ class WorkoutSessionExercises extends Table {
   ];
 }
 
+class WorkoutSetEntries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get sessionId =>
+      text().references(WorkoutSessions, #id, onDelete: KeyAction.cascade)();
+  IntColumn get exercisePosition => integer()();
+  IntColumn get setIndex => integer()();
+  IntColumn get repetitions => integer().nullable()();
+  RealColumn get loadKg => real().nullable()();
+  IntColumn get durationSeconds => integer().nullable()();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {sessionId, exercisePosition, setIndex},
+  ];
+}
+
 class AppMetadata extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
@@ -93,6 +109,7 @@ class AppMetadata extends Table {
     TrainingPlanEquipment,
     WorkoutSessions,
     WorkoutSessionExercises,
+    WorkoutSetEntries,
     AppMetadata,
   ],
 )
@@ -105,11 +122,14 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) => migrator.createAll(),
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) await migrator.createTable(workoutSetEntries);
+    },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },

@@ -19,6 +19,7 @@ class HomeView extends StatelessWidget {
     required this.onStartWorkout,
     required this.onEditPlan,
     required this.completedDates,
+    this.hasActiveWorkout = false,
   });
 
   final VoidCallback onShowActivity;
@@ -27,6 +28,7 @@ class HomeView extends StatelessWidget {
   final VoidCallback onStartWorkout;
   final VoidCallback onEditPlan;
   final Set<DateTime> completedDates;
+  final bool hasActiveWorkout;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +111,7 @@ class HomeView extends StatelessWidget {
                   settings: settings,
                   onPressed: onStartWorkout,
                   sessionDate: nextTrainingDate,
+                  hasActiveWorkout: hasActiveWorkout,
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
@@ -135,11 +138,13 @@ class _TodayWorkoutCard extends StatelessWidget {
     required this.settings,
     required this.onPressed,
     required this.sessionDate,
+    required this.hasActiveWorkout,
   });
 
   final TrainingSettings settings;
   final VoidCallback onPressed;
   final DateTime sessionDate;
+  final bool hasActiveWorkout;
 
   static const _planBuilder = TrainingPlanBuilder();
 
@@ -206,7 +211,11 @@ class _TodayWorkoutCard extends StatelessWidget {
                 foregroundColor: context.appColors.accent,
               ),
               icon: const Icon(Icons.play_arrow_rounded),
-              label: const Text('Ver sesión de hoy'),
+              label: Text(
+                hasActiveWorkout
+                    ? 'Continuar entrenamiento'
+                    : 'Ver sesión de hoy',
+              ),
             ),
           ),
         ],

@@ -2,6 +2,11 @@
 
 Este documento reúne módulos que pueden ampliar FORZA sin perder el foco en crear un plan, entrenar y entender los resultados. Las prioridades indican el orden sugerido, no una obligación de incluir todo en la primera versión.
 
+## Avance
+
+- **Registro de series y recuperación de sesión:** implementados en SQLite. La sesión activa conserva el ejercicio, tiempo y series; cada serie admite repeticiones y carga, o duración para ejercicios cronometrados. Al completar, esos resultados se guardan junto al historial.
+- **Pendiente de esta secuencia:** agenda persistente compartida, métricas de Progreso basadas en series, metas, calentamiento, guías y exportación/respaldo.
+
 ## Prioridad alta: cerrar el ciclo de entrenamiento
 
 | Módulo | Propósito | Alcance inicial |
