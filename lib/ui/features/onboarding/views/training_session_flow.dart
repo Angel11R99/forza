@@ -223,6 +223,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   String get _title => switch (_screen) {
     _SessionScreen.preparation => 'Preparación',
+    _SessionScreen.warmup => 'Calentamiento',
     _SessionScreen.exerciseList => 'Tu entrenamiento',
     _SessionScreen.rest => 'Descanso',
     _SessionScreen.paused => 'Entrenamiento pausado',
@@ -233,6 +234,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   Widget _buildScreen(BuildContext context) => switch (_screen) {
     _SessionScreen.preparation => _buildPreparation(context),
+    _SessionScreen.warmup => _buildWarmup(context),
     _SessionScreen.exerciseList => _buildExerciseList(context),
     _SessionScreen.rest => _buildRest(context),
     _SessionScreen.paused => _buildPaused(context),
@@ -240,6 +242,127 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     _SessionScreen.completed => _buildCompleted(context),
     _SessionScreen.summary => _buildSummary(context),
   };
+
+  List<_WarmupMovement> get _warmupMovements =>
+      switch (widget.sessionIndex % 3) {
+        0 => const [
+          _WarmupMovement(
+            'Círculos de hombros',
+            '30 s',
+            'Haz círculos suaves hacia delante y hacia atrás.',
+            Icons.accessibility_new_rounded,
+          ),
+          _WarmupMovement(
+            'Rotación torácica',
+            '30 s por lado',
+            'Gira el torso sin forzar el cuello.',
+            Icons.sync_alt_rounded,
+          ),
+          _WarmupMovement(
+            'Flexiones inclinadas',
+            '8 repeticiones',
+            'Apoya las manos en una superficie firme y mueve con control.',
+            Icons.fitness_center_rounded,
+          ),
+        ],
+        1 => const [
+          _WarmupMovement(
+            'Marcha en el sitio',
+            '45 s',
+            'Eleva las rodillas a un ritmo cómodo.',
+            Icons.directions_walk_rounded,
+          ),
+          _WarmupMovement(
+            'Bisagra de cadera',
+            '8 repeticiones',
+            'Lleva la cadera atrás manteniendo la espalda cómoda.',
+            Icons.accessibility_new_rounded,
+          ),
+          _WarmupMovement(
+            'Sentadilla sin carga',
+            '8 repeticiones',
+            'Baja solo hasta un rango que puedas controlar.',
+            Icons.airline_seat_legroom_normal_rounded,
+          ),
+        ],
+        _ => const [
+          _WarmupMovement(
+            'Marcha con brazos',
+            '45 s',
+            'Marcha en el sitio y acompaña el movimiento con los brazos.',
+            Icons.directions_walk_rounded,
+          ),
+          _WarmupMovement(
+            'Rotaciones de torso',
+            '30 s',
+            'Gira suavemente de lado a lado, sin rebotes.',
+            Icons.sync_alt_rounded,
+          ),
+          _WarmupMovement(
+            'Bisagra de cadera',
+            '8 repeticiones',
+            'Lleva la cadera atrás con un movimiento lento y cómodo.',
+            Icons.accessibility_new_rounded,
+          ),
+        ],
+      };
+
+  Widget _buildWarmup(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SessionEyebrow(label: 'Calentamiento'),
+        const SizedBox(height: AppSpacing.x3),
+        Text(
+          'Prepara tu cuerpo',
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppSpacing.x2),
+        Text(
+          'Movimientos breves para ${_plannedSession.title.toLowerCase()}. Hazlos a un ritmo cómodo; puedes omitirlos cuando quieras.',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const SizedBox(height: AppSpacing.x6),
+        for (var index = 0; index < _warmupMovements.length; index++) ...[
+          AppSurfaceCard(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  _warmupMovements[index].icon,
+                  color: context.appColors.accent,
+                ),
+                const SizedBox(width: AppSpacing.x3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _warmupMovements[index].title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: AppSpacing.x1),
+                      Text(
+                        _warmupMovements[index].instructions,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.x2),
+                Text(
+                  _warmupMovements[index].duration,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            ),
+          ),
+          if (index < _warmupMovements.length - 1)
+            const SizedBox(height: AppSpacing.x2),
+        ],
+      ],
+    );
+  }
 
   Widget _buildPreparation(BuildContext context) {
     return Column(
@@ -586,12 +709,30 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       width: double.infinity,
       child: switch (_screen) {
         _SessionScreen.preparation => FilledButton.icon(
-          onPressed: _start,
-          icon: const Icon(Icons.play_arrow_rounded),
+          onPressed: () => setState(() => _screen = _SessionScreen.warmup),
+          icon: const Icon(Icons.arrow_forward_rounded),
           label: const Padding(
             padding: EdgeInsets.symmetric(vertical: 13),
-            child: Text('Comenzar entrenamiento'),
+            child: Text('Ver calentamiento'),
           ),
+        ),
+        _SessionScreen.warmup => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton.icon(
+              onPressed: _start,
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 13),
+                child: Text('Comenzar entrenamiento'),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            TextButton(
+              onPressed: _start,
+              child: const Text('Omitir calentamiento'),
+            ),
+          ],
         ),
         _SessionScreen.exerciseList => FilledButton(
           onPressed: _completeCurrentExercise,
@@ -783,6 +924,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     switch (_screen) {
       case _SessionScreen.preparation:
         Navigator.of(context).pop();
+      case _SessionScreen.warmup:
+        setState(() => _screen = _SessionScreen.preparation);
       case _SessionScreen.exerciseList:
         _pause();
       case _SessionScreen.rest:
@@ -801,12 +944,27 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
 enum _SessionScreen {
   preparation,
+  warmup,
   exerciseList,
   rest,
   paused,
   confirmAbandon,
   completed,
   summary,
+}
+
+class _WarmupMovement {
+  const _WarmupMovement(
+    this.title,
+    this.duration,
+    this.instructions,
+    this.icon,
+  );
+
+  final String title;
+  final String duration;
+  final String instructions;
+  final IconData icon;
 }
 
 class _WorkoutSetEditor extends StatelessWidget {
