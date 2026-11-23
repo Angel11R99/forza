@@ -9,9 +9,9 @@ Este documento reúne módulos que pueden ampliar FORZA sin perder el foco en cr
 - **Progreso basado en resultados:** implementado para los últimos 30 días. La vista resume repeticiones, series y volumen (repeticiones × carga); el detalle muestra el registro de cada ejercicio. Las sesiones marcadas fuera de la app no generan métricas de series.
 - **Objetivos personales:** implementados con metas semanales de sesiones y marcas de carga para un ejercicio. Se guardan localmente y se pueden editar o retirar; el avance se calcula desde las sesiones y series registradas.
 - **Calentamiento y movilidad:** implementados antes de cada sesión, con una secuencia breve según el enfoque del entrenamiento y una opción visible para omitirla.
-- **Guías de ejercicios:** implementadas en el detalle con animación disponible e instrucciones numeradas del catálogo. Las notas de errores frecuentes se muestran solo para ejercicios con una fuente curada; por ahora incluyen el peso muerto rumano con barra.
+- **Guías de ejercicios:** implementadas en el detalle con animaciones locales disponibles, instrucciones numeradas y notas técnicas vinculadas a fuentes ACE para familias de movimientos presentes en el catálogo. Los ejercicios sin animación muestran su alternativa visual y los pasos escritos.
 - **Exportación y respaldo:** implementados como archivo JSON local. Incluye plan, historial y series, agenda, objetivos, sesión activa y apariencia; al restaurar valida el archivo y pide confirmación antes de reemplazar los datos.
-- **Siguiente mejora posible:** ampliar las notas verificadas de ejercicios. No bloquea los módulos de esta secuencia.
+- **Siguiente mejora posible:** revisar individualmente las variantes no cubiertas por las familias de notas y ampliar el catálogo de animaciones cuando haya material revisado y autorizado.
 
 ## Prioridad alta: cerrar el ciclo de entrenamiento
 

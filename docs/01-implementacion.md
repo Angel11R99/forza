@@ -134,9 +134,9 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 3 · Datos
 
-- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y repositorio asíncrono carga el dataset local fijado en un commit, con 1.324 nombres/instrucciones en español y sin medios. La biblioteca muestra carga/error; búsqueda, filtros, detalle y alternativas consultan el repositorio. Planes e historial se guardan en SQLite mediante Drift; el catálogo de ejercicios permanece como asset. No hay API.
+- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y repositorio asíncrono carga el dataset local fijado en un commit, con 1.324 nombres/instrucciones en español. Las ilustraciones animadas son un asset vectorial local independiente del dataset, con alternativa de icono para ejercicios sin animación. La biblioteca muestra carga/error; búsqueda, filtros, detalle y alternativas consultan el repositorio. Planes e historial se guardan en SQLite mediante Drift; el catálogo de ejercicios permanece como asset. No hay API.
 - [x] Definir modelo `Exercise` y contrato `ExerciseRepository` separados de widgets.
-- [x] Incluir el dataset de texto aprobado como asset local; omitir imágenes y GIFs.
+- [x] Incluir el dataset de texto como asset local y separar las ilustraciones vectoriales; omitir las imágenes y GIFs upstream.
 - [ ] Conectar una API solo si aparece un servicio remoto aprobado y necesario.
 - [ ] Si el catálogo pasa a una API, paginar y resolver búsqueda/filtros en el origen; no cargar todos los GIFs de golpe.
 
