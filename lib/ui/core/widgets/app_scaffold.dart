@@ -349,6 +349,7 @@ class _AppScaffoldState extends State<AppScaffold>
       onDestinationSelected: _selectDestination,
       backgroundColor: context.appColors.background,
       indicatorColor: context.appColors.accentSoft,
+      indicatorShape: const CircleBorder(),
       labelType: NavigationRailLabelType.all,
       minWidth: 84,
       groupAlignment: -0.65,
@@ -360,15 +361,12 @@ class _AppScaffoldState extends State<AppScaffold>
         child: Semantics(
           label: 'FORZA',
           child: ExcludeSemantics(
-            child: Container(
+            child: SizedBox(
               width: 64,
               height: 34,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: context.appColors.accent,
-                borderRadius: BorderRadius.circular(10),
+              child: Center(
+                child: ForzaWordmark(color: context.appColors.textPrimary),
               ),
-              child: ForzaWordmark(color: context.appColors.inverseText),
             ),
           ),
         ),
