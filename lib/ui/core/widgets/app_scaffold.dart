@@ -29,9 +29,14 @@ class AppScaffold extends StatefulWidget {
   State<AppScaffold> createState() => _AppScaffoldState();
 }
 
-class _AppScaffoldState extends State<AppScaffold> {
+class _AppScaffoldState extends State<AppScaffold>
+    with SingleTickerProviderStateMixin {
   late int _selectedIndex;
   final _viewModel = AppShellViewModel();
+  late final AnimationController _moduleController;
+  late final CurvedAnimation _moduleTransition;
+  late final Animation<Offset> _moduleOffset;
+  int? _pendingDestination;
   bool _isOpeningFirstRun = false;
 
   static const _destinations = <_AppDestination>[
@@ -68,11 +73,29 @@ class _AppScaffoldState extends State<AppScaffold> {
     _selectedIndex = widget.initialIndex
         .clamp(0, _destinations.length - 1)
         .toInt();
+    _moduleController = AnimationController(
+      vsync: this,
+      value: 1,
+      duration: const Duration(milliseconds: 210),
+      reverseDuration: const Duration(milliseconds: 140),
+    )..addStatusListener(_onModuleTransitionStatus);
+    _moduleTransition = CurvedAnimation(
+      parent: _moduleController,
+      curve: Curves.easeInOutCubic,
+    );
+    _moduleOffset = Tween<Offset>(
+      begin: const Offset(0.015, 0),
+      end: Offset.zero,
+    ).animate(_moduleTransition);
     _restoreSettings();
   }
 
   @override
   void dispose() {
+    _moduleController
+      ..removeStatusListener(_onModuleTransitionStatus)
+      ..dispose();
+    _moduleTransition.dispose();
     _viewModel.dispose();
     super.dispose();
   }
@@ -113,8 +136,27 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   void _selectDestination(int index) {
-    if (index == _selectedIndex) return;
-    setState(() => _selectedIndex = index);
+    if (index == _selectedIndex) {
+      _pendingDestination = null;
+      _moduleController.forward();
+      return;
+    }
+    _pendingDestination = index;
+    if (_moduleController.status != AnimationStatus.reverse) {
+      _moduleController.reverse();
+    }
+  }
+
+  void _onModuleTransitionStatus(AnimationStatus status) {
+    if (status != AnimationStatus.dismissed || _pendingDestination == null) {
+      return;
+    }
+    final nextIndex = _pendingDestination!;
+    _pendingDestination = null;
+    if (nextIndex != _selectedIndex) {
+      setState(() => _selectedIndex = nextIndex);
+    }
+    _moduleController.forward();
   }
 
   Future<void> _editPlan() async {
@@ -222,6 +264,10 @@ class _AppScaffoldState extends State<AppScaffold> {
               ),
             ),
           );
+          final animatedContent = FadeTransition(
+            opacity: _moduleTransition,
+            child: SlideTransition(position: _moduleOffset, child: content),
+          );
 
           return Scaffold(
             body: useRail
@@ -229,10 +275,10 @@ class _AppScaffoldState extends State<AppScaffold> {
                     children: [
                       _buildNavigationRail(),
                       const VerticalDivider(width: 1, thickness: 1),
-                      Expanded(child: content),
+                      Expanded(child: animatedContent),
                     ],
                   )
-                : content,
+                : animatedContent,
             bottomNavigationBar: useRail ? null : _buildBottomNavigationBar(),
           );
         },
