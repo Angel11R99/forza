@@ -1,0 +1,22 @@
+[
+  {"name":"type:bug","color":"d73a4a","description":"Error o comportamiento incorrecto"},
+  {"name":"type:feature","color":"a2eeef","description":"Nueva funcionalidad"},
+  {"name":"type:enhancement","color":"7057ff","description":"Mejora de una función existente"},
+  {"name":"type:documentation","color":"0075ca","description":"Cambio de documentación"},
+  {"name":"status:pending-review","color":"fbca04","description":"Pendiente de decisión del mantenedor"},
+  {"name":"status:approved","color":"0e8a16","description":"Aprobado para desarrollo"},
+  {"name":"status:rejected","color":"b60205","description":"Propuesta rechazada"},
+  {"name":"status:duplicate","color":"cfd3d7","description":"Duplicado confirmado por un mantenedor"},
+  {"name":"status:in-progress","color":"1d76db","description":"Desarrollo autorizado en curso"},
+  {"name":"status:in-review","color":"5319e7","description":"Pull Request en revisión"},
+  {"name":"status:completed","color":"0e8a16","description":"Trabajo integrado"},
+  {"name":"module:home","color":"c5def5","description":"Inicio y resumen"},
+  {"name":"module:exercises","color":"c5def5","description":"Exploración y detalle de ejercicios"},
+  {"name":"module:activity","color":"c5def5","description":"Actividad y sesiones programadas"},
+  {"name":"module:progress","color":"c5def5","description":"Progreso, estadísticas y objetivos"},
+  {"name":"module:profile","color":"c5def5","description":"Perfil, preferencias y copias de seguridad"},
+  {"name":"module:onboarding","color":"c5def5","description":"Incorporación y configuración inicial"},
+  {"name":"module:localization","color":"c5def5","description":"Idiomas y traducciones"},
+  {"name":"module:data","color":"c5def5","description":"Persistencia local y migraciones"},
+  {"name":"contrib:exception-approved","color":"e4e669","description":"Excepción de autor de PR autorizada por el mantenedor"}
+]

@@ -1,0 +1,19 @@
+name: Reportar un error
+description: Cuéntanos qué falla en FORZA.
+title: "bug: "
+labels: ["type:bug", "status:pending-review"]
+body:
+  - type: textarea
+    id: observed
+    attributes:
+      label: ¿Qué sucede?
+      description: Describe el problema y qué esperabas que ocurriera.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: ¿Cómo reproducirlo?
+      placeholder: "1. Abre… 2. Pulsa…"
+    validations:
+      required: true

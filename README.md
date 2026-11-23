@@ -19,6 +19,9 @@ GDK_BACKEND=x11 flutter run -d linux
 
 ## Documentación
 
+- [Cómo contribuir](CONTRIBUTING.md)
+- [Configuración de contribuciones, reglas y APK en GitHub](docs/github-contributions.md)
+
 - [Guía de implementación](docs/01-implementacion.md)
 - [Pantallas y módulos](docs/02-modulos-y-pantallas.md)
 - [Sistema visual](docs/03-sistema-visual.md)

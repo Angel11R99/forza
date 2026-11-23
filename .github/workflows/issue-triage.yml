@@ -1,0 +1,48 @@
+name: Issue triage
+on:
+  issues:
+    types: [opened, labeled, assigned, closed]
+  pull_request:
+    types: [closed]
+permissions:
+  contents: read
+  issues: write
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Suggest possible duplicates for human review
+        if: github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: python .github/scripts/find_issue_duplicates.py
+      - name: Keep issue status labels consistent
+        if: github.event.action == 'labeled' || github.event.action == 'assigned'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: python .github/scripts/sync_issue_status.py
+      - name: Mark linked issue complete after merge
+        if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python - <<'PY'
+          import os, re, subprocess, sys
+          body = os.environ.get("PR_BODY") or ""
+          refs = re.findall(r"(?im)^\s*(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)\b", body)
+          if len(set(refs)) == 1:
+              subprocess.run(["gh", "issue", "edit", refs[0], "--repo", os.environ["GH_REPO"], "--remove-label", "status:in-review", "--remove-label", "status:in-progress", "--add-label", "status:completed"], check=True)
+          else:
+              print("Merged PR has no unique closing issue; no issue label was changed.")
+          PY

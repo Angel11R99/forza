@@ -1,0 +1,11 @@
+name: Solicitar una funcionalidad
+description: Propón una capacidad que todavía no tiene FORZA.
+title: "feature: "
+labels: ["type:feature", "status:pending-review"]
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: ¿Qué funcionalidad falta y para qué serviría?
+    validations:
+      required: true

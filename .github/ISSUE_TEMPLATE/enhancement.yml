@@ -1,0 +1,11 @@
+name: Proponer una mejora
+description: Sugiere cómo mejorar una parte existente de FORZA.
+title: "enhancement: "
+labels: ["type:enhancement", "status:pending-review"]
+body:
+  - type: textarea
+    id: improvement
+    attributes:
+      label: ¿Qué mejorarías y por qué?
+    validations:
+      required: true

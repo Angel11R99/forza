@@ -1,0 +1,58 @@
+name: Publish Android APK
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version (for example v1.2.0)
+        required: true
+        type: string
+permissions:
+  contents: write
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate release request and signing secrets
+        env:
+          VERSION: ${{ inputs.version }}
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Use semantic version format vX.Y.Z.' >&2; exit 1; }
+          [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]] || { echo 'Configure ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD repository secrets.' >&2; exit 1; }
+          ! git tag -l "$VERSION" | grep -q . || { echo "Tag $VERSION already exists." >&2; exit 1; }
+          ! gh release view "$VERSION" >/dev/null 2>&1 || { echo "Release $VERSION already exists." >&2; exit 1; }
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/forza-release.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/forza-release.jks" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION=${VERSION#v}" >> "$GITHUB_ENV"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+      - run: flutter test
+      - name: Build signed production APK
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: flutter build apk --release --build-name="$RELEASE_VERSION" --build-number="$GITHUB_RUN_NUMBER"
+      - name: Create tag and publish APK release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/forza-${VERSION}.apk"
+          git tag "$VERSION" "$GITHUB_SHA"
+          git push origin "$VERSION"
+          gh release create "$VERSION" "dist/forza-${VERSION}.apk" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "FORZA $VERSION" --generate-notes
