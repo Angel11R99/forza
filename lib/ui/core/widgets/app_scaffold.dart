@@ -304,40 +304,17 @@ class _AppScaffoldState extends State<AppScaffold> {
       ),
       child: SafeArea(
         top: false,
-        child: NavigationBarTheme(
-          data: NavigationBarThemeData(
-            indicatorColor: Colors.transparent,
-            labelTextStyle: WidgetStateProperty.resolveWith((states) {
-              final selected = states.contains(WidgetState.selected);
-              return TextStyle(
-                color: selected
-                    ? context.appColors.accent
-                    : context.appColors.textSecondary,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              );
-            }),
-            iconTheme: WidgetStateProperty.resolveWith((states) {
-              final selected = states.contains(WidgetState.selected);
-              return IconThemeData(
-                color: selected
-                    ? context.appColors.accent
-                    : context.appColors.textSecondary,
-              );
-            }),
-          ),
-          child: NavigationBar(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: _selectDestination,
-            backgroundColor: Colors.transparent,
-            destinations: [
-              for (final destination in _destinations)
-                NavigationDestination(
-                  icon: Icon(destination.icon),
-                  selectedIcon: Icon(destination.selectedIcon),
-                  label: destination.label,
+        child: Row(
+          children: [
+            for (var index = 0; index < _destinations.length; index++)
+              Expanded(
+                child: _BottomNavigationDestination(
+                  destination: _destinations[index],
+                  selected: index == _selectedIndex,
+                  onTap: () => _selectDestination(index),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
@@ -354,4 +331,81 @@ class _AppDestination {
   final String label;
   final IconData icon;
   final IconData selectedIcon;
+}
+
+class _BottomNavigationDestination extends StatefulWidget {
+  const _BottomNavigationDestination({
+    required this.destination,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final _AppDestination destination;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  State<_BottomNavigationDestination> createState() =>
+      _BottomNavigationDestinationState();
+}
+
+class _BottomNavigationDestinationState
+    extends State<_BottomNavigationDestination> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+    return Semantics(
+      button: true,
+      selected: widget.selected,
+      label: widget.destination.label,
+      child: InkWell(
+        onTap: widget.onTap,
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MouseRegion(
+                onEnter: (_) => setState(() => _hovered = true),
+                onExit: (_) => setState(() => _hovered = false),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 120),
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: _hovered ? colors.accentSoft : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    widget.selected
+                        ? widget.destination.selectedIcon
+                        : widget.destination.icon,
+                    color: widget.selected
+                        ? colors.accent
+                        : colors.textSecondary,
+                    size: 22,
+                  ),
+                ),
+              ),
+              Text(
+                widget.destination.label,
+                style: TextStyle(
+                  color: widget.selected ? colors.accent : colors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: widget.selected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
