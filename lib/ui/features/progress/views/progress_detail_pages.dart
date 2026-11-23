@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
@@ -8,31 +9,8 @@ import '../../../../domain/models/workout_record.dart';
 import '../data/progress_demo_data.dart';
 import '../models/progress_models.dart';
 import '../widgets/progress_line_chart.dart';
-
-const _monthNames = <String>[
-  'enero',
-  'febrero',
-  'marzo',
-  'abril',
-  'mayo',
-  'junio',
-  'julio',
-  'agosto',
-  'septiembre',
-  'octubre',
-  'noviembre',
-  'diciembre',
-];
-
-const _weekdayNames = <String>[
-  'lunes',
-  'martes',
-  'miércoles',
-  'jueves',
-  'viernes',
-  'sábado',
-  'domingo',
-];
+import '../../../../app/localization/localization_extensions.dart';
+import '../../exercises/models/exercise_localized_labels.dart';
 
 class SessionDetailPage extends StatelessWidget {
   const SessionDetailPage({super.key, required this.session});
@@ -41,8 +19,9 @@ class SessionDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle de sesión')),
+      appBar: AppBar(title: Text(context.l10n.progressSessionDetail)),
       body: SafeArea(
         bottom: false,
         child: Center(
@@ -63,7 +42,7 @@ class SessionDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  _formatLongDate(session.date),
+                  _formatLongDate(session.date, localeName),
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -71,7 +50,7 @@ class SessionDetailPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _ValueCard(
-                        label: 'Duración',
+                        label: context.l10n.progressDuration,
                         value: '${session.durationMinutes} min',
                         icon: Icons.schedule_rounded,
                       ),
@@ -79,7 +58,7 @@ class SessionDetailPage extends StatelessWidget {
                     const SizedBox(width: AppSpacing.x3),
                     Expanded(
                       child: _ValueCard(
-                        label: 'Ejercicios',
+                        label: context.l10n.progressExercises,
                         value: '${session.exerciseCount}',
                         icon: Icons.fitness_center_rounded,
                       ),
@@ -91,7 +70,7 @@ class SessionDetailPage extends StatelessWidget {
                   AppSurfaceCard(
                     color: context.appColors.surfaceMuted,
                     child: Text(
-                      'Marcaste esta sesión como realizada fuera de FORZA. No hay detalle de movimientos ni cargas.',
+                      context.l10n.progressOutsideAppNote,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
@@ -99,7 +78,9 @@ class SessionDetailPage extends StatelessWidget {
                 const SizedBox(height: AppSpacing.x8),
                 if (session.exercises.isNotEmpty) ...[
                   SectionHeading(
-                    title: 'Ejercicios · ${session.exercises.length}',
+                    title: context.l10n.progressExerciseHeading(
+                      session.exercises.length,
+                    ),
                   ),
                   for (var index = 0; index < session.exercises.length; index++)
                     Builder(
@@ -127,7 +108,10 @@ class SessionDetailPage extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        session.exercises[index],
+                                        localizedTrainingExerciseName(
+                                          context,
+                                          session.exercises[index],
+                                        ),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium,
@@ -140,7 +124,7 @@ class SessionDetailPage extends StatelessWidget {
                                               bottom: AppSpacing.x1,
                                             ),
                                             child: Text(
-                                              _setSummary(set),
+                                              _setSummary(context, set),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium,
@@ -198,7 +182,7 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
     final increase = values.last - values.first;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Evolución de fuerza')),
+      appBar: AppBar(title: Text(context.l10n.progressStrengthEvolution)),
       body: SafeArea(
         bottom: false,
         child: Center(
@@ -214,12 +198,12 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
               children: [
                 const SizedBox(height: AppSpacing.x4),
                 Text(
-                  'Más fuerza, paso a paso.',
+                  context.l10n.progressStrengthHeadline,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Compara el peso de trabajo entre tus últimas seis sesiones.',
+                  context.l10n.progressStrengthDescription,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -229,7 +213,9 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                   children: [
                     for (final exercise in _exercises)
                       ChoiceChip(
-                        label: Text(exercise),
+                        label: Text(
+                          localizedTrainingExerciseName(context, exercise),
+                        ),
                         selected: exercise == _selectedExercise,
                         onSelected: (_) =>
                             setState(() => _selectedExercise = exercise),
@@ -254,15 +240,16 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                       ),
                       const SizedBox(height: AppSpacing.x1),
                       Text(
-                        'Peso de trabajo (kg)',
+                        context.l10n.progressWorkingWeight,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: AppSpacing.x2),
                       ProgressLineChart(
                         values: values,
                         labels: ProgressDemoData.strengthLabels,
-                        summary:
-                            'El peso de trabajo aumentó ${increase.toStringAsFixed(1)} kilogramos en seis sesiones.',
+                        summary: context.l10n.progressStrengthChartSummary(
+                          increase.toStringAsFixed(1),
+                        ),
                       ),
                     ],
                   ),
@@ -272,7 +259,7 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                   children: [
                     Expanded(
                       child: _ValueCard(
-                        label: 'Inicio',
+                        label: context.l10n.progressStart,
                         value: '${values.first} kg',
                         icon: Icons.flag_outlined,
                       ),
@@ -280,7 +267,7 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                     const SizedBox(width: AppSpacing.x3),
                     Expanded(
                       child: _ValueCard(
-                        label: 'Actual',
+                        label: context.l10n.progressCurrent,
                         value: '${values.last} kg',
                         icon: Icons.trending_up_rounded,
                       ),
@@ -331,7 +318,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Evolución corporal')),
+      appBar: AppBar(title: Text(context.l10n.progressBodyEvolution)),
       body: SafeArea(
         bottom: false,
         child: Center(
@@ -347,12 +334,12 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
               children: [
                 const SizedBox(height: AppSpacing.x4),
                 Text(
-                  'Cambios que puedes seguir.',
+                  context.l10n.progressBodyHeadline,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Las medidas son referencias orientativas, no objetivos.',
+                  context.l10n.progressBodyDescription,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -367,7 +354,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Peso corporal',
+                        context.l10n.progressBodyWeight,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: AppSpacing.x1),
@@ -376,8 +363,10 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                       ProgressLineChart(
                         values: values,
                         labels: labels,
-                        summary:
-                            'El peso corporal pasó de ${first.weightKg.toStringAsFixed(1)} a ${latest.weightKg.toStringAsFixed(1)} kilogramos.',
+                        summary: context.l10n.progressWeightChartSummary(
+                          first.weightKg.toStringAsFixed(1),
+                          latest.weightKg.toStringAsFixed(1),
+                        ),
                       ),
                     ],
                   ),
@@ -387,7 +376,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                   children: [
                     Expanded(
                       child: _ValueCard(
-                        label: 'Último registro',
+                        label: context.l10n.progressLastEntry,
                         value: '${latest.weightKg.toStringAsFixed(1)} kg',
                         icon: Icons.monitor_weight_outlined,
                       ),
@@ -395,7 +384,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                     const SizedBox(width: AppSpacing.x3),
                     Expanded(
                       child: _ValueCard(
-                        label: 'Cambio del periodo',
+                        label: context.l10n.progressPeriodChange,
                         value:
                             '${change > 0 ? '+' : ''}${change.toStringAsFixed(1)} kg',
                         icon: Icons.trending_up_rounded,
@@ -404,7 +393,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.x8),
-                SectionHeading(title: 'Medidas recientes'),
+                SectionHeading(title: context.l10n.progressRecentMeasurements),
                 for (final entry in ordered.reversed.take(3))
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.x2),
@@ -427,7 +416,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
           child: FilledButton.icon(
             onPressed: _openMeasurementForm,
             icon: const Icon(Icons.add_rounded),
-            label: const Text('Registrar medidas'),
+            label: Text(context.l10n.progressRegisterMeasurements),
           ),
         ),
       ),
@@ -475,7 +464,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrar medidas')),
+      appBar: AppBar(title: Text(context.l10n.progressRegisterMeasurements)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -492,12 +481,12 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                 children: [
                   const SizedBox(height: AppSpacing.x4),
                   Text(
-                    'Registra cómo vas.',
+                    context.l10n.progressMeasurementHeadline,
                     style: Theme.of(context).textTheme.displaySmall,
                   ),
                   const SizedBox(height: AppSpacing.x2),
                   Text(
-                    'El peso es obligatorio. Las demás medidas son opcionales.',
+                    context.l10n.progressMeasurementDescription,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: AppSpacing.x6),
@@ -505,8 +494,13 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                     padding: EdgeInsets.zero,
                     child: ListTile(
                       leading: const Icon(Icons.calendar_today_rounded),
-                      title: const Text('Fecha de registro'),
-                      subtitle: Text(_formatLongDate(_date)),
+                      title: Text(context.l10n.progressMeasurementDate),
+                      subtitle: Text(
+                        _formatLongDate(
+                          _date,
+                          Localizations.localeOf(context).toLanguageTag(),
+                        ),
+                      ),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: _pickDate,
                     ),
@@ -514,43 +508,43 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                   const SizedBox(height: AppSpacing.x6),
                   _MeasurementField(
                     controller: _weightController,
-                    label: 'Peso corporal',
+                    label: context.l10n.progressBodyWeight,
                     unit: 'kg',
                     required: true,
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _waistController,
-                    label: 'Cintura',
+                    label: context.l10n.progressWaist,
                     unit: 'cm',
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _chestController,
-                    label: 'Pecho',
+                    label: context.l10n.progressChest,
                     unit: 'cm',
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _hipsController,
-                    label: 'Cadera',
+                    label: context.l10n.progressHips,
                     unit: 'cm',
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _armController,
-                    label: 'Brazo',
+                    label: context.l10n.progressArm,
                     unit: 'cm',
                   ),
                   const SizedBox(height: AppSpacing.x6),
                   FilledButton.icon(
                     onPressed: _save,
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('Guardar registro'),
+                    label: Text(context.l10n.progressSaveEntry),
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   Text(
-                    'Este registro se conserva mientras la app está abierta.',
+                    context.l10n.progressMeasurementsSavedNote,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
@@ -614,16 +608,18 @@ class _MeasurementField extends StatelessWidget {
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
-        labelText: required ? '$label *' : label,
+        labelText: required ? context.l10n.requiredField(label) : label,
         suffixText: unit,
       ),
       validator: (text) {
         final value = text?.trim().replaceAll(',', '.') ?? '';
         if (value.isEmpty) {
-          return required ? 'Ingresa el peso corporal.' : null;
+          return required ? context.l10n.progressWeightRequired : null;
         }
         final parsed = double.tryParse(value);
-        if (parsed == null || parsed <= 0) return 'Ingresa un valor válido.';
+        if (parsed == null || parsed <= 0) {
+          return context.l10n.progressInvalidValue;
+        }
         return null;
       },
     );
@@ -638,7 +634,7 @@ class PersonalRecordsPage extends StatelessWidget {
     final records = ProgressDemoData.records(DateTime.now());
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Récords personales')),
+      appBar: AppBar(title: Text(context.l10n.progressPersonalRecords)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -653,12 +649,12 @@ class PersonalRecordsPage extends StatelessWidget {
               children: [
                 const SizedBox(height: AppSpacing.x4),
                 Text(
-                  'Tus mejores marcas.',
+                  context.l10n.progressRecordsHeadline,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Tus mejores marcas en distintos ejercicios.',
+                  context.l10n.progressRecordsDescription,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -700,12 +696,15 @@ class _RecordCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  record.exercise,
+                  localizedTrainingExerciseName(context, record.exercise),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  _formatShortDate(record.date),
+                  _formatShortDate(
+                    record.date,
+                    Localizations.localeOf(context).toLanguageTag(),
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -729,10 +728,26 @@ class _MeasurementSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final details = <String>[
-      if (entry.waistCm != null) 'Cintura ${_formatValue(entry.waistCm!)} cm',
-      if (entry.chestCm != null) 'Pecho ${_formatValue(entry.chestCm!)} cm',
-      if (entry.hipsCm != null) 'Cadera ${_formatValue(entry.hipsCm!)} cm',
-      if (entry.armCm != null) 'Brazo ${_formatValue(entry.armCm!)} cm',
+      if (entry.waistCm != null)
+        context.l10n.measurementValue(
+          context.l10n.progressWaist,
+          _formatValue(entry.waistCm!),
+        ),
+      if (entry.chestCm != null)
+        context.l10n.measurementValue(
+          context.l10n.progressChest,
+          _formatValue(entry.chestCm!),
+        ),
+      if (entry.hipsCm != null)
+        context.l10n.measurementValue(
+          context.l10n.progressHips,
+          _formatValue(entry.hipsCm!),
+        ),
+      if (entry.armCm != null)
+        context.l10n.measurementValue(
+          context.l10n.progressArm,
+          _formatValue(entry.armCm!),
+        ),
     ];
 
     return AppSurfaceCard(
@@ -745,12 +760,17 @@ class _MeasurementSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _formatShortDate(entry.date),
+                  _formatShortDate(
+                    entry.date,
+                    Localizations.localeOf(context).toLanguageTag(),
+                  ),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  details.isEmpty ? 'Peso corporal' : details.join('  ·  '),
+                  details.isEmpty
+                      ? context.l10n.progressBodyWeight
+                      : details.join('  ·  '),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -795,21 +815,33 @@ class _ValueCard extends StatelessWidget {
   }
 }
 
-String _formatLongDate(DateTime date) =>
-    '${_weekdayNames[date.weekday - 1]}, ${date.day} de ${_monthNames[date.month - 1]}';
+String _formatLongDate(DateTime date, String localeName) =>
+    DateFormat.yMMMMEEEEd(localeName).format(date);
 
-String _formatShortDate(DateTime date) =>
-    '${date.day} ${_monthNames[date.month - 1].substring(0, 3)}';
+String _formatShortDate(DateTime date, String localeName) =>
+    DateFormat.MMMd(localeName).format(date);
 
 String _formatValue(double value) => value == value.roundToDouble()
     ? value.toStringAsFixed(0)
     : value.toStringAsFixed(1);
 
-String _setSummary(WorkoutSetResult set) {
+String _setSummary(BuildContext context, WorkoutSetResult set) {
   final values = <String>[
-    if (set.repetitions != null) '${set.repetitions} reps',
-    if (set.loadKg != null) '${_formatValue(set.loadKg!)} kg',
-    if (set.durationSeconds != null) '${set.durationSeconds} s',
+    if (set.repetitions != null)
+      context.l10n.progressValueWithUnit(
+        '${set.repetitions}',
+        context.l10n.progressRepetitionsUnit,
+      ),
+    if (set.loadKg != null)
+      context.l10n.progressValueWithUnit(
+        _formatValue(set.loadKg!),
+        context.l10n.progressKilograms,
+      ),
+    if (set.durationSeconds != null)
+      context.l10n.progressValueWithUnit(
+        '${set.durationSeconds}',
+        context.l10n.progressSecondsUnit,
+      ),
   ];
-  return 'Serie ${set.setIndex + 1} · ${values.join(' · ')}';
+  return context.l10n.progressSetSummary(set.setIndex + 1, values.join(' · '));
 }

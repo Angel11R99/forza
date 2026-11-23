@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 
 class AccountWelcomePage extends StatelessWidget {
@@ -25,25 +26,25 @@ class AccountWelcomePage extends StatelessWidget {
                       const _ForzaMark(),
                       const SizedBox(height: AppSpacing.x12),
                       Text(
-                        'Entrena a tu ritmo.',
+                        context.l10n.accountWelcomeTitle,
                         style: Theme.of(context).textTheme.displaySmall,
                       ),
                       const SizedBox(height: AppSpacing.x3),
                       Text(
-                        'Crea un espacio para organizar tus entrenamientos y seguir tu progreso.',
+                        context.l10n.accountWelcomeDescription,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: AppSpacing.x8),
-                      const _AccessNote(),
+                      _AccessNote(),
                       const SizedBox(height: AppSpacing.x8),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
                           onPressed: () =>
                               _open(context, const CreateAccountPage()),
-                          child: const Padding(
+                          child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 13),
-                            child: Text('Crear cuenta'),
+                            child: Text(context.l10n.accountCreate),
                           ),
                         ),
                       ),
@@ -52,9 +53,9 @@ class AccountWelcomePage extends StatelessWidget {
                         width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () => _open(context, const SignInPage()),
-                          child: const Padding(
+                          child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 13),
-                            child: Text('Ya tengo una cuenta'),
+                            child: Text(context.l10n.accountExisting),
                           ),
                         ),
                       ),
@@ -62,7 +63,7 @@ class AccountWelcomePage extends StatelessWidget {
                       Center(
                         child: TextButton(
                           onPressed: Navigator.of(context).pop,
-                          child: const Text('Continuar explorando'),
+                          child: Text(context.l10n.accountContinue),
                         ),
                       ),
                     ],
@@ -101,9 +102,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   @override
   Widget build(BuildContext context) {
     return _AccountFormScaffold(
-      title: 'Crear cuenta',
-      eyebrow: 'Nueva cuenta',
-      description: 'Regístrate para preparar tu espacio de entrenamiento.',
+      title: context.l10n.accountCreate,
+      eyebrow: context.l10n.accountNewEyebrow,
+      description: context.l10n.accountCreateDescription,
       form: Form(
         key: _formKey,
         child: Column(
@@ -112,23 +113,23 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Correo electrónico',
+              decoration: InputDecoration(
+                labelText: context.l10n.accountEmail,
                 prefixIcon: Icon(Icons.mail_outline_rounded),
               ),
-              validator: _validateEmail,
+              validator: (value) => _validateEmail(context, value),
             ),
             const SizedBox(height: AppSpacing.x4),
             TextFormField(
               controller: _passwordController,
               obscureText: true,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Contraseña',
+              decoration: InputDecoration(
+                labelText: context.l10n.accountPassword,
                 prefixIcon: Icon(Icons.lock_outline_rounded),
               ),
               validator: (value) => (value?.length ?? 0) < 8
-                  ? 'Usa al menos 8 caracteres.'
+                  ? context.l10n.accountPasswordLengthError
                   : null,
             ),
             const SizedBox(height: AppSpacing.x4),
@@ -136,23 +137,23 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               controller: _confirmationController,
               obscureText: true,
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Confirmar contraseña',
+              decoration: InputDecoration(
+                labelText: context.l10n.accountConfirmPassword,
                 prefixIcon: Icon(Icons.lock_reset_rounded),
               ),
               validator: (value) => value != _passwordController.text
-                  ? 'Las contraseñas no coinciden.'
+                  ? context.l10n.accountPasswordMismatchError
                   : null,
               onFieldSubmitted: (_) => _submit(),
             ),
           ],
         ),
       ),
-      actionLabel: 'Crear cuenta',
+      actionLabel: context.l10n.accountCreate,
       onAction: _submit,
       footer: TextButton(
         onPressed: () => _replace(context, const SignInPage()),
-        child: const Text('¿Ya tienes cuenta? Inicia sesión'),
+        child: Text(context.l10n.accountSignInPrompt),
       ),
     );
   }
@@ -185,9 +186,9 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return _AccountFormScaffold(
-      title: 'Iniciar sesión',
-      eyebrow: 'Bienvenido de vuelta',
-      description: 'Continúa con tu correo y contraseña.',
+      title: context.l10n.accountSignIn,
+      eyebrow: context.l10n.accountSignInEyebrow,
+      description: context.l10n.accountSignInDescription,
       form: Form(
         key: _formKey,
         child: Column(
@@ -196,40 +197,41 @@ class _SignInPageState extends State<SignInPage> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Correo electrónico',
+              decoration: InputDecoration(
+                labelText: context.l10n.accountEmail,
                 prefixIcon: Icon(Icons.mail_outline_rounded),
               ),
-              validator: _validateEmail,
+              validator: (value) => _validateEmail(context, value),
             ),
             const SizedBox(height: AppSpacing.x4),
             TextFormField(
               controller: _passwordController,
               obscureText: true,
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Contraseña',
+              decoration: InputDecoration(
+                labelText: context.l10n.accountPassword,
                 prefixIcon: Icon(Icons.lock_outline_rounded),
               ),
-              validator: (value) =>
-                  (value?.isEmpty ?? true) ? 'Escribe tu contraseña.' : null,
+              validator: (value) => (value?.isEmpty ?? true)
+                  ? context.l10n.accountPasswordRequired
+                  : null,
               onFieldSubmitted: (_) => _submit(),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () => _open(context, const RecoverPasswordPage()),
-                child: const Text('¿Olvidaste tu contraseña?'),
+                child: Text(context.l10n.accountForgotPassword),
               ),
             ),
           ],
         ),
       ),
-      actionLabel: 'Iniciar sesión',
+      actionLabel: context.l10n.accountSignIn,
       onAction: _submit,
       footer: TextButton(
         onPressed: () => _replace(context, const CreateAccountPage()),
-        child: const Text('Crear una cuenta nueva'),
+        child: Text(context.l10n.accountCreateNew),
       ),
     );
   }
@@ -260,24 +262,24 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return _AccountFormScaffold(
-      title: 'Recuperar contraseña',
-      eyebrow: 'Recuperación de acceso',
-      description: 'Escribe el correo asociado a tu cuenta para continuar con la recuperación.',
+      title: context.l10n.accountRecover,
+      eyebrow: context.l10n.accountRecoverEyebrow,
+      description: context.l10n.accountRecoverDescription,
       form: Form(
         key: _formKey,
         child: TextFormField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.done,
-          decoration: const InputDecoration(
-            labelText: 'Correo electrónico',
+          decoration: InputDecoration(
+            labelText: context.l10n.accountEmail,
             prefixIcon: Icon(Icons.mail_outline_rounded),
           ),
-          validator: _validateEmail,
+          validator: (value) => _validateEmail(context, value),
           onFieldSubmitted: (_) => _submit(),
         ),
       ),
-      actionLabel: 'Continuar',
+      actionLabel: context.l10n.accountContinueAction,
       onAction: _submit,
     );
   }
@@ -362,7 +364,7 @@ class _AccountFormScaffold extends StatelessWidget {
                       Center(child: footer!),
                     ],
                     const SizedBox(height: AppSpacing.x6),
-                    const _AccessNote(),
+                    _AccessNote(),
                   ],
                 ),
               ),
@@ -430,7 +432,7 @@ class _AccessNote extends StatelessWidget {
           const SizedBox(width: AppSpacing.x3),
           Expanded(
             child: Text(
-              'El acceso a la cuenta aún no está disponible.',
+              context.l10n.accountUnavailableNote,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -440,11 +442,11 @@ class _AccessNote extends StatelessWidget {
   }
 }
 
-String? _validateEmail(String? value) {
+String? _validateEmail(BuildContext context, String? value) {
   final email = value?.trim() ?? '';
-  if (email.isEmpty) return 'Escribe tu correo electrónico.';
+  if (email.isEmpty) return context.l10n.accountEmailRequired;
   if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
-    return 'Revisa el formato del correo.';
+    return context.l10n.accountEmailInvalid;
   }
   return null;
 }
@@ -453,9 +455,7 @@ void _showAccountUnavailableMessage(BuildContext context) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(
-      const SnackBar(
-        content: Text('El acceso a la cuenta estará disponible próximamente.'),
-      ),
+      SnackBar(content: Text(context.l10n.accountUnavailableMessage)),
     );
 }
 

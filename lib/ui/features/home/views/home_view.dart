@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
@@ -54,13 +55,14 @@ class HomeView extends StatelessWidget {
         )
         .firstOrNull;
     final plannedSession = activeSession ?? upcomingSession;
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     final nextTrainingDate =
         plannedSession?.scheduledDate ??
         _nextTrainingDate(settings.trainingDays, now);
     final greeting = switch (now.hour) {
-      < 12 => 'Buenos días',
-      < 19 => 'Buenas tardes',
-      _ => 'Buenas noches',
+      < 12 => context.l10n.homeGreetingMorning,
+      < 19 => context.l10n.homeGreetingAfternoon,
+      _ => context.l10n.homeGreetingEvening,
     };
 
     return CustomScrollView(
@@ -90,7 +92,7 @@ class HomeView extends StatelessWidget {
                               right: 0,
                               child: IconButton.filled(
                                 onPressed: onShowProfile,
-                                tooltip: 'Abrir perfil',
+                                tooltip: context.l10n.homeProfileTooltip,
                                 style: IconButton.styleFrom(
                                   backgroundColor: context.appColors.accent,
                                   foregroundColor:
@@ -108,7 +110,7 @@ class HomeView extends StatelessWidget {
                 const SizedBox(height: AppSpacing.x1),
                 Text(
                   _capitalize(
-                    DateFormat("EEEE, d 'de' MMMM", 'es_DO').format(now),
+                    DateFormat('EEEE, d MMMM', localeName).format(now),
                   ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
@@ -116,15 +118,17 @@ class HomeView extends StatelessWidget {
                 Text(greeting, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Tu plan de entrenamiento',
+                  context.l10n.homePlanTitle,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 SectionHeading(
                   title: _sameDate(nextTrainingDate, now)
-                      ? 'Entrenamiento de hoy'
-                      : 'Próxima sesión · ${_shortWeekday(nextTrainingDate.weekday)}',
-                  actionLabel: 'Ajustar plan',
+                      ? context.l10n.homeTodayWorkout
+                      : context.l10n.homeNextSession(
+                          DateFormat.E(localeName).format(nextTrainingDate),
+                        ),
+                  actionLabel: context.l10n.homeAdjustPlan,
                   onAction: onEditPlan,
                 ),
                 _TodayWorkoutCard(
@@ -136,8 +140,8 @@ class HomeView extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
-                  title: 'Tu semana',
-                  actionLabel: 'Ver actividad',
+                  title: context.l10n.homeWeekTitle,
+                  actionLabel: context.l10n.homeViewActivity,
                   onAction: onShowActivity,
                 ),
                 _WeeklySummary(
@@ -174,6 +178,7 @@ class _TodayWorkoutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     final days = settings.trainingDays.toList()..sort();
     final todayIndex = days.indexOf(sessionDate.weekday);
     final exerciseCount =
@@ -206,8 +211,12 @@ class _TodayWorkoutCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.x2),
               Text(
                 _sameDate(sessionDate, DateTime.now())
-                    ? 'SESIÓN DE HOY'
-                    : 'SIGUIENTE SESIÓN · ${_shortWeekday(sessionDate.weekday).toUpperCase()}',
+                    ? context.l10n.homeTodaySession
+                    : context.l10n.homeNextSessionLabel(
+                        DateFormat.E(localeName)
+                            .format(sessionDate)
+                            .toUpperCase(),
+                      ),
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: context.appColors.inverseText.withValues(alpha: 0.82),
                 ),
@@ -222,7 +231,10 @@ class _TodayWorkoutCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
-            '${scheduledSession?.durationMinutes ?? settings.sessionMinutes} min por sesión   ·   $exerciseCount ejercicios',
+            context.l10n.homeDurationExercises(
+              scheduledSession?.durationMinutes ?? settings.sessionMinutes,
+              exerciseCount,
+            ),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: context.appColors.inverseText.withValues(alpha: 0.82),
             ),
@@ -239,8 +251,8 @@ class _TodayWorkoutCard extends StatelessWidget {
               icon: const Icon(Icons.play_arrow_rounded),
               label: Text(
                 hasActiveWorkout
-                    ? 'Continuar entrenamiento'
-                    : 'Ver sesión de hoy',
+                    ? context.l10n.homeContinueWorkout
+                    : context.l10n.homeViewTodaySession,
               ),
             ),
           ),
@@ -265,6 +277,7 @@ class _WeeklySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     final days = settings.trainingDays.toList()..sort();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -311,19 +324,22 @@ class _WeeklySummary extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '$completedCount de $weeklyTarget sesiones',
+                      context.l10n.homeWeeklySessionCount(
+                        completedCount,
+                        weeklyTarget,
+                      ),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   Text(
-                    'Esta semana',
+                    context.l10n.homeThisWeek,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.x1),
               Text(
-                'Tu meta es ${days.length} ${days.length == 1 ? 'sesión' : 'sesiones'} semanales.',
+                context.l10n.homeWeeklyGoal(days.length),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppSpacing.x4),
@@ -337,6 +353,7 @@ class _WeeklySummary extends StatelessWidget {
                           date: session.scheduledDate,
                           completedDates: completedDates,
                           isToday: _sameDate(session.scheduledDate, today),
+                          localeName: localeName,
                         ),
                       )
                   else
@@ -350,6 +367,7 @@ class _WeeklySummary extends StatelessWidget {
                             weekStart.add(Duration(days: weekday - 1)),
                             today,
                           ),
+                          localeName: localeName,
                         ),
                       ),
                 ],
@@ -378,20 +396,26 @@ class _WeekdayProgress extends StatelessWidget {
     required this.date,
     required this.completedDates,
     required this.isToday,
+    required this.localeName,
   });
 
   final int weekday;
   final DateTime date;
   final Set<DateTime> completedDates;
   final bool isToday;
+  final String localeName;
 
   @override
   Widget build(BuildContext context) {
     final completed = completedDates.any((saved) => _sameDate(saved, date));
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Semantics(
-      label:
-          '${_shortWeekday(weekday)}: ${completed ? 'completada' : 'pendiente'}',
+      label: context.l10n.homeWeekdayStatus(
+        DateFormat.E(localeName).format(date),
+        completed
+            ? context.l10n.homeStatusCompleted
+            : context.l10n.homeStatusPending,
+      ),
       child: Column(
         children: [
           Container(
@@ -422,7 +446,7 @@ class _WeekdayProgress extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.x1),
           Text(
-            _shortWeekday(weekday),
+            DateFormat.E(localeName).format(date),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
@@ -447,14 +471,3 @@ DateTime _nextTrainingDate(Set<int> trainingDays, DateTime from) {
   }
   return today;
 }
-
-String _shortWeekday(int weekday) => switch (weekday) {
-  DateTime.monday => 'Lun',
-  DateTime.tuesday => 'Mar',
-  DateTime.wednesday => 'Mié',
-  DateTime.thursday => 'Jue',
-  DateTime.friday => 'Vie',
-  DateTime.saturday => 'Sáb',
-  DateTime.sunday => 'Dom',
-  _ => '',
-};

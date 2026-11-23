@@ -45,6 +45,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final displayProfile = _localizedProfile(context);
     final horizontalPadding = AppSpacing.pageGutter(
       MediaQuery.sizeOf(context).width,
     );
@@ -62,9 +63,12 @@ class _ProfileViewState extends State<ProfileView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ForzaEyebrow(label: 'Cuenta'),
+                ForzaEyebrow(label: context.l10n.profileEyebrow),
                 const SizedBox(height: AppSpacing.x1),
-                Text('Perfil', style: Theme.of(context).textTheme.displaySmall),
+                Text(
+                  context.l10n.profileTitle,
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
                 const SizedBox(height: AppSpacing.x6),
                 AppSurfaceCard(
                   padding: const EdgeInsets.all(AppSpacing.x4),
@@ -75,7 +79,7 @@ class _ProfileViewState extends State<ProfileView> {
                         backgroundColor: context.appColors.accentSoft,
                         foregroundColor: context.appColors.accent,
                         child: Text(
-                          _initials(_profile.fullName),
+                          _initials(displayProfile.fullName),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
@@ -85,17 +89,17 @@ class _ProfileViewState extends State<ProfileView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _profile.fullName,
+                              displayProfile.fullName,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: AppSpacing.x1),
                             Text(
-                              _profile.email,
+                              displayProfile.email,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             const SizedBox(height: AppSpacing.x2),
                             Text(
-                              _profile.goal,
+                              displayProfile.goal,
                               style: Theme.of(context).textTheme.labelLarge
                                   ?.copyWith(color: context.appColors.accent),
                             ),
@@ -107,82 +111,91 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 _ProfileSection(
-                  title: 'Cuenta',
+                  title: context.l10n.profileEyebrow,
                   options: [
                     _ProfileOption(
                       icon: Icons.language_rounded,
                       title: context.l10n.settingsLanguageSelection,
-                      subtitle: widget.localeController.locale?.languageCode == 'en'
+                      subtitle:
+                          widget.localeController.locale?.languageCode == 'en'
                           ? context.l10n.settingsLanguageEnglish
                           : widget.localeController.locale?.languageCode == 'es'
-                              ? context.l10n.settingsLanguageSpanish
-                              : context.l10n.settingsLanguageAutomatic,
+                          ? context.l10n.settingsLanguageSpanish
+                          : context.l10n.settingsLanguageAutomatic,
                       onTap: _editLanguage,
                     ),
                     _ProfileOption(
                       icon: Icons.person_outline_rounded,
-                      title: 'Editar perfil',
-                      subtitle: 'Nombre, correo y objetivo',
+                      title: context.l10n.profileEdit,
+                      subtitle: context.l10n.profileEditSubtitle,
                       onTap: _editProfile,
                     ),
                     _ProfileOption(
                       icon: Icons.login_rounded,
-                      title: 'Cuenta y acceso',
-                      subtitle: 'Opciones de inicio de sesión',
+                      title: context.l10n.profileAccountAccess,
+                      subtitle: context.l10n.profileAccountAccessSubtitle,
                       onTap: _openAccountAccess,
                     ),
                     _ProfileOption(
                       icon: Icons.lock_outline_rounded,
-                      title: 'Privacidad',
+                      title: context.l10n.profilePrivacy,
                       subtitle: _privacy.privateProfile
-                          ? 'Perfil privado'
-                          : 'Perfil visible',
+                          ? context.l10n.profilePrivate
+                          : context.l10n.profileVisible,
                       onTap: _editPrivacy,
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 _ProfileSection(
-                  title: 'Entrenamiento',
+                  title: context.l10n.profileTraining,
                   options: [
                     _ProfileOption(
                       icon: Icons.flag_outlined,
-                      title: 'Mi plan de entrenamiento',
-                      subtitle:
-                          '${widget.trainingSettings.goal} · ${widget.trainingSettings.daysPerWeek} días · ${widget.trainingSettings.sessionMinutes} min',
+                      title: context.l10n.profileMyPlan,
+                      subtitle: context.l10n.profilePlanSummary(
+                        _localizedGoal(context, widget.trainingSettings.goal),
+                        widget.trainingSettings.daysPerWeek,
+                        widget.trainingSettings.sessionMinutes,
+                      ),
                       onTap: _configurePlan,
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 _ProfileSection(
-                  title: 'Preferencias',
+                  title: context.l10n.profilePreferences,
                   options: [
                     _ProfileOption(
                       icon: Icons.palette_outlined,
-                      title: 'Apariencia',
-                      subtitle: _themeModeLabel(widget.themeMode),
+                      title: context.l10n.profileAppearance,
+                      subtitle: _themeModeLabel(context, widget.themeMode),
                       onTap: _editAppearance,
                     ),
                     _ProfileOption(
                       icon: Icons.tune_rounded,
-                      title: 'Preferencias',
+                      title: context.l10n.profilePreferences,
                       subtitle:
-                          'Peso ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()} · háptica ${_preferences.hapticsEnabled ? 'activa' : 'desactivada'}',
+                          '${context.l10n.profileWeightUnit(_preferences.weightUnit)} · ${context.l10n.profileWeekStart(_weekStartLabel(context, _preferences.weekStartsOn))} · ${context.l10n.profileHaptics(_preferences.hapticsEnabled ? context.l10n.profileHapticsOn : context.l10n.profileHapticsOff)}',
                       onTap: _editPreferences,
                     ),
                     _ProfileOption(
                       icon: Icons.backup_outlined,
-                      title: 'Exportar y restaurar datos',
-                      subtitle: 'Crear un respaldo o recuperar tus datos',
+                      title: context.l10n.profileBackup,
+                      subtitle: context.l10n.profileBackupSubtitle,
                       onTap: widget.onManageBackups,
                     ),
                     _ProfileOption(
                       icon: Icons.notifications_none_rounded,
-                      title: 'Notificaciones',
+                      title: context.l10n.profileNotifications,
                       subtitle: _notifications.workoutReminders
-                          ? 'Recordatorio ${_formatTime(_notifications.reminderHour, _notifications.reminderMinute)}'
-                          : 'Recordatorios desactivados',
+                          ? context.l10n.profileReminderAt(
+                              _formatTime(
+                                _notifications.reminderHour,
+                                _notifications.reminderMinute,
+                              ),
+                            )
+                          : context.l10n.profileRemindersOff,
                       onTap: _editNotifications,
                     ),
                   ],
@@ -190,7 +203,7 @@ class _ProfileViewState extends State<ProfileView> {
                 const SizedBox(height: AppSpacing.x4),
                 Center(
                   child: Text(
-                    'Las preferencias se mantienen mientras la app está abierta.',
+                    context.l10n.profileSessionPreferencesNote,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -230,7 +243,7 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _editProfile() async {
     final updated = await Navigator.of(context).push<ForzaProfile>(
       MaterialPageRoute<ForzaProfile>(
-        builder: (_) => ProfileEditPage(profile: _profile),
+        builder: (_) => ProfileEditPage(profile: _localizedProfile(context)),
       ),
     );
     if (updated == null || !mounted) return;
@@ -261,7 +274,8 @@ class _ProfileViewState extends State<ProfileView> {
   void _editLanguage() {
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => AppLanguagePage(localeController: widget.localeController),
+        builder: (_) =>
+            AppLanguagePage(localeController: widget.localeController),
       ),
     );
   }
@@ -279,13 +293,23 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _editPrivacy() async {
     final updated = await Navigator.of(context).push<PrivacySettings>(
       MaterialPageRoute<PrivacySettings>(
-        builder: (_) =>
-            PrivacyAccountPage(settings: _privacy, profile: _profile),
+        builder: (_) => PrivacyAccountPage(
+          settings: _privacy,
+          profile: _localizedProfile(context),
+        ),
       ),
     );
     if (updated == null || !mounted) return;
     setState(() => _privacy = updated);
   }
+
+  ForzaProfile _localizedProfile(BuildContext context) => ForzaProfile(
+    fullName: _profile.fullName == 'Atleta FORZA'
+        ? context.l10n.profileDefaultName
+        : _profile.fullName,
+    email: _profile.email,
+    goal: _localizedGoal(context, _profile.goal),
+  );
 }
 
 class _ProfileSection extends StatelessWidget {
@@ -366,8 +390,19 @@ String _initials(String name) {
 String _formatTime(int hour, int minute) =>
     '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 
-String _themeModeLabel(ThemeMode mode) => switch (mode) {
-  ThemeMode.system => 'Según el dispositivo',
-  ThemeMode.light => 'Claro',
-  ThemeMode.dark => 'Oscuro',
+String _themeModeLabel(BuildContext context, ThemeMode mode) => switch (mode) {
+  ThemeMode.system => context.l10n.settingsThemeSystem,
+  ThemeMode.light => context.l10n.settingsThemeLight,
+  ThemeMode.dark => context.l10n.settingsThemeDark,
+};
+
+String _weekStartLabel(BuildContext context, String day) => day == 'Lunes'
+    ? context.l10n.profileWeekMonday
+    : context.l10n.profileWeekSunday;
+
+String _localizedGoal(BuildContext context, String goal) => switch (goal) {
+  'Ganar fuerza' => context.l10n.onboardingStrengthGoal,
+  'Ganar músculo' => context.l10n.onboardingMuscleGoal,
+  'Crear el hábito' => context.l10n.onboardingHabitGoal,
+  _ => goal,
 };

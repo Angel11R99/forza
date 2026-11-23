@@ -1,11 +1,14 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../profile/models/profile_settings.dart';
+import '../../exercises/models/exercise_localized_labels.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({
@@ -58,9 +61,15 @@ class _OnboardingViewState extends State<OnboardingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_step < 4 ? 'Crear tu plan' : 'Vista previa'),
+        title: Text(
+          _step < 4
+              ? context.l10n.onboardingCreatePlan
+              : context.l10n.onboardingPreview,
+        ),
         leading: IconButton(
-          tooltip: _step == 0 ? 'Volver' : 'Paso anterior',
+          tooltip: _step == 0
+              ? context.l10n.onboardingBack
+              : context.l10n.onboardingPreviousStep,
           onPressed: _step == 0
               ? () => Navigator.of(context).maybePop()
               : () => setState(() => _step--),
@@ -114,14 +123,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 13,
                                 ),
-                                child: Text(_actionLabel),
+                                child: Text(_actionLabel(context)),
                               ),
                             ),
                           ),
                           if (widget.isFirstRun)
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Omitir por ahora'),
+                              child: Text(context.l10n.onboardingSkip),
                             ),
                         ],
                       ),
@@ -136,7 +145,9 @@ class _OnboardingViewState extends State<OnboardingView> {
     );
   }
 
-  String get _actionLabel => _step == 4 ? 'Crear mi plan' : 'Continuar';
+  String _actionLabel(BuildContext context) => _step == 4
+      ? context.l10n.onboardingCreateMyPlan
+      : context.l10n.onboardingContinue;
 
   Widget _buildStep(BuildContext context) {
     return switch (_step) {
@@ -160,12 +171,12 @@ class _OnboardingViewState extends State<OnboardingView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Así queda tu semana',
+          context.l10n.onboardingPreviewTitle,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Este es un punto de partida. Podrás ajustar tu plan desde Perfil.',
+          context.l10n.onboardingPreviewDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -175,20 +186,35 @@ class _OnboardingViewState extends State<OnboardingView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_goal, style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  _goalLabel(context, _goal),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  '${_trainingDays.length} días · $_sessionMinutes min por sesión',
+                  context.l10n.profilePlanSummary(
+                    _goalLabel(context, _goal),
+                    _trainingDays.length,
+                    _sessionMinutes,
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Experiencia: $_experience',
+                  context.l10n.onboardingPlanExperience(
+                    _experienceLabel(context, _experience),
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Equipo: ${_equipment.join(', ')}',
+                  context.l10n.onboardingPlanEquipment(
+                    _equipment
+                        .map(
+                          (item) => localizedExerciseEquipment(context, item),
+                        )
+                        .join(', '),
+                  ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -204,13 +230,18 @@ class _OnboardingViewState extends State<OnboardingView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${_weekdays[session.weekday]} · ${session.title}',
+                    '${DateFormat.E(Localizations.localeOf(context).toLanguageTag()).format(DateTime(2024, 1, session.weekday))} · ${_sessionTitle(context, session.title)}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: AppSpacing.x2),
                   Text(
                     session.exercises
-                        .map((exercise) => exercise.name)
+                        .map(
+                          (exercise) => localizedTrainingExerciseName(
+                            context,
+                            exercise.name,
+                          ),
+                        )
                         .join(' · '),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -222,7 +253,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ],
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Guía general. Si tienes dolor, una lesión o una condición médica, consulta con un profesional antes de entrenar.',
+          context.l10n.onboardingSafetyNote,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
@@ -234,12 +265,12 @@ class _OnboardingViewState extends State<OnboardingView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '¿Con qué equipo cuentas?',
+          context.l10n.onboardingEquipmentTitle,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Usaremos esto para elegir ejercicios que puedas hacer.',
+          context.l10n.onboardingEquipmentDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -249,7 +280,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           children: [
             for (final equipment in _equipmentOptions)
               FilterChip(
-                label: Text(equipment),
+                label: Text(localizedExerciseEquipment(context, equipment)),
                 selected: _equipment.contains(equipment),
                 onSelected: (selected) => setState(() {
                   if (selected) {
@@ -264,7 +295,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         if (_equipment.isEmpty) ...[
           const SizedBox(height: AppSpacing.x3),
           Text(
-            'Elige al menos una opción para preparar los ejercicios.',
+            context.l10n.onboardingEquipmentRequired,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -277,22 +308,22 @@ class _OnboardingViewState extends State<OnboardingView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '¿Qué quieres lograr?',
+          context.l10n.onboardingGoalTitle,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Elegiremos un punto de partida que se ajuste a ti. Puedes cambiarlo después.',
+          context.l10n.onboardingGoalDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
         for (final goal in _goals) ...[
           _ChoiceCard(
-            title: goal,
+            title: _goalLabel(context, goal),
             subtitle: switch (goal) {
-              'Ganar fuerza' => 'Progresar en tus levantamientos',
-              'Ganar músculo' => 'Construir masa muscular con constancia',
-              _ => 'Formar una rutina sostenible',
+              'Ganar fuerza' => context.l10n.onboardingStrengthGoalDescription,
+              'Ganar músculo' => context.l10n.onboardingMuscleGoalDescription,
+              _ => context.l10n.onboardingHabitGoalDescription,
             },
             icon: switch (goal) {
               'Ganar fuerza' => Icons.bolt_rounded,
@@ -313,22 +344,24 @@ class _OnboardingViewState extends State<OnboardingView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '¿Cuál es tu experiencia?',
+          context.l10n.onboardingExperienceTitle,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Usaremos tu respuesta para ajustar la carga inicial.',
+          context.l10n.onboardingExperienceDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
         for (final level in _experienceLevels) ...[
           _ChoiceCard(
-            title: level,
+            title: _experienceLabel(context, level),
             subtitle: switch (level) {
-              'Estoy empezando' => 'Quiero aprender y avanzar paso a paso',
-              'Tengo algo de experiencia' => 'Ya conozco algunos movimientos',
-              _ => 'Tengo una rutina y busco nuevos retos',
+              'Estoy empezando' =>
+                context.l10n.onboardingExperienceBeginnerDescription,
+              'Tengo algo de experiencia' =>
+                context.l10n.onboardingExperienceSomeDescription,
+              _ => context.l10n.onboardingExperienceLongDescription,
             },
             icon: Icons.trending_up_rounded,
             selected: _experience == level,
@@ -337,7 +370,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           const SizedBox(height: AppSpacing.x3),
         ],
         Text(
-          'Tu experiencia ayuda a ajustar el entrenamiento.',
+          context.l10n.onboardingExperienceNote,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
@@ -350,12 +383,12 @@ class _OnboardingViewState extends State<OnboardingView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '¿Qué días puedes entrenar?',
+          context.l10n.onboardingScheduleTitle,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Elige los días que suelen funcionarte. Puedes cambiarlos después.',
+          context.l10n.onboardingScheduleDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -364,7 +397,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${days.length} ${days.length == 1 ? 'sesión' : 'sesiones'} por semana',
+                context.l10n.onboardingSessionsPerWeek(days.length),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: AppSpacing.x3),
@@ -374,7 +407,11 @@ class _OnboardingViewState extends State<OnboardingView> {
                 children: [
                   for (final entry in _weekdays.entries)
                     FilterChip(
-                      label: Text(entry.value),
+                      label: Text(
+                        DateFormat.E(
+                          Localizations.localeOf(context).toLanguageTag(),
+                        ).format(DateTime(2024, 1, entry.key)),
+                      ),
                       selected: _trainingDays.contains(entry.key),
                       onSelected: (selected) => setState(() {
                         if (selected) {
@@ -388,12 +425,12 @@ class _OnboardingViewState extends State<OnboardingView> {
               ),
               const Divider(height: AppSpacing.x8),
               Text(
-                'Tiempo por sesión',
+                context.l10n.onboardingSessionTime,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: AppSpacing.x1),
               Text(
-                '$_sessionMinutes min',
+                context.l10n.onboardingMinutes(_sessionMinutes),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Slider(
@@ -401,7 +438,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 min: 20,
                 max: 90,
                 divisions: 14,
-                label: '$_sessionMinutes min',
+                label: context.l10n.onboardingMinutes(_sessionMinutes),
                 onChanged: (value) =>
                     setState(() => _sessionMinutes = value.round()),
               ),
@@ -437,12 +474,12 @@ class _StepProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final progress = (step + 1) / totalSteps;
     return Semantics(
-      label: 'Paso ${step + 1} de $totalSteps',
+      label: context.l10n.onboardingStepLabel(step + 1, totalSteps),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Paso ${step + 1} de $totalSteps',
+            context.l10n.onboardingStepLabel(step + 1, totalSteps),
             style: Theme.of(context).textTheme.labelLarge,
           ),
           const SizedBox(height: AppSpacing.x2),
@@ -463,6 +500,25 @@ class _StepProgress extends StatelessWidget {
     );
   }
 }
+
+String _goalLabel(BuildContext context, String goal) => switch (goal) {
+  'Ganar fuerza' => context.l10n.onboardingStrengthGoal,
+  'Ganar músculo' => context.l10n.onboardingMuscleGoal,
+  _ => context.l10n.onboardingHabitGoal,
+};
+
+String _experienceLabel(BuildContext context, String experience) =>
+    switch (experience) {
+      'Estoy empezando' => context.l10n.onboardingExperienceBeginner,
+      'Tengo algo de experiencia' => context.l10n.onboardingExperienceSome,
+      _ => context.l10n.onboardingExperienceLong,
+    };
+
+String _sessionTitle(BuildContext context, String title) => switch (title) {
+  'Tren superior' => context.l10n.onboardingUpperBody,
+  'Tren inferior' => context.l10n.onboardingLowerBody,
+  _ => context.l10n.onboardingFullBody,
+};
 
 class _ChoiceCard extends StatelessWidget {
   const _ChoiceCard({

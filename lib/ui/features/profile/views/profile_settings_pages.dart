@@ -23,25 +23,33 @@ class AppLanguagePage extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.x6),
             children: [
-              Text(context.l10n.settingsLanguageDescription,
-                  style: Theme.of(context).textTheme.bodyLarge),
+              Text(
+                context.l10n.settingsLanguageDescription,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
               const SizedBox(height: AppSpacing.x4),
               RadioGroup<String?>(
                 groupValue: localeController.locale?.languageCode,
                 onChanged: localeController.setLanguageCode,
-                child: Column(children: [
-                  RadioListTile<String?>(
-                    value: null,
-                    title: Text(context.l10n.settingsLanguageAutomatic),
-                    subtitle: Text(context.l10n.settingsLanguageSystemDescription),
-                  ),
-                  RadioListTile<String?>(
-                    value: 'es', title: Text(context.l10n.settingsLanguageSpanish),
-                  ),
-                  RadioListTile<String?>(
-                    value: 'en', title: Text(context.l10n.settingsLanguageEnglish),
-                  ),
-                ]),
+                child: Column(
+                  children: [
+                    RadioListTile<String?>(
+                      value: null,
+                      title: Text(context.l10n.settingsLanguageAutomatic),
+                      subtitle: Text(
+                        context.l10n.settingsLanguageSystemDescription,
+                      ),
+                    ),
+                    RadioListTile<String?>(
+                      value: 'es',
+                      title: Text(context.l10n.settingsLanguageSpanish),
+                    ),
+                    RadioListTile<String?>(
+                      value: 'en',
+                      title: Text(context.l10n.settingsLanguageEnglish),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -81,7 +89,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Editar perfil')),
+      appBar: AppBar(title: Text(context.l10n.profileEditTitle)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -98,12 +106,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 children: [
                   const SizedBox(height: AppSpacing.x4),
                   Text(
-                    'Tu información',
+                    context.l10n.profileYourInformation,
                     style: Theme.of(context).textTheme.displaySmall,
                   ),
                   const SizedBox(height: AppSpacing.x2),
                   Text(
-                    'Actualiza los datos que se muestran en tu perfil.',
+                    context.l10n.profileUpdateInformation,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: AppSpacing.x6),
@@ -111,9 +119,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     controller: _nameController,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(labelText: 'Nombre'),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.profileNameField,
+                    ),
                     validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Ingresa tu nombre.'
+                        ? context.l10n.profileNameRequired
                         : null,
                   ),
                   const SizedBox(height: AppSpacing.x3),
@@ -121,12 +131,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(labelText: 'Correo'),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.profileEmailField,
+                    ),
                     validator: (value) {
                       final email = value?.trim() ?? '';
                       if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                           .hasMatch(email)) {
-                        return 'Ingresa un correo válido.';
+                        return context.l10n.profileEmailInvalid;
                       }
                       return null;
                     },
@@ -136,18 +148,18 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     controller: _goalController,
                     textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.done,
-                    decoration: const InputDecoration(
-                      labelText: 'Objetivo de entrenamiento',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.profileGoalField,
                     ),
                     validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Escribe un objetivo.'
+                        ? context.l10n.profileGoalRequired
                         : null,
                   ),
                   const SizedBox(height: AppSpacing.x6),
                   FilledButton.icon(
                     onPressed: _continueToConfirmation,
                     icon: const Icon(Icons.arrow_forward_rounded),
-                    label: const Text('Revisar cambios'),
+                    label: Text(context.l10n.profileReviewChanges),
                   ),
                 ],
               ),
@@ -218,7 +230,7 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Puedes seguir el tema del dispositivo o elegir uno para FORZA.',
+              context.l10n.settingsThemeDescription,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x6),
@@ -234,7 +246,9 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
                     RadioListTile<ThemeMode>(
                       value: ThemeMode.system,
                       title: Text(context.l10n.settingsThemeSystem),
-                      subtitle: Text(context.l10n.settingsThemeSystemDescription),
+                      subtitle: Text(
+                        context.l10n.settingsThemeSystemDescription,
+                      ),
                     ),
                     const Divider(height: 1, indent: 56),
                     RadioListTile<ThemeMode>(
@@ -274,7 +288,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Preferencias')),
+      appBar: AppBar(title: Text(context.l10n.profilePreferencesTitle)),
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -287,22 +301,26 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
           children: [
             const SizedBox(height: AppSpacing.x4),
             Text(
-              'A tu medida',
+              context.l10n.profileTailoredTitle,
               style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Ajusta las unidades y la forma en que FORZA organiza tu semana.',
+              context.l10n.profileTailoredDescription,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x8),
-            SectionHeading(title: 'Unidad de peso'),
+            SectionHeading(title: context.l10n.profileWeightUnitTitle),
             Wrap(
               spacing: AppSpacing.x2,
               children: [
                 for (final unit in ['kg', 'lb'])
                   ChoiceChip(
-                    label: Text(unit),
+                    label: Text(
+                      unit == 'kg'
+                          ? context.l10n.profileKilograms
+                          : context.l10n.profilePounds,
+                    ),
                     selected: unit == _weightUnit,
                     selectedColor: context.appColors.surfaceMuted,
                     onSelected: (_) => setState(() => _weightUnit = unit),
@@ -310,13 +328,17 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
               ],
             ),
             const SizedBox(height: AppSpacing.x6),
-            SectionHeading(title: 'Inicio de semana'),
+            SectionHeading(title: context.l10n.profileWeekStartTitle),
             Wrap(
               spacing: AppSpacing.x2,
               children: [
                 for (final day in ['Lunes', 'Domingo'])
                   ChoiceChip(
-                    label: Text(day),
+                    label: Text(
+                      day == 'Lunes'
+                          ? context.l10n.profileWeekMonday
+                          : context.l10n.profileWeekSunday,
+                    ),
                     selected: day == _weekStartsOn,
                     selectedColor: context.appColors.surfaceMuted,
                     onSelected: (_) => setState(() => _weekStartsOn = day),
@@ -327,10 +349,8 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
             AppSurfaceCard(
               padding: EdgeInsets.zero,
               child: SwitchListTile(
-                title: const Text('Respuesta háptica'),
-                subtitle: const Text(
-                  'Vibración suave al usar controles compatibles.',
-                ),
+                title: Text(context.l10n.profileHapticTitle),
+                subtitle: Text(context.l10n.profileHapticDescription),
                 value: _hapticsEnabled,
                 onChanged: (value) => setState(() => _hapticsEnabled = value),
               ),
@@ -339,7 +359,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
         ),
       ),
       bottomNavigationBar: _SaveBar(
-        label: 'Guardar preferencias',
+        label: context.l10n.profileSavePreferences,
         onPressed: () => Navigator.of(context).pop(
           AppPreferences(
             weightUnit: _weightUnit,
@@ -374,7 +394,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notificaciones')),
+      appBar: AppBar(title: Text(context.l10n.profileNotificationsPageTitle)),
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -387,12 +407,12 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
           children: [
             const SizedBox(height: AppSpacing.x4),
             Text(
-              'Recibe solo lo útil.',
+              context.l10n.profileNotificationsHeading,
               style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Configura tus preferencias de notificaciones.',
+              context.l10n.profileNotificationsDescription,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x6),
@@ -401,8 +421,8 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
               child: Column(
                 children: [
                   SwitchListTile(
-                    title: const Text('Recordatorios de entrenamiento'),
-                    subtitle: const Text('Elige una hora que te funcione.'),
+                    title: Text(context.l10n.profileWorkoutReminders),
+                    subtitle: Text(context.l10n.profileReminderDescription),
                     value: _workoutReminders,
                     onChanged: (value) =>
                         setState(() => _workoutReminders = value),
@@ -411,7 +431,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                     const Divider(height: 1),
                     ListTile(
                       leading: const Icon(Icons.schedule_rounded),
-                      title: const Text('Hora del recordatorio'),
+                      title: Text(context.l10n.profileReminderTime),
                       trailing: Text(
                         _reminderTime.format(context),
                         style: Theme.of(context).textTheme.titleMedium,
@@ -421,18 +441,18 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                   ],
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('Resumen semanal'),
-                    subtitle: const Text('Un repaso de tu actividad.'),
+                    title: Text(context.l10n.profileWeeklySummary),
+                    subtitle: Text(
+                      context.l10n.profileWeeklySummaryDescription,
+                    ),
                     value: _weeklySummary,
                     onChanged: (value) =>
                         setState(() => _weeklySummary = value),
                   ),
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('Récords personales'),
-                    subtitle: const Text(
-                      'Avisos cuando alcances una nueva marca.',
-                    ),
+                    title: Text(context.l10n.profilePersonalRecords),
+                    subtitle: Text(context.l10n.profileRecordsSubtitle),
                     value: _recordAlerts,
                     onChanged: (value) => setState(() => _recordAlerts = value),
                   ),
@@ -443,7 +463,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
         ),
       ),
       bottomNavigationBar: _SaveBar(
-        label: 'Guardar preferencias',
+        label: context.l10n.profileSavePreferences,
         onPressed: () => Navigator.of(context).pop(
           NotificationSettings(
             workoutReminders: _workoutReminders,
@@ -487,7 +507,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Privacidad y cuenta')),
+      appBar: AppBar(title: Text(context.l10n.profilePrivacyPageTitle)),
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -500,12 +520,12 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
           children: [
             const SizedBox(height: AppSpacing.x4),
             Text(
-              'Tú decides qué compartir.',
+              context.l10n.profilePrivacyHeading,
               style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Tus preferencias de privacidad.',
+              context.l10n.profilePrivacyDescription,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x6),
@@ -514,19 +534,17 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
               child: Column(
                 children: [
                   SwitchListTile(
-                    title: const Text('Perfil privado'),
-                    subtitle: const Text(
-                      'Mantener tu perfil fuera de vistas públicas.',
-                    ),
+                    title: Text(context.l10n.profilePrivateTitle),
+                    subtitle: Text(context.l10n.profilePrivateDescription),
                     value: _privateProfile,
                     onChanged: (value) =>
                         setState(() => _privateProfile = value),
                   ),
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('Compartir actividad'),
-                    subtitle: const Text(
-                      'Permitir que otras personas vean tus entrenamientos.',
+                    title: Text(context.l10n.profileShareActivityTitle),
+                    subtitle: Text(
+                      context.l10n.profileShareActivityDescription,
                     ),
                     value: _shareActivity,
                     onChanged: (value) =>
@@ -541,7 +559,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Datos de cuenta',
+                    context.l10n.profileAccountData,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: AppSpacing.x2),
@@ -558,7 +576,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
                   OutlinedButton.icon(
                     onPressed: _reviewAccount,
                     icon: const Icon(Icons.verified_user_outlined),
-                    label: const Text('Confirmar datos de cuenta'),
+                    label: Text(context.l10n.profileConfirmAccount),
                   ),
                 ],
               ),
@@ -567,7 +585,7 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
         ),
       ),
       bottomNavigationBar: _SaveBar(
-        label: 'Guardar privacidad',
+        label: context.l10n.profileSavePrivacy,
         onPressed: () => Navigator.of(context).pop(
           PrivacySettings(
             privateProfile: _privateProfile,
@@ -585,9 +603,9 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
       ),
     );
     if (!mounted || confirmed == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Revisión de datos completada.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.profileReviewComplete)));
   }
 }
 
@@ -599,7 +617,7 @@ class AccountConfirmationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Confirmación de cuenta')),
+      appBar: AppBar(title: Text(context.l10n.profileAccountConfirmation)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -624,12 +642,12 @@ class AccountConfirmationPage extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 Text(
-                  'Confirma tus datos',
+                  context.l10n.profileConfirmHeading,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Revisa la información antes de volver a tu perfil.',
+                  context.l10n.profileConfirmDescription,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
@@ -637,11 +655,20 @@ class AccountConfirmationPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _AccountValue(label: 'Nombre', value: profile.fullName),
+                      _AccountValue(
+                        label: context.l10n.profileName,
+                        value: profile.fullName,
+                      ),
                       const Divider(height: AppSpacing.x6),
-                      _AccountValue(label: 'Correo', value: profile.email),
+                      _AccountValue(
+                        label: context.l10n.profileEmail,
+                        value: profile.email,
+                      ),
                       const Divider(height: AppSpacing.x6),
-                      _AccountValue(label: 'Objetivo', value: profile.goal),
+                      _AccountValue(
+                        label: context.l10n.profileGoal,
+                        value: profile.goal,
+                      ),
                     ],
                   ),
                 ),
@@ -649,7 +676,7 @@ class AccountConfirmationPage extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => Navigator.of(context).pop(profile),
                   icon: const Icon(Icons.check_rounded),
-                  label: const Text('Confirmar datos'),
+                  label: Text(context.l10n.profileConfirmDetails),
                 ),
               ],
             ),

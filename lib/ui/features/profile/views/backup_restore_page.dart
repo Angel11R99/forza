@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../data/repositories/backup_repository.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 
@@ -33,17 +34,19 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
   bool _busy = false;
 
   Future<void> _export() async {
+    final savedMessage = context.l10n.backupSaved;
+    final saveDialogTitle = context.l10n.backupSaveDialog;
     await _run(() async {
       final contents = await widget.exportBackup(widget.appearanceMode);
       final now = DateTime.now();
       final stamp = '${now.year}${_two(now.month)}${_two(now.day)}';
       final saved = await FilePicker.saveFile(
-        fileName: 'forza_respaldo_$stamp.json',
+        fileName: 'forza_backup_$stamp.json',
         bytes: utf8.encode(contents),
         mimeType: 'application/json',
-        dialogTitle: 'Guardar respaldo de FORZA',
+        dialogTitle: saveDialogTitle,
       );
-      if (saved != null && mounted) _message('Respaldo guardado.');
+      if (saved != null && mounted) _message(savedMessage);
     });
   }
 
@@ -52,7 +55,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       final file = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: const ['json'],
-        dialogTitle: 'Seleccionar respaldo de FORZA',
+        dialogTitle: context.l10n.backupPickDialog,
       );
       if (file == null) return;
       final backup = widget.validateBackup(
@@ -62,21 +65,23 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Restaurar respaldo'),
+          title: Text(context.l10n.backupConfirmTitle),
           content: Text(
-            'Se reemplazarán los datos locales por los del respaldo del '
-            '${_date(backup.exportedAt)}. Incluye ${backup.records.length} '
-            'sesiones, ${backup.schedule.length} sesiones de agenda y '
-            '${backup.goals.length} objetivos. Esta acción no se puede deshacer.',
+            context.l10n.backupConfirmMessage(
+              _date(backup.exportedAt),
+              backup.records.length,
+              backup.schedule.length,
+              backup.goals.length,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar'),
+              child: Text(context.l10n.commonCancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Reemplazar datos'),
+              child: Text(context.l10n.backupReplace),
             ),
           ],
         ),
@@ -84,7 +89,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       if (confirmed != true || !mounted) return;
       await widget.restoreBackup(backup);
       widget.onAppearanceModeChanged(backup.appearanceMode);
-      if (mounted) _message('Respaldo restaurado.');
+      if (mounted) _message(context.l10n.backupRestored);
     });
   }
 
@@ -101,8 +106,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
   }
 
   String _errorMessage(Object error) {
-    if (error is FormatException) return error.message;
-    return 'No pudimos procesar el archivo. Inténtalo de nuevo.';
+    if (error is FormatException) return context.l10n.backupInvalid;
+    return context.l10n.backupGenericError;
   }
 
   void _message(String message) {
@@ -114,7 +119,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
   Widget build(BuildContext context) {
     final gutter = AppSpacing.pageGutter(MediaQuery.sizeOf(context).width);
     return Scaffold(
-      appBar: AppBar(title: const Text('Exportar y restaurar')),
+      appBar: AppBar(title: Text(context.l10n.backupTitle)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -127,15 +132,15 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 AppSpacing.x8,
               ),
               children: [
-                const ForzaEyebrow(label: 'Tus datos'),
+                ForzaEyebrow(label: context.l10n.backupEyebrow),
                 const SizedBox(height: AppSpacing.x2),
                 Text(
-                  'Un respaldo bajo tu control',
+                  context.l10n.backupHeading,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: AppSpacing.x3),
                 Text(
-                  'El archivo incluye tu plan, historial con series, agenda, objetivos, sesión activa y apariencia. Se guarda como JSON en la ubicación que elijas.',
+                  context.l10n.backupDescription,
                   style: Theme.of(context).textTheme.bodyLarge
                       ?.copyWith(color: context.appColors.textSecondary),
                 ),
@@ -146,20 +151,18 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Exportar',
+                        context.l10n.backupExport,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: AppSpacing.x2),
-                      Text(
-                        'Crea un archivo que puedes guardar o transferir a otro dispositivo.',
-                      ),
+                      Text(context.l10n.backupExportDescription),
                       const SizedBox(height: AppSpacing.x4),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton.icon(
                           onPressed: _busy ? null : _export,
                           icon: const Icon(Icons.download_rounded),
-                          label: const Text('Crear respaldo'),
+                          label: Text(context.l10n.backupCreate),
                         ),
                       ),
                     ],
@@ -172,20 +175,18 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Restaurar',
+                        context.l10n.backupRestore,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: AppSpacing.x2),
-                      Text(
-                        'Revisa el contenido y confirma antes de reemplazar los datos locales.',
-                      ),
+                      Text(context.l10n.backupRestoreDescription),
                       const SizedBox(height: AppSpacing.x4),
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
                           onPressed: _busy ? null : _import,
                           icon: const Icon(Icons.upload_file_rounded),
-                          label: const Text('Elegir archivo de respaldo'),
+                          label: Text(context.l10n.backupChooseFile),
                         ),
                       ),
                     ],

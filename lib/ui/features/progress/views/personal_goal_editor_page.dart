@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../domain/models/personal_goal.dart';
+import '../../../../app/localization/localization_extensions.dart';
 
 class PersonalGoalEditorPage extends StatefulWidget {
   const PersonalGoalEditorPage({super.key, this.goal});
@@ -43,7 +44,11 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.goal == null ? 'Nuevo objetivo' : 'Editar objetivo'),
+        title: Text(
+          widget.goal == null
+              ? context.l10n.progressNewGoal
+              : context.l10n.progressEditGoal,
+        ),
       ),
       body: SafeArea(
         child: Center(
@@ -55,23 +60,23 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
                 padding: const EdgeInsets.all(AppSpacing.x6),
                 children: [
                   Text(
-                    'Elige una meta que puedas seguir en FORZA.',
+                    context.l10n.progressGoalEditorDescription,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: AppSpacing.x6),
                   DropdownButtonFormField<PersonalGoalType>(
                     initialValue: _type,
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de objetivo',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.progressGoalType,
                     ),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: PersonalGoalType.sessionsPerWeek,
-                        child: Text('Sesiones por semana'),
+                        child: Text(context.l10n.progressWeeklySessions),
                       ),
                       DropdownMenuItem(
                         value: PersonalGoalType.exerciseLoad,
-                        child: Text('Marca de carga por ejercicio'),
+                        child: Text(context.l10n.progressExerciseLoadRecord),
                       ),
                     ],
                     onChanged: (value) {
@@ -90,13 +95,13 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
                     TextFormField(
                       controller: _exerciseController,
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre del ejercicio',
-                        hintText: 'Ej. Sentadilla goblet',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.progressExerciseName,
+                        hintText: context.l10n.progressExerciseHint,
                       ),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                          ? 'Escribe el nombre tal como aparece en tu sesión.'
+                          ? context.l10n.progressExerciseNameRequired
                           : null,
                     ),
                   ],
@@ -108,10 +113,10 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
                     ),
                     decoration: InputDecoration(
                       labelText: _type == PersonalGoalType.sessionsPerWeek
-                          ? 'Sesiones por semana'
-                          : 'Carga objetivo',
+                          ? context.l10n.progressWeeklySessions
+                          : context.l10n.progressTargetLoad,
                       suffixText: _type == PersonalGoalType.sessionsPerWeek
-                          ? 'sesiones'
+                          ? context.l10n.progressSessionsUnit
                           : 'kg',
                     ),
                     validator: _validateTarget,
@@ -120,7 +125,7 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
                   FilledButton.icon(
                     onPressed: _save,
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('Guardar objetivo'),
+                    label: Text(context.l10n.progressSaveGoal),
                   ),
                 ],
               ),
@@ -135,11 +140,11 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
     final value = input?.trim().replaceAll(',', '.') ?? '';
     final target = double.tryParse(value);
     if (target == null || target <= 0) {
-      return 'Ingresa un valor mayor que cero.';
+      return context.l10n.progressPositiveValueRequired;
     }
     if (_type == PersonalGoalType.sessionsPerWeek &&
         (target > 7 || target != target.roundToDouble())) {
-      return 'Elige entre 1 y 7 sesiones completas.';
+      return context.l10n.progressWeeklyTargetRange;
     }
     return null;
   }

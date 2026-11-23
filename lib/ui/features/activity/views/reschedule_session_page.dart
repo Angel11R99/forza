@@ -1,35 +1,12 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
-
-const _rescheduleMonths = <String>[
-  'enero',
-  'febrero',
-  'marzo',
-  'abril',
-  'mayo',
-  'junio',
-  'julio',
-  'agosto',
-  'septiembre',
-  'octubre',
-  'noviembre',
-  'diciembre',
-];
-
-const _rescheduleWeekdays = <String>[
-  'lunes',
-  'martes',
-  'miércoles',
-  'jueves',
-  'viernes',
-  'sábado',
-  'domingo',
-];
+import '../../../../app/localization/localization_extensions.dart';
 
 class RescheduleSessionPage extends StatefulWidget {
   const RescheduleSessionPage({
@@ -62,8 +39,9 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     return Scaffold(
-      appBar: AppBar(title: const Text('Reprogramar sesión')),
+      appBar: AppBar(title: Text(context.l10n.rescheduleTitle)),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -84,10 +62,10 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const ForzaEyebrow(label: 'Actividad'),
+                      ForzaEyebrow(label: context.l10n.rescheduleEyebrow),
                       const SizedBox(height: AppSpacing.x2),
                       Text(
-                        'Mueve tu sesión',
+                        context.l10n.rescheduleHeading,
                         style: Theme.of(context).textTheme.displaySmall,
                       ),
                       const SizedBox(height: AppSpacing.x6),
@@ -110,7 +88,12 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Fecha actual: ${_formatDate(widget.sessionDate)}',
+                                    context.l10n.rescheduleCurrentDate(
+                                      _formatDate(
+                                        widget.sessionDate,
+                                        localeName,
+                                      ),
+                                    ),
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium,
@@ -130,15 +113,13 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                       ),
                       const SizedBox(height: AppSpacing.x8),
                       Text(
-                        'Fechas disponibles',
+                        context.l10n.rescheduleAvailableDates,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: AppSpacing.x3),
                       if (widget.availableDates.isEmpty)
-                        const AppSurfaceCard(
-                          child: Text(
-                            'No encontramos otra fecha disponible en las próximas dos semanas.',
-                          ),
+                        AppSurfaceCard(
+                          child: Text(context.l10n.rescheduleNoDates),
                         )
                       else
                         for (final date in widget.availableDates) ...[
@@ -148,6 +129,7 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                             ),
                             child: _DateOptionCard(
                               date: date,
+                              localeName: localeName,
                               selected: _isSameDay(date, _selectedDate),
                               onTap: () => setState(() => _selectedDate = date),
                             ),
@@ -161,12 +143,12 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                               ? null
                               : () => Navigator.of(context).pop(_selectedDate),
                           icon: const Icon(Icons.check_rounded),
-                          label: const Text('Confirmar nueva fecha'),
+                          label: Text(context.l10n.rescheduleConfirm),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.x3),
                       Text(
-                        'Los cambios se mantienen mientras la app está abierta.',
+                        context.l10n.reschedulePersistenceNote,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
@@ -185,20 +167,23 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
 class _DateOptionCard extends StatelessWidget {
   const _DateOptionCard({
     required this.date,
+    required this.localeName,
     required this.selected,
     required this.onTap,
   });
 
   final DateTime date;
+  final String localeName;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final dateLabel = _formatDate(date, localeName);
     return Semantics(
       button: true,
       selected: selected,
-      label: '${_formatDate(date)}, fecha disponible',
+      label: context.l10n.rescheduleAvailableDateSemantics(dateLabel),
       child: ExcludeSemantics(
         child: Material(
           color: selected
@@ -233,12 +218,15 @@ class _DateOptionCard extends StatelessWidget {
                   const SizedBox(width: AppSpacing.x3),
                   Expanded(
                     child: Text(
-                      _formatDate(date),
+                      dateLabel,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   if (_isSameDay(date, DateTime.now()))
-                    Text('Hoy', style: Theme.of(context).textTheme.labelLarge),
+                    Text(
+                      context.l10n.activityToday,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
                 ],
               ),
             ),
@@ -249,8 +237,8 @@ class _DateOptionCard extends StatelessWidget {
   }
 }
 
-String _formatDate(DateTime date) =>
-    '${_rescheduleWeekdays[date.weekday - 1]}, ${date.day} de ${_rescheduleMonths[date.month - 1]}';
+String _formatDate(DateTime date, String localeName) =>
+    DateFormat('EEEE, d MMMM', localeName).format(date);
 
 bool _isSameDay(DateTime first, DateTime? second) =>
     second != null &&

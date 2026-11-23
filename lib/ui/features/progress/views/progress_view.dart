@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
@@ -11,6 +12,7 @@ import '../../../../domain/models/personal_goal.dart';
 import '../models/progress_models.dart';
 import 'progress_detail_pages.dart';
 import 'personal_goal_editor_page.dart';
+import '../../../../app/localization/localization_extensions.dart';
 
 class ProgressView extends StatefulWidget {
   const ProgressView({
@@ -63,15 +65,15 @@ class _ProgressViewState extends State<ProgressView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ForzaEyebrow(label: 'Progreso'),
+                ForzaEyebrow(label: context.l10n.progressEyebrow),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Tu progreso',
+                  context.l10n.progressTitle,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Tu constancia, en perspectiva.',
+                  context.l10n.progressSubtitle,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x8),
@@ -81,7 +83,7 @@ class _ProgressViewState extends State<ProgressView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Últimos 30 días',
+                        context.l10n.progressLast30Days,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: AppSpacing.x2),
@@ -99,7 +101,7 @@ class _ProgressViewState extends State<ProgressView> {
                               bottom: AppSpacing.x1,
                             ),
                             child: Text(
-                              'sesiones',
+                              context.l10n.progressSessions,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
@@ -110,14 +112,20 @@ class _ProgressViewState extends State<ProgressView> {
                         children: [
                           _SummaryValue(
                             icon: Icons.schedule_rounded,
-                            label:
-                                '${totalMinutes ~/ 60} h ${totalMinutes % 60} min',
+                            label: context.l10n.progressTimeTotal(
+                              totalMinutes ~/ 60,
+                              totalMinutes % 60,
+                            ),
                           ),
                           const SizedBox(width: AppSpacing.x6),
                           _SummaryValue(
                             icon: Icons.fitness_center_rounded,
-                            label:
-                                '${sessions.fold<int>(0, (sum, entry) => sum + entry.exerciseCount)} ejercicios',
+                            label: context.l10n.progressExerciseCount(
+                              sessions.fold<int>(
+                                0,
+                                (sum, entry) => sum + entry.exerciseCount,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -126,13 +134,22 @@ class _ProgressViewState extends State<ProgressView> {
                         children: [
                           _SummaryValue(
                             icon: Icons.repeat_rounded,
-                            label:
-                                '${sessions.fold<int>(0, (sum, entry) => sum + entry.loggedSets.length)} series · ${sessions.fold<int>(0, (sum, entry) => sum + entry.totalRepetitions)} reps',
+                            label: context.l10n.progressSetsAndReps(
+                              sessions.fold<int>(
+                                0,
+                                (sum, entry) => sum + entry.loggedSets.length,
+                              ),
+                              sessions.fold<int>(
+                                0,
+                                (sum, entry) => sum + entry.totalRepetitions,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: AppSpacing.x6),
                           _SummaryValue(
                             icon: Icons.scale_outlined,
                             label: _volumeLabel(
+                              context,
                               sessions.fold<double>(
                                 0,
                                 (sum, entry) => sum + entry.totalVolumeKg,
@@ -143,7 +160,7 @@ class _ProgressViewState extends State<ProgressView> {
                       ),
                       const SizedBox(height: AppSpacing.x2),
                       Text(
-                        'El volumen suma repeticiones × carga de las series con ambos datos.',
+                        context.l10n.progressVolumeExplanation,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -151,14 +168,14 @@ class _ProgressViewState extends State<ProgressView> {
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
-                  title: 'Objetivos personales',
-                  actionLabel: 'Añadir',
+                  title: context.l10n.progressGoals,
+                  actionLabel: context.l10n.progressAddGoal,
                   onAction: _openGoalEditor,
                 ),
                 if (widget.goals.isEmpty)
                   AppSurfaceCard(
                     child: Text(
-                      'Define una meta semanal o una marca de carga para seguir tu avance.',
+                      context.l10n.progressGoalDescription,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   )
@@ -174,7 +191,7 @@ class _ProgressViewState extends State<ProgressView> {
                       ),
                     ),
                 const SizedBox(height: AppSpacing.x8),
-                SectionHeading(title: 'Historial de entrenamientos'),
+                SectionHeading(title: context.l10n.progressHistory),
                 if (sessions.isEmpty)
                   AppSurfaceCard(
                     child: Row(
@@ -183,7 +200,7 @@ class _ProgressViewState extends State<ProgressView> {
                         const SizedBox(width: AppSpacing.x3),
                         Expanded(
                           child: Text(
-                            'Completa una sesión para ver aquí tu actividad reciente.',
+                            context.l10n.progressNoHistory,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
@@ -229,16 +246,16 @@ class _ProgressViewState extends State<ProgressView> {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Retirar objetivo'),
-        content: const Text('¿Quieres quitar este objetivo de tu progreso?'),
+        title: Text(context.l10n.progressRemoveGoalTitle),
+        content: Text(context.l10n.progressRemoveGoalBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Retirar'),
+            child: Text(context.l10n.commonRemove),
           ),
         ],
       ),
@@ -280,25 +297,29 @@ class _PersonalGoalCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   isWeekly
-                      ? 'Sesiones esta semana'
-                      : goal.exerciseName ?? 'Meta de carga',
+                      ? context.l10n.progressWeeklySessions
+                      : goal.exerciseName ?? context.l10n.progressLoadGoal,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
               IconButton(
-                tooltip: 'Editar objetivo',
+                tooltip: context.l10n.progressEditGoal,
                 onPressed: onEdit,
                 icon: const Icon(Icons.edit_outlined),
               ),
               IconButton(
-                tooltip: 'Retirar objetivo',
+                tooltip: context.l10n.progressRemoveGoalTitle,
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete_outline_rounded),
               ),
             ],
           ),
           Text(
-            '$currentLabel de $targetLabel ${goal.unit}',
+            context.l10n.progressGoalCurrentTarget(
+              currentLabel,
+              targetLabel,
+              goal.unit,
+            ),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: AppSpacing.x3),
@@ -306,8 +327,8 @@ class _PersonalGoalCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.x2),
           Text(
             isWeekly
-                ? 'Sesiones completadas de lunes a domingo.'
-                : 'Mayor carga registrada en tus series para este ejercicio.',
+                ? context.l10n.progressWeeklyGoalDescription
+                : context.l10n.progressLoadGoalDescription,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
@@ -324,11 +345,18 @@ class _SessionHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
       child: Semantics(
         button: true,
-        label: '${session.title}, ${_formatShortDate(session.date)}',
+        label: context.l10n.progressSessionSemantics(
+          _localizedSessionTitle(context, session.title),
+          _formatShortDate(
+            session.date,
+            Localizations.localeOf(context).toLanguageTag(),
+          ),
+        ),
         child: ExcludeSemantics(
           child: InkWell(
             onTap: onTap,
@@ -351,12 +379,19 @@ class _SessionHistoryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          session.title,
+                          _localizedSessionTitle(context, session.title),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: AppSpacing.x1),
                         Text(
-                          '${_formatShortDate(session.date)}  ·  ${session.durationMinutes} min  ·  ${session.exerciseCount} ejercicios${session.totalVolumeKg > 0 ? '  ·  ${_volumeLabel(session.totalVolumeKg)}' : ''}',
+                          context.l10n.progressHistorySummary(
+                            _formatShortDate(session.date, localeName),
+                            session.durationMinutes,
+                            session.exerciseCount,
+                            session.totalVolumeKg > 0
+                                ? _volumeLabel(context, session.totalVolumeKg)
+                                : '',
+                          ),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -396,27 +431,23 @@ class _SummaryValue extends StatelessWidget {
   }
 }
 
-String _formatShortDate(DateTime date) =>
-    '${date.day} ${_monthAbbreviation(date.month)}';
+String _formatShortDate(DateTime date, String localeName) =>
+    DateFormat.MMMd(localeName).format(date);
 
-String _volumeLabel(double volume) =>
-    volume == 0 ? 'Sin datos de\u00A0carga' : '${_formatVolume(volume)} kg';
+String _volumeLabel(BuildContext context, double volume) => volume == 0
+    ? context.l10n.progressNoLoadData
+    : context.l10n.progressVolumeKg(_formatVolume(volume));
+
+String _localizedSessionTitle(BuildContext context, String title) =>
+    switch (title) {
+      'Tren superior' => context.l10n.onboardingUpperBody,
+      'Tren inferior' => context.l10n.onboardingLowerBody,
+      'Cuerpo completo' => context.l10n.onboardingFullBody,
+      'Fuerza total' => context.l10n.progressTotalStrength,
+      'Piernas y core' => context.l10n.progressLegsCore,
+      _ => title,
+    };
 
 String _formatVolume(double volume) => volume == volume.roundToDouble()
     ? volume.toStringAsFixed(0)
     : volume.toStringAsFixed(1);
-
-String _monthAbbreviation(int month) => const [
-  'ene',
-  'feb',
-  'mar',
-  'abr',
-  'may',
-  'jun',
-  'jul',
-  'ago',
-  'sep',
-  'oct',
-  'nov',
-  'dic',
-][month - 1];

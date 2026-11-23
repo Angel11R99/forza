@@ -12,6 +12,8 @@ import '../../profile/models/profile_settings.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../data/repositories/workout_log_repository.dart';
+import '../../../../app/localization/localization_extensions.dart';
+import '../../exercises/models/exercise_localized_labels.dart';
 
 class TrainingSessionFlow extends StatefulWidget {
   const TrainingSessionFlow({
@@ -153,11 +155,11 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(_title),
+        title: Text(_title(context)),
         leading: IconButton(
           tooltip: _screen == _SessionScreen.preparation
-              ? 'Volver'
-              : 'Volver al paso anterior',
+              ? context.l10n.sessionBack
+              : context.l10n.sessionBackStep,
           onPressed: _goBack,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
@@ -165,7 +167,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           if (_screen == _SessionScreen.exerciseList ||
               _screen == _SessionScreen.rest)
             IconButton(
-              tooltip: 'Pausar entrenamiento',
+              tooltip: context.l10n.sessionPause,
               onPressed: _pause,
               icon: const Icon(Icons.pause_rounded),
             ),
@@ -221,15 +223,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     );
   }
 
-  String get _title => switch (_screen) {
-    _SessionScreen.preparation => 'Preparación',
-    _SessionScreen.warmup => 'Calentamiento',
-    _SessionScreen.exerciseList => 'Tu entrenamiento',
-    _SessionScreen.rest => 'Descanso',
-    _SessionScreen.paused => 'Entrenamiento pausado',
-    _SessionScreen.confirmAbandon => 'Confirmar abandono',
-    _SessionScreen.completed => 'Entrenamiento completado',
-    _SessionScreen.summary => 'Resumen de sesión',
+  String _title(BuildContext context) => switch (_screen) {
+    _SessionScreen.preparation => context.l10n.sessionTitlePreparation,
+    _SessionScreen.warmup => context.l10n.sessionTitleWarmup,
+    _SessionScreen.exerciseList => context.l10n.sessionTitleWorkout,
+    _SessionScreen.rest => context.l10n.sessionTitleRest,
+    _SessionScreen.paused => context.l10n.sessionTitlePaused,
+    _SessionScreen.confirmAbandon => context.l10n.sessionTitleConfirmAbandon,
+    _SessionScreen.completed => context.l10n.sessionTitleCompleted,
+    _SessionScreen.summary => context.l10n.sessionTitleSummary,
   };
 
   Widget _buildScreen(BuildContext context) => switch (_screen) {
@@ -311,15 +313,17 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Calentamiento'),
+        _SessionEyebrow(label: context.l10n.sessionWarmup),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          'Prepara tu cuerpo',
+          context.l10n.sessionWarmupHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Movimientos breves para ${_plannedSession.title.toLowerCase()}. Hazlos a un ritmo cómodo; puedes omitirlos cuando quieras.',
+          context.l10n.sessionWarmupDescription(
+            _localizedPlanTitle(context, _plannedSession.title),
+          ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -338,12 +342,18 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _warmupMovements[index].title,
+                        _localizedWarmupTitle(
+                          context,
+                          _warmupMovements[index].title,
+                        ),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: AppSpacing.x1),
                       Text(
-                        _warmupMovements[index].instructions,
+                        _localizedWarmupInstructions(
+                          context,
+                          _warmupMovements[index].title,
+                        ),
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
@@ -351,7 +361,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                 ),
                 const SizedBox(width: AppSpacing.x2),
                 Text(
-                  _warmupMovements[index].duration,
+                  _localizedWarmupDuration(
+                    context,
+                    _warmupMovements[index].duration,
+                  ),
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
               ],
@@ -368,15 +381,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Preparación'),
+        _SessionEyebrow(label: context.l10n.sessionPreparation),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          'Todo listo para empezar',
+          context.l10n.sessionPreparationHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Tómate un momento para preparar tu espacio y revisar la sesión de hoy.',
+          context.l10n.sessionPreparationDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -385,27 +398,30 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.settings.goal,
+                _localizedGoal(context, widget.settings.goal),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: AppSpacing.x3),
               Text(
-                _plannedSession.title,
+                _localizedPlanTitle(context, _plannedSession.title),
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: AppSpacing.x2),
               Text(
-                '${widget.settings.sessionMinutes} min · ${_exercises.length} ejercicios',
+                context.l10n.homeDurationExercises(
+                  widget.settings.sessionMinutes,
+                  _exercises.length,
+                ),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
-        for (final item in const [
-          ('Botella de agua', Icons.water_drop_outlined),
-          ('Espacio despejado', Icons.check_circle_outline_rounded),
-          ('Equipo a mano', Icons.fitness_center_outlined),
+        for (final item in [
+          (context.l10n.sessionWaterBottle, Icons.water_drop_outlined),
+          (context.l10n.sessionClearSpace, Icons.check_circle_outline_rounded),
+          (context.l10n.sessionEquipmentReady, Icons.fitness_center_outlined),
         ]) ...[
           AppSurfaceCard(
             padding: const EdgeInsets.symmetric(
@@ -432,15 +448,18 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Ejercicios'),
+        _SessionEyebrow(label: context.l10n.sessionExercises),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          'Sigue tu sesión',
+          context.l10n.sessionExerciseHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Ejercicio ${_currentExercise + 1} de ${_exercises.length}',
+          context.l10n.sessionExerciseCountProgress(
+            _currentExercise + 1,
+            _exercises.length,
+          ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -463,7 +482,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ],
         if (_currentExercise < _exercises.length) ...[
           Text(
-            'Registro de series',
+            context.l10n.sessionSetLog,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: AppSpacing.x2),
@@ -473,7 +492,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             setIndex++
           ) ...[
             _WorkoutSetEditor(
-              label: 'Serie ${setIndex + 1}',
+              label: context.l10n.sessionSet(setIndex + 1),
               isTimed: _exercises[_currentExercise].isTimed,
               result: _resultFor(_currentExercise, setIndex),
               onChanged: (result) {
@@ -516,10 +535,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Descanso'),
+        _SessionEyebrow(label: context.l10n.sessionRest),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          'Tómate un respiro',
+          context.l10n.sessionRestHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -550,7 +569,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               ),
               const SizedBox(height: AppSpacing.x4),
               Text(
-                'Antes de ${_exercises[_currentExercise].name}',
+                context.l10n.sessionBeforeExercise(
+                  localizedTrainingExerciseName(
+                    context,
+                    _exercises[_currentExercise].name,
+                  ),
+                ),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -559,7 +583,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ),
         const SizedBox(height: AppSpacing.x4),
         Text(
-          'El temporizador es orientativo y solo corre mientras esta pantalla está activa.',
+          context.l10n.sessionTimerNote,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
@@ -570,15 +594,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Entrenamiento pausado'),
+        _SessionEyebrow(label: context.l10n.sessionPaused),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          'Pausa cuando lo necesites',
+          context.l10n.sessionPauseHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'La sesión está en pausa. Puedes retomarla o terminar el entrenamiento.',
+          context.l10n.sessionPauseDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -589,7 +613,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               const SizedBox(width: AppSpacing.x4),
               Expanded(
                 child: Text(
-                  '${_currentExercise + 1} de ${_exercises.length} ejercicios',
+                  context.l10n.sessionProgressCount(
+                    _currentExercise + 1,
+                    _exercises.length,
+                  ),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -604,15 +631,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Salir del entrenamiento'),
+        _SessionEyebrow(label: context.l10n.sessionExitTitle),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          '¿Quieres abandonar?',
+          context.l10n.sessionAbandonHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Se cerrará esta sesión. El progreso no se guardará en el historial.',
+          context.l10n.sessionAbandonDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -625,12 +652,17 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Entrenamiento completado'),
+        _SessionEyebrow(label: context.l10n.sessionCompletedTitle),
         const SizedBox(height: AppSpacing.x3),
-        Text('Buen trabajo', style: Theme.of(context).textTheme.displaySmall),
+        Text(
+          context.l10n.sessionGoodWork,
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Terminaste tu sesión de ${_plannedSession.title.toLowerCase()}.',
+          context.l10n.sessionWorkoutFinishedFor(
+            _localizedPlanTitle(context, _plannedSession.title),
+          ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -645,7 +677,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               const SizedBox(width: AppSpacing.x4),
               Expanded(
                 child: Text(
-                  '${_exercises.length} ejercicios completados',
+                  context.l10n.sessionExercisesCompleted(_exercises.length),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -663,15 +695,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SessionEyebrow(label: 'Resumen de sesión'),
+        _SessionEyebrow(label: context.l10n.sessionSummary),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          'Así fue tu sesión',
+          context.l10n.sessionSummaryHeadline,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
         Text(
-          'Tu actividad de hoy, resumida.',
+          context.l10n.sessionSummaryDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -680,20 +712,20 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             children: [
               _SummaryMetric(
                 icon: Icons.schedule_rounded,
-                label: 'Duración',
+                label: context.l10n.sessionDuration,
                 value: '$durationMinutes min',
               ),
               const Divider(height: AppSpacing.x6),
               _SummaryMetric(
                 icon: Icons.fitness_center_rounded,
-                label: 'Ejercicios',
+                label: context.l10n.sessionExerciseCount,
                 value: '${_exercises.length}',
               ),
               const Divider(height: AppSpacing.x6),
               _SummaryMetric(
                 icon: Icons.bolt_rounded,
-                label: 'Objetivo',
-                value: widget.settings.goal,
+                label: context.l10n.sessionGoal,
+                value: _localizedGoal(context, widget.settings.goal),
               ),
             ],
           ),
@@ -711,9 +743,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         _SessionScreen.preparation => FilledButton.icon(
           onPressed: () => setState(() => _screen = _SessionScreen.warmup),
           icon: const Icon(Icons.arrow_forward_rounded),
-          label: const Padding(
+          label: Padding(
             padding: EdgeInsets.symmetric(vertical: 13),
-            child: Text('Ver calentamiento'),
+            child: Text(context.l10n.sessionWarmupButton),
           ),
         ),
         _SessionScreen.warmup => Column(
@@ -722,15 +754,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             FilledButton.icon(
               onPressed: _start,
               icon: const Icon(Icons.play_arrow_rounded),
-              label: const Padding(
+              label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 13),
-                child: Text('Comenzar entrenamiento'),
+                child: Text(context.l10n.sessionStart),
               ),
             ),
             const SizedBox(height: AppSpacing.x2),
             TextButton(
               onPressed: _start,
-              child: const Text('Omitir calentamiento'),
+              child: Text(context.l10n.sessionSkipWarmupButton),
             ),
           ],
         ),
@@ -740,16 +772,16 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             padding: const EdgeInsets.symmetric(vertical: 13),
             child: Text(
               _currentExercise == _exercises.length - 1
-                  ? 'Completar entrenamiento'
-                  : 'Completar ejercicio',
+                  ? context.l10n.sessionCompleteWorkout
+                  : context.l10n.sessionCompleteExercise,
             ),
           ),
         ),
         _SessionScreen.rest => FilledButton(
           onPressed: _skipRest,
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13),
-            child: Text('Saltar descanso'),
+            child: Text(context.l10n.sessionSkipRestButton),
           ),
         ),
         _SessionScreen.paused => Column(
@@ -758,16 +790,16 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             FilledButton.icon(
               onPressed: _resume,
               icon: const Icon(Icons.play_arrow_rounded),
-              label: const Padding(
+              label: Padding(
                 padding: EdgeInsets.symmetric(vertical: 13),
-                child: Text('Continuar entrenamiento'),
+                child: Text(context.l10n.sessionContinue),
               ),
             ),
             const SizedBox(height: AppSpacing.x2),
             OutlinedButton(
               onPressed: () =>
                   setState(() => _screen = _SessionScreen.confirmAbandon),
-              child: const Text('Abandonar sesión'),
+              child: Text(context.l10n.sessionAbandonButton),
             ),
           ],
         ),
@@ -780,23 +812,23 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                 if (!context.mounted) return;
                 Navigator.of(context).pop();
               },
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 13),
-                child: Text('Sí, abandonar'),
+                child: Text(context.l10n.sessionAbandonConfirm),
               ),
             ),
             const SizedBox(height: AppSpacing.x2),
             TextButton(
               onPressed: () => setState(() => _screen = _SessionScreen.paused),
-              child: const Text('Seguir entrenando'),
+              child: Text(context.l10n.sessionKeep),
             ),
           ],
         ),
         _SessionScreen.completed => FilledButton(
           onPressed: () => setState(() => _screen = _SessionScreen.summary),
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13),
-            child: Text('Ver resumen de sesión'),
+            child: Text(context.l10n.sessionViewSummary),
           ),
         ),
         _SessionScreen.summary => const SizedBox.shrink(),
@@ -808,9 +840,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     width: double.infinity,
     child: FilledButton(
       onPressed: _finishWithRecord,
-      child: const Padding(
+      child: Padding(
         padding: EdgeInsets.symmetric(vertical: 13),
-        child: Text('Finalizar'),
+        child: Text(context.l10n.sessionFinish),
       ),
     ),
   );
@@ -995,7 +1027,9 @@ class _WorkoutSetEditor extends StatelessWidget {
             children: [
               Expanded(
                 child: _numberField(
-                  label: isTimed ? 'Segundos' : 'Repeticiones',
+                  label: isTimed
+                      ? context.l10n.sessionSeconds
+                      : context.l10n.sessionRepetitions,
                   initialValue: isTimed
                       ? value.durationSeconds
                       : value.repetitions,
@@ -1018,7 +1052,7 @@ class _WorkoutSetEditor extends StatelessWidget {
                 const SizedBox(width: AppSpacing.x2),
                 Expanded(
                   child: _numberField(
-                    label: 'Carga (kg)',
+                    label: context.l10n.sessionLoad,
                     initialValue: value.loadKg,
                     decimal: true,
                     onChanged: (number) => onChanged(
@@ -1081,7 +1115,7 @@ class _SessionProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Ejercicio ${current + 1} de $total',
+      label: context.l10n.sessionExerciseCountProgress(current + 1, total),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.pill),
         child: LinearProgressIndicator(
@@ -1164,12 +1198,12 @@ class _ExerciseSessionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      exercise.name,
+                      localizedTrainingExerciseName(context, exercise.name),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: AppSpacing.x1),
                     Text(
-                      exercise.detail,
+                      _localizedExerciseDetail(context, exercise.detail),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -1231,7 +1265,7 @@ class _SessionSaveNote extends StatelessWidget {
           const SizedBox(width: AppSpacing.x3),
           Expanded(
             child: Text(
-              'Al terminar, esta sesión quedará registrada en tu actividad.',
+              context.l10n.sessionRecordNote,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -1240,3 +1274,62 @@ class _SessionSaveNote extends StatelessWidget {
     );
   }
 }
+
+String _localizedPlanTitle(BuildContext context, String title) =>
+    switch (title) {
+      'Tren superior' => context.l10n.onboardingUpperBody,
+      'Tren inferior' => context.l10n.onboardingLowerBody,
+      _ => context.l10n.onboardingFullBody,
+    };
+
+String _localizedGoal(BuildContext context, String goal) => switch (goal) {
+  'Ganar fuerza' => context.l10n.onboardingStrengthGoal,
+  'Ganar músculo' => context.l10n.onboardingMuscleGoal,
+  'Crear el hábito' => context.l10n.onboardingHabitGoal,
+  _ => goal,
+};
+
+String _localizedExerciseDetail(BuildContext context, String detail) {
+  final parts = detail.split(' · ');
+  if (parts.length < 3) return detail;
+  final setCount = int.tryParse(parts[1].split(' ').first) ?? 0;
+  final target = switch (parts[2]) {
+    '20–40 segundos' => context.l10n.sessionTimeTarget,
+    '6–8 repeticiones' => context.l10n.sessionRepTargetLow,
+    '8–12 repeticiones' => context.l10n.sessionRepTargetMid,
+    _ => context.l10n.sessionRepTargetComfortable,
+  };
+  return '${localizedExerciseMuscleGroup(context, parts.first)} · ${context.l10n.sessionSetsTarget(setCount, target)}';
+}
+
+String _localizedWarmupTitle(BuildContext context, String title) =>
+    switch (title) {
+      'Círculos de hombros' => context.l10n.warmupShoulderCircles,
+      'Rotación torácica' => context.l10n.warmupThoracicRotation,
+      'Flexiones inclinadas' => context.l10n.warmupInclinePushups,
+      'Marcha en el sitio' => context.l10n.warmupMarch,
+      'Bisagra de cadera' => context.l10n.warmupHipHinge,
+      'Sentadilla sin carga' => context.l10n.warmupBodyweightSquat,
+      'Marcha con brazos' => context.l10n.warmupMarchArms,
+      _ => context.l10n.warmupTorsoRotations,
+    };
+
+String _localizedWarmupInstructions(BuildContext context, String title) =>
+    switch (title) {
+      'Círculos de hombros' => context.l10n.warmupShoulderCirclesInstructions,
+      'Rotación torácica' => context.l10n.warmupThoracicInstructions,
+      'Flexiones inclinadas' => context.l10n.warmupInclineInstructions,
+      'Marcha en el sitio' => context.l10n.warmupMarchInstructions,
+      'Bisagra de cadera' => context.l10n.warmupHipHingeInstructions,
+      'Sentadilla sin carga' => context.l10n.warmupBodyweightSquatInstructions,
+      'Marcha con brazos' => context.l10n.warmupMarchArmsInstructions,
+      _ => context.l10n.warmupTorsoInstructions,
+    };
+
+String _localizedWarmupDuration(BuildContext context, String duration) =>
+    switch (duration) {
+      '30 s' => context.l10n.warmupThirtySeconds,
+      '30 s por lado' => context.l10n.warmupThirtySecondsEachSide,
+      '45 s' => context.l10n.warmupFortyFiveSeconds,
+      _ => context.l10n.warmupEightReps,
+    };

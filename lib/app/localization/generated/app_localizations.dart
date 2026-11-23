@@ -254,12 +254,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{No exercises found} =1{1 exercise found} other{{count} exercises found}}'**
   String exerciseFoundCount(int count);
 
-  /// No description provided for @exerciseCatalogSpanishNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'Exercise names, categories, and instructions in this catalog are currently in Spanish.'**
-  String get exerciseCatalogSpanishNotice;
-
   /// No description provided for @exerciseLoadError.
   ///
   /// In en, this message translates to:
@@ -847,6 +841,2854 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ACE · Romanian deadlift technique'**
   String get exerciseGuideRomanianDeadliftSource;
+
+  /// No description provided for @homeGreetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get homeGreetingMorning;
+
+  /// No description provided for @homeGreetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get homeGreetingAfternoon;
+
+  /// No description provided for @homeGreetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get homeGreetingEvening;
+
+  /// No description provided for @homeProfileTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open profile'**
+  String get homeProfileTooltip;
+
+  /// No description provided for @homePlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your training plan'**
+  String get homePlanTitle;
+
+  /// No description provided for @homeTodayWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s workout'**
+  String get homeTodayWorkout;
+
+  /// No description provided for @homeNextSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Next session · {weekday}'**
+  String homeNextSession(Object weekday);
+
+  /// No description provided for @homeAdjustPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust plan'**
+  String get homeAdjustPlan;
+
+  /// No description provided for @homeWeekTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your week'**
+  String get homeWeekTitle;
+
+  /// No description provided for @homeViewActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'View activity'**
+  String get homeViewActivity;
+
+  /// No description provided for @homeTodaySession.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY\'S SESSION'**
+  String get homeTodaySession;
+
+  /// No description provided for @homeNextSessionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NEXT SESSION · {weekday}'**
+  String homeNextSessionLabel(Object weekday);
+
+  /// No description provided for @homeDurationExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min per session · {count} exercises'**
+  String homeDurationExercises(Object count, Object minutes);
+
+  /// No description provided for @homeContinueWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue workout'**
+  String get homeContinueWorkout;
+
+  /// No description provided for @homeViewTodaySession.
+  ///
+  /// In en, this message translates to:
+  /// **'View today\'s session'**
+  String get homeViewTodaySession;
+
+  /// No description provided for @homeWeeklySessionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {target} sessions'**
+  String homeWeeklySessionCount(Object done, Object target);
+
+  /// No description provided for @homeThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get homeThisWeek;
+
+  /// No description provided for @homeWeeklyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal is {count, plural, =1{1 session per week.} other{{count} sessions per week.}}'**
+  String homeWeeklyGoal(num count);
+
+  /// No description provided for @homeStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'completed'**
+  String get homeStatusCompleted;
+
+  /// No description provided for @homeStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'pending'**
+  String get homeStatusPending;
+
+  /// No description provided for @activityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTitle;
+
+  /// No description provided for @activitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your training calendar.'**
+  String get activitySubtitle;
+
+  /// No description provided for @activityTodayDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Day details'**
+  String get activityTodayDetail;
+
+  /// No description provided for @activityToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get activityToday;
+
+  /// No description provided for @activityRescheduleConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'There is already a workout on that day.'**
+  String get activityRescheduleConflict;
+
+  /// No description provided for @activityRescheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout moved to {date}.'**
+  String activityRescheduled(Object date);
+
+  /// No description provided for @activityPreviousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get activityPreviousMonth;
+
+  /// No description provided for @activityNextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get activityNextMonth;
+
+  /// No description provided for @activityRecoveryDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery day'**
+  String get activityRecoveryDay;
+
+  /// No description provided for @activityNoSession.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout is scheduled for this day.'**
+  String get activityNoSession;
+
+  /// No description provided for @activityExerciseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String activityExerciseCount(num count);
+
+  /// No description provided for @activitySessionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout completed'**
+  String get activitySessionCompleted;
+
+  /// No description provided for @activityWorkoutInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout in progress'**
+  String get activityWorkoutInProgress;
+
+  /// No description provided for @activityContinueWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue workout'**
+  String get activityContinueWorkout;
+
+  /// No description provided for @activityRepeatWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat workout'**
+  String get activityRepeatWorkout;
+
+  /// No description provided for @activityStartSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Start workout'**
+  String get activityStartSession;
+
+  /// No description provided for @activityScheduledSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled workout'**
+  String get activityScheduledSession;
+
+  /// No description provided for @activityCompletedOutside.
+  ///
+  /// In en, this message translates to:
+  /// **'I trained outside the app'**
+  String get activityCompletedOutside;
+
+  /// No description provided for @activityChangeDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Change day'**
+  String get activityChangeDay;
+
+  /// No description provided for @rescheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule workout'**
+  String get rescheduleTitle;
+
+  /// No description provided for @rescheduleEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get rescheduleEyebrow;
+
+  /// No description provided for @rescheduleHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Move your workout'**
+  String get rescheduleHeading;
+
+  /// No description provided for @rescheduleCurrentDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Current date: {date}'**
+  String rescheduleCurrentDate(Object date);
+
+  /// No description provided for @rescheduleAvailableDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Available dates'**
+  String get rescheduleAvailableDates;
+
+  /// No description provided for @rescheduleNoDates.
+  ///
+  /// In en, this message translates to:
+  /// **'No other date is available in the next two weeks.'**
+  String get rescheduleNoDates;
+
+  /// No description provided for @rescheduleConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new date'**
+  String get rescheduleConfirm;
+
+  /// No description provided for @reschedulePersistenceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes are kept while the app is open.'**
+  String get reschedulePersistenceNote;
+
+  /// No description provided for @rescheduleAvailableDateSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, available date'**
+  String rescheduleAvailableDateSemantics(Object date);
+
+  /// No description provided for @profileEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get profileEyebrow;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get profileEdit;
+
+  /// No description provided for @profileEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, email, and goal'**
+  String get profileEditSubtitle;
+
+  /// No description provided for @profileAccountAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account and access'**
+  String get profileAccountAccess;
+
+  /// No description provided for @profileAccountAccessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in options'**
+  String get profileAccountAccessSubtitle;
+
+  /// No description provided for @profilePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get profilePrivacy;
+
+  /// No description provided for @profilePrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private profile'**
+  String get profilePrivate;
+
+  /// No description provided for @profileVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible profile'**
+  String get profileVisible;
+
+  /// No description provided for @profileTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get profileTraining;
+
+  /// No description provided for @profileMyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'My training plan'**
+  String get profileMyPlan;
+
+  /// No description provided for @profilePlanSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{goal} · {days} days · {minutes} min'**
+  String profilePlanSummary(Object days, Object goal, Object minutes);
+
+  /// No description provided for @profilePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get profilePreferences;
+
+  /// No description provided for @profileAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get profileAppearance;
+
+  /// No description provided for @profileWeightUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight {unit}'**
+  String profileWeightUnit(Object unit);
+
+  /// No description provided for @profileWeekStart.
+  ///
+  /// In en, this message translates to:
+  /// **'week starts {day}'**
+  String profileWeekStart(Object day);
+
+  /// No description provided for @profileHaptics.
+  ///
+  /// In en, this message translates to:
+  /// **'haptics {status}'**
+  String profileHaptics(Object status);
+
+  /// No description provided for @profileHapticsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'on'**
+  String get profileHapticsOn;
+
+  /// No description provided for @profileHapticsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'off'**
+  String get profileHapticsOff;
+
+  /// No description provided for @profileBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export and restore data'**
+  String get profileBackup;
+
+  /// No description provided for @profileBackupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a backup or restore your data'**
+  String get profileBackupSubtitle;
+
+  /// No description provided for @profileNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get profileNotifications;
+
+  /// No description provided for @profileReminderAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder at {time}'**
+  String profileReminderAt(Object time);
+
+  /// No description provided for @profileRemindersOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders off'**
+  String get profileRemindersOff;
+
+  /// No description provided for @profileSessionPreferencesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences are kept while the app is open.'**
+  String get profileSessionPreferencesNote;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
+  /// No description provided for @commonRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get commonRetry;
+
+  /// No description provided for @commonBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
+  /// No description provided for @commonFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get commonFinish;
+
+  /// No description provided for @commonRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get commonRemove;
+
+  /// No description provided for @homeWeekdayStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}: {status}'**
+  String homeWeekdayStatus(Object day, Object status);
+
+  /// No description provided for @profileEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get profileEditTitle;
+
+  /// No description provided for @profileNameField.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileNameField;
+
+  /// No description provided for @profileEmailField.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get profileEmailField;
+
+  /// No description provided for @profileGoalField.
+  ///
+  /// In en, this message translates to:
+  /// **'Training goal'**
+  String get profileGoalField;
+
+  /// No description provided for @profileReviewChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Review changes'**
+  String get profileReviewChanges;
+
+  /// No description provided for @profilePreferencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get profilePreferencesTitle;
+
+  /// No description provided for @profileWeightUnitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight unit'**
+  String get profileWeightUnitTitle;
+
+  /// No description provided for @profileWeekStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Week starts on'**
+  String get profileWeekStartTitle;
+
+  /// No description provided for @profileHapticTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic feedback'**
+  String get profileHapticTitle;
+
+  /// No description provided for @profileSavePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Save preferences'**
+  String get profileSavePreferences;
+
+  /// No description provided for @profileNotificationsPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get profileNotificationsPageTitle;
+
+  /// No description provided for @profileWorkoutReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout reminders'**
+  String get profileWorkoutReminders;
+
+  /// No description provided for @profileReminderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a time that works for you.'**
+  String get profileReminderDescription;
+
+  /// No description provided for @profileReminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder time'**
+  String get profileReminderTime;
+
+  /// No description provided for @profileWeeklySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly summary'**
+  String get profileWeeklySummary;
+
+  /// No description provided for @profileWeeklySummaryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A review of your activity.'**
+  String get profileWeeklySummaryDescription;
+
+  /// No description provided for @profilePersonalRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal records'**
+  String get profilePersonalRecords;
+
+  /// No description provided for @profileSaveNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Save preferences'**
+  String get profileSaveNotifications;
+
+  /// No description provided for @profilePrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and account'**
+  String get profilePrivacyTitle;
+
+  /// No description provided for @profilePrivateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private profile'**
+  String get profilePrivateTitle;
+
+  /// No description provided for @profilePrivateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you can see your profile.'**
+  String get profilePrivateDescription;
+
+  /// No description provided for @profileShareActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share activity'**
+  String get profileShareActivityTitle;
+
+  /// No description provided for @profileShareActivityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow your progress to be shown in the app.'**
+  String get profileShareActivityDescription;
+
+  /// No description provided for @profileConfirmAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm account details'**
+  String get profileConfirmAccount;
+
+  /// No description provided for @profileSavePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save privacy'**
+  String get profileSavePrivacy;
+
+  /// No description provided for @profileReviewComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Data review complete.'**
+  String get profileReviewComplete;
+
+  /// No description provided for @profileAccountConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Account confirmation'**
+  String get profileAccountConfirmation;
+
+  /// No description provided for @profileName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileName;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get profileEmail;
+
+  /// No description provided for @profileGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get profileGoal;
+
+  /// No description provided for @profileConfirmDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm details'**
+  String get profileConfirmDetails;
+
+  /// No description provided for @profileThemeDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow device'**
+  String get profileThemeDevice;
+
+  /// No description provided for @profileThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get profileThemeLight;
+
+  /// No description provided for @profileThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get profileThemeDark;
+
+  /// No description provided for @profileThemeAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get profileThemeAppearance;
+
+  /// No description provided for @profileThemeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you want FORZA to look.'**
+  String get profileThemeDescription;
+
+  /// No description provided for @profileWeightKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilograms (kg)'**
+  String get profileWeightKg;
+
+  /// No description provided for @profileWeightLb.
+  ///
+  /// In en, this message translates to:
+  /// **'Pounds (lb)'**
+  String get profileWeightLb;
+
+  /// No description provided for @profileWeekMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get profileWeekMonday;
+
+  /// No description provided for @profileWeekSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get profileWeekSunday;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export and restore'**
+  String get backupTitle;
+
+  /// No description provided for @backupEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data'**
+  String get backupEyebrow;
+
+  /// No description provided for @backupHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'A backup you control'**
+  String get backupHeading;
+
+  /// No description provided for @backupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The file includes your plan, workout history and sets, schedule, goals, active workout, and appearance. It is saved as JSON wherever you choose.'**
+  String get backupDescription;
+
+  /// No description provided for @backupExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get backupExport;
+
+  /// No description provided for @backupExportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a file you can save or transfer to another device.'**
+  String get backupExportDescription;
+
+  /// No description provided for @backupCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create backup'**
+  String get backupCreate;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get backupRestore;
+
+  /// No description provided for @backupRestoreDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the contents and confirm before replacing local data.'**
+  String get backupRestoreDescription;
+
+  /// No description provided for @backupChooseFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose backup file'**
+  String get backupChooseFile;
+
+  /// No description provided for @backupSaveDialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Save FORZA backup'**
+  String get backupSaveDialog;
+
+  /// No description provided for @backupPickDialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Select FORZA backup'**
+  String get backupPickDialog;
+
+  /// No description provided for @backupSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved.'**
+  String get backupSaved;
+
+  /// No description provided for @backupRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup restored.'**
+  String get backupRestored;
+
+  /// No description provided for @backupConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore backup'**
+  String get backupConfirmTitle;
+
+  /// No description provided for @backupConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Local data will be replaced with the backup from {date}. It includes {records} workout history entries, {schedule} scheduled workouts, and {goals} goals. This cannot be undone.'**
+  String backupConfirmMessage(
+    Object date,
+    Object goals,
+    Object records,
+    Object schedule,
+  );
+
+  /// No description provided for @backupReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace data'**
+  String get backupReplace;
+
+  /// No description provided for @backupGenericError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t process the file. Try again.'**
+  String get backupGenericError;
+
+  /// No description provided for @accountWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Train at your own pace.'**
+  String get accountWelcomeTitle;
+
+  /// No description provided for @accountWelcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a space to organize your workouts and track your progress.'**
+  String get accountWelcomeDescription;
+
+  /// No description provided for @accountCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get accountCreate;
+
+  /// No description provided for @accountExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'I already have an account'**
+  String get accountExisting;
+
+  /// No description provided for @accountContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue exploring'**
+  String get accountContinue;
+
+  /// No description provided for @accountNewEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'New account'**
+  String get accountNewEyebrow;
+
+  /// No description provided for @accountCreateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up to set up your training space.'**
+  String get accountCreateDescription;
+
+  /// No description provided for @accountSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get accountSignIn;
+
+  /// No description provided for @accountSignInEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get accountSignInEyebrow;
+
+  /// No description provided for @accountSignInDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with your email and password.'**
+  String get accountSignInDescription;
+
+  /// No description provided for @accountRecover.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover password'**
+  String get accountRecover;
+
+  /// No description provided for @accountRecoverEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Account recovery'**
+  String get accountRecoverEyebrow;
+
+  /// No description provided for @accountRecoverDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email linked to your account to continue recovery.'**
+  String get accountRecoverDescription;
+
+  /// No description provided for @accountEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get accountEmail;
+
+  /// No description provided for @accountPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get accountPassword;
+
+  /// No description provided for @accountConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get accountConfirmPassword;
+
+  /// No description provided for @accountPasswordLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters.'**
+  String get accountPasswordLengthError;
+
+  /// No description provided for @accountPasswordMismatchError.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match.'**
+  String get accountPasswordMismatchError;
+
+  /// No description provided for @accountSignInPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get accountSignInPrompt;
+
+  /// No description provided for @accountForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get accountForgotPassword;
+
+  /// No description provided for @accountCreateNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new account'**
+  String get accountCreateNew;
+
+  /// No description provided for @accountUnavailableNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Account access isn\'t available yet.'**
+  String get accountUnavailableNote;
+
+  /// No description provided for @accountEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address.'**
+  String get accountEmailRequired;
+
+  /// No description provided for @accountEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the email format.'**
+  String get accountEmailInvalid;
+
+  /// No description provided for @accountUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Account access will be available soon.'**
+  String get accountUnavailableMessage;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingCreatePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your plan'**
+  String get onboardingCreatePlan;
+
+  /// No description provided for @onboardingPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get onboardingPreview;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get onboardingBack;
+
+  /// No description provided for @onboardingPreviousStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous step'**
+  String get onboardingPreviousStep;
+
+  /// No description provided for @onboardingContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get onboardingContinue;
+
+  /// No description provided for @onboardingStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}'**
+  String onboardingStepLabel(Object step, Object total);
+
+  /// No description provided for @onboardingGoalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to achieve?'**
+  String get onboardingGoalTitle;
+
+  /// No description provided for @onboardingGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll choose a starting point that suits you. You can change it later.'**
+  String get onboardingGoalDescription;
+
+  /// No description provided for @onboardingStrengthGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Build strength'**
+  String get onboardingStrengthGoal;
+
+  /// No description provided for @onboardingMuscleGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle'**
+  String get onboardingMuscleGoal;
+
+  /// No description provided for @onboardingHabitGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a habit'**
+  String get onboardingHabitGoal;
+
+  /// No description provided for @onboardingStrengthGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Make progress in your lifts'**
+  String get onboardingStrengthGoalDescription;
+
+  /// No description provided for @onboardingMuscleGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle consistently'**
+  String get onboardingMuscleGoalDescription;
+
+  /// No description provided for @onboardingHabitGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a sustainable routine'**
+  String get onboardingHabitGoalDescription;
+
+  /// No description provided for @onboardingExperienceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s your experience level?'**
+  String get onboardingExperienceTitle;
+
+  /// No description provided for @onboardingExperienceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll use your answer to adjust your starting workload.'**
+  String get onboardingExperienceDescription;
+
+  /// No description provided for @onboardingExperienceBeginner.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m just getting started'**
+  String get onboardingExperienceBeginner;
+
+  /// No description provided for @onboardingExperienceSome.
+  ///
+  /// In en, this message translates to:
+  /// **'I have some experience'**
+  String get onboardingExperienceSome;
+
+  /// No description provided for @onboardingExperienceLong.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve been training for a while'**
+  String get onboardingExperienceLong;
+
+  /// No description provided for @onboardingExperienceBeginnerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to learn and progress step by step'**
+  String get onboardingExperienceBeginnerDescription;
+
+  /// No description provided for @onboardingExperienceSomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'I know some of the movements'**
+  String get onboardingExperienceSomeDescription;
+
+  /// No description provided for @onboardingExperienceLongDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'I have a routine and want new challenges'**
+  String get onboardingExperienceLongDescription;
+
+  /// No description provided for @onboardingExperienceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your experience helps tailor your training.'**
+  String get onboardingExperienceNote;
+
+  /// No description provided for @onboardingScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which days can you train?'**
+  String get onboardingScheduleTitle;
+
+  /// No description provided for @onboardingScheduleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the days that usually work for you. You can change them later.'**
+  String get onboardingScheduleDescription;
+
+  /// No description provided for @onboardingSessionsPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session per week} other{{count} sessions per week}}'**
+  String onboardingSessionsPerWeek(num count);
+
+  /// No description provided for @onboardingSessionTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time per session'**
+  String get onboardingSessionTime;
+
+  /// No description provided for @onboardingMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String onboardingMinutes(Object minutes);
+
+  /// No description provided for @onboardingEquipmentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What equipment do you have?'**
+  String get onboardingEquipmentTitle;
+
+  /// No description provided for @onboardingEquipmentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll use this to choose exercises you can do.'**
+  String get onboardingEquipmentDescription;
+
+  /// No description provided for @onboardingEquipmentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one option to prepare your workouts.'**
+  String get onboardingEquipmentRequired;
+
+  /// No description provided for @onboardingPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s your week'**
+  String get onboardingPreviewTitle;
+
+  /// No description provided for @onboardingPreviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a starting point. You can adjust your plan from Profile.'**
+  String get onboardingPreviewDescription;
+
+  /// No description provided for @onboardingPlanExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience: {experience}'**
+  String onboardingPlanExperience(Object experience);
+
+  /// No description provided for @onboardingPlanEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment: {equipment}'**
+  String onboardingPlanEquipment(Object equipment);
+
+  /// No description provided for @onboardingPlanExerciseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String onboardingPlanExerciseCount(num count);
+
+  /// No description provided for @onboardingSafetyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'General guidance. If you have pain, an injury, or a medical condition, consult a professional before exercising.'**
+  String get onboardingSafetyNote;
+
+  /// No description provided for @onboardingCreateMyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Create my plan'**
+  String get onboardingCreateMyPlan;
+
+  /// No description provided for @sessionPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause workout'**
+  String get sessionPause;
+
+  /// No description provided for @sessionWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up'**
+  String get sessionWarmup;
+
+  /// No description provided for @sessionPreparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting ready'**
+  String get sessionPreparation;
+
+  /// No description provided for @sessionExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get sessionExercises;
+
+  /// No description provided for @sessionSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set {number}'**
+  String sessionSet(Object number);
+
+  /// No description provided for @sessionRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get sessionRest;
+
+  /// No description provided for @sessionPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout paused'**
+  String get sessionPaused;
+
+  /// No description provided for @sessionExitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave workout'**
+  String get sessionExitTitle;
+
+  /// No description provided for @sessionCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout complete'**
+  String get sessionCompletedTitle;
+
+  /// No description provided for @sessionGoodWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done'**
+  String get sessionGoodWork;
+
+  /// No description provided for @sessionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout summary'**
+  String get sessionSummary;
+
+  /// No description provided for @sessionDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get sessionDuration;
+
+  /// No description provided for @sessionExerciseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get sessionExerciseCount;
+
+  /// No description provided for @sessionGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get sessionGoal;
+
+  /// No description provided for @sessionViewWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'View warm-up'**
+  String get sessionViewWarmup;
+
+  /// No description provided for @sessionStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start workout'**
+  String get sessionStart;
+
+  /// No description provided for @sessionSkipWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip warm-up'**
+  String get sessionSkipWarmup;
+
+  /// No description provided for @sessionSkipRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip rest'**
+  String get sessionSkipRest;
+
+  /// No description provided for @sessionContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue workout'**
+  String get sessionContinue;
+
+  /// No description provided for @sessionAbandon.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave workout'**
+  String get sessionAbandon;
+
+  /// No description provided for @sessionAbandonConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, leave'**
+  String get sessionAbandonConfirm;
+
+  /// No description provided for @sessionKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep training'**
+  String get sessionKeep;
+
+  /// No description provided for @sessionViewSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'View workout summary'**
+  String get sessionViewSummary;
+
+  /// No description provided for @sessionFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get sessionFinish;
+
+  /// No description provided for @sessionRepetitions.
+  ///
+  /// In en, this message translates to:
+  /// **'Repetitions'**
+  String get sessionRepetitions;
+
+  /// No description provided for @sessionSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds'**
+  String get sessionSeconds;
+
+  /// No description provided for @sessionLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get sessionLoad;
+
+  /// No description provided for @sessionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise {current} of {total}'**
+  String sessionProgress(Object current, Object total);
+
+  /// No description provided for @sessionSavedFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved! Your results are now part of your progress.'**
+  String get sessionSavedFeedback;
+
+  /// No description provided for @sessionNextExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Next exercise'**
+  String get sessionNextExercise;
+
+  /// No description provided for @sessionPreviousExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous exercise'**
+  String get sessionPreviousExercise;
+
+  /// No description provided for @sessionSetComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Set complete'**
+  String get sessionSetComplete;
+
+  /// No description provided for @progressEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progressEyebrow;
+
+  /// No description provided for @progressGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal goals'**
+  String get progressGoals;
+
+  /// No description provided for @progressHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout history'**
+  String get progressHistory;
+
+  /// No description provided for @progressRemoveGoalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove goal'**
+  String get progressRemoveGoalTitle;
+
+  /// No description provided for @progressRemoveGoalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to remove this goal from your progress?'**
+  String get progressRemoveGoalBody;
+
+  /// No description provided for @progressEditGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get progressEditGoal;
+
+  /// No description provided for @progressGoalRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal removed.'**
+  String get progressGoalRemoved;
+
+  /// No description provided for @progressDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get progressDuration;
+
+  /// No description provided for @progressExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get progressExercises;
+
+  /// No description provided for @progressSessionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout details'**
+  String get progressSessionDetails;
+
+  /// No description provided for @progressStrengthTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength trend'**
+  String get progressStrengthTrend;
+
+  /// No description provided for @progressBodyTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Body measurements'**
+  String get progressBodyTrend;
+
+  /// No description provided for @progressStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get progressStart;
+
+  /// No description provided for @progressCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get progressCurrent;
+
+  /// No description provided for @progressLastEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest entry'**
+  String get progressLastEntry;
+
+  /// No description provided for @progressPeriodChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change over the period'**
+  String get progressPeriodChange;
+
+  /// No description provided for @progressRecentMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent measurements'**
+  String get progressRecentMeasurements;
+
+  /// No description provided for @progressRegisterMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Log measurements'**
+  String get progressRegisterMeasurements;
+
+  /// No description provided for @progressMeasurementDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry date'**
+  String get progressMeasurementDate;
+
+  /// No description provided for @progressBodyWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Body weight'**
+  String get progressBodyWeight;
+
+  /// No description provided for @progressWaist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waist'**
+  String get progressWaist;
+
+  /// No description provided for @progressChest.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest'**
+  String get progressChest;
+
+  /// No description provided for @progressHips.
+  ///
+  /// In en, this message translates to:
+  /// **'Hips'**
+  String get progressHips;
+
+  /// No description provided for @progressArm.
+  ///
+  /// In en, this message translates to:
+  /// **'Arm'**
+  String get progressArm;
+
+  /// No description provided for @progressSaveEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Save entry'**
+  String get progressSaveEntry;
+
+  /// No description provided for @progressPersonalRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal records'**
+  String get progressPersonalRecords;
+
+  /// No description provided for @progressNewGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'New goal'**
+  String get progressNewGoal;
+
+  /// No description provided for @progressGoalType.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal type'**
+  String get progressGoalType;
+
+  /// No description provided for @progressWeeklySessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions per week'**
+  String get progressWeeklySessions;
+
+  /// No description provided for @progressExerciseLoadRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise weight record'**
+  String get progressExerciseLoadRecord;
+
+  /// No description provided for @progressExerciseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise name'**
+  String get progressExerciseName;
+
+  /// No description provided for @progressExerciseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Goblet squat'**
+  String get progressExerciseHint;
+
+  /// No description provided for @progressSaveGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save goal'**
+  String get progressSaveGoal;
+
+  /// No description provided for @progressExerciseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} exercises'**
+  String progressExerciseCount(Object count);
+
+  /// No description provided for @progressEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No progress data yet'**
+  String get progressEmptyTitle;
+
+  /// No description provided for @progressEmptyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a workout and log your sets to start seeing your results.'**
+  String get progressEmptyDescription;
+
+  /// No description provided for @progressNoHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a workout to see your recent activity here.'**
+  String get progressNoHistory;
+
+  /// No description provided for @progressGoalSessionsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {target} workouts this week'**
+  String progressGoalSessionsValue(Object done, Object target);
+
+  /// No description provided for @progressGoalLoadValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Target: {weight} {unit}'**
+  String progressGoalLoadValue(Object unit, Object weight);
+
+  /// No description provided for @progressGoalProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {target}'**
+  String progressGoalProgress(Object current, Object target);
+
+  /// No description provided for @progressRecentSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent workouts'**
+  String get progressRecentSessions;
+
+  /// No description provided for @progressViewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get progressViewAll;
+
+  /// No description provided for @progressReps.
+  ///
+  /// In en, this message translates to:
+  /// **'Repetitions'**
+  String get progressReps;
+
+  /// No description provided for @progressSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get progressSets;
+
+  /// No description provided for @progressVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get progressVolume;
+
+  /// No description provided for @progressNoMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'No measurements have been logged.'**
+  String get progressNoMeasurements;
+
+  /// No description provided for @progressNoRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'No personal records yet.'**
+  String get progressNoRecords;
+
+  /// No description provided for @progressWeightUnitKg.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get progressWeightUnitKg;
+
+  /// No description provided for @progressWeightUnitLb.
+  ///
+  /// In en, this message translates to:
+  /// **'lb'**
+  String get progressWeightUnitLb;
+
+  /// No description provided for @progressTrendDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your progress is calculated from saved workouts and sets.'**
+  String get progressTrendDescription;
+
+  /// No description provided for @progressGoalStatusComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal complete'**
+  String get progressGoalStatusComplete;
+
+  /// No description provided for @progressGoalStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get progressGoalStatusInProgress;
+
+  /// No description provided for @progressSessionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 workout} other{{count} workouts}}'**
+  String progressSessionCount(num count);
+
+  /// No description provided for @onboardingUpperBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper body'**
+  String get onboardingUpperBody;
+
+  /// No description provided for @onboardingLowerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower body'**
+  String get onboardingLowerBody;
+
+  /// No description provided for @onboardingFullBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Full body'**
+  String get onboardingFullBody;
+
+  /// No description provided for @accountPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password.'**
+  String get accountPasswordRequired;
+
+  /// No description provided for @accountContinueAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get accountContinueAction;
+
+  /// No description provided for @profileYourInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your information'**
+  String get profileYourInformation;
+
+  /// No description provided for @profileUpdateInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the information shown on your profile.'**
+  String get profileUpdateInformation;
+
+  /// No description provided for @profileNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name.'**
+  String get profileNameRequired;
+
+  /// No description provided for @profileEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get profileEmailInvalid;
+
+  /// No description provided for @profileGoalRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a goal.'**
+  String get profileGoalRequired;
+
+  /// No description provided for @settingsThemeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your device theme or choose one for FORZA.'**
+  String get settingsThemeDescription;
+
+  /// No description provided for @profileTailoredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Made for you'**
+  String get profileTailoredTitle;
+
+  /// No description provided for @profileTailoredDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust units and how FORZA organizes your week.'**
+  String get profileTailoredDescription;
+
+  /// No description provided for @profileKilograms.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilograms (kg)'**
+  String get profileKilograms;
+
+  /// No description provided for @profilePounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Pounds (lb)'**
+  String get profilePounds;
+
+  /// No description provided for @profileHapticDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle vibration when using supported controls.'**
+  String get profileHapticDescription;
+
+  /// No description provided for @profileNotificationsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Get only what matters.'**
+  String get profileNotificationsHeading;
+
+  /// No description provided for @profileNotificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your notification preferences.'**
+  String get profileNotificationsDescription;
+
+  /// No description provided for @profilePrivacyPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and account'**
+  String get profilePrivacyPageTitle;
+
+  /// No description provided for @profilePrivacyHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'You decide what to share.'**
+  String get profilePrivacyHeading;
+
+  /// No description provided for @profilePrivacyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your privacy preferences.'**
+  String get profilePrivacyDescription;
+
+  /// No description provided for @profileAccountData.
+  ///
+  /// In en, this message translates to:
+  /// **'Account details'**
+  String get profileAccountData;
+
+  /// No description provided for @profileConfirmHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your details'**
+  String get profileConfirmHeading;
+
+  /// No description provided for @profileConfirmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this information before returning to your profile.'**
+  String get profileConfirmDescription;
+
+  /// No description provided for @backupInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup is invalid or damaged. Check the file and try again.'**
+  String get backupInvalid;
+
+  /// No description provided for @profileRecordsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts when you reach a new record.'**
+  String get profileRecordsSubtitle;
+
+  /// No description provided for @progressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your progress'**
+  String get progressTitle;
+
+  /// No description provided for @progressSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your consistency, in perspective.'**
+  String get progressSubtitle;
+
+  /// No description provided for @progressLast30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get progressLast30Days;
+
+  /// No description provided for @progressSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'workouts'**
+  String get progressSessions;
+
+  /// No description provided for @progressTimeTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hr {minutes} min'**
+  String progressTimeTotal(Object hours, Object minutes);
+
+  /// No description provided for @progressSetsAndReps.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} sets · {reps} reps'**
+  String progressSetsAndReps(Object reps, Object sets);
+
+  /// No description provided for @progressVolumeExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume adds reps × weight for sets that include both values.'**
+  String get progressVolumeExplanation;
+
+  /// No description provided for @progressAddGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get progressAddGoal;
+
+  /// No description provided for @progressGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a weekly goal or a weight target to track your progress.'**
+  String get progressGoalDescription;
+
+  /// No description provided for @progressLoadGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight goal'**
+  String get progressLoadGoal;
+
+  /// No description provided for @progressGoalCurrentTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {target} {unit}'**
+  String progressGoalCurrentTarget(Object current, Object target, Object unit);
+
+  /// No description provided for @progressWeeklyGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts completed Monday through Sunday.'**
+  String get progressWeeklyGoalDescription;
+
+  /// No description provided for @progressLoadGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Heaviest weight recorded in your sets for this exercise.'**
+  String get progressLoadGoalDescription;
+
+  /// No description provided for @progressSessionSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, {date}'**
+  String progressSessionSemantics(Object date, Object title);
+
+  /// No description provided for @progressHistorySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {minutes} min · {count} exercises{volume}'**
+  String progressHistorySummary(
+    Object count,
+    Object date,
+    Object minutes,
+    Object volume,
+  );
+
+  /// No description provided for @progressNoLoadData.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight data'**
+  String get progressNoLoadData;
+
+  /// No description provided for @progressVolumeKg.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} kg'**
+  String progressVolumeKg(Object value);
+
+  /// No description provided for @progressGoalEditorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a goal you can track in FORZA.'**
+  String get progressGoalEditorDescription;
+
+  /// No description provided for @progressTargetLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Target weight'**
+  String get progressTargetLoad;
+
+  /// No description provided for @progressSessionsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'workouts'**
+  String get progressSessionsUnit;
+
+  /// No description provided for @progressExerciseNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the exercise name as it appears in your workout.'**
+  String get progressExerciseNameRequired;
+
+  /// No description provided for @progressPositiveValueRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value greater than zero.'**
+  String get progressPositiveValueRequired;
+
+  /// No description provided for @progressWeeklyTargetRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose between 1 and 7 whole workouts.'**
+  String get progressWeeklyTargetRange;
+
+  /// No description provided for @progressSessionDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout details'**
+  String get progressSessionDetail;
+
+  /// No description provided for @progressOutsideAppNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You marked this workout as completed outside FORZA. Exercise and weight details aren\'t available.'**
+  String get progressOutsideAppNote;
+
+  /// No description provided for @progressExerciseHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises · {count}'**
+  String progressExerciseHeading(Object count);
+
+  /// No description provided for @progressStrengthEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength progress'**
+  String get progressStrengthEvolution;
+
+  /// No description provided for @progressStrengthHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Build strength, one step at a time.'**
+  String get progressStrengthHeadline;
+
+  /// No description provided for @progressStrengthDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare your working weight across your last six workouts.'**
+  String get progressStrengthDescription;
+
+  /// No description provided for @progressWorkingWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Working weight (kg)'**
+  String get progressWorkingWeight;
+
+  /// No description provided for @progressStrengthChartSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Working weight increased by {increase} kilograms over six workouts.'**
+  String progressStrengthChartSummary(Object increase);
+
+  /// No description provided for @progressBodyEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Body measurements'**
+  String get progressBodyEvolution;
+
+  /// No description provided for @progressBodyHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes you can track.'**
+  String get progressBodyHeadline;
+
+  /// No description provided for @progressBodyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements are for reference, not targets.'**
+  String get progressBodyDescription;
+
+  /// No description provided for @progressWeightChartSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Body weight changed from {start} to {current} kilograms.'**
+  String progressWeightChartSummary(Object current, Object start);
+
+  /// No description provided for @progressMeasurementHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your progress.'**
+  String get progressMeasurementHeadline;
+
+  /// No description provided for @progressMeasurementDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight is required. Other measurements are optional.'**
+  String get progressMeasurementDescription;
+
+  /// No description provided for @progressMeasurementsSavedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry is kept while the app is open.'**
+  String get progressMeasurementsSavedNote;
+
+  /// No description provided for @progressInvalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value.'**
+  String get progressInvalidValue;
+
+  /// No description provided for @progressWeightRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your body weight.'**
+  String get progressWeightRequired;
+
+  /// No description provided for @progressRecordsHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your bests.'**
+  String get progressRecordsHeadline;
+
+  /// No description provided for @progressRecordsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your best results across different exercises.'**
+  String get progressRecordsDescription;
+
+  /// No description provided for @progressRecordNoMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Body weight'**
+  String get progressRecordNoMeasurements;
+
+  /// No description provided for @progressKilograms.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get progressKilograms;
+
+  /// No description provided for @progressRepetitionsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'reps'**
+  String get progressRepetitionsUnit;
+
+  /// No description provided for @progressSecondsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get progressSecondsUnit;
+
+  /// No description provided for @progressSetSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Set {number} · {values}'**
+  String progressSetSummary(Object number, Object values);
+
+  /// No description provided for @progressMinutesUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get progressMinutesUnit;
+
+  /// No description provided for @progressChangeFromStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Change from start'**
+  String get progressChangeFromStart;
+
+  /// No description provided for @progressDateFormatShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}'**
+  String progressDateFormatShort(Object date);
+
+  /// No description provided for @sessionBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get sessionBack;
+
+  /// No description provided for @sessionBackStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to previous step'**
+  String get sessionBackStep;
+
+  /// No description provided for @sessionTitlePreparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting ready'**
+  String get sessionTitlePreparation;
+
+  /// No description provided for @sessionTitleWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up'**
+  String get sessionTitleWarmup;
+
+  /// No description provided for @sessionTitleWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Your workout'**
+  String get sessionTitleWorkout;
+
+  /// No description provided for @sessionTitleRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get sessionTitleRest;
+
+  /// No description provided for @sessionTitlePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout paused'**
+  String get sessionTitlePaused;
+
+  /// No description provided for @sessionTitleConfirmAbandon.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm leaving'**
+  String get sessionTitleConfirmAbandon;
+
+  /// No description provided for @sessionTitleCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout complete'**
+  String get sessionTitleCompleted;
+
+  /// No description provided for @sessionTitleSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout summary'**
+  String get sessionTitleSummary;
+
+  /// No description provided for @sessionWarmupHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Get your body ready'**
+  String get sessionWarmupHeadline;
+
+  /// No description provided for @sessionWarmupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Brief movements for {session}. Keep a comfortable pace; you can skip them whenever you like.'**
+  String sessionWarmupDescription(Object session);
+
+  /// No description provided for @warmupShoulderCircles.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoulder circles'**
+  String get warmupShoulderCircles;
+
+  /// No description provided for @warmupShoulderCirclesInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Make gentle circles forward and backward.'**
+  String get warmupShoulderCirclesInstructions;
+
+  /// No description provided for @warmupThoracicRotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Thoracic rotation'**
+  String get warmupThoracicRotation;
+
+  /// No description provided for @warmupThoracicInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate your torso without straining your neck.'**
+  String get warmupThoracicInstructions;
+
+  /// No description provided for @warmupInclinePushups.
+  ///
+  /// In en, this message translates to:
+  /// **'Incline push-ups'**
+  String get warmupInclinePushups;
+
+  /// No description provided for @warmupInclineInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your hands on a sturdy surface and move with control.'**
+  String get warmupInclineInstructions;
+
+  /// No description provided for @warmupMarch.
+  ///
+  /// In en, this message translates to:
+  /// **'March in place'**
+  String get warmupMarch;
+
+  /// No description provided for @warmupMarchInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise your knees at a comfortable pace.'**
+  String get warmupMarchInstructions;
+
+  /// No description provided for @warmupHipHinge.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip hinge'**
+  String get warmupHipHinge;
+
+  /// No description provided for @warmupHipHingeInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Move your hips back while keeping your back comfortable.'**
+  String get warmupHipHingeInstructions;
+
+  /// No description provided for @warmupBodyweightSquat.
+  ///
+  /// In en, this message translates to:
+  /// **'Bodyweight squat'**
+  String get warmupBodyweightSquat;
+
+  /// No description provided for @warmupBodyweightSquatInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower only as far as you can control.'**
+  String get warmupBodyweightSquatInstructions;
+
+  /// No description provided for @warmupMarchArms.
+  ///
+  /// In en, this message translates to:
+  /// **'March with arm swings'**
+  String get warmupMarchArms;
+
+  /// No description provided for @warmupMarchArmsInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'March in place and swing your arms with the movement.'**
+  String get warmupMarchArmsInstructions;
+
+  /// No description provided for @warmupTorsoRotations.
+  ///
+  /// In en, this message translates to:
+  /// **'Torso rotations'**
+  String get warmupTorsoRotations;
+
+  /// No description provided for @warmupTorsoInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate gently from side to side without bouncing.'**
+  String get warmupTorsoInstructions;
+
+  /// No description provided for @warmupThirtySeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'30 sec'**
+  String get warmupThirtySeconds;
+
+  /// No description provided for @warmupThirtySecondsEachSide.
+  ///
+  /// In en, this message translates to:
+  /// **'30 sec per side'**
+  String get warmupThirtySecondsEachSide;
+
+  /// No description provided for @warmupFortyFiveSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'45 sec'**
+  String get warmupFortyFiveSeconds;
+
+  /// No description provided for @warmupEightReps.
+  ///
+  /// In en, this message translates to:
+  /// **'8 reps'**
+  String get warmupEightReps;
+
+  /// No description provided for @sessionPreparationHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to begin'**
+  String get sessionPreparationHeadline;
+
+  /// No description provided for @sessionPreparationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a moment to prepare your space and review today\'s workout.'**
+  String get sessionPreparationDescription;
+
+  /// No description provided for @sessionWaterBottle.
+  ///
+  /// In en, this message translates to:
+  /// **'Water bottle'**
+  String get sessionWaterBottle;
+
+  /// No description provided for @sessionClearSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear space'**
+  String get sessionClearSpace;
+
+  /// No description provided for @sessionEquipmentReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment ready'**
+  String get sessionEquipmentReady;
+
+  /// No description provided for @sessionExerciseHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get sessionExerciseHeadline;
+
+  /// No description provided for @sessionExerciseCountProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise {current} of {total}'**
+  String sessionExerciseCountProgress(Object current, Object total);
+
+  /// No description provided for @sessionSetLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Set log'**
+  String get sessionSetLog;
+
+  /// No description provided for @sessionRestHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a breather'**
+  String get sessionRestHeadline;
+
+  /// No description provided for @sessionBeforeExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Before {exercise}'**
+  String sessionBeforeExercise(Object exercise);
+
+  /// No description provided for @sessionTimerNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The timer is only a guide and runs while this screen is active.'**
+  String get sessionTimerNote;
+
+  /// No description provided for @sessionPauseHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause whenever you need'**
+  String get sessionPauseHeadline;
+
+  /// No description provided for @sessionPauseDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your workout is paused. You can resume or end it.'**
+  String get sessionPauseDescription;
+
+  /// No description provided for @sessionProgressCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {total} exercises'**
+  String sessionProgressCount(Object current, Object total);
+
+  /// No description provided for @sessionAbandonHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave this workout?'**
+  String get sessionAbandonHeadline;
+
+  /// No description provided for @sessionAbandonDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout will close. Your progress won\'t be saved to your history.'**
+  String get sessionAbandonDescription;
+
+  /// No description provided for @sessionWorkoutFinishedFor.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished your {session} workout.'**
+  String sessionWorkoutFinishedFor(Object session);
+
+  /// No description provided for @sessionExercisesCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} exercises completed'**
+  String sessionExercisesCompleted(Object count);
+
+  /// No description provided for @sessionSummaryHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your workout summary'**
+  String get sessionSummaryHeadline;
+
+  /// No description provided for @sessionSummaryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A summary of today\'s activity.'**
+  String get sessionSummaryDescription;
+
+  /// No description provided for @sessionCompleteWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete workout'**
+  String get sessionCompleteWorkout;
+
+  /// No description provided for @sessionCompleteExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete exercise'**
+  String get sessionCompleteExercise;
+
+  /// No description provided for @sessionWarmupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View warm-up'**
+  String get sessionWarmupButton;
+
+  /// No description provided for @sessionStartButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Start workout'**
+  String get sessionStartButton;
+
+  /// No description provided for @sessionSkipWarmupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip warm-up'**
+  String get sessionSkipWarmupButton;
+
+  /// No description provided for @sessionSkipRestButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip rest'**
+  String get sessionSkipRestButton;
+
+  /// No description provided for @sessionAbandonButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave workout'**
+  String get sessionAbandonButton;
+
+  /// No description provided for @sessionConfirmAbandonButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, leave'**
+  String get sessionConfirmAbandonButton;
+
+  /// No description provided for @sessionContinueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep training'**
+  String get sessionContinueButton;
+
+  /// No description provided for @sessionSummaryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View workout summary'**
+  String get sessionSummaryButton;
+
+  /// No description provided for @sessionRecordNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout will be saved to your activity when you finish.'**
+  String get sessionRecordNote;
+
+  /// No description provided for @sessionSetsTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} sets · {target}'**
+  String sessionSetsTarget(Object sets, Object target);
+
+  /// No description provided for @sessionSetUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'sets'**
+  String get sessionSetUnit;
+
+  /// No description provided for @sessionRepTargetLow.
+  ///
+  /// In en, this message translates to:
+  /// **'6–8 reps'**
+  String get sessionRepTargetLow;
+
+  /// No description provided for @sessionRepTargetMid.
+  ///
+  /// In en, this message translates to:
+  /// **'8–12 reps'**
+  String get sessionRepTargetMid;
+
+  /// No description provided for @sessionRepTargetComfortable.
+  ///
+  /// In en, this message translates to:
+  /// **'8–12 reps at a comfortable pace'**
+  String get sessionRepTargetComfortable;
+
+  /// No description provided for @sessionTimeTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'20–40 seconds'**
+  String get sessionTimeTarget;
+
+  /// No description provided for @sessionWarmupFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'your workout'**
+  String get sessionWarmupFallback;
+
+  /// No description provided for @measurementValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} {value} cm'**
+  String measurementValue(Object label, Object value);
+
+  /// No description provided for @progressValueWithUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {unit}'**
+  String progressValueWithUnit(Object unit, Object value);
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} *'**
+  String requiredField(Object label);
+
+  /// No description provided for @navigationHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navigationHome;
+
+  /// No description provided for @shellPlanSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t save your plan.'**
+  String get shellPlanSaveError;
+
+  /// No description provided for @shellWorkoutSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout saved to your activity.'**
+  String get shellWorkoutSaved;
+
+  /// No description provided for @shellWorkoutSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t save this workout.'**
+  String get shellWorkoutSaveError;
+
+  /// No description provided for @trainingNameDumbbellPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Dumbbell press'**
+  String get trainingNameDumbbellPress;
+
+  /// No description provided for @trainingNameGobletSquat.
+  ///
+  /// In en, this message translates to:
+  /// **'Goblet squat'**
+  String get trainingNameGobletSquat;
+
+  /// No description provided for @trainingNameDumbbellRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Dumbbell row'**
+  String get trainingNameDumbbellRow;
+
+  /// No description provided for @trainingNameRomanianDeadlift.
+  ///
+  /// In en, this message translates to:
+  /// **'Romanian deadlift'**
+  String get trainingNameRomanianDeadlift;
+
+  /// No description provided for @trainingNameShoulderPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoulder press'**
+  String get trainingNameShoulderPress;
+
+  /// No description provided for @trainingNameBarbellSquat.
+  ///
+  /// In en, this message translates to:
+  /// **'Barbell squat'**
+  String get trainingNameBarbellSquat;
+
+  /// No description provided for @trainingNameBarbellBench.
+  ///
+  /// In en, this message translates to:
+  /// **'Barbell bench press'**
+  String get trainingNameBarbellBench;
+
+  /// No description provided for @trainingNameBarbellRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Barbell row'**
+  String get trainingNameBarbellRow;
+
+  /// No description provided for @trainingNameBarbellDeadlift.
+  ///
+  /// In en, this message translates to:
+  /// **'Barbell deadlift'**
+  String get trainingNameBarbellDeadlift;
+
+  /// No description provided for @trainingNameBandChestPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Band chest press'**
+  String get trainingNameBandChestPress;
+
+  /// No description provided for @trainingNameBandRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Band row'**
+  String get trainingNameBandRow;
+
+  /// No description provided for @trainingNameBandSquat.
+  ///
+  /// In en, this message translates to:
+  /// **'Banded squat'**
+  String get trainingNameBandSquat;
+
+  /// No description provided for @trainingNameBandPullApart.
+  ///
+  /// In en, this message translates to:
+  /// **'Band pull-apart'**
+  String get trainingNameBandPullApart;
+
+  /// No description provided for @trainingNameMachineChestPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Machine chest press'**
+  String get trainingNameMachineChestPress;
+
+  /// No description provided for @trainingNameLegPress.
+  ///
+  /// In en, this message translates to:
+  /// **'Leg press'**
+  String get trainingNameLegPress;
+
+  /// No description provided for @trainingNameLatPulldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Lat pulldown'**
+  String get trainingNameLatPulldown;
+
+  /// No description provided for @trainingNameSeatedRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Seated row'**
+  String get trainingNameSeatedRow;
+
+  /// No description provided for @trainingNamePushUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Push-up'**
+  String get trainingNamePushUp;
+
+  /// No description provided for @trainingNameInclinePushUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Incline push-up'**
+  String get trainingNameInclinePushUp;
+
+  /// No description provided for @trainingNamePikePushUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Pike push-up'**
+  String get trainingNamePikePushUp;
+
+  /// No description provided for @trainingNameLunges.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunges'**
+  String get trainingNameLunges;
+
+  /// No description provided for @trainingNameBodyweightSquat.
+  ///
+  /// In en, this message translates to:
+  /// **'Bodyweight squat'**
+  String get trainingNameBodyweightSquat;
+
+  /// No description provided for @trainingNameCalfRaise.
+  ///
+  /// In en, this message translates to:
+  /// **'Calf raise'**
+  String get trainingNameCalfRaise;
+
+  /// No description provided for @trainingNameGluteBridge.
+  ///
+  /// In en, this message translates to:
+  /// **'Glute bridge'**
+  String get trainingNameGluteBridge;
+
+  /// No description provided for @trainingNameBirdDog.
+  ///
+  /// In en, this message translates to:
+  /// **'Bird-dog'**
+  String get trainingNameBirdDog;
+
+  /// No description provided for @trainingNameDeadBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Dead bug'**
+  String get trainingNameDeadBug;
+
+  /// No description provided for @trainingNamePlank.
+  ///
+  /// In en, this message translates to:
+  /// **'Plank'**
+  String get trainingNamePlank;
+
+  /// No description provided for @activityFocusUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest, back, and shoulders'**
+  String get activityFocusUpper;
+
+  /// No description provided for @activityFocusLower.
+  ///
+  /// In en, this message translates to:
+  /// **'Legs and core'**
+  String get activityFocusLower;
+
+  /// No description provided for @activityFocusFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-body workout'**
+  String get activityFocusFull;
+
+  /// No description provided for @profileDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'FORZA athlete'**
+  String get profileDefaultName;
+
+  /// No description provided for @progressTotalStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Total-body strength'**
+  String get progressTotalStrength;
+
+  /// No description provided for @progressLegsCore.
+  ///
+  /// In en, this message translates to:
+  /// **'Legs and core'**
+  String get progressLegsCore;
+
+  /// No description provided for @progressUpperBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upper body'**
+  String get progressUpperBody;
 }
 
 class _AppLocalizationsDelegate

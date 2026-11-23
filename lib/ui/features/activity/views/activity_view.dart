@@ -16,6 +16,7 @@ import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../data/repositories/workout_log_repository.dart';
 import '../../../../domain/models/scheduled_training_session.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import 'reschedule_session_page.dart';
 
 class ActivityView extends StatefulWidget {
@@ -90,7 +91,7 @@ class _ActivityViewState extends State<ActivityView> {
       MaterialPageRoute<DateTime>(
         builder: (_) => RescheduleSessionPage(
           sessionDate: source,
-          sessionTitle: session.title,
+          sessionTitle: _localizedSessionTitle(context, session.title),
           sessionIcon: session.icon,
           availableDates: options,
         ),
@@ -102,7 +103,7 @@ class _ActivityViewState extends State<ActivityView> {
     if (!mounted) return;
     if (!moved) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ese día ya tiene una sesión.')),
+        SnackBar(content: Text(context.l10n.activityRescheduleConflict)),
       );
       return;
     }
@@ -112,7 +113,16 @@ class _ActivityViewState extends State<ActivityView> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sesión movida al ${_formatDate(target)}.')),
+      SnackBar(
+        content: Text(
+          context.l10n.activityRescheduled(
+            _formatDate(
+              target,
+              Localizations.localeOf(context).toLanguageTag(),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -155,6 +165,7 @@ class _ActivityViewState extends State<ActivityView> {
 
   @override
   Widget build(BuildContext context) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     final session = _sessionForDate(_selectedDate);
     final horizontalPadding = AppSpacing.pageGutter(
       MediaQuery.sizeOf(context).width,
@@ -177,17 +188,17 @@ class _ActivityViewState extends State<ActivityView> {
                 ForzaEyebrow(
                   label: DateFormat(
                     'EEEE, d MMMM',
-                    'es_DO',
+                    localeName,
                   ).format(DateTime.now()),
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Actividad',
+                  context.l10n.activityTitle,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Tu calendario de entrenamiento.',
+                  context.l10n.activitySubtitle,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x8),
@@ -202,6 +213,7 @@ class _ActivityViewState extends State<ActivityView> {
                     children: [
                       _MonthHeader(
                         month: _visibleMonth,
+                        localeName: localeName,
                         onPrevious: () => _moveMonth(-1),
                         onNext: () => _moveMonth(1),
                       ),
@@ -221,7 +233,7 @@ class _ActivityViewState extends State<ActivityView> {
                             firstDay: DateTime(2000, 1, 1),
                             lastDay: DateTime(2100, 12, 31),
                             focusedDay: _visibleMonth,
-                            locale: 'es_DO',
+                            locale: localeName,
                             startingDayOfWeek: StartingDayOfWeek.monday,
                             calendarFormat: CalendarFormat.month,
                             headerVisible: false,
@@ -315,16 +327,17 @@ class _ActivityViewState extends State<ActivityView> {
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
-                  title: 'Detalle del día',
+                  title: context.l10n.activityTodayDetail,
                   actionLabel: _isSameDay(_selectedDate, DateTime.now())
                       ? null
-                      : 'Hoy',
+                      : context.l10n.activityToday,
                   onAction: _isSameDay(_selectedDate, DateTime.now())
                       ? null
                       : () => _selectDate(DateTime.now()),
                 ),
                 _DayDetailCard(
                   date: _selectedDate,
+                  localeName: localeName,
                   session: session,
                   isCompleted: widget.records.any(
                     (record) => _isSameDay(record.date, _selectedDate),
@@ -350,8 +363,8 @@ class _ActivityViewState extends State<ActivityView> {
     final persisted = _scheduledForDate(normalizedDate);
     if (persisted != null) {
       return _TrainingSession(
-        title: persisted.title,
-        detail: persisted.focus,
+        title: _localizedSessionTitle(context, persisted.title),
+        detail: _localizedSessionFocus(context, persisted.focus),
         duration: '${persisted.durationMinutes} min',
         exerciseCount: persisted.exerciseCount,
         icon: switch (persisted.sessionIndex % 3) {
@@ -385,8 +398,8 @@ class _ActivityViewState extends State<ActivityView> {
     if (plannedSession == null) return null;
 
     return _TrainingSession(
-      title: plannedSession.title,
-      detail: plannedSession.focus,
+      title: _localizedSessionTitle(context, plannedSession.title),
+      detail: _localizedSessionFocus(context, plannedSession.focus),
       duration: '${plannedSession.durationMinutes} min',
       exerciseCount: plannedSession.exercises.length,
       icon: switch (date.weekday % 3) {
@@ -431,11 +444,13 @@ class _ActivityViewState extends State<ActivityView> {
 class _MonthHeader extends StatelessWidget {
   const _MonthHeader({
     required this.month,
+    required this.localeName,
     required this.onPrevious,
     required this.onNext,
   });
 
   final DateTime month;
+  final String localeName;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
@@ -444,19 +459,19 @@ class _MonthHeader extends StatelessWidget {
     return Row(
       children: [
         IconButton(
-          tooltip: 'Mes anterior',
+          tooltip: context.l10n.activityPreviousMonth,
           onPressed: onPrevious,
           icon: const Icon(Icons.chevron_left_rounded),
         ),
         Expanded(
           child: Text(
-            DateFormat.yMMMM('es_DO').format(month),
+            DateFormat.yMMMM(localeName).format(month),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         IconButton(
-          tooltip: 'Mes siguiente',
+          tooltip: context.l10n.activityNextMonth,
           onPressed: onNext,
           icon: const Icon(Icons.chevron_right_rounded),
         ),
@@ -468,6 +483,7 @@ class _MonthHeader extends StatelessWidget {
 class _DayDetailCard extends StatelessWidget {
   const _DayDetailCard({
     required this.date,
+    required this.localeName,
     required this.session,
     required this.isCompleted,
     required this.isInProgress,
@@ -478,6 +494,7 @@ class _DayDetailCard extends StatelessWidget {
   });
 
   final DateTime date;
+  final String localeName;
   final _TrainingSession? session;
   final bool isCompleted;
   final bool isInProgress;
@@ -488,7 +505,7 @@ class _DayDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateLabel = _formatDate(date);
+    final dateLabel = _formatDate(date, localeName);
 
     if (session == null) {
       return AppSurfaceCard(
@@ -507,12 +524,12 @@ class _DayDetailCard extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.x1),
                   Text(
-                    'Día de recuperación',
+                    context.l10n.activityRecoveryDay,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: AppSpacing.x1),
                   Text(
-                    'No hay sesión programada para este día.',
+                    context.l10n.activityNoSession,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -571,7 +588,7 @@ class _DayDetailCard extends StatelessWidget {
               const Icon(Icons.fitness_center_rounded, size: 18),
               const SizedBox(width: AppSpacing.x2),
               Text(
-                '${session!.exerciseCount} ejercicios',
+                context.l10n.activityExerciseCount(session!.exerciseCount),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -585,11 +602,11 @@ class _DayDetailCard extends StatelessWidget {
                 color: context.appColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.check_circle_rounded, size: 19),
-                  SizedBox(width: AppSpacing.x2),
-                  Text('Sesión completada'),
+                  const Icon(Icons.check_circle_rounded, size: 19),
+                  const SizedBox(width: AppSpacing.x2),
+                  Text(context.l10n.activitySessionCompleted),
                 ],
               ),
             ),
@@ -603,11 +620,11 @@ class _DayDetailCard extends StatelessWidget {
                 color: context.appColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.play_circle_outline_rounded, size: 19),
-                  SizedBox(width: AppSpacing.x2),
-                  Text('Entrenamiento en curso'),
+                  const Icon(Icons.play_circle_outline_rounded, size: 19),
+                  const SizedBox(width: AppSpacing.x2),
+                  Text(context.l10n.activityWorkoutInProgress),
                 ],
               ),
             ),
@@ -621,11 +638,11 @@ class _DayDetailCard extends StatelessWidget {
               label: Text(
                 canComplete
                     ? isInProgress
-                          ? 'Continuar entrenamiento'
+                          ? context.l10n.activityContinueWorkout
                           : isCompleted
-                          ? 'Repetir entrenamiento'
-                          : 'Empezar sesión'
-                    : 'Sesión programada',
+                          ? context.l10n.activityRepeatWorkout
+                          : context.l10n.activityStartSession
+                    : context.l10n.activityScheduledSession,
               ),
             ),
           ),
@@ -636,7 +653,7 @@ class _DayDetailCard extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: onMarkCompleted,
                 icon: const Icon(Icons.check_rounded, size: 18),
-                label: const Text('Ya entrené fuera de la app'),
+                label: Text(context.l10n.activityCompletedOutside),
               ),
             ),
             const SizedBox(height: AppSpacing.x2),
@@ -645,7 +662,7 @@ class _DayDetailCard extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: onReschedule,
                 icon: const Icon(Icons.event_repeat_rounded, size: 18),
-                label: const Text('Cambiar día'),
+                label: Text(context.l10n.activityChangeDay),
               ),
             ),
           ],
@@ -688,5 +705,23 @@ class _TrainingSession {
   final IconData icon;
 }
 
-String _formatDate(DateTime date) =>
-    DateFormat("EEEE, d 'de' MMMM", 'es_DO').format(date);
+String _formatDate(DateTime date, String localeName) =>
+    DateFormat('EEEE, d MMMM', localeName).format(date);
+
+String _localizedSessionTitle(BuildContext context, String title) =>
+    switch (title) {
+      'Tren superior' => context.l10n.onboardingUpperBody,
+      'Tren inferior' => context.l10n.onboardingLowerBody,
+      'Cuerpo completo' => context.l10n.onboardingFullBody,
+      'Fuerza total' => context.l10n.progressTotalStrength,
+      'Piernas y core' => context.l10n.progressLegsCore,
+      _ => title,
+    };
+
+String _localizedSessionFocus(BuildContext context, String focus) =>
+    switch (focus) {
+      'Pecho, espalda y hombros' => context.l10n.activityFocusUpper,
+      'Piernas y core' => context.l10n.activityFocusLower,
+      'Rutina de cuerpo completo' => context.l10n.activityFocusFull,
+      _ => focus,
+    };

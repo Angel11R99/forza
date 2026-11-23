@@ -113,10 +113,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exerciseCatalogSpanishNotice =>
-      'Exercise names, categories, and instructions in this catalog are currently in Spanish.';
-
-  @override
   String get exerciseLoadError => 'We couldn’t load the exercises.';
 
   @override
@@ -446,4 +442,1626 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get exerciseGuideRomanianDeadliftSource =>
       'ACE · Romanian deadlift technique';
+
+  @override
+  String get homeGreetingMorning => 'Good morning';
+
+  @override
+  String get homeGreetingAfternoon => 'Good afternoon';
+
+  @override
+  String get homeGreetingEvening => 'Good evening';
+
+  @override
+  String get homeProfileTooltip => 'Open profile';
+
+  @override
+  String get homePlanTitle => 'Your training plan';
+
+  @override
+  String get homeTodayWorkout => 'Today\'s workout';
+
+  @override
+  String homeNextSession(Object weekday) {
+    return 'Next session · $weekday';
+  }
+
+  @override
+  String get homeAdjustPlan => 'Adjust plan';
+
+  @override
+  String get homeWeekTitle => 'Your week';
+
+  @override
+  String get homeViewActivity => 'View activity';
+
+  @override
+  String get homeTodaySession => 'TODAY\'S SESSION';
+
+  @override
+  String homeNextSessionLabel(Object weekday) {
+    return 'NEXT SESSION · $weekday';
+  }
+
+  @override
+  String homeDurationExercises(Object count, Object minutes) {
+    return '$minutes min per session · $count exercises';
+  }
+
+  @override
+  String get homeContinueWorkout => 'Continue workout';
+
+  @override
+  String get homeViewTodaySession => 'View today\'s session';
+
+  @override
+  String homeWeeklySessionCount(Object done, Object target) {
+    return '$done of $target sessions';
+  }
+
+  @override
+  String get homeThisWeek => 'This week';
+
+  @override
+  String homeWeeklyGoal(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions per week.',
+      one: '1 session per week.',
+    );
+    return 'Your goal is $_temp0';
+  }
+
+  @override
+  String get homeStatusCompleted => 'completed';
+
+  @override
+  String get homeStatusPending => 'pending';
+
+  @override
+  String get activityTitle => 'Activity';
+
+  @override
+  String get activitySubtitle => 'Your training calendar.';
+
+  @override
+  String get activityTodayDetail => 'Day details';
+
+  @override
+  String get activityToday => 'Today';
+
+  @override
+  String get activityRescheduleConflict =>
+      'There is already a workout on that day.';
+
+  @override
+  String activityRescheduled(Object date) {
+    return 'Workout moved to $date.';
+  }
+
+  @override
+  String get activityPreviousMonth => 'Previous month';
+
+  @override
+  String get activityNextMonth => 'Next month';
+
+  @override
+  String get activityRecoveryDay => 'Recovery day';
+
+  @override
+  String get activityNoSession => 'No workout is scheduled for this day.';
+
+  @override
+  String activityExerciseCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get activitySessionCompleted => 'Workout completed';
+
+  @override
+  String get activityWorkoutInProgress => 'Workout in progress';
+
+  @override
+  String get activityContinueWorkout => 'Continue workout';
+
+  @override
+  String get activityRepeatWorkout => 'Repeat workout';
+
+  @override
+  String get activityStartSession => 'Start workout';
+
+  @override
+  String get activityScheduledSession => 'Scheduled workout';
+
+  @override
+  String get activityCompletedOutside => 'I trained outside the app';
+
+  @override
+  String get activityChangeDay => 'Change day';
+
+  @override
+  String get rescheduleTitle => 'Reschedule workout';
+
+  @override
+  String get rescheduleEyebrow => 'Activity';
+
+  @override
+  String get rescheduleHeading => 'Move your workout';
+
+  @override
+  String rescheduleCurrentDate(Object date) {
+    return 'Current date: $date';
+  }
+
+  @override
+  String get rescheduleAvailableDates => 'Available dates';
+
+  @override
+  String get rescheduleNoDates =>
+      'No other date is available in the next two weeks.';
+
+  @override
+  String get rescheduleConfirm => 'Confirm new date';
+
+  @override
+  String get reschedulePersistenceNote =>
+      'Changes are kept while the app is open.';
+
+  @override
+  String rescheduleAvailableDateSemantics(Object date) {
+    return '$date, available date';
+  }
+
+  @override
+  String get profileEyebrow => 'Account';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileEdit => 'Edit profile';
+
+  @override
+  String get profileEditSubtitle => 'Name, email, and goal';
+
+  @override
+  String get profileAccountAccess => 'Account and access';
+
+  @override
+  String get profileAccountAccessSubtitle => 'Sign-in options';
+
+  @override
+  String get profilePrivacy => 'Privacy';
+
+  @override
+  String get profilePrivate => 'Private profile';
+
+  @override
+  String get profileVisible => 'Visible profile';
+
+  @override
+  String get profileTraining => 'Training';
+
+  @override
+  String get profileMyPlan => 'My training plan';
+
+  @override
+  String profilePlanSummary(Object days, Object goal, Object minutes) {
+    return '$goal · $days days · $minutes min';
+  }
+
+  @override
+  String get profilePreferences => 'Preferences';
+
+  @override
+  String get profileAppearance => 'Appearance';
+
+  @override
+  String profileWeightUnit(Object unit) {
+    return 'Weight $unit';
+  }
+
+  @override
+  String profileWeekStart(Object day) {
+    return 'week starts $day';
+  }
+
+  @override
+  String profileHaptics(Object status) {
+    return 'haptics $status';
+  }
+
+  @override
+  String get profileHapticsOn => 'on';
+
+  @override
+  String get profileHapticsOff => 'off';
+
+  @override
+  String get profileBackup => 'Export and restore data';
+
+  @override
+  String get profileBackupSubtitle => 'Create a backup or restore your data';
+
+  @override
+  String get profileNotifications => 'Notifications';
+
+  @override
+  String profileReminderAt(Object time) {
+    return 'Reminder at $time';
+  }
+
+  @override
+  String get profileRemindersOff => 'Reminders off';
+
+  @override
+  String get profileSessionPreferencesNote =>
+      'Preferences are kept while the app is open.';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonRetry => 'Try again';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get commonFinish => 'Finish';
+
+  @override
+  String get commonRemove => 'Remove';
+
+  @override
+  String homeWeekdayStatus(Object day, Object status) {
+    return '$day: $status';
+  }
+
+  @override
+  String get profileEditTitle => 'Edit profile';
+
+  @override
+  String get profileNameField => 'Name';
+
+  @override
+  String get profileEmailField => 'Email';
+
+  @override
+  String get profileGoalField => 'Training goal';
+
+  @override
+  String get profileReviewChanges => 'Review changes';
+
+  @override
+  String get profilePreferencesTitle => 'Preferences';
+
+  @override
+  String get profileWeightUnitTitle => 'Weight unit';
+
+  @override
+  String get profileWeekStartTitle => 'Week starts on';
+
+  @override
+  String get profileHapticTitle => 'Haptic feedback';
+
+  @override
+  String get profileSavePreferences => 'Save preferences';
+
+  @override
+  String get profileNotificationsPageTitle => 'Notifications';
+
+  @override
+  String get profileWorkoutReminders => 'Workout reminders';
+
+  @override
+  String get profileReminderDescription => 'Choose a time that works for you.';
+
+  @override
+  String get profileReminderTime => 'Reminder time';
+
+  @override
+  String get profileWeeklySummary => 'Weekly summary';
+
+  @override
+  String get profileWeeklySummaryDescription => 'A review of your activity.';
+
+  @override
+  String get profilePersonalRecords => 'Personal records';
+
+  @override
+  String get profileSaveNotifications => 'Save preferences';
+
+  @override
+  String get profilePrivacyTitle => 'Privacy and account';
+
+  @override
+  String get profilePrivateTitle => 'Private profile';
+
+  @override
+  String get profilePrivateDescription => 'Only you can see your profile.';
+
+  @override
+  String get profileShareActivityTitle => 'Share activity';
+
+  @override
+  String get profileShareActivityDescription =>
+      'Allow your progress to be shown in the app.';
+
+  @override
+  String get profileConfirmAccount => 'Confirm account details';
+
+  @override
+  String get profileSavePrivacy => 'Save privacy';
+
+  @override
+  String get profileReviewComplete => 'Data review complete.';
+
+  @override
+  String get profileAccountConfirmation => 'Account confirmation';
+
+  @override
+  String get profileName => 'Name';
+
+  @override
+  String get profileEmail => 'Email';
+
+  @override
+  String get profileGoal => 'Goal';
+
+  @override
+  String get profileConfirmDetails => 'Confirm details';
+
+  @override
+  String get profileThemeDevice => 'Follow device';
+
+  @override
+  String get profileThemeLight => 'Light';
+
+  @override
+  String get profileThemeDark => 'Dark';
+
+  @override
+  String get profileThemeAppearance => 'Appearance';
+
+  @override
+  String get profileThemeDescription => 'Choose how you want FORZA to look.';
+
+  @override
+  String get profileWeightKg => 'Kilograms (kg)';
+
+  @override
+  String get profileWeightLb => 'Pounds (lb)';
+
+  @override
+  String get profileWeekMonday => 'Monday';
+
+  @override
+  String get profileWeekSunday => 'Sunday';
+
+  @override
+  String get backupTitle => 'Export and restore';
+
+  @override
+  String get backupEyebrow => 'Your data';
+
+  @override
+  String get backupHeading => 'A backup you control';
+
+  @override
+  String get backupDescription =>
+      'The file includes your plan, workout history and sets, schedule, goals, active workout, and appearance. It is saved as JSON wherever you choose.';
+
+  @override
+  String get backupExport => 'Export';
+
+  @override
+  String get backupExportDescription =>
+      'Create a file you can save or transfer to another device.';
+
+  @override
+  String get backupCreate => 'Create backup';
+
+  @override
+  String get backupRestore => 'Restore';
+
+  @override
+  String get backupRestoreDescription =>
+      'Review the contents and confirm before replacing local data.';
+
+  @override
+  String get backupChooseFile => 'Choose backup file';
+
+  @override
+  String get backupSaveDialog => 'Save FORZA backup';
+
+  @override
+  String get backupPickDialog => 'Select FORZA backup';
+
+  @override
+  String get backupSaved => 'Backup saved.';
+
+  @override
+  String get backupRestored => 'Backup restored.';
+
+  @override
+  String get backupConfirmTitle => 'Restore backup';
+
+  @override
+  String backupConfirmMessage(
+    Object date,
+    Object goals,
+    Object records,
+    Object schedule,
+  ) {
+    return 'Local data will be replaced with the backup from $date. It includes $records workout history entries, $schedule scheduled workouts, and $goals goals. This cannot be undone.';
+  }
+
+  @override
+  String get backupReplace => 'Replace data';
+
+  @override
+  String get backupGenericError => 'We couldn\'t process the file. Try again.';
+
+  @override
+  String get accountWelcomeTitle => 'Train at your own pace.';
+
+  @override
+  String get accountWelcomeDescription =>
+      'Create a space to organize your workouts and track your progress.';
+
+  @override
+  String get accountCreate => 'Create account';
+
+  @override
+  String get accountExisting => 'I already have an account';
+
+  @override
+  String get accountContinue => 'Continue exploring';
+
+  @override
+  String get accountNewEyebrow => 'New account';
+
+  @override
+  String get accountCreateDescription =>
+      'Sign up to set up your training space.';
+
+  @override
+  String get accountSignIn => 'Sign in';
+
+  @override
+  String get accountSignInEyebrow => 'Welcome back';
+
+  @override
+  String get accountSignInDescription =>
+      'Continue with your email and password.';
+
+  @override
+  String get accountRecover => 'Recover password';
+
+  @override
+  String get accountRecoverEyebrow => 'Account recovery';
+
+  @override
+  String get accountRecoverDescription =>
+      'Enter the email linked to your account to continue recovery.';
+
+  @override
+  String get accountEmail => 'Email address';
+
+  @override
+  String get accountPassword => 'Password';
+
+  @override
+  String get accountConfirmPassword => 'Confirm password';
+
+  @override
+  String get accountPasswordLengthError => 'Use at least 8 characters.';
+
+  @override
+  String get accountPasswordMismatchError => 'Passwords don\'t match.';
+
+  @override
+  String get accountSignInPrompt => 'Already have an account? Sign in';
+
+  @override
+  String get accountForgotPassword => 'Forgot your password?';
+
+  @override
+  String get accountCreateNew => 'Create a new account';
+
+  @override
+  String get accountUnavailableNote => 'Account access isn\'t available yet.';
+
+  @override
+  String get accountEmailRequired => 'Enter your email address.';
+
+  @override
+  String get accountEmailInvalid => 'Check the email format.';
+
+  @override
+  String get accountUnavailableMessage =>
+      'Account access will be available soon.';
+
+  @override
+  String get onboardingSkip => 'Skip for now';
+
+  @override
+  String get onboardingCreatePlan => 'Create your plan';
+
+  @override
+  String get onboardingPreview => 'Preview';
+
+  @override
+  String get onboardingBack => 'Back';
+
+  @override
+  String get onboardingPreviousStep => 'Previous step';
+
+  @override
+  String get onboardingContinue => 'Continue';
+
+  @override
+  String onboardingStepLabel(Object step, Object total) {
+    return 'Step $step of $total';
+  }
+
+  @override
+  String get onboardingGoalTitle => 'What would you like to achieve?';
+
+  @override
+  String get onboardingGoalDescription =>
+      'We\'ll choose a starting point that suits you. You can change it later.';
+
+  @override
+  String get onboardingStrengthGoal => 'Build strength';
+
+  @override
+  String get onboardingMuscleGoal => 'Build muscle';
+
+  @override
+  String get onboardingHabitGoal => 'Build a habit';
+
+  @override
+  String get onboardingStrengthGoalDescription => 'Make progress in your lifts';
+
+  @override
+  String get onboardingMuscleGoalDescription => 'Build muscle consistently';
+
+  @override
+  String get onboardingHabitGoalDescription => 'Build a sustainable routine';
+
+  @override
+  String get onboardingExperienceTitle => 'What\'s your experience level?';
+
+  @override
+  String get onboardingExperienceDescription =>
+      'We\'ll use your answer to adjust your starting workload.';
+
+  @override
+  String get onboardingExperienceBeginner => 'I\'m just getting started';
+
+  @override
+  String get onboardingExperienceSome => 'I have some experience';
+
+  @override
+  String get onboardingExperienceLong => 'I\'ve been training for a while';
+
+  @override
+  String get onboardingExperienceBeginnerDescription =>
+      'I want to learn and progress step by step';
+
+  @override
+  String get onboardingExperienceSomeDescription =>
+      'I know some of the movements';
+
+  @override
+  String get onboardingExperienceLongDescription =>
+      'I have a routine and want new challenges';
+
+  @override
+  String get onboardingExperienceNote =>
+      'Your experience helps tailor your training.';
+
+  @override
+  String get onboardingScheduleTitle => 'Which days can you train?';
+
+  @override
+  String get onboardingScheduleDescription =>
+      'Choose the days that usually work for you. You can change them later.';
+
+  @override
+  String onboardingSessionsPerWeek(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions per week',
+      one: '1 session per week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onboardingSessionTime => 'Time per session';
+
+  @override
+  String onboardingMinutes(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get onboardingEquipmentTitle => 'What equipment do you have?';
+
+  @override
+  String get onboardingEquipmentDescription =>
+      'We\'ll use this to choose exercises you can do.';
+
+  @override
+  String get onboardingEquipmentRequired =>
+      'Choose at least one option to prepare your workouts.';
+
+  @override
+  String get onboardingPreviewTitle => 'Here\'s your week';
+
+  @override
+  String get onboardingPreviewDescription =>
+      'This is a starting point. You can adjust your plan from Profile.';
+
+  @override
+  String onboardingPlanExperience(Object experience) {
+    return 'Experience: $experience';
+  }
+
+  @override
+  String onboardingPlanEquipment(Object equipment) {
+    return 'Equipment: $equipment';
+  }
+
+  @override
+  String onboardingPlanExerciseCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onboardingSafetyNote =>
+      'General guidance. If you have pain, an injury, or a medical condition, consult a professional before exercising.';
+
+  @override
+  String get onboardingCreateMyPlan => 'Create my plan';
+
+  @override
+  String get sessionPause => 'Pause workout';
+
+  @override
+  String get sessionWarmup => 'Warm-up';
+
+  @override
+  String get sessionPreparation => 'Getting ready';
+
+  @override
+  String get sessionExercises => 'Exercises';
+
+  @override
+  String sessionSet(Object number) {
+    return 'Set $number';
+  }
+
+  @override
+  String get sessionRest => 'Rest';
+
+  @override
+  String get sessionPaused => 'Workout paused';
+
+  @override
+  String get sessionExitTitle => 'Leave workout';
+
+  @override
+  String get sessionCompletedTitle => 'Workout complete';
+
+  @override
+  String get sessionGoodWork => 'Well done';
+
+  @override
+  String get sessionSummary => 'Workout summary';
+
+  @override
+  String get sessionDuration => 'Duration';
+
+  @override
+  String get sessionExerciseCount => 'Exercises';
+
+  @override
+  String get sessionGoal => 'Goal';
+
+  @override
+  String get sessionViewWarmup => 'View warm-up';
+
+  @override
+  String get sessionStart => 'Start workout';
+
+  @override
+  String get sessionSkipWarmup => 'Skip warm-up';
+
+  @override
+  String get sessionSkipRest => 'Skip rest';
+
+  @override
+  String get sessionContinue => 'Continue workout';
+
+  @override
+  String get sessionAbandon => 'Leave workout';
+
+  @override
+  String get sessionAbandonConfirm => 'Yes, leave';
+
+  @override
+  String get sessionKeep => 'Keep training';
+
+  @override
+  String get sessionViewSummary => 'View workout summary';
+
+  @override
+  String get sessionFinish => 'Finish';
+
+  @override
+  String get sessionRepetitions => 'Repetitions';
+
+  @override
+  String get sessionSeconds => 'Seconds';
+
+  @override
+  String get sessionLoad => 'Weight (kg)';
+
+  @override
+  String sessionProgress(Object current, Object total) {
+    return 'Exercise $current of $total';
+  }
+
+  @override
+  String get sessionSavedFeedback =>
+      'Workout saved! Your results are now part of your progress.';
+
+  @override
+  String get sessionNextExercise => 'Next exercise';
+
+  @override
+  String get sessionPreviousExercise => 'Previous exercise';
+
+  @override
+  String get sessionSetComplete => 'Set complete';
+
+  @override
+  String get progressEyebrow => 'Progress';
+
+  @override
+  String get progressGoals => 'Personal goals';
+
+  @override
+  String get progressHistory => 'Workout history';
+
+  @override
+  String get progressRemoveGoalTitle => 'Remove goal';
+
+  @override
+  String get progressRemoveGoalBody =>
+      'Do you want to remove this goal from your progress?';
+
+  @override
+  String get progressEditGoal => 'Edit goal';
+
+  @override
+  String get progressGoalRemoved => 'Goal removed.';
+
+  @override
+  String get progressDuration => 'Duration';
+
+  @override
+  String get progressExercises => 'Exercises';
+
+  @override
+  String get progressSessionDetails => 'Workout details';
+
+  @override
+  String get progressStrengthTrend => 'Strength trend';
+
+  @override
+  String get progressBodyTrend => 'Body measurements';
+
+  @override
+  String get progressStart => 'Start';
+
+  @override
+  String get progressCurrent => 'Current';
+
+  @override
+  String get progressLastEntry => 'Latest entry';
+
+  @override
+  String get progressPeriodChange => 'Change over the period';
+
+  @override
+  String get progressRecentMeasurements => 'Recent measurements';
+
+  @override
+  String get progressRegisterMeasurements => 'Log measurements';
+
+  @override
+  String get progressMeasurementDate => 'Entry date';
+
+  @override
+  String get progressBodyWeight => 'Body weight';
+
+  @override
+  String get progressWaist => 'Waist';
+
+  @override
+  String get progressChest => 'Chest';
+
+  @override
+  String get progressHips => 'Hips';
+
+  @override
+  String get progressArm => 'Arm';
+
+  @override
+  String get progressSaveEntry => 'Save entry';
+
+  @override
+  String get progressPersonalRecords => 'Personal records';
+
+  @override
+  String get progressNewGoal => 'New goal';
+
+  @override
+  String get progressGoalType => 'Goal type';
+
+  @override
+  String get progressWeeklySessions => 'Sessions per week';
+
+  @override
+  String get progressExerciseLoadRecord => 'Exercise weight record';
+
+  @override
+  String get progressExerciseName => 'Exercise name';
+
+  @override
+  String get progressExerciseHint => 'e.g. Goblet squat';
+
+  @override
+  String get progressSaveGoal => 'Save goal';
+
+  @override
+  String progressExerciseCount(Object count) {
+    return '$count exercises';
+  }
+
+  @override
+  String get progressEmptyTitle => 'No progress data yet';
+
+  @override
+  String get progressEmptyDescription =>
+      'Complete a workout and log your sets to start seeing your results.';
+
+  @override
+  String get progressNoHistory =>
+      'Complete a workout to see your recent activity here.';
+
+  @override
+  String progressGoalSessionsValue(Object done, Object target) {
+    return '$done of $target workouts this week';
+  }
+
+  @override
+  String progressGoalLoadValue(Object unit, Object weight) {
+    return 'Target: $weight $unit';
+  }
+
+  @override
+  String progressGoalProgress(Object current, Object target) {
+    return '$current of $target';
+  }
+
+  @override
+  String get progressRecentSessions => 'Recent workouts';
+
+  @override
+  String get progressViewAll => 'View all';
+
+  @override
+  String get progressReps => 'Repetitions';
+
+  @override
+  String get progressSets => 'Sets';
+
+  @override
+  String get progressVolume => 'Volume';
+
+  @override
+  String get progressNoMeasurements => 'No measurements have been logged.';
+
+  @override
+  String get progressNoRecords => 'No personal records yet.';
+
+  @override
+  String get progressWeightUnitKg => 'kg';
+
+  @override
+  String get progressWeightUnitLb => 'lb';
+
+  @override
+  String get progressTrendDescription =>
+      'Your progress is calculated from saved workouts and sets.';
+
+  @override
+  String get progressGoalStatusComplete => 'Goal complete';
+
+  @override
+  String get progressGoalStatusInProgress => 'In progress';
+
+  @override
+  String progressSessionCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count workouts',
+      one: '1 workout',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onboardingUpperBody => 'Upper body';
+
+  @override
+  String get onboardingLowerBody => 'Lower body';
+
+  @override
+  String get onboardingFullBody => 'Full body';
+
+  @override
+  String get accountPasswordRequired => 'Enter your password.';
+
+  @override
+  String get accountContinueAction => 'Continue';
+
+  @override
+  String get profileYourInformation => 'Your information';
+
+  @override
+  String get profileUpdateInformation =>
+      'Update the information shown on your profile.';
+
+  @override
+  String get profileNameRequired => 'Enter your name.';
+
+  @override
+  String get profileEmailInvalid => 'Enter a valid email address.';
+
+  @override
+  String get profileGoalRequired => 'Enter a goal.';
+
+  @override
+  String get settingsThemeDescription =>
+      'Use your device theme or choose one for FORZA.';
+
+  @override
+  String get profileTailoredTitle => 'Made for you';
+
+  @override
+  String get profileTailoredDescription =>
+      'Adjust units and how FORZA organizes your week.';
+
+  @override
+  String get profileKilograms => 'Kilograms (kg)';
+
+  @override
+  String get profilePounds => 'Pounds (lb)';
+
+  @override
+  String get profileHapticDescription =>
+      'Gentle vibration when using supported controls.';
+
+  @override
+  String get profileNotificationsHeading => 'Get only what matters.';
+
+  @override
+  String get profileNotificationsDescription =>
+      'Set your notification preferences.';
+
+  @override
+  String get profilePrivacyPageTitle => 'Privacy and account';
+
+  @override
+  String get profilePrivacyHeading => 'You decide what to share.';
+
+  @override
+  String get profilePrivacyDescription => 'Your privacy preferences.';
+
+  @override
+  String get profileAccountData => 'Account details';
+
+  @override
+  String get profileConfirmHeading => 'Confirm your details';
+
+  @override
+  String get profileConfirmDescription =>
+      'Review this information before returning to your profile.';
+
+  @override
+  String get backupInvalid =>
+      'The backup is invalid or damaged. Check the file and try again.';
+
+  @override
+  String get profileRecordsSubtitle => 'Alerts when you reach a new record.';
+
+  @override
+  String get progressTitle => 'Your progress';
+
+  @override
+  String get progressSubtitle => 'Your consistency, in perspective.';
+
+  @override
+  String get progressLast30Days => 'Last 30 days';
+
+  @override
+  String get progressSessions => 'workouts';
+
+  @override
+  String progressTimeTotal(Object hours, Object minutes) {
+    return '$hours hr $minutes min';
+  }
+
+  @override
+  String progressSetsAndReps(Object reps, Object sets) {
+    return '$sets sets · $reps reps';
+  }
+
+  @override
+  String get progressVolumeExplanation =>
+      'Volume adds reps × weight for sets that include both values.';
+
+  @override
+  String get progressAddGoal => 'Add';
+
+  @override
+  String get progressGoalDescription =>
+      'Set a weekly goal or a weight target to track your progress.';
+
+  @override
+  String get progressLoadGoal => 'Weight goal';
+
+  @override
+  String progressGoalCurrentTarget(Object current, Object target, Object unit) {
+    return '$current of $target $unit';
+  }
+
+  @override
+  String get progressWeeklyGoalDescription =>
+      'Workouts completed Monday through Sunday.';
+
+  @override
+  String get progressLoadGoalDescription =>
+      'Heaviest weight recorded in your sets for this exercise.';
+
+  @override
+  String progressSessionSemantics(Object date, Object title) {
+    return '$title, $date';
+  }
+
+  @override
+  String progressHistorySummary(
+    Object count,
+    Object date,
+    Object minutes,
+    Object volume,
+  ) {
+    return '$date · $minutes min · $count exercises$volume';
+  }
+
+  @override
+  String get progressNoLoadData => 'No weight data';
+
+  @override
+  String progressVolumeKg(Object value) {
+    return '$value kg';
+  }
+
+  @override
+  String get progressGoalEditorDescription =>
+      'Choose a goal you can track in FORZA.';
+
+  @override
+  String get progressTargetLoad => 'Target weight';
+
+  @override
+  String get progressSessionsUnit => 'workouts';
+
+  @override
+  String get progressExerciseNameRequired =>
+      'Enter the exercise name as it appears in your workout.';
+
+  @override
+  String get progressPositiveValueRequired =>
+      'Enter a value greater than zero.';
+
+  @override
+  String get progressWeeklyTargetRange =>
+      'Choose between 1 and 7 whole workouts.';
+
+  @override
+  String get progressSessionDetail => 'Workout details';
+
+  @override
+  String get progressOutsideAppNote =>
+      'You marked this workout as completed outside FORZA. Exercise and weight details aren\'t available.';
+
+  @override
+  String progressExerciseHeading(Object count) {
+    return 'Exercises · $count';
+  }
+
+  @override
+  String get progressStrengthEvolution => 'Strength progress';
+
+  @override
+  String get progressStrengthHeadline => 'Build strength, one step at a time.';
+
+  @override
+  String get progressStrengthDescription =>
+      'Compare your working weight across your last six workouts.';
+
+  @override
+  String get progressWorkingWeight => 'Working weight (kg)';
+
+  @override
+  String progressStrengthChartSummary(Object increase) {
+    return 'Working weight increased by $increase kilograms over six workouts.';
+  }
+
+  @override
+  String get progressBodyEvolution => 'Body measurements';
+
+  @override
+  String get progressBodyHeadline => 'Changes you can track.';
+
+  @override
+  String get progressBodyDescription =>
+      'Measurements are for reference, not targets.';
+
+  @override
+  String progressWeightChartSummary(Object current, Object start) {
+    return 'Body weight changed from $start to $current kilograms.';
+  }
+
+  @override
+  String get progressMeasurementHeadline => 'Log your progress.';
+
+  @override
+  String get progressMeasurementDescription =>
+      'Weight is required. Other measurements are optional.';
+
+  @override
+  String get progressMeasurementsSavedNote =>
+      'This entry is kept while the app is open.';
+
+  @override
+  String get progressInvalidValue => 'Enter a valid value.';
+
+  @override
+  String get progressWeightRequired => 'Enter your body weight.';
+
+  @override
+  String get progressRecordsHeadline => 'Your bests.';
+
+  @override
+  String get progressRecordsDescription =>
+      'Your best results across different exercises.';
+
+  @override
+  String get progressRecordNoMeasurements => 'Body weight';
+
+  @override
+  String get progressKilograms => 'kg';
+
+  @override
+  String get progressRepetitionsUnit => 'reps';
+
+  @override
+  String get progressSecondsUnit => 's';
+
+  @override
+  String progressSetSummary(Object number, Object values) {
+    return 'Set $number · $values';
+  }
+
+  @override
+  String get progressMinutesUnit => 'min';
+
+  @override
+  String get progressChangeFromStart => 'Change from start';
+
+  @override
+  String progressDateFormatShort(Object date) {
+    return '$date';
+  }
+
+  @override
+  String get sessionBack => 'Back';
+
+  @override
+  String get sessionBackStep => 'Back to previous step';
+
+  @override
+  String get sessionTitlePreparation => 'Getting ready';
+
+  @override
+  String get sessionTitleWarmup => 'Warm-up';
+
+  @override
+  String get sessionTitleWorkout => 'Your workout';
+
+  @override
+  String get sessionTitleRest => 'Rest';
+
+  @override
+  String get sessionTitlePaused => 'Workout paused';
+
+  @override
+  String get sessionTitleConfirmAbandon => 'Confirm leaving';
+
+  @override
+  String get sessionTitleCompleted => 'Workout complete';
+
+  @override
+  String get sessionTitleSummary => 'Workout summary';
+
+  @override
+  String get sessionWarmupHeadline => 'Get your body ready';
+
+  @override
+  String sessionWarmupDescription(Object session) {
+    return 'Brief movements for $session. Keep a comfortable pace; you can skip them whenever you like.';
+  }
+
+  @override
+  String get warmupShoulderCircles => 'Shoulder circles';
+
+  @override
+  String get warmupShoulderCirclesInstructions =>
+      'Make gentle circles forward and backward.';
+
+  @override
+  String get warmupThoracicRotation => 'Thoracic rotation';
+
+  @override
+  String get warmupThoracicInstructions =>
+      'Rotate your torso without straining your neck.';
+
+  @override
+  String get warmupInclinePushups => 'Incline push-ups';
+
+  @override
+  String get warmupInclineInstructions =>
+      'Place your hands on a sturdy surface and move with control.';
+
+  @override
+  String get warmupMarch => 'March in place';
+
+  @override
+  String get warmupMarchInstructions =>
+      'Raise your knees at a comfortable pace.';
+
+  @override
+  String get warmupHipHinge => 'Hip hinge';
+
+  @override
+  String get warmupHipHingeInstructions =>
+      'Move your hips back while keeping your back comfortable.';
+
+  @override
+  String get warmupBodyweightSquat => 'Bodyweight squat';
+
+  @override
+  String get warmupBodyweightSquatInstructions =>
+      'Lower only as far as you can control.';
+
+  @override
+  String get warmupMarchArms => 'March with arm swings';
+
+  @override
+  String get warmupMarchArmsInstructions =>
+      'March in place and swing your arms with the movement.';
+
+  @override
+  String get warmupTorsoRotations => 'Torso rotations';
+
+  @override
+  String get warmupTorsoInstructions =>
+      'Rotate gently from side to side without bouncing.';
+
+  @override
+  String get warmupThirtySeconds => '30 sec';
+
+  @override
+  String get warmupThirtySecondsEachSide => '30 sec per side';
+
+  @override
+  String get warmupFortyFiveSeconds => '45 sec';
+
+  @override
+  String get warmupEightReps => '8 reps';
+
+  @override
+  String get sessionPreparationHeadline => 'Ready to begin';
+
+  @override
+  String get sessionPreparationDescription =>
+      'Take a moment to prepare your space and review today\'s workout.';
+
+  @override
+  String get sessionWaterBottle => 'Water bottle';
+
+  @override
+  String get sessionClearSpace => 'Clear space';
+
+  @override
+  String get sessionEquipmentReady => 'Equipment ready';
+
+  @override
+  String get sessionExerciseHeadline => 'Keep going';
+
+  @override
+  String sessionExerciseCountProgress(Object current, Object total) {
+    return 'Exercise $current of $total';
+  }
+
+  @override
+  String get sessionSetLog => 'Set log';
+
+  @override
+  String get sessionRestHeadline => 'Take a breather';
+
+  @override
+  String sessionBeforeExercise(Object exercise) {
+    return 'Before $exercise';
+  }
+
+  @override
+  String get sessionTimerNote =>
+      'The timer is only a guide and runs while this screen is active.';
+
+  @override
+  String get sessionPauseHeadline => 'Pause whenever you need';
+
+  @override
+  String get sessionPauseDescription =>
+      'Your workout is paused. You can resume or end it.';
+
+  @override
+  String sessionProgressCount(Object current, Object total) {
+    return '$current of $total exercises';
+  }
+
+  @override
+  String get sessionAbandonHeadline => 'Leave this workout?';
+
+  @override
+  String get sessionAbandonDescription =>
+      'This workout will close. Your progress won\'t be saved to your history.';
+
+  @override
+  String sessionWorkoutFinishedFor(Object session) {
+    return 'You finished your $session workout.';
+  }
+
+  @override
+  String sessionExercisesCompleted(Object count) {
+    return '$count exercises completed';
+  }
+
+  @override
+  String get sessionSummaryHeadline => 'Your workout summary';
+
+  @override
+  String get sessionSummaryDescription => 'A summary of today\'s activity.';
+
+  @override
+  String get sessionCompleteWorkout => 'Complete workout';
+
+  @override
+  String get sessionCompleteExercise => 'Complete exercise';
+
+  @override
+  String get sessionWarmupButton => 'View warm-up';
+
+  @override
+  String get sessionStartButton => 'Start workout';
+
+  @override
+  String get sessionSkipWarmupButton => 'Skip warm-up';
+
+  @override
+  String get sessionSkipRestButton => 'Skip rest';
+
+  @override
+  String get sessionAbandonButton => 'Leave workout';
+
+  @override
+  String get sessionConfirmAbandonButton => 'Yes, leave';
+
+  @override
+  String get sessionContinueButton => 'Keep training';
+
+  @override
+  String get sessionSummaryButton => 'View workout summary';
+
+  @override
+  String get sessionRecordNote =>
+      'This workout will be saved to your activity when you finish.';
+
+  @override
+  String sessionSetsTarget(Object sets, Object target) {
+    return '$sets sets · $target';
+  }
+
+  @override
+  String get sessionSetUnit => 'sets';
+
+  @override
+  String get sessionRepTargetLow => '6–8 reps';
+
+  @override
+  String get sessionRepTargetMid => '8–12 reps';
+
+  @override
+  String get sessionRepTargetComfortable => '8–12 reps at a comfortable pace';
+
+  @override
+  String get sessionTimeTarget => '20–40 seconds';
+
+  @override
+  String get sessionWarmupFallback => 'your workout';
+
+  @override
+  String measurementValue(Object label, Object value) {
+    return '$label $value cm';
+  }
+
+  @override
+  String progressValueWithUnit(Object unit, Object value) {
+    return '$value $unit';
+  }
+
+  @override
+  String requiredField(Object label) {
+    return '$label *';
+  }
+
+  @override
+  String get navigationHome => 'Home';
+
+  @override
+  String get shellPlanSaveError => 'We couldn\'t save your plan.';
+
+  @override
+  String get shellWorkoutSaved => 'Workout saved to your activity.';
+
+  @override
+  String get shellWorkoutSaveError => 'We couldn\'t save this workout.';
+
+  @override
+  String get trainingNameDumbbellPress => 'Dumbbell press';
+
+  @override
+  String get trainingNameGobletSquat => 'Goblet squat';
+
+  @override
+  String get trainingNameDumbbellRow => 'Dumbbell row';
+
+  @override
+  String get trainingNameRomanianDeadlift => 'Romanian deadlift';
+
+  @override
+  String get trainingNameShoulderPress => 'Shoulder press';
+
+  @override
+  String get trainingNameBarbellSquat => 'Barbell squat';
+
+  @override
+  String get trainingNameBarbellBench => 'Barbell bench press';
+
+  @override
+  String get trainingNameBarbellRow => 'Barbell row';
+
+  @override
+  String get trainingNameBarbellDeadlift => 'Barbell deadlift';
+
+  @override
+  String get trainingNameBandChestPress => 'Band chest press';
+
+  @override
+  String get trainingNameBandRow => 'Band row';
+
+  @override
+  String get trainingNameBandSquat => 'Banded squat';
+
+  @override
+  String get trainingNameBandPullApart => 'Band pull-apart';
+
+  @override
+  String get trainingNameMachineChestPress => 'Machine chest press';
+
+  @override
+  String get trainingNameLegPress => 'Leg press';
+
+  @override
+  String get trainingNameLatPulldown => 'Lat pulldown';
+
+  @override
+  String get trainingNameSeatedRow => 'Seated row';
+
+  @override
+  String get trainingNamePushUp => 'Push-up';
+
+  @override
+  String get trainingNameInclinePushUp => 'Incline push-up';
+
+  @override
+  String get trainingNamePikePushUp => 'Pike push-up';
+
+  @override
+  String get trainingNameLunges => 'Lunges';
+
+  @override
+  String get trainingNameBodyweightSquat => 'Bodyweight squat';
+
+  @override
+  String get trainingNameCalfRaise => 'Calf raise';
+
+  @override
+  String get trainingNameGluteBridge => 'Glute bridge';
+
+  @override
+  String get trainingNameBirdDog => 'Bird-dog';
+
+  @override
+  String get trainingNameDeadBug => 'Dead bug';
+
+  @override
+  String get trainingNamePlank => 'Plank';
+
+  @override
+  String get activityFocusUpper => 'Chest, back, and shoulders';
+
+  @override
+  String get activityFocusLower => 'Legs and core';
+
+  @override
+  String get activityFocusFull => 'Full-body workout';
+
+  @override
+  String get profileDefaultName => 'FORZA athlete';
+
+  @override
+  String get progressTotalStrength => 'Total-body strength';
+
+  @override
+  String get progressLegsCore => 'Legs and core';
+
+  @override
+  String get progressUpperBody => 'Upper body';
 }

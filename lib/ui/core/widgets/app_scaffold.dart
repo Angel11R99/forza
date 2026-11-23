@@ -15,6 +15,7 @@ import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
 import '../view_models/app_shell_view_model.dart';
 import '../../../app/localization/locale_controller.dart';
+import '../../../app/localization/localization_extensions.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({
@@ -44,27 +45,22 @@ class _AppScaffoldState extends State<AppScaffold>
 
   static const _destinations = <_AppDestination>[
     _AppDestination(
-      label: 'Inicio',
       icon: Icons.home_outlined,
       selectedIcon: Icons.home_rounded,
     ),
     _AppDestination(
-      label: 'Actividad',
       icon: Icons.calendar_month_outlined,
       selectedIcon: Icons.calendar_month_rounded,
     ),
     _AppDestination(
-      label: 'Ejercicios',
       icon: Icons.fitness_center_outlined,
       selectedIcon: Icons.fitness_center_rounded,
     ),
     _AppDestination(
-      label: 'Progreso',
       icon: Icons.insights_outlined,
       selectedIcon: Icons.insights_rounded,
     ),
     _AppDestination(
-      label: 'Perfil',
       icon: Icons.person_outline_rounded,
       selectedIcon: Icons.person_rounded,
     ),
@@ -130,7 +126,7 @@ class _AppScaffoldState extends State<AppScaffold>
     } on Object {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No pudimos guardar tu plan.')),
+          SnackBar(content: Text(context.l10n.shellPlanSaveError)),
         );
       }
     } finally {
@@ -223,13 +219,13 @@ class _AppScaffoldState extends State<AppScaffold>
     try {
       await _viewModel.recordWorkout(record);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sesión guardada en tu actividad.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.shellWorkoutSaved)));
     } on Object {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No pudimos guardar esta sesión.')),
+        SnackBar(content: Text(context.l10n.shellWorkoutSaveError)),
       );
     }
   }
@@ -332,9 +328,9 @@ class _AppScaffoldState extends State<AppScaffold>
       await _viewModel.saveTrainingSettings(settings);
     } on Object {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No pudimos guardar tu plan.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.shellPlanSaveError)));
     }
   }
 
@@ -353,11 +349,11 @@ class _AppScaffoldState extends State<AppScaffold>
       minWidth: 84,
       groupAlignment: 0,
       destinations: [
-        for (final destination in _destinations)
+        for (var index = 0; index < _destinations.length; index++)
           NavigationRailDestination(
-            icon: Icon(destination.icon),
-            selectedIcon: Icon(destination.selectedIcon),
-            label: Text(destination.label),
+            icon: Icon(_destinations[index].icon),
+            selectedIcon: Icon(_destinations[index].selectedIcon),
+            label: Text(_destinationLabel(context, index)),
           ),
       ],
     );
@@ -377,6 +373,7 @@ class _AppScaffoldState extends State<AppScaffold>
               Expanded(
                 child: _BottomNavigationDestination(
                   destination: _destinations[index],
+                  label: _destinationLabel(context, index),
                   selected: index == _selectedIndex,
                   onTap: () => _selectDestination(index),
                 ),
@@ -394,6 +391,14 @@ String _appearanceName(ThemeMode mode) => switch (mode) {
   ThemeMode.dark => 'dark',
 };
 
+String _destinationLabel(BuildContext context, int index) => switch (index) {
+  0 => context.l10n.navigationHome,
+  1 => context.l10n.activityTitle,
+  2 => context.l10n.exerciseEyebrow,
+  3 => context.l10n.progressEyebrow,
+  _ => context.l10n.profileTitle,
+};
+
 ThemeMode _themeMode(String mode) => switch (mode) {
   'light' => ThemeMode.light,
   'dark' => ThemeMode.dark,
@@ -401,13 +406,8 @@ ThemeMode _themeMode(String mode) => switch (mode) {
 };
 
 class _AppDestination {
-  const _AppDestination({
-    required this.label,
-    required this.icon,
-    required this.selectedIcon,
-  });
+  const _AppDestination({required this.icon, required this.selectedIcon});
 
-  final String label;
   final IconData icon;
   final IconData selectedIcon;
 }
@@ -415,11 +415,13 @@ class _AppDestination {
 class _BottomNavigationDestination extends StatefulWidget {
   const _BottomNavigationDestination({
     required this.destination,
+    required this.label,
     required this.selected,
     required this.onTap,
   });
 
   final _AppDestination destination;
+  final String label;
   final bool selected;
   final VoidCallback onTap;
 
@@ -439,7 +441,7 @@ class _BottomNavigationDestinationState
     return Semantics(
       button: true,
       selected: widget.selected,
-      label: widget.destination.label,
+      label: widget.label,
       child: InkWell(
         onTap: widget.onTap,
         overlayColor: const WidgetStatePropertyAll(Colors.transparent),
@@ -473,7 +475,7 @@ class _BottomNavigationDestinationState
                 ),
               ),
               Text(
-                widget.destination.label,
+                widget.label,
                 style: labelStyle?.copyWith(
                   color: widget.selected ? colors.accent : colors.textSecondary,
                   fontWeight: widget.selected
