@@ -15,9 +15,23 @@
   "settingsThemeLight": "Claro",
   "settingsThemeDark": "Oscuro",
   "homeWelcome": "Te damos la bienvenida, {name}",
-  "@@homeWelcome": { "description": "Saludo en la pantalla de inicio", "placeholders": { "name": { "type": "String" } } },
+  "@@homeWelcome": {
+    "description": "Saludo en la pantalla de inicio",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "workoutCount": "{count, plural, =0{Ningún entrenamiento} =1{1 entrenamiento} other{{count} entrenamientos}}",
-  "@workoutCount": { "description": "Cantidad de entrenamientos completados", "placeholders": { "count": { "type": "int" } } },
+  "@workoutCount": {
+    "description": "Cantidad de entrenamientos completados",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseEyebrow": "Ejercicios",
   "exerciseLibraryTitle": "Biblioteca de ejercicios",
   "exerciseLibrarySubtitle": "Encuentra movimientos para tu próxima sesión.",
@@ -25,11 +39,25 @@
   "exerciseClearSearch": "Borrar búsqueda",
   "exerciseOpenFilters": "Abrir filtros",
   "exerciseActiveFilters": "Filtros activos: {count}",
-  "@exerciseActiveFilters": { "description": "Cantidad de filtros activos", "placeholders": { "count": { "type": "int" } } },
+  "@exerciseActiveFilters": {
+    "description": "Cantidad de filtros activos",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseSearchResultsTitle": "Resultados de búsqueda",
   "exerciseAllResultsTitle": "Todos los ejercicios",
   "exerciseFoundCount": "{count, plural, =0{No se encontraron ejercicios} =1{1 ejercicio encontrado} other{{count} ejercicios encontrados}}",
-  "@exerciseFoundCount": { "description": "Cantidad de ejercicios encontrados", "placeholders": { "count": { "type": "int" } } },
+  "@exerciseFoundCount": {
+    "description": "Cantidad de ejercicios encontrados",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseCatalogSpanishNotice": "Los nombres, categorías e instrucciones del catálogo están disponibles en español.",
   "exerciseLoadError": "No pudimos cargar los ejercicios.",
   "exerciseRetry": "Reintentar",
@@ -43,10 +71,24 @@
   "exerciseMuscleGroupFilter": "Grupo muscular",
   "exerciseEquipmentFilter": "Equipo",
   "exerciseShowResults": "Mostrar resultados · {count}",
-  "@exerciseShowResults": { "description": "Cantidad de resultados coincidentes", "placeholders": { "count": { "type": "int" } } },
+  "@exerciseShowResults": {
+    "description": "Cantidad de resultados coincidentes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseAlternativesTitle": "Alternativas",
   "exerciseAlternativesTo": "Alternativas a {name}",
-  "@exerciseAlternativesTo": { "description": "Nombre del ejercicio seleccionado", "placeholders": { "name": { "type": "String" } } },
+  "@exerciseAlternativesTo": {
+    "description": "Nombre del ejercicio seleccionado",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseAlternativesDescription": "Más ejercicios para trabajar un grupo muscular parecido.",
   "exerciseAlternativesEmpty": "No hay alternativas disponibles para este ejercicio.",
   "exerciseDetailTitle": "Detalle del ejercicio",
@@ -54,18 +96,52 @@
   "exerciseGuideHeading": "Claves técnicas y errores frecuentes",
   "exerciseGuideVariantNote": "Pautas de una variante de referencia. Compara cada punto con los pasos de este ejercicio.",
   "exerciseSourcePrefix": "Fuente: {source}",
-  "@exerciseSourcePrefix": { "description": "Nombre de la fuente citada", "placeholders": { "source": { "type": "String" } } },
+  "@exerciseSourcePrefix": {
+    "description": "Nombre de la fuente citada",
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseSourceLink": "Enlace de la fuente: {url}",
-  "@exerciseSourceLink": { "description": "URL de la fuente citada", "placeholders": { "url": { "type": "String" } } },
+  "@exerciseSourceLink": {
+    "description": "URL de la fuente citada",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseViewAlternatives": "Ver alternativas",
   "exerciseAnimationUnavailable": "Sin ilustración animada · consulta los pasos",
   "exerciseAnimationIllustrative": "Ilustración orientativa · el ritmo depende de ti",
   "exerciseAnimationLabel": "Animación: {name}",
-  "@exerciseAnimationLabel": { "description": "Descripción accesible de la animación", "placeholders": { "name": { "type": "String" } } },
+  "@exerciseAnimationLabel": {
+    "description": "Descripción accesible de la animación",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseAnimationPlay": "Reproducir animación",
   "exerciseAnimationPause": "Pausar animación",
   "exerciseCardSemantics": "{name}, {group}, equipo: {equipment}",
-  "@exerciseCardSemantics": { "description": "Descripción accesible de una tarjeta", "placeholders": { "name": { "type": "String" }, "group": { "type": "String" }, "equipment": { "type": "String" } } },
+  "@exerciseCardSemantics": {
+    "description": "Descripción accesible de una tarjeta",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "equipment": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseGroupArms": "Brazos",
   "exerciseGroupCardio": "Cardio",
   "exerciseGroupCore": "Core",

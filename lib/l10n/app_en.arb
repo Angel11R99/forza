@@ -15,9 +15,23 @@
   "settingsThemeLight": "Light",
   "settingsThemeDark": "Dark",
   "homeWelcome": "Welcome, {name}",
-  "@@homeWelcome": { "description": "Greeting shown on the home screen", "placeholders": { "name": { "type": "String" } } },
+  "@@homeWelcome": {
+    "description": "Greeting shown on the home screen",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "workoutCount": "{count, plural, =0{No workouts} =1{1 workout} other{{count} workouts}}",
-  "@workoutCount": { "description": "Number of completed workouts", "placeholders": { "count": { "type": "int" } } },
+  "@workoutCount": {
+    "description": "Number of completed workouts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseEyebrow": "Exercises",
   "exerciseLibraryTitle": "Exercise library",
   "exerciseLibrarySubtitle": "Find movements for your next session.",
@@ -25,11 +39,25 @@
   "exerciseClearSearch": "Clear search",
   "exerciseOpenFilters": "Open filters",
   "exerciseActiveFilters": "Active filters: {count}",
-  "@exerciseActiveFilters": { "description": "Active filter count", "placeholders": { "count": { "type": "int" } } },
+  "@exerciseActiveFilters": {
+    "description": "Active filter count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseSearchResultsTitle": "Search results",
   "exerciseAllResultsTitle": "All exercises",
   "exerciseFoundCount": "{count, plural, =0{No exercises found} =1{1 exercise found} other{{count} exercises found}}",
-  "@exerciseFoundCount": { "description": "Number of exercises found", "placeholders": { "count": { "type": "int" } } },
+  "@exerciseFoundCount": {
+    "description": "Number of exercises found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseCatalogSpanishNotice": "Exercise names, categories, and instructions in this catalog are currently in Spanish.",
   "exerciseLoadError": "We couldn’t load the exercises.",
   "exerciseRetry": "Try again",
@@ -43,10 +71,24 @@
   "exerciseMuscleGroupFilter": "Muscle group",
   "exerciseEquipmentFilter": "Equipment",
   "exerciseShowResults": "Show results · {count}",
-  "@exerciseShowResults": { "description": "Number of matching exercises", "placeholders": { "count": { "type": "int" } } },
+  "@exerciseShowResults": {
+    "description": "Number of matching exercises",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "exerciseAlternativesTitle": "Alternatives",
   "exerciseAlternativesTo": "Alternatives to {name}",
-  "@exerciseAlternativesTo": { "description": "Name of the selected exercise", "placeholders": { "name": { "type": "String" } } },
+  "@exerciseAlternativesTo": {
+    "description": "Name of the selected exercise",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseAlternativesDescription": "More exercises for a similar muscle group.",
   "exerciseAlternativesEmpty": "No alternatives are available for this exercise.",
   "exerciseDetailTitle": "Exercise details",
@@ -54,18 +96,52 @@
   "exerciseGuideHeading": "Technique cues and common mistakes",
   "exerciseGuideVariantNote": "These cues are based on a reference variation. Compare them with the steps for this exercise.",
   "exerciseSourcePrefix": "Source: {source}",
-  "@exerciseSourcePrefix": { "description": "Name of the cited source", "placeholders": { "source": { "type": "String" } } },
+  "@exerciseSourcePrefix": {
+    "description": "Name of the cited source",
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseSourceLink": "Source link: {url}",
-  "@exerciseSourceLink": { "description": "URL for the cited source", "placeholders": { "url": { "type": "String" } } },
+  "@exerciseSourceLink": {
+    "description": "URL for the cited source",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseViewAlternatives": "View alternatives",
   "exerciseAnimationUnavailable": "No animation available · follow the steps",
   "exerciseAnimationIllustrative": "Illustration for reference · pace is up to you",
   "exerciseAnimationLabel": "Exercise animation: {name}",
-  "@exerciseAnimationLabel": { "description": "Accessible label for the exercise animation", "placeholders": { "name": { "type": "String" } } },
+  "@exerciseAnimationLabel": {
+    "description": "Accessible label for the exercise animation",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseAnimationPlay": "Play animation",
   "exerciseAnimationPause": "Pause animation",
   "exerciseCardSemantics": "{name}, {group}, equipment: {equipment}",
-  "@exerciseCardSemantics": { "description": "Accessible exercise card description", "placeholders": { "name": { "type": "String" }, "group": { "type": "String" }, "equipment": { "type": "String" } } },
+  "@exerciseCardSemantics": {
+    "description": "Accessible exercise card description",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "equipment": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseGroupArms": "Arms",
   "exerciseGroupCardio": "Cardio",
   "exerciseGroupCore": "Core",
