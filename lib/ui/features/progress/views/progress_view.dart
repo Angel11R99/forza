@@ -27,18 +27,7 @@ class _ProgressViewState extends State<ProgressView> {
     final sessions =
         widget.records
             .where((record) => !record.date.isBefore(cutoff))
-            .map(
-              (record) => WorkoutHistoryEntry(
-                id: record.date.toIso8601String(),
-                title: record.title,
-                date: record.date,
-                durationMinutes: record.durationMinutes,
-                exerciseCount: record.exerciseCount,
-                totalVolumeKg: 0,
-                exercises: record.exercises,
-                completedOutsideApp: record.completedOutsideApp,
-              ),
-            )
+            .map(WorkoutHistoryEntry.fromRecord)
             .toList(growable: false)
           ..sort((first, second) => second.date.compareTo(first.date));
     final totalMinutes = sessions.fold<int>(
@@ -120,6 +109,31 @@ class _ProgressViewState extends State<ProgressView> {
                                 '${sessions.fold<int>(0, (sum, entry) => sum + entry.exerciseCount)} ejercicios',
                           ),
                         ],
+                      ),
+                      const SizedBox(height: AppSpacing.x3),
+                      Row(
+                        children: [
+                          _SummaryValue(
+                            icon: Icons.repeat_rounded,
+                            label:
+                                '${sessions.fold<int>(0, (sum, entry) => sum + entry.loggedSets.length)} series · ${sessions.fold<int>(0, (sum, entry) => sum + entry.totalRepetitions)} reps',
+                          ),
+                          const SizedBox(width: AppSpacing.x6),
+                          _SummaryValue(
+                            icon: Icons.scale_outlined,
+                            label: _volumeLabel(
+                              sessions.fold<double>(
+                                0,
+                                (sum, entry) => sum + entry.totalVolumeKg,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.x2),
+                      Text(
+                        'El volumen suma repeticiones × carga de las series con ambos datos.',
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
@@ -207,7 +221,7 @@ class _SessionHistoryCard extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.x1),
                         Text(
-                          '${_formatShortDate(session.date)}  ·  ${session.durationMinutes} min  ·  ${session.exerciseCount} ejercicios',
+                          '${_formatShortDate(session.date)}  ·  ${session.durationMinutes} min  ·  ${session.exerciseCount} ejercicios${session.totalVolumeKg > 0 ? '  ·  ${_volumeLabel(session.totalVolumeKg)}' : ''}',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -249,6 +263,13 @@ class _SummaryValue extends StatelessWidget {
 
 String _formatShortDate(DateTime date) =>
     '${date.day} ${_monthAbbreviation(date.month)}';
+
+String _volumeLabel(double volume) =>
+    volume == 0 ? 'Sin datos de carga' : '${_formatVolume(volume)} kg';
+
+String _formatVolume(double volume) => volume == volume.roundToDouble()
+    ? volume.toStringAsFixed(0)
+    : volume.toStringAsFixed(1);
 
 String _monthAbbreviation(int month) => const [
   'ene',

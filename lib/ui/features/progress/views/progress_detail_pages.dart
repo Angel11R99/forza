@@ -4,6 +4,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
+import '../../../../domain/models/workout_record.dart';
 import '../data/progress_demo_data.dart';
 import '../models/progress_models.dart';
 import '../widgets/progress_line_chart.dart';
@@ -101,32 +102,63 @@ class SessionDetailPage extends StatelessWidget {
                     title: 'Ejercicios · ${session.exercises.length}',
                   ),
                   for (var index = 0; index < session.exercises.length; index++)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                      child: AppSurfaceCard(
-                        child: Row(
-                          children: [
-                            Text(
-                              (index + 1).toString().padLeft(2, '0'),
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: context.appColors.textSecondary,
+                    Builder(
+                      builder: (context) {
+                        final sets = session.loggedSets
+                            .where((set) => set.exercisePosition == index)
+                            .toList(growable: false);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                          child: AppSurfaceCard(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  (index + 1).toString().padLeft(2, '0'),
+                                  style: Theme.of(context).textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: context.appColors.textSecondary,
+                                      ),
+                                ),
+                                const SizedBox(width: AppSpacing.x4),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        session.exercises[index],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium,
+                                      ),
+                                      if (sets.isNotEmpty) ...[
+                                        const SizedBox(height: AppSpacing.x2),
+                                        for (final set in sets)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: AppSpacing.x1,
+                                            ),
+                                            child: Text(
+                                              _setSummary(set),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                            ),
+                                          ),
+                                      ],
+                                    ],
                                   ),
+                                ),
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: context.appColors.accent,
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: AppSpacing.x4),
-                            Expanded(
-                              child: Text(
-                                session.exercises[index],
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                            Icon(
-                              Icons.check_circle_rounded,
-                              color: context.appColors.accent,
-                            ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
                 ],
               ],
@@ -772,3 +804,12 @@ String _formatShortDate(DateTime date) =>
 String _formatValue(double value) => value == value.roundToDouble()
     ? value.toStringAsFixed(0)
     : value.toStringAsFixed(1);
+
+String _setSummary(WorkoutSetResult set) {
+  final values = <String>[
+    if (set.repetitions != null) '${set.repetitions} reps',
+    if (set.loadKg != null) '${_formatValue(set.loadKg!)} kg',
+    if (set.durationSeconds != null) '${set.durationSeconds} s',
+  ];
+  return 'Serie ${set.setIndex + 1} · ${values.join(' · ')}';
+}
