@@ -28,7 +28,9 @@ Antes de añadir cada paquete:
 
 ## Dataset de ejercicios
 
-Fuente integrada: [jlfernandezfernandez/exercises-dataset-es](https://github.com/jlfernandezfernandez/exercises-dataset-es), derivada de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) y fijada en `5a5dd652f102c34bb09fcb0db3c2f3ae4dd53cbe`. Proporciona 1.324 ejercicios con nombres e instrucciones en español. La importación conserva texto y metadatos, mapea equipo/grupo a etiquetas FORZA y elimina referencias y archivos multimedia. El transformador está en `tool/import_exercise_dataset.py`; la licencia y procedencia están en `third_party/exercises-dataset/`.
+Fuente integrada: [jlfernandezfernandez/exercises-dataset-es](https://github.com/jlfernandezfernandez/exercises-dataset-es), derivada de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) y fijada en `5a5dd652f102c34bb09fcb0db3c2f3ae4dd53cbe`. Proporciona 1.324 ejercicios con nombres e instrucciones en español. La importación conserva texto y metadatos, mapea equipo/grupo a etiquetas FORZA y elimina las referencias a los medios del dataset upstream. El transformador está en `tool/import_exercise_dataset.py`; la licencia y procedencia están en `third_party/exercises-dataset/`.
+
+FORZA incluye además ilustraciones animadas vectoriales bajo `third_party/flow-exercise-dataset/`, separadas del dataset upstream. Su procedencia, alcance de licencia y limitaciones están descritos en `third_party/flow-exercise-dataset/NOTICE.md`.
 
 ### Licencia: separar datos de medios
 
@@ -38,7 +40,7 @@ El README declara MIT para código, estructura de datos/texto de instrucciones, 
 - Antes de integrar medios comprados, confirmar con Gym visual que el empaquetado en la app, la caché/descarga bajo demanda y el alcance de distribución de FORZA cumplen la prohibición de redistribución. Conservar comprobantes de compra y la atribución pedida por el README del dataset.
 - Si no se obtiene una licencia apropiada, utilizar solo los datos cuyo uso esté cubierto y conseguir imágenes/animaciones de una fuente licenciada de forma independiente.
 - Mantener `ExerciseMedia` desacoplado del JSON: una fuente de datos no debe decidir cómo se representa el componente.
-- Las animaciones son fase futura: definir estados de carga/error, fallback y tamaño estable; cargar bajo demanda y no bajar el catálogo completo al abrir la app.
+- Las animaciones vectoriales locales se usan con controles de pausa y respeto a la preferencia de movimiento reducido. Videos y medios externos siguen fuera hasta tener una fuente y licencia revisadas.
 
 Estructura conceptual para más adelante:
 
@@ -49,3 +51,7 @@ ExerciseMedia(thumbnail, animation, attribution, licenseStatus)
 ```
 
 La disponibilidad técnica de un URL público no equivale a permiso de reutilización.
+
+### Guías de ejecución
+
+El detalle de ejercicios presenta las animaciones locales disponibles y los pasos del catálogo. Las notas de errores frecuentes son contenido curado por ejercicio y llevan su fuente; actualmente el peso muerto rumano con barra usa una síntesis de [ACE sobre técnica y errores comunes del peso muerto rumano](https://www.acefitness.org/continuing-education/certified/may-2025/8865/the-ace-do-it-better-series-the-romanian-deadlift/). No se infieren errores específicos para los ejercicios que todavía no tienen una fuente revisada.
