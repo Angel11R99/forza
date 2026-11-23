@@ -208,7 +208,9 @@ class _ActivityViewState extends State<ActivityView> {
                             sixWeekMonthsEnforced: true,
                             selectedDayPredicate: (day) =>
                                 _isSameDay(day, _selectedDate),
-                            eventLoader: (day) => _sessionForDate(day) == null
+                            eventLoader: (day) =>
+                                _isSameDay(day, _selectedDate) ||
+                                    _sessionForDate(day) == null
                                 ? const []
                                 : const [true],
                             onDaySelected: (selectedDay, focusedDay) {
