@@ -60,6 +60,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeStreakCurrent => 'Current streak';
+
+  @override
+  String get homeStreakDay => 'day';
+
+  @override
+  String get homeStreakDays => 'days';
+
+  @override
+  String homeStreakCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+      zero: '0 days',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeStreakSemantics(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Current streak: $count days',
+      one: 'Current streak: 1 day',
+      zero: 'Current streak: 0 days',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String workoutCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

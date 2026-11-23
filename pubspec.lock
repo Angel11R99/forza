@@ -834,6 +834,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.2"
+  streak_flame:
+    dependency: "direct main"
+    description:
+      name: streak_flame
+      sha256: "52423ebdd7eb2d26fbe1039c58b4ae35d0e1fd714e0f17773992e49a58298d8c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   stream_channel:
     dependency: transitive
     description:

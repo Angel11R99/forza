@@ -9,6 +9,7 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../profile/models/profile_settings.dart';
+import '../widgets/home_streak_indicator.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/scheduled_training_session.dart';
 
@@ -21,6 +22,9 @@ class HomeView extends StatelessWidget {
     required this.onStartWorkout,
     required this.onEditPlan,
     required this.completedDates,
+    this.streakDays = 0,
+    this.streakAnimationFrom = 0,
+    this.streakAnimationRevision = 0,
     this.hasActiveWorkout = false,
     this.scheduledSessions = const [],
   });
@@ -31,6 +35,9 @@ class HomeView extends StatelessWidget {
   final VoidCallback onStartWorkout;
   final VoidCallback onEditPlan;
   final Set<DateTime> completedDates;
+  final int streakDays;
+  final int streakAnimationFrom;
+  final int streakAnimationRevision;
   final bool hasActiveWorkout;
   final List<ScheduledTrainingSession> scheduledSessions;
 
@@ -117,11 +124,39 @@ class HomeView extends StatelessWidget {
                 const SizedBox(height: AppSpacing.x6),
                 Text(greeting, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: AppSpacing.x2),
-                Text(
-                  context.l10n.homePlanTitle,
-                  style: Theme.of(context).textTheme.displaySmall,
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final planTitle = Text(
+                      context.l10n.homePlanTitle,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    );
+                    final streakIndicator = HomeStreakIndicator(
+                      key: const ValueKey('home-streak-indicator'),
+                      days: streakDays,
+                      animationFrom: streakAnimationFrom,
+                      animationRevision: streakAnimationRevision,
+                    );
+                    if (constraints.maxWidth >= 400) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(child: planTitle),
+                          const SizedBox(width: AppSpacing.x3),
+                          streakIndicator,
+                        ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        planTitle,
+                        const SizedBox(height: AppSpacing.x2),
+                        streakIndicator,
+                      ],
+                    );
+                  },
                 ),
-                const SizedBox(height: AppSpacing.x6),
+                const SizedBox(height: AppSpacing.x4),
                 SectionHeading(
                   title: _sameDate(nextTrainingDate, now)
                       ? context.l10n.homeTodayWorkout

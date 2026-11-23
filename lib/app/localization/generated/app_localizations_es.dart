@@ -60,6 +60,39 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get homeStreakCurrent => 'Racha actual';
+
+  @override
+  String get homeStreakDay => 'día';
+
+  @override
+  String get homeStreakDays => 'días';
+
+  @override
+  String homeStreakCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+      zero: '0 días',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeStreakSemantics(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Racha actual: $count días',
+      one: 'Racha actual: 1 día',
+      zero: 'Racha actual: 0 días',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String workoutCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

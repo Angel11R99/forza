@@ -44,6 +44,7 @@ dependencies:
   drift: ^2.35.4
   drift_flutter: ^0.3.1
   file_picker: ^13.4.1
+  streak_flame: ^0.1.0
 
 dev_dependencies:
   flutter_test:

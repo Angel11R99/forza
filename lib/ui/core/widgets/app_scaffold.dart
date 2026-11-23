@@ -267,6 +267,10 @@ class _AppScaffoldState extends State<AppScaffold>
                       onEditPlan: _editPlan,
                       onStartWorkout: _startHomeWorkout,
                       completedDates: _viewModel.completedDates,
+                      streakDays: _viewModel.currentStreak,
+                      streakAnimationFrom: _viewModel.streakAnimationFrom,
+                      streakAnimationRevision:
+                          _viewModel.streakAnimationRevision,
                       hasActiveWorkout: _viewModel.hasActiveWorkout,
                       scheduledSessions: _viewModel.scheduledSessions,
                     ),

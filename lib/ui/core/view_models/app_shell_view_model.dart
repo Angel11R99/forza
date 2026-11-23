@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:material_ui/material_ui.dart';
@@ -11,6 +12,7 @@ import '../../../data/repositories/training_schedule_repository.dart';
 import '../../../data/repositories/personal_goal_repository.dart';
 import '../../../data/repositories/backup_repository.dart';
 import '../../../domain/models/workout_record.dart';
+import '../../../domain/use_cases/workout_streak_calculator.dart';
 import '../../../domain/models/scheduled_training_session.dart';
 import '../../../domain/models/personal_goal.dart';
 import '../../features/profile/models/profile_settings.dart';
@@ -66,6 +68,9 @@ class AppShellViewModel extends ChangeNotifier {
   bool _needsFirstRunSetup = false;
   bool _hasActiveWorkout = false;
   DateTime? _activeWorkoutDate;
+  int _streakAnimationRevision = 0;
+  int _streakAnimationFrom = 0;
+  Timer? _streakRolloverTimer;
 
   TrainingSettings get trainingSettings => _trainingSettings;
   List<WorkoutRecord> get workoutRecords => _workoutRecords;
@@ -97,6 +102,10 @@ class AppShellViewModel extends ChangeNotifier {
   Set<DateTime> get completedDates => {
     for (final record in _workoutRecords) record.date,
   };
+  int get currentStreak =>
+      WorkoutStreakCalculator.currentStreak(_workoutRecords);
+  int get streakAnimationRevision => _streakAnimationRevision;
+  int get streakAnimationFrom => _streakAnimationFrom;
 
   Future<void> restore() async {
     var settings = const TrainingSettings();
@@ -155,6 +164,7 @@ class AppShellViewModel extends ChangeNotifier {
     _needsFirstRunSetup = !setupComplete;
     _isReady = true;
     notifyListeners();
+    _scheduleStreakRollover();
   }
 
   Future<void> saveTrainingSettings(TrainingSettings settings) async {
@@ -176,7 +186,15 @@ class AppShellViewModel extends ChangeNotifier {
   }
 
   Future<void> recordWorkout(WorkoutRecord record) async {
+    final previousStreak = currentStreak;
     _workoutRecords = await _workoutLogRepository.save(record);
+    final updatedStreak = currentStreak;
+    final now = DateTime.now();
+    final completedToday = _sameDate(record.completedAt.toLocal(), now);
+    if (completedToday && updatedStreak > previousStreak) {
+      _streakAnimationFrom = previousStreak;
+      _streakAnimationRevision++;
+    }
     await _trainingScheduleRepository.ensureUpcoming(
       _trainingSettings,
       from: record.date,
@@ -252,6 +270,10 @@ class AppShellViewModel extends ChangeNotifier {
     await _backupRepository.restore(backup);
     _trainingSettings = backup.settings;
     _workoutRecords = backup.records;
+    _streakAnimationRevision = 0;
+    _streakAnimationFrom = WorkoutStreakCalculator.currentStreak(
+      _workoutRecords,
+    );
     _scheduledSessions = backup.schedule;
     _personalGoals = backup.goals;
     _needsFirstRunSetup = false;
@@ -260,6 +282,22 @@ class AppShellViewModel extends ChangeNotifier {
         ? null
         : DateTime.parse(backup.activeWorkout!['scheduledDate']! as String);
     notifyListeners();
+  }
+
+  void _scheduleStreakRollover() {
+    _streakRolloverTimer?.cancel();
+    final now = DateTime.now();
+    final nextMidnight = DateTime(now.year, now.month, now.day + 1);
+    _streakRolloverTimer = Timer(nextMidnight.difference(now), () {
+      notifyListeners();
+      _scheduleStreakRollover();
+    });
+  }
+
+  @override
+  void dispose() {
+    _streakRolloverTimer?.cancel();
+    super.dispose();
   }
 
   static DateTime _dateOnly(DateTime date) =>

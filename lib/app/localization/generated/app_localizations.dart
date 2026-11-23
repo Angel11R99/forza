@@ -188,6 +188,36 @@ abstract class AppLocalizations {
   /// **'Welcome, {name}'**
   String homeWelcome(Object name);
 
+  /// No description provided for @homeStreakCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current streak'**
+  String get homeStreakCurrent;
+
+  /// No description provided for @homeStreakDay.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get homeStreakDay;
+
+  /// No description provided for @homeStreakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get homeStreakDays;
+
+  /// No description provided for @homeStreakCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 days} =1{1 day} other{{count} days}}'**
+  String homeStreakCount(num count);
+
+  /// No description provided for @homeStreakSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Current streak: 0 days} =1{Current streak: 1 day} other{Current streak: {count} days}}'**
+  String homeStreakSemantics(num count);
+
   /// Number of completed workouts
   ///
   /// In en, this message translates to:
