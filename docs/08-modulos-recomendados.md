@@ -5,7 +5,8 @@ Este documento reúne módulos que pueden ampliar FORZA sin perder el foco en cr
 ## Avance
 
 - **Registro de series y recuperación de sesión:** implementados en SQLite. La sesión activa conserva el ejercicio, tiempo y series; cada serie admite repeticiones y carga, o duración para ejercicios cronometrados. Al completar, esos resultados se guardan junto al historial.
-- **Pendiente de esta secuencia:** agenda persistente compartida, métricas de Progreso basadas en series, metas, calentamiento, guías y exportación/respaldo.
+- **Agenda compartida entre Inicio, Actividad y entrenamiento:** implementada en SQLite para los próximos 120 días. Las sesiones conservan su estado pendiente, en curso o completada; las reprogramaciones sobreviven al reinicio y las tres superficies consultan el mismo calendario.
+- **Pendiente de esta secuencia:** métricas de Progreso basadas en series, metas, calentamiento, guías y exportación/respaldo.
 
 ## Prioridad alta: cerrar el ciclo de entrenamiento
 

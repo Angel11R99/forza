@@ -8,9 +8,10 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 - Sesiones terminadas: fecha planificada, fecha de finalización, objetivo, duración, cantidad de ejercicios, lista de ejercicios y si se marcaron como completadas fuera de la app.
 - Resultados por serie: repeticiones o duración y carga registrada para cada ejercicio de una sesión.
 - Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
+- Agenda: sesiones de los próximos 120 días, fecha original al reprogramar y estado pendiente, en curso o completada.
 - Metadatos: finalización del onboarding y control de importaciones.
 
-El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El perfil personal, medidas corporales, notificaciones, reprogramación y sincronización entre dispositivos todavía no son datos persistidos.
+El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El perfil personal, medidas corporales, notificaciones y sincronización entre dispositivos todavía no son datos persistidos. La agenda mantiene 120 días de sesiones próximas y sincroniza Inicio, Actividad y la sesión activa mediante el mismo repositorio.
 
 Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. Los repositorios de `lib/data/repositories/` mantienen aislada la persistencia del ViewModel para permitir añadir una implementación remota más adelante.
 
@@ -22,9 +23,10 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 | `workout_sessions` | Historial y resumen de sesiones terminadas. |
 | `workout_session_exercises` | Ejercicios guardados en cada resumen, ordenados por posición. |
 | `workout_set_entries` | Resultados registrados por ejercicio y serie. |
+| `scheduled_training_sessions` | Agenda próxima, reprogramaciones y estado de cada sesión. |
 | `app_metadata` | Marcadores, importaciones y borrador del entrenamiento activo. |
 
-La versión actual del esquema es `2`. Las migraciones están en `database/migrations/sqlite/0001_initial.sql` y `0002_workout_set_entries.sql`; las instantáneas serializadas están en `drift_schemas/schema_v1.json` y `schema_v2.json`. Al actualizar desde la versión 1, Drift crea la tabla de series y conserva el historial existente.
+La versión actual del esquema es `3`. Las migraciones están en `database/migrations/sqlite/0001_initial.sql`, `0002_workout_set_entries.sql` y `0003_scheduled_training_sessions.sql`; las instantáneas serializadas están en `drift_schemas/schema_v1.json`, `schema_v2.json` y `schema_v3.json`. Las actualizaciones crean las tablas nuevas sin alterar el historial existente.
 
 ## Importación de instalaciones anteriores
 
