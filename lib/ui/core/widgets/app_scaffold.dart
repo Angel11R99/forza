@@ -13,7 +13,6 @@ import '../../features/profile/views/profile_view.dart';
 import '../../features/profile/views/backup_restore_page.dart';
 import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
-import 'forza_brand.dart';
 import '../view_models/app_shell_view_model.dart';
 import '../../../app/localization/locale_controller.dart';
 
@@ -353,24 +352,6 @@ class _AppScaffoldState extends State<AppScaffold>
       labelType: NavigationRailLabelType.all,
       minWidth: 84,
       groupAlignment: -0.65,
-      leading: Padding(
-        padding: const EdgeInsets.only(
-          bottom: AppSpacing.x8,
-          top: AppSpacing.x4,
-        ),
-        child: Semantics(
-          label: 'FORZA',
-          child: ExcludeSemantics(
-            child: SizedBox(
-              width: 64,
-              height: 34,
-              child: Center(
-                child: ForzaWordmark(color: context.appColors.textPrimary),
-              ),
-            ),
-          ),
-        ),
-      ),
       destinations: [
         for (final destination in _destinations)
           NavigationRailDestination(
