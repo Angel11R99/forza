@@ -169,52 +169,53 @@ class _OnboardingViewState extends State<OnboardingView> {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: AppSpacing.x6),
-        AppSurfaceCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_goal, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.x2),
-              Text(
-                '${_trainingDays.length} días · $_sessionMinutes min por sesión',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.x1),
-              Text(
-                'Experiencia: $_experience',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.x1),
-              Text(
-                'Equipo: ${_equipment.join(', ')}',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
+        SizedBox(
+          width: double.infinity,
+          child: AppSurfaceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_goal, style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: AppSpacing.x2),
+                Text(
+                  '${_trainingDays.length} días · $_sessionMinutes min por sesión',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  'Experiencia: $_experience',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
+                  'Equipo: ${_equipment.join(', ')}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
         for (final session in sessions) ...[
-          AppSurfaceCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${_weekdays[session.weekday]} · ${session.title}',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: AppSpacing.x1),
-                Text(
-                  '${session.exercises.length} ejercicios · ${session.durationMinutes} min',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                Text(
-                  session.exercises
-                      .map((exercise) => exercise.name)
-                      .join(' · '),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
+          SizedBox(
+            width: double.infinity,
+            child: AppSurfaceCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${_weekdays[session.weekday]} · ${session.title}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.x2),
+                  Text(
+                    session.exercises
+                        .map((exercise) => exercise.name)
+                        .join(' · '),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.x2),
