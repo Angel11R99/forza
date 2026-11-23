@@ -100,7 +100,7 @@ class _RescheduleSessionPageState extends State<RescheduleSessionPage> {
                               child: Center(
                                 child: Icon(
                                   widget.sessionIcon,
-                                  color: AppColors.textPrimary,
+                                  color: context.appColors.textPrimary,
                                 ),
                               ),
                             ),
@@ -201,7 +201,9 @@ class _DateOptionCard extends StatelessWidget {
       label: '${_formatDate(date)}, fecha disponible',
       child: ExcludeSemantics(
         child: Material(
-          color: selected ? AppColors.accentSoft : AppColors.surface,
+          color: selected
+              ? context.appColors.accentSoft
+              : context.appColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.medium),
           child: InkWell(
             onTap: onTap,
@@ -215,7 +217,9 @@ class _DateOptionCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.medium),
                 border: Border.all(
-                  color: selected ? AppColors.accent : AppColors.divider,
+                  color: selected
+                      ? context.appColors.accent
+                      : context.appColors.divider,
                 ),
               ),
               child: Row(
@@ -224,7 +228,7 @@ class _DateOptionCard extends StatelessWidget {
                     selected
                         ? Icons.radio_button_checked_rounded
                         : Icons.radio_button_off_rounded,
-                    color: AppColors.accent,
+                    color: context.appColors.accent,
                   ),
                   const SizedBox(width: AppSpacing.x3),
                   Expanded(

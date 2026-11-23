@@ -163,7 +163,7 @@ class _ExercisePreview extends StatelessWidget {
       height: 248,
       padding: const EdgeInsets.all(AppSpacing.x3),
       decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
+        color: AppColors.light.surfaceMuted,
         borderRadius: BorderRadius.circular(AppRadius.large),
       ),
       child: Stack(
@@ -187,7 +187,7 @@ class _ExercisePreview extends StatelessWidget {
             child: Text(
               'Animación del movimiento',
               style: Theme.of(context).textTheme.labelSmall
-                  ?.copyWith(color: AppColors.textSecondary),
+                  ?.copyWith(color: AppColors.light.textSecondary),
             ),
           ),
         ],
@@ -209,7 +209,7 @@ class _InfoChip extends StatelessWidget {
         vertical: AppSpacing.x2,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
+        color: context.appColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppRadius.control),
       ),
       child: Text(label, style: Theme.of(context).textTheme.labelLarge),
@@ -234,14 +234,14 @@ class _InstructionCard extends StatelessWidget {
             width: 30,
             height: 30,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-              color: AppColors.accentSoft,
+            decoration: BoxDecoration(
+              color: context.appColors.accentSoft,
               shape: BoxShape.circle,
             ),
             child: Text(
               '$index',
               style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: AppColors.accent),
+                  ?.copyWith(color: context.appColors.accent),
             ),
           ),
           const SizedBox(width: AppSpacing.x3),

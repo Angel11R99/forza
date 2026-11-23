@@ -3,16 +3,16 @@ import 'package:material_ui/material_ui.dart';
 import '../../../app/theme/app_colors.dart';
 
 class ForzaMark extends StatelessWidget {
-  const ForzaMark({super.key, this.size = 20, this.color = AppColors.accent});
+  const ForzaMark({super.key, this.size = 20, this.color});
 
   final double size;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.square(size),
-      painter: _ForzaMarkPainter(color),
+      painter: _ForzaMarkPainter(color ?? context.appColors.accent),
     );
   }
 }
@@ -54,9 +54,9 @@ class _ForzaMarkPainter extends CustomPainter {
 }
 
 class ForzaWordmark extends StatelessWidget {
-  const ForzaWordmark({super.key, this.color = AppColors.textPrimary});
+  const ForzaWordmark({super.key, this.color});
 
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class ForzaWordmark extends StatelessWidget {
       'FORZA',
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
         fontFamily: 'Barlow Condensed',
-        color: color,
+        color: color ?? context.appColors.textPrimary,
         fontWeight: FontWeight.w800,
         letterSpacing: 1.8,
       ),
@@ -81,8 +81,10 @@ class ForzaEyebrow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: Theme.of(context).textTheme.labelLarge
-          ?.copyWith(color: AppColors.accent, fontWeight: FontWeight.w600),
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        color: context.appColors.accent,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 }

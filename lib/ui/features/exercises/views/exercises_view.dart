@@ -202,13 +202,13 @@ class _ExercisesViewState extends State<ExercisesView> {
                       height: 52,
                       decoration: BoxDecoration(
                         color: _filters.isEmpty
-                            ? AppColors.surface
-                            : AppColors.surfaceMuted,
+                            ? context.appColors.surface
+                            : context.appColors.surfaceMuted,
                         borderRadius: BorderRadius.circular(AppRadius.medium),
                         border: Border.all(
                           color: _filters.isEmpty
-                              ? AppColors.divider
-                              : AppColors.accent,
+                              ? context.appColors.divider
+                              : context.appColors.accent,
                         ),
                       ),
                       child: IconButton(
@@ -243,7 +243,9 @@ class _ExercisesViewState extends State<ExercisesView> {
                         child: Text(
                           '${results.length}',
                           style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(color: AppColors.textSecondary),
+                              ?.copyWith(
+                                color: context.appColors.textSecondary,
+                              ),
                         ),
                       ),
                     ),

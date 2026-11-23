@@ -176,7 +176,7 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
       return Icon(
         widget.fallbackIcon,
         size: 56,
-        color: AppColors.textSecondary,
+        color: context.appColors.textSecondary,
       );
     }
 
@@ -187,7 +187,7 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
       return Icon(
         widget.fallbackIcon,
         size: 56,
-        color: AppColors.textSecondary,
+        color: context.appColors.textSecondary,
       );
     }
 
@@ -195,37 +195,45 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
     return Semantics(
       image: true,
       label: 'Animación: ${widget.label}',
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          ExcludeSemantics(
-            child: SvgPicture.asset(
-              animation.frames[frameIndex],
-              fit: BoxFit.contain,
-              colorFilter: const ColorFilter.mode(
-                AppColors.textPrimary,
-                BlendMode.srcIn,
-              ),
-              errorBuilder: (context, error, stackTrace) => Icon(
-                widget.fallbackIcon,
-                size: 56,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          if (widget.showControls && !reduceMotion)
-            Positioned(
-              top: 4,
-              right: 4,
-              child: IconButton.filledTonal(
-                onPressed: _togglePlayback,
-                tooltip: _paused ? 'Reproducir animación' : 'Pausar animación',
-                icon: Icon(
-                  _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.light.surfaceMuted,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ExcludeSemantics(
+              child: SvgPicture.asset(
+                animation.frames[frameIndex],
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFF111111),
+                  BlendMode.srcIn,
+                ),
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  widget.fallbackIcon,
+                  size: 56,
+                  color: context.appColors.textSecondary,
                 ),
               ),
             ),
-        ],
+            if (widget.showControls && !reduceMotion)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: IconButton.filledTonal(
+                  onPressed: _togglePlayback,
+                  tooltip: _paused
+                      ? 'Reproducir animación'
+                      : 'Pausar animación',
+                  icon: Icon(
+                    _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

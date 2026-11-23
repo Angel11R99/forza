@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/workout_record.dart';
+import '../../../app/theme/appearance_controller.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../features/activity/views/activity_view.dart';
@@ -15,9 +16,14 @@ import 'forza_brand.dart';
 import '../view_models/app_shell_view_model.dart';
 
 class AppScaffold extends StatefulWidget {
-  const AppScaffold({super.key, this.initialIndex = 0});
+  const AppScaffold({
+    super.key,
+    this.initialIndex = 0,
+    required this.appearance,
+  });
 
   final int initialIndex;
+  final AppearanceController appearance;
 
   @override
   State<AppScaffold> createState() => _AppScaffoldState();
@@ -206,6 +212,8 @@ class _AppScaffoldState extends State<AppScaffold> {
                     ProgressView(records: _viewModel.workoutRecords),
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
+                      themeMode: widget.appearance.mode,
+                      onThemeModeChanged: widget.appearance.setMode,
                       onTrainingSettingsChanged: (settings) =>
                           _updateTrainingSettings(settings),
                     ),
@@ -251,8 +259,8 @@ class _AppScaffoldState extends State<AppScaffold> {
     return NavigationRail(
       selectedIndex: _selectedIndex,
       onDestinationSelected: _selectDestination,
-      backgroundColor: AppColors.background,
-      indicatorColor: AppColors.accentSoft,
+      backgroundColor: context.appColors.background,
+      indicatorColor: context.appColors.accentSoft,
       labelType: NavigationRailLabelType.all,
       minWidth: 84,
       groupAlignment: -0.65,
@@ -268,11 +276,11 @@ class _AppScaffoldState extends State<AppScaffold> {
               width: 40,
               height: 40,
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: AppColors.accent,
+              decoration: BoxDecoration(
+                color: context.appColors.accent,
                 shape: BoxShape.circle,
               ),
-              child: const ForzaMark(color: AppColors.inverseText, size: 22),
+              child: ForzaMark(color: context.appColors.inverseText, size: 22),
             ),
           ),
         ),
@@ -290,9 +298,9 @@ class _AppScaffoldState extends State<AppScaffold> {
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.divider)),
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        border: Border(top: BorderSide(color: context.appColors.divider)),
       ),
       child: SafeArea(
         top: false,
@@ -302,14 +310,18 @@ class _AppScaffoldState extends State<AppScaffold> {
             labelTextStyle: WidgetStateProperty.resolveWith((states) {
               final selected = states.contains(WidgetState.selected);
               return TextStyle(
-                color: selected ? AppColors.accent : AppColors.textSecondary,
+                color: selected
+                    ? context.appColors.accent
+                    : context.appColors.textSecondary,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               );
             }),
             iconTheme: WidgetStateProperty.resolveWith((states) {
               final selected = states.contains(WidgetState.selected);
               return IconThemeData(
-                color: selected ? AppColors.accent : AppColors.textSecondary,
+                color: selected
+                    ? context.appColors.accent
+                    : context.appColors.textSecondary,
               );
             }),
           ),

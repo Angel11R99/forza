@@ -332,7 +332,7 @@ class _AccountFormScaffold extends StatelessWidget {
                     Text(
                       eyebrow,
                       style: Theme.of(context).textTheme.labelLarge
-                          ?.copyWith(color: AppColors.accent),
+                          ?.copyWith(color: context.appColors.accent),
                     ),
                     const SizedBox(height: AppSpacing.x3),
                     Text(
@@ -388,15 +388,15 @@ class _ForzaMark extends StatelessWidget {
             Container(
               width: 48,
               height: 48,
-              decoration: const BoxDecoration(
-                color: AppColors.textPrimary,
+              decoration: BoxDecoration(
+                color: context.appColors.textPrimary,
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: const Text(
+              child: Text(
                 'F',
                 style: TextStyle(
-                  color: AppColors.inverseText,
+                  color: context.appColors.inverseText,
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                 ),
@@ -421,7 +421,7 @@ class _AccessNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSurfaceCard(
-      color: AppColors.surfaceMuted,
+      color: context.appColors.surfaceMuted,
       padding: const EdgeInsets.all(AppSpacing.x4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

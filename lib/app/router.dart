@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'theme/appearance_controller.dart';
 import '../ui/core/widgets/app_scaffold.dart';
 
 abstract final class AppRoutes {
@@ -11,7 +12,10 @@ abstract final class AppRoutes {
 }
 
 abstract final class AppRouter {
-  static Route<void> onGenerateRoute(RouteSettings settings) {
+  static Route<void> onGenerateRoute(
+    RouteSettings settings, {
+    required AppearanceController appearance,
+  }) {
     final initialIndex = switch (settings.name) {
       AppRoutes.home => 0,
       AppRoutes.activity => 1,
@@ -23,7 +27,8 @@ abstract final class AppRouter {
 
     return MaterialPageRoute<void>(
       settings: settings,
-      builder: (_) => AppScaffold(initialIndex: initialIndex),
+      builder: (_) =>
+          AppScaffold(initialIndex: initialIndex, appearance: appearance),
     );
   }
 }

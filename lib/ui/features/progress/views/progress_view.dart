@@ -91,7 +91,7 @@ class _ProgressViewState extends State<ProgressView> {
                           Text(
                             '${sessions.length}',
                             style: Theme.of(context).textTheme.displaySmall
-                                ?.copyWith(color: AppColors.accent),
+                                ?.copyWith(color: context.appColors.accent),
                           ),
                           const SizedBox(width: AppSpacing.x2),
                           Padding(
@@ -188,12 +188,12 @@ class _SessionHistoryCard extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.x4),
               child: Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 48,
                     height: 48,
                     child: Icon(
                       Icons.fitness_center_rounded,
-                      color: AppColors.accent,
+                      color: context.appColors.accent,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.x4),
@@ -236,7 +236,7 @@ class _SummaryValue extends StatelessWidget {
     return Expanded(
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.accent),
+          Icon(icon, size: 18, color: context.appColors.accent),
           const SizedBox(width: AppSpacing.x2),
           Expanded(
             child: Text(label, style: Theme.of(context).textTheme.bodyMedium),

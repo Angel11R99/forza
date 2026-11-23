@@ -14,10 +14,14 @@ class ProfileView extends StatefulWidget {
     super.key,
     required this.trainingSettings,
     required this.onTrainingSettingsChanged,
+    required this.themeMode,
+    required this.onThemeModeChanged,
   });
 
   final TrainingSettings trainingSettings;
   final ValueChanged<TrainingSettings> onTrainingSettingsChanged;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -62,8 +66,8 @@ class _ProfileViewState extends State<ProfileView> {
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor: AppColors.accentSoft,
-                        foregroundColor: AppColors.accent,
+                        backgroundColor: context.appColors.accentSoft,
+                        foregroundColor: context.appColors.accent,
                         child: Text(
                           _initials(_profile.fullName),
                           style: Theme.of(context).textTheme.titleLarge,
@@ -87,7 +91,7 @@ class _ProfileViewState extends State<ProfileView> {
                             Text(
                               _profile.goal,
                               style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(color: AppColors.accent),
+                                  ?.copyWith(color: context.appColors.accent),
                             ),
                           ],
                         ),
@@ -140,9 +144,9 @@ class _ProfileViewState extends State<ProfileView> {
                   options: [
                     _ProfileOption(
                       icon: Icons.tune_rounded,
-                      title: 'Unidades y calendario',
+                      title: 'Apariencia y preferencias',
                       subtitle:
-                          'Peso ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()}',
+                          '${_themeModeLabel(widget.themeMode)} · ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()}',
                       onTap: _editPreferences,
                     ),
                     _ProfileOption(
@@ -208,7 +212,11 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _editPreferences() async {
     final updated = await Navigator.of(context).push<AppPreferences>(
       MaterialPageRoute<AppPreferences>(
-        builder: (_) => AppPreferencesPage(preferences: _preferences),
+        builder: (_) => AppPreferencesPage(
+          preferences: _preferences,
+          themeMode: widget.themeMode,
+          onThemeModeChanged: widget.onThemeModeChanged,
+        ),
       ),
     );
     if (updated == null || !mounted) return;
@@ -290,12 +298,12 @@ class _ProfileOption extends StatelessWidget {
           onTap: onTap,
           minVerticalPadding: AppSpacing.x3,
           contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
-          leading: Icon(icon, color: AppColors.accent),
+          leading: Icon(icon, color: context.appColors.accent),
           title: Text(title),
           subtitle: Text(subtitle),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.chevron_right_rounded,
-            color: AppColors.textSecondary,
+            color: context.appColors.textSecondary,
           ),
         ),
       ),
@@ -314,3 +322,9 @@ String _initials(String name) {
 
 String _formatTime(int hour, int minute) =>
     '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+
+String _themeModeLabel(ThemeMode mode) => switch (mode) {
+  ThemeMode.system => 'Según el dispositivo',
+  ThemeMode.light => 'Claro',
+  ThemeMode.dark => 'Oscuro',
+};

@@ -131,9 +131,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 }
 
 class AppPreferencesPage extends StatefulWidget {
-  const AppPreferencesPage({super.key, required this.preferences});
+  const AppPreferencesPage({
+    super.key,
+    required this.preferences,
+    required this.themeMode,
+    required this.onThemeModeChanged,
+  });
 
   final AppPreferences preferences;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
 
   @override
   State<AppPreferencesPage> createState() => _AppPreferencesPageState();
@@ -177,7 +184,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
                   ChoiceChip(
                     label: Text(unit),
                     selected: unit == _weightUnit,
-                    selectedColor: AppColors.surfaceMuted,
+                    selectedColor: context.appColors.surfaceMuted,
                     onSelected: (_) => setState(() => _weightUnit = unit),
                   ),
               ],
@@ -191,7 +198,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
                   ChoiceChip(
                     label: Text(day),
                     selected: day == _weekStartsOn,
-                    selectedColor: AppColors.surfaceMuted,
+                    selectedColor: context.appColors.surfaceMuted,
                     onSelected: (_) => setState(() => _weekStartsOn = day),
                   ),
               ],
@@ -209,22 +216,33 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
               ),
             ),
             const SizedBox(height: AppSpacing.x3),
-            const AppSurfaceCard(
-              child: Row(
-                children: [
-                  Icon(Icons.light_mode_outlined),
-                  SizedBox(width: AppSpacing.x3),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Apariencia'),
-                        SizedBox(height: AppSpacing.x1),
-                        Text('Tema claro'),
-                      ],
+            SectionHeading(title: 'Apariencia'),
+            AppSurfaceCard(
+              padding: EdgeInsets.zero,
+              child: RadioGroup<ThemeMode>(
+                groupValue: widget.themeMode,
+                onChanged: (mode) {
+                  if (mode != null) widget.onThemeModeChanged(mode);
+                },
+                child: Column(
+                  children: [
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.system,
+                      title: const Text('Según el dispositivo'),
+                      subtitle: const Text('Sigue el tema del sistema.'),
                     ),
-                  ),
-                ],
+                    const Divider(height: 1, indent: 56),
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.light,
+                      title: const Text('Claro'),
+                    ),
+                    const Divider(height: 1, indent: 56),
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.dark,
+                      title: const Text('Oscuro'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -504,14 +522,14 @@ class AccountConfirmationPage extends StatelessWidget {
                   width: 72,
                   height: 72,
                   alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: AppColors.surfaceMuted,
+                  decoration: BoxDecoration(
+                    color: context.appColors.surfaceMuted,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.verified_user_outlined,
                     size: 34,
-                    color: AppColors.textPrimary,
+                    color: context.appColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.x6),

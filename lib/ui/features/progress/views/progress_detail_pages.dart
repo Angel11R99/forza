@@ -88,7 +88,7 @@ class SessionDetailPage extends StatelessWidget {
                 if (session.completedOutsideApp) ...[
                   const SizedBox(height: AppSpacing.x4),
                   AppSurfaceCard(
-                    color: AppColors.surfaceMuted,
+                    color: context.appColors.surfaceMuted,
                     child: Text(
                       'Marcaste esta sesión como realizada fuera de FORZA. No hay detalle de movimientos ni cargas.',
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -109,7 +109,9 @@ class SessionDetailPage extends StatelessWidget {
                             Text(
                               (index + 1).toString().padLeft(2, '0'),
                               style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(color: AppColors.textSecondary),
+                                  ?.copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
                             ),
                             const SizedBox(width: AppSpacing.x4),
                             Expanded(
@@ -118,9 +120,9 @@ class SessionDetailPage extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.check_circle_rounded,
-                              color: AppColors.accent,
+                              color: context.appColors.accent,
                             ),
                           ],
                         ),
@@ -199,7 +201,7 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                         selected: exercise == _selectedExercise,
                         onSelected: (_) =>
                             setState(() => _selectedExercise = exercise),
-                        selectedColor: AppColors.surfaceMuted,
+                        selectedColor: context.appColors.surfaceMuted,
                       ),
                   ],
                 ),
@@ -652,12 +654,12 @@ class _RecordCard extends StatelessWidget {
     return AppSurfaceCard(
       child: Row(
         children: [
-          const SizedBox(
+          SizedBox(
             width: 42,
             height: 42,
             child: Icon(
               Icons.emoji_events_outlined,
-              color: AppColors.textPrimary,
+              color: context.appColors.textPrimary,
             ),
           ),
           const SizedBox(width: AppSpacing.x4),
@@ -750,7 +752,7 @@ class _ValueCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: AppColors.textSecondary),
+          Icon(icon, size: 20, color: context.appColors.textSecondary),
           const SizedBox(height: AppSpacing.x3),
           Text(label, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: AppSpacing.x1),

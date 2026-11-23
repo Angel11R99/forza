@@ -234,11 +234,15 @@ class _ActivityViewState extends State<ActivityView> {
                               weekdayStyle: Theme.of(context)
                                   .textTheme
                                   .labelLarge!
-                                  .copyWith(color: AppColors.textSecondary),
+                                  .copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
                               weekendStyle: Theme.of(context)
                                   .textTheme
                                   .labelLarge!
-                                  .copyWith(color: AppColors.textSecondary),
+                                  .copyWith(
+                                    color: context.appColors.textSecondary,
+                                  ),
                               dowTextFormatter: (date, locale) =>
                                   DateFormat.E(locale)
                                       .format(date)
@@ -250,8 +254,8 @@ class _ActivityViewState extends State<ActivityView> {
                               cellMargin: const EdgeInsets.all(2),
                               markerSize: 4,
                               markersAnchor: 0.78,
-                              markerDecoration: const BoxDecoration(
-                                color: AppColors.accent,
+                              markerDecoration: BoxDecoration(
+                                color: context.appColors.accent,
                                 shape: BoxShape.circle,
                               ),
                               defaultTextStyle: Theme.of(context)
@@ -264,18 +268,20 @@ class _ActivityViewState extends State<ActivityView> {
                                   .textTheme
                                   .bodyMedium!
                                   .copyWith(
-                                    color: AppColors.accent,
+                                    color: context.appColors.accent,
                                     fontWeight: FontWeight.w700,
                                   ),
                               todayDecoration: BoxDecoration(
-                                border: Border.all(color: AppColors.accent),
+                                border: Border.all(
+                                  color: context.appColors.accent,
+                                ),
                                 shape: BoxShape.circle,
                               ),
-                              selectedTextStyle: const TextStyle(
-                                color: AppColors.inverseText,
+                              selectedTextStyle: TextStyle(
+                                color: context.appColors.inverseText,
                               ),
-                              selectedDecoration: const BoxDecoration(
-                                color: AppColors.accent,
+                              selectedDecoration: BoxDecoration(
+                                color: context.appColors.accent,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -525,7 +531,7 @@ class _DayDetailCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(AppSpacing.x3),
               decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
+                color: context.appColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(AppRadius.control),
               ),
               child: const Row(
@@ -588,7 +594,9 @@ class _SessionIcon extends StatelessWidget {
     return SizedBox(
       width: 48,
       height: 48,
-      child: Center(child: Icon(icon, size: 22, color: AppColors.accent)),
+      child: Center(
+        child: Icon(icon, size: 22, color: context.appColors.accent),
+      ),
     );
   }
 }

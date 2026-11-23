@@ -290,8 +290,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                     CircularProgressIndicator(
                       value: _remainingRestSeconds / 45,
                       strokeWidth: 8,
-                      backgroundColor: AppColors.surfaceMuted,
-                      color: AppColors.accent,
+                      backgroundColor: context.appColors.surfaceMuted,
+                      color: context.appColors.accent,
                     ),
                     Center(
                       child: Text(
@@ -391,9 +391,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         AppSurfaceCard(
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.check_circle_rounded,
-                color: AppColors.accent,
+                color: context.appColors.accent,
                 size: 36,
               ),
               const SizedBox(width: AppSpacing.x4),
@@ -691,8 +691,8 @@ class _SessionProgress extends StatelessWidget {
         child: LinearProgressIndicator(
           value: (current + 1) / total,
           minHeight: 6,
-          backgroundColor: AppColors.surfaceMuted,
-          color: AppColors.textPrimary,
+          backgroundColor: context.appColors.surfaceMuted,
+          color: context.appColors.textPrimary,
         ),
       ),
     );
@@ -727,7 +727,9 @@ class _ExerciseSessionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSurfaceCard(
       padding: const EdgeInsets.all(AppSpacing.x4),
-      borderColor: current ? AppColors.accent : AppColors.divider,
+      borderColor: current
+          ? context.appColors.accent
+          : context.appColors.divider,
       child: Row(
         children: [
           Container(
@@ -735,16 +737,21 @@ class _ExerciseSessionCard extends StatelessWidget {
             height: 42,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: current ? AppColors.accent : AppColors.surfaceMuted,
+              color: current
+                  ? context.appColors.accent
+                  : context.appColors.surfaceMuted,
               shape: BoxShape.circle,
             ),
             child: completed
-                ? const Icon(Icons.check_rounded, color: AppColors.inverseText)
+                ? Icon(
+                    Icons.check_rounded,
+                    color: context.appColors.inverseText,
+                  )
                 : Icon(
                     exercise.icon,
                     color: current
-                        ? AppColors.inverseText
-                        : AppColors.textPrimary,
+                        ? context.appColors.inverseText
+                        : context.appColors.textPrimary,
                     size: 19,
                   ),
           ),
@@ -807,7 +814,7 @@ class _SessionSaveNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSurfaceCard(
-      color: AppColors.surfaceMuted,
+      color: context.appColors.surfaceMuted,
       padding: const EdgeInsets.all(AppSpacing.x4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

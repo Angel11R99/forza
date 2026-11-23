@@ -158,12 +158,12 @@ class _FilterSection extends StatelessWidget {
                 label: Text(option),
                 selected: selected.contains(option),
                 onSelected: (_) => onSelected(option),
-                checkmarkColor: AppColors.accent,
-                selectedColor: AppColors.accentSoft,
+                checkmarkColor: context.appColors.accent,
+                selectedColor: context.appColors.accentSoft,
                 side: BorderSide(
                   color: selected.contains(option)
-                      ? AppColors.accent
-                      : AppColors.divider,
+                      ? context.appColors.accent
+                      : context.appColors.divider,
                 ),
                 showCheckmark: true,
               ),

@@ -8,13 +8,13 @@ class ProgressLineChart extends StatelessWidget {
     required this.values,
     required this.labels,
     required this.summary,
-    this.lineColor = AppColors.accent,
+    this.lineColor,
   });
 
   final List<double> values;
   final List<String> labels;
   final String summary;
-  final Color lineColor;
+  final Color? lineColor;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,10 @@ class ProgressLineChart extends StatelessWidget {
             painter: _ProgressChartPainter(
               values: values,
               labels: labels,
-              lineColor: lineColor,
+              lineColor: lineColor ?? context.appColors.accent,
+              gridColor: context.appColors.divider,
+              pointFill: context.appColors.surface,
+              labelColor: context.appColors.textSecondary,
             ),
           ),
         ),
@@ -42,11 +45,17 @@ class _ProgressChartPainter extends CustomPainter {
     required this.values,
     required this.labels,
     required this.lineColor,
+    required this.gridColor,
+    required this.pointFill,
+    required this.labelColor,
   });
 
   final List<double> values;
   final List<String> labels;
   final Color lineColor;
+  final Color gridColor;
+  final Color pointFill;
+  final Color labelColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -62,7 +71,7 @@ class _ProgressChartPainter extends CustomPainter {
 
     final plot = Rect.fromLTWH(left, top, chartWidth, chartHeight);
     final gridPaint = Paint()
-      ..color = AppColors.divider
+      ..color = gridColor
       ..strokeWidth = 1;
     for (var row = 0; row <= 3; row++) {
       final y = plot.top + plot.height * row / 3;
@@ -108,7 +117,7 @@ class _ProgressChartPainter extends CustomPainter {
     );
 
     final pointPaint = Paint()..color = lineColor;
-    final innerPointPaint = Paint()..color = AppColors.surface;
+    final innerPointPaint = Paint()..color = pointFill;
     for (final point in points) {
       canvas.drawCircle(point, 5, pointPaint);
       canvas.drawCircle(point, 2.5, innerPointPaint);
@@ -141,7 +150,7 @@ class _ProgressChartPainter extends CustomPainter {
     final painter = TextPainter(
       text: TextSpan(
         text: label,
-        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+        style: TextStyle(color: labelColor, fontSize: 12),
       ),
       textDirection: TextDirection.ltr,
       textAlign: align,
@@ -156,5 +165,8 @@ class _ProgressChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _ProgressChartPainter oldDelegate) =>
       oldDelegate.values != values ||
       oldDelegate.labels != labels ||
-      oldDelegate.lineColor != lineColor;
+      oldDelegate.lineColor != lineColor ||
+      oldDelegate.gridColor != gridColor ||
+      oldDelegate.pointFill != pointFill ||
+      oldDelegate.labelColor != labelColor;
 }

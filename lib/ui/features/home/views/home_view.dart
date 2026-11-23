@@ -70,8 +70,9 @@ class HomeView extends StatelessWidget {
                                 onPressed: onShowProfile,
                                 tooltip: 'Abrir perfil',
                                 style: IconButton.styleFrom(
-                                  backgroundColor: AppColors.accent,
-                                  foregroundColor: AppColors.inverseText,
+                                  backgroundColor: context.appColors.accent,
+                                  foregroundColor:
+                                      context.appColors.inverseText,
                                 ),
                                 icon: const Icon(Icons.person_outline_rounded),
                               ),
@@ -158,7 +159,7 @@ class _TodayWorkoutCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.x6),
       decoration: BoxDecoration(
-        color: AppColors.accent,
+        color: context.appColors.accent,
         borderRadius: BorderRadius.circular(AppRadius.large),
       ),
       child: Column(
@@ -166,9 +167,9 @@ class _TodayWorkoutCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.fitness_center_rounded,
-                color: AppColors.inverseText,
+                color: context.appColors.inverseText,
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.x2),
@@ -177,7 +178,7 @@ class _TodayWorkoutCard extends StatelessWidget {
                     ? 'SESIÓN DE HOY'
                     : 'SIGUIENTE SESIÓN · ${_shortWeekday(sessionDate.weekday).toUpperCase()}',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.inverseText.withValues(alpha: 0.82),
+                  color: context.appColors.inverseText.withValues(alpha: 0.82),
                 ),
               ),
             ],
@@ -186,13 +187,13 @@ class _TodayWorkoutCard extends StatelessWidget {
           Text(
             settings.goal,
             style: Theme.of(context).textTheme.headlineSmall
-                ?.copyWith(color: AppColors.inverseText),
+                ?.copyWith(color: context.appColors.inverseText),
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
             '${settings.sessionMinutes} min por sesión   ·   $exerciseCount ejercicios',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.inverseText.withValues(alpha: 0.82),
+              color: context.appColors.inverseText.withValues(alpha: 0.82),
             ),
           ),
           const SizedBox(height: AppSpacing.x6),
@@ -201,8 +202,8 @@ class _TodayWorkoutCard extends StatelessWidget {
             child: FilledButton.tonalIcon(
               onPressed: onPressed,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.inverseText,
-                foregroundColor: AppColors.accent,
+                backgroundColor: context.appColors.inverseText,
+                foregroundColor: context.appColors.accent,
               ),
               icon: const Icon(Icons.play_arrow_rounded),
               label: const Text('Ver sesión de hoy'),
@@ -285,8 +286,8 @@ class _WeeklySummary extends StatelessWidget {
               LinearProgressIndicator(
                 value: days.isEmpty ? 0 : completedCount / days.length,
                 minHeight: 4,
-                backgroundColor: AppColors.surfaceMuted,
-                color: AppColors.accent,
+                backgroundColor: context.appColors.surfaceMuted,
+                color: context.appColors.accent,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ],
@@ -322,12 +323,12 @@ class _WeekdayProgress extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: completed ? AppColors.accent : Colors.transparent,
+              color: completed ? context.appColors.accent : Colors.transparent,
               shape: BoxShape.circle,
               border: Border.all(
                 color: isToday || completed
-                    ? AppColors.accent
-                    : AppColors.divider,
+                    ? context.appColors.accent
+                    : context.appColors.divider,
                 width: isToday && !completed ? 1.5 : 1,
               ),
             ),
@@ -335,7 +336,9 @@ class _WeekdayProgress extends StatelessWidget {
             child: Icon(
               completed ? Icons.check_rounded : Icons.circle,
               size: completed ? 18 : 6,
-              color: completed ? AppColors.inverseText : AppColors.divider,
+              color: completed
+                  ? context.appColors.inverseText
+                  : context.appColors.divider,
             ),
           ),
           const SizedBox(height: AppSpacing.x1),

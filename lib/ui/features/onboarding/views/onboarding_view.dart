@@ -448,8 +448,8 @@ class _StepProgress extends StatelessWidget {
           LinearProgressIndicator(
             value: progress,
             minHeight: 4,
-            backgroundColor: AppColors.surfaceMuted,
-            color: AppColors.accent,
+            backgroundColor: context.appColors.surfaceMuted,
+            color: context.appColors.accent,
             borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
         ],
@@ -477,7 +477,9 @@ class _ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
-      borderColor: selected ? AppColors.accent : AppColors.divider,
+      borderColor: selected
+          ? context.appColors.accent
+          : context.appColors.divider,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.medium),

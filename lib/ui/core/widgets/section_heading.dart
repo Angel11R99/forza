@@ -29,7 +29,7 @@ class SectionHeading extends StatelessWidget {
             TextButton(
               onPressed: onAction,
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.accent,
+                foregroundColor: context.appColors.accent,
                 minimumSize: const Size(48, 48),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
