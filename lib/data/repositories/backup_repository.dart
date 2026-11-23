@@ -59,8 +59,7 @@ class BackupRepository {
       'exportedAt': DateTime.now().toIso8601String(),
       'trainingSettings': _settingsToJson(await settingsRepository.load()),
       'workoutRecords': [
-        for (final record in await workoutLogRepository.load())
-          record.toJson(),
+        for (final record in await workoutLogRepository.load()) record.toJson(),
       ],
       'scheduledSessions': [
         for (final session in await scheduleRepository.load())
@@ -90,18 +89,20 @@ class BackupRepository {
           !const {'system', 'light', 'dark'}.contains(appearance)) {
         throw const FormatException('La apariencia del respaldo no es válida.');
       }
-      final records = _list(root['workoutRecords'], 'workoutRecords')
-          .map((value) => _record(value))
-          .toList(growable: false);
+      final records = _list(
+        root['workoutRecords'],
+        'workoutRecords',
+      ).map((value) => _record(value)).toList(growable: false);
       final recordDates = records.map((record) => _key(record.date)).toSet();
       if (recordDates.length != records.length) {
         throw const FormatException(
           'El respaldo contiene sesiones repetidas en una misma fecha.',
         );
       }
-      final schedule = _list(root['scheduledSessions'], 'scheduledSessions')
-          .map(_schedule)
-          .toList(growable: false);
+      final schedule = _list(
+        root['scheduledSessions'],
+        'scheduledSessions',
+      ).map(_schedule).toList(growable: false);
       final scheduleDates = schedule
           .map((session) => _key(session.scheduledDate))
           .toSet();
@@ -110,11 +111,14 @@ class BackupRepository {
           'El respaldo contiene sesiones de agenda duplicadas.',
         );
       }
-      final goals = _list(root['personalGoals'], 'personalGoals')
-          .map(_goal)
-          .toList(growable: false);
+      final goals = _list(
+        root['personalGoals'],
+        'personalGoals',
+      ).map(_goal).toList(growable: false);
       if (goals.map((goal) => goal.id).toSet().length != goals.length) {
-        throw const FormatException('El respaldo contiene objetivos duplicados.');
+        throw const FormatException(
+          'El respaldo contiene objetivos duplicados.',
+        );
       }
       final activeWorkout = root['activeWorkout'] == null
           ? null
@@ -145,17 +149,19 @@ class BackupRepository {
       await database.delete(database.personalGoals).go();
       await database.delete(database.trainingPlans).go();
 
-      await database.into(database.trainingPlans).insert(
-        db.TrainingPlansCompanion.insert(
-          id: db.AppDatabase.activePlanId,
-          goal: backup.settings.goal,
-          experience: backup.settings.experience,
-          sessionMinutes: backup.settings.sessionMinutes,
-          createdAt: now,
-          updatedAt: now,
-          isActive: const Value(true),
-        ),
-      );
+      await database
+          .into(database.trainingPlans)
+          .insert(
+            db.TrainingPlansCompanion.insert(
+              id: db.AppDatabase.activePlanId,
+              goal: backup.settings.goal,
+              experience: backup.settings.experience,
+              sessionMinutes: backup.settings.sessionMinutes,
+              createdAt: now,
+              updatedAt: now,
+              isActive: const Value(true),
+            ),
+          );
       final days = backup.settings.trainingDays.toList()..sort();
       await database.batch((batch) {
         batch.insertAll(database.trainingPlanDays, [
@@ -177,19 +183,21 @@ class BackupRepository {
 
       for (final record in backup.records) {
         final id = _key(record.date);
-        await database.into(database.workoutSessions).insert(
-          db.WorkoutSessionsCompanion.insert(
-            id: id,
-            planId: const Value(db.AppDatabase.activePlanId),
-            scheduledDate: record.date.toIso8601String(),
-            completedAt: record.completedAt.toIso8601String(),
-            title: record.title,
-            goal: record.goal,
-            durationMinutes: record.durationMinutes,
-            exerciseCount: record.exerciseCount,
-            completedOutsideApp: record.completedOutsideApp,
-          ),
-        );
+        await database
+            .into(database.workoutSessions)
+            .insert(
+              db.WorkoutSessionsCompanion.insert(
+                id: id,
+                planId: const Value(db.AppDatabase.activePlanId),
+                scheduledDate: record.date.toIso8601String(),
+                completedAt: record.completedAt.toIso8601String(),
+                title: record.title,
+                goal: record.goal,
+                durationMinutes: record.durationMinutes,
+                exerciseCount: record.exerciseCount,
+                completedOutsideApp: record.completedOutsideApp,
+              ),
+            );
         if (record.exercises.isNotEmpty) {
           await database.batch((batch) {
             batch.insertAll(database.workoutSessionExercises, [
@@ -262,12 +270,14 @@ class BackupRepository {
         database.appMetadata,
       )..where((row) => row.key.equals('active_workout_v1'))).go();
       if (backup.activeWorkout != null) {
-        await database.into(database.appMetadata).insertOnConflictUpdate(
-          db.AppMetadataCompanion.insert(
-            key: 'active_workout_v1',
-            value: jsonEncode(backup.activeWorkout),
-          ),
-        );
+        await database
+            .into(database.appMetadata)
+            .insertOnConflictUpdate(
+              db.AppMetadataCompanion.insert(
+                key: 'active_workout_v1',
+                value: jsonEncode(backup.activeWorkout),
+              ),
+            );
       }
     });
   }
@@ -303,7 +313,11 @@ class BackupRepository {
     final index = _integer(json['sessionIndex'], 'sessionIndex');
     final duration = _integer(json['durationMinutes'], 'durationMinutes');
     final count = _integer(json['exerciseCount'], 'exerciseCount');
-    if (index < 0 || index > 20 || duration < 1 || duration > 240 || count < 0) {
+    if (index < 0 ||
+        index > 20 ||
+        duration < 1 ||
+        duration > 240 ||
+        count < 0) {
       throw const FormatException('Una sesión programada no es válida.');
     }
     if (!const {'pending', 'in_progress', 'completed'}.contains(status)) {
@@ -326,7 +340,9 @@ class BackupRepository {
     final json = _map(value, 'objetivo');
     final typeName = _string(json['type'], 'type');
     final type = PersonalGoalType.values.where((item) => item.name == typeName);
-    if (type.isEmpty) throw const FormatException('El tipo de objetivo no es válido.');
+    if (type.isEmpty) {
+      throw const FormatException('El tipo de objetivo no es válido.');
+    }
     final target = _number(json['targetValue'], 'targetValue');
     final exercise = json['exerciseName'];
     if (target <= 0 ||
@@ -347,12 +363,14 @@ class BackupRepository {
 
   static TrainingSettings _settings(Object? value) {
     final json = _map(value, 'trainingSettings');
-    final days = _list(json['trainingDays'], 'trainingDays')
-        .map((value) => _integer(value, 'trainingDays'))
-        .toList(growable: false);
-    final equipment = _list(json['equipment'], 'equipment')
-        .map((value) => _string(value, 'equipment'))
-        .toSet();
+    final days = _list(
+      json['trainingDays'],
+      'trainingDays',
+    ).map((value) => _integer(value, 'trainingDays')).toList(growable: false);
+    final equipment = _list(
+      json['equipment'],
+      'equipment',
+    ).map((value) => _string(value, 'equipment')).toSet();
     final minutes = _integer(json['sessionMinutes'], 'sessionMinutes');
     final goal = _string(json['goal'], 'goal');
     final experience = _string(json['experience'], 'experience');
@@ -380,7 +398,10 @@ class BackupRepository {
     final elapsed = _integer(json['elapsedSeconds'], 'elapsedSeconds');
     final rest = _integer(json['remainingRestSeconds'], 'remainingRestSeconds');
     final screen = _string(json['resumeScreen'], 'resumeScreen');
-    if (current < 0 || elapsed < 0 || rest < 0 || rest > 3600 ||
+    if (current < 0 ||
+        elapsed < 0 ||
+        rest < 0 ||
+        rest > 3600 ||
         !const {
           'preparation',
           'warmup',
@@ -390,16 +411,21 @@ class BackupRepository {
           'completed',
           'summary',
         }.contains(screen)) {
-      throw const FormatException('La sesión activa del respaldo no es válida.');
+      throw const FormatException(
+        'La sesión activa del respaldo no es válida.',
+      );
     }
     final sets = _list(json['sets'], 'sets');
     for (final value in sets) {
       final set = WorkoutSetResult.fromJson(_map(value, 'serie'));
-      if (set.exercisePosition < 0 || set.setIndex < 0 ||
+      if (set.exercisePosition < 0 ||
+          set.setIndex < 0 ||
           (set.repetitions != null && set.repetitions! < 0) ||
           (set.loadKg != null && (!set.loadKg!.isFinite || set.loadKg! < 0)) ||
           (set.durationSeconds != null && set.durationSeconds! < 0)) {
-        throw const FormatException('Una serie de la sesión activa no es válida.');
+        throw const FormatException(
+          'Una serie de la sesión activa no es válida.',
+        );
       }
     }
     return json;
@@ -436,12 +462,16 @@ class BackupRepository {
   };
 
   static Map<String, Object?> _map(Object? value, String label) {
-    if (value is! Map) throw FormatException('El campo $label debe ser un objeto.');
+    if (value is! Map) {
+      throw FormatException('El campo $label debe ser un objeto.');
+    }
     return Map<String, Object?>.from(value);
   }
 
   static List<Object?> _list(Object? value, String label) {
-    if (value is! List<Object?>) throw FormatException('El campo $label debe ser una lista.');
+    if (value is! List<Object?>) {
+      throw FormatException('El campo $label debe ser una lista.');
+    }
     return value;
   }
 
@@ -453,7 +483,9 @@ class BackupRepository {
   }
 
   static int _integer(Object? value, String label) {
-    if (value is! int) throw FormatException('El campo $label debe ser entero.');
+    if (value is! int) {
+      throw FormatException('El campo $label debe ser entero.');
+    }
     return value;
   }
 
