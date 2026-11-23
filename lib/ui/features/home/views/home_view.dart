@@ -238,6 +238,9 @@ class _WeeklySummary extends StatelessWidget {
     }).length;
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
+      borderColor: Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF4A4D52)
+          : context.appColors.divider,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.medium),
@@ -286,7 +289,9 @@ class _WeeklySummary extends StatelessWidget {
               LinearProgressIndicator(
                 value: days.isEmpty ? 0 : completedCount / days.length,
                 minHeight: 4,
-                backgroundColor: context.appColors.surfaceMuted,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF3A3D40)
+                    : context.appColors.surfaceMuted,
                 color: context.appColors.accent,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
@@ -314,6 +319,7 @@ class _WeekdayProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final completed = completedDates.any((saved) => _sameDate(saved, date));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Semantics(
       label:
           '${_shortWeekday(weekday)}: ${completed ? 'completada' : 'pendiente'}',
@@ -328,6 +334,8 @@ class _WeekdayProgress extends StatelessWidget {
               border: Border.all(
                 color: isToday || completed
                     ? context.appColors.accent
+                    : isDark
+                    ? const Color(0xFF777A80)
                     : context.appColors.divider,
                 width: isToday && !completed ? 1.5 : 1,
               ),
@@ -338,6 +346,8 @@ class _WeekdayProgress extends StatelessWidget {
               size: completed ? 18 : 6,
               color: completed
                   ? context.appColors.inverseText
+                  : isDark
+                  ? const Color(0xFFB8BABD)
                   : context.appColors.divider,
             ),
           ),
