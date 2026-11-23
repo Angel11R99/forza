@@ -400,7 +400,7 @@ String _formatShortDate(DateTime date) =>
     '${date.day} ${_monthAbbreviation(date.month)}';
 
 String _volumeLabel(double volume) =>
-    volume == 0 ? 'Sin datos de carga' : '${_formatVolume(volume)} kg';
+    volume == 0 ? 'Sin datos de\u00A0carga' : '${_formatVolume(volume)} kg';
 
 String _formatVolume(double volume) => volume == volume.roundToDouble()
     ? volume.toStringAsFixed(0)
