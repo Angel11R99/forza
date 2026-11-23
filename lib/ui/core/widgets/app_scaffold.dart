@@ -351,7 +351,7 @@ class _AppScaffoldState extends State<AppScaffold>
       indicatorShape: const CircleBorder(),
       labelType: NavigationRailLabelType.all,
       minWidth: 84,
-      groupAlignment: -0.65,
+      groupAlignment: 0,
       destinations: [
         for (final destination in _destinations)
           NavigationRailDestination(
