@@ -114,6 +114,17 @@ class ScheduledTrainingSessions extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+class PersonalGoals extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()();
+  RealColumn get targetValue => real()();
+  TextColumn get exerciseName => text().nullable()();
+  TextColumn get createdAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 class AppMetadata extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
@@ -131,6 +142,7 @@ class AppMetadata extends Table {
     WorkoutSessionExercises,
     WorkoutSetEntries,
     ScheduledTrainingSessions,
+    PersonalGoals,
     AppMetadata,
   ],
 )
@@ -143,7 +155,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -151,6 +163,7 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (migrator, from, to) async {
       if (from < 2) await migrator.createTable(workoutSetEntries);
       if (from < 3) await migrator.createTable(scheduledTrainingSessions);
+      if (from < 4) await migrator.createTable(personalGoals);
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

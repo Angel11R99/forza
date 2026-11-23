@@ -3007,6 +3007,378 @@ class ScheduledTrainingSessionsCompanion
   }
 }
 
+class $PersonalGoalsTable extends PersonalGoals
+    with TableInfo<$PersonalGoalsTable, PersonalGoal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PersonalGoalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetValueMeta = const VerificationMeta(
+    'targetValue',
+  );
+  @override
+  late final GeneratedColumn<double> targetValue = GeneratedColumn<double>(
+    'target_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exerciseNameMeta = const VerificationMeta(
+    'exerciseName',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseName = GeneratedColumn<String>(
+    'exercise_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    targetValue,
+    exerciseName,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'personal_goals';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PersonalGoal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('target_value')) {
+      context.handle(
+        _targetValueMeta,
+        targetValue.isAcceptableOrUnknown(
+          data['target_value']!,
+          _targetValueMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetValueMeta);
+    }
+    if (data.containsKey('exercise_name')) {
+      context.handle(
+        _exerciseNameMeta,
+        exerciseName.isAcceptableOrUnknown(
+          data['exercise_name']!,
+          _exerciseNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PersonalGoal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PersonalGoal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      targetValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}target_value'],
+      )!,
+      exerciseName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_name'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PersonalGoalsTable createAlias(String alias) {
+    return $PersonalGoalsTable(attachedDatabase, alias);
+  }
+}
+
+class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
+  final String id;
+  final String type;
+  final double targetValue;
+  final String? exerciseName;
+  final String createdAt;
+  const PersonalGoal({
+    required this.id,
+    required this.type,
+    required this.targetValue,
+    this.exerciseName,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['type'] = Variable<String>(type);
+    map['target_value'] = Variable<double>(targetValue);
+    if (!nullToAbsent || exerciseName != null) {
+      map['exercise_name'] = Variable<String>(exerciseName);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  PersonalGoalsCompanion toCompanion(bool nullToAbsent) {
+    return PersonalGoalsCompanion(
+      id: Value(id),
+      type: Value(type),
+      targetValue: Value(targetValue),
+      exerciseName: exerciseName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exerciseName),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PersonalGoal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PersonalGoal(
+      id: serializer.fromJson<String>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      targetValue: serializer.fromJson<double>(json['targetValue']),
+      exerciseName: serializer.fromJson<String?>(json['exerciseName']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'type': serializer.toJson<String>(type),
+      'targetValue': serializer.toJson<double>(targetValue),
+      'exerciseName': serializer.toJson<String?>(exerciseName),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  PersonalGoal copyWith({
+    String? id,
+    String? type,
+    double? targetValue,
+    Value<String?> exerciseName = const Value.absent(),
+    String? createdAt,
+  }) => PersonalGoal(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    targetValue: targetValue ?? this.targetValue,
+    exerciseName: exerciseName.present ? exerciseName.value : this.exerciseName,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PersonalGoal copyWithCompanion(PersonalGoalsCompanion data) {
+    return PersonalGoal(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      targetValue: data.targetValue.present
+          ? data.targetValue.value
+          : this.targetValue,
+      exerciseName: data.exerciseName.present
+          ? data.exerciseName.value
+          : this.exerciseName,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonalGoal(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('targetValue: $targetValue, ')
+          ..write('exerciseName: $exerciseName, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, type, targetValue, exerciseName, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PersonalGoal &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.targetValue == this.targetValue &&
+          other.exerciseName == this.exerciseName &&
+          other.createdAt == this.createdAt);
+}
+
+class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
+  final Value<String> id;
+  final Value<String> type;
+  final Value<double> targetValue;
+  final Value<String?> exerciseName;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const PersonalGoalsCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.targetValue = const Value.absent(),
+    this.exerciseName = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PersonalGoalsCompanion.insert({
+    required String id,
+    required String type,
+    required double targetValue,
+    this.exerciseName = const Value.absent(),
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       type = Value(type),
+       targetValue = Value(targetValue),
+       createdAt = Value(createdAt);
+  static Insertable<PersonalGoal> custom({
+    Expression<String>? id,
+    Expression<String>? type,
+    Expression<double>? targetValue,
+    Expression<String>? exerciseName,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (targetValue != null) 'target_value': targetValue,
+      if (exerciseName != null) 'exercise_name': exerciseName,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PersonalGoalsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? type,
+    Value<double>? targetValue,
+    Value<String?>? exerciseName,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return PersonalGoalsCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      targetValue: targetValue ?? this.targetValue,
+      exerciseName: exerciseName ?? this.exerciseName,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (targetValue.present) {
+      map['target_value'] = Variable<double>(targetValue.value);
+    }
+    if (exerciseName.present) {
+      map['exercise_name'] = Variable<String>(exerciseName.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonalGoalsCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('targetValue: $targetValue, ')
+          ..write('exerciseName: $exerciseName, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AppMetadataTable extends AppMetadata
     with TableInfo<$AppMetadataTable, AppMetadataData> {
   @override
@@ -3233,6 +3605,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $WorkoutSetEntriesTable(this);
   late final $ScheduledTrainingSessionsTable scheduledTrainingSessions =
       $ScheduledTrainingSessionsTable(this);
+  late final $PersonalGoalsTable personalGoals = $PersonalGoalsTable(this);
   late final $AppMetadataTable appMetadata = $AppMetadataTable(this);
   late final Index workoutSessionsScheduledDateIdx = Index(
     'workout_sessions_scheduled_date_idx',
@@ -3258,6 +3631,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workoutSessionExercises,
     workoutSetEntries,
     scheduledTrainingSessions,
+    personalGoals,
     appMetadata,
     workoutSessionsScheduledDateIdx,
     workoutSessionsCompletedAtIdx,
@@ -6070,6 +6444,219 @@ typedef $$ScheduledTrainingSessionsTableProcessedTableManager =
       ScheduledTrainingSession,
       PrefetchHooks Function()
     >;
+typedef $$PersonalGoalsTableCreateCompanionBuilder =
+    PersonalGoalsCompanion Function({
+      required String id,
+      required String type,
+      required double targetValue,
+      Value<String?> exerciseName,
+      required String createdAt,
+      Value<int> rowid,
+    });
+typedef $$PersonalGoalsTableUpdateCompanionBuilder =
+    PersonalGoalsCompanion Function({
+      Value<String> id,
+      Value<String> type,
+      Value<double> targetValue,
+      Value<String?> exerciseName,
+      Value<String> createdAt,
+      Value<int> rowid,
+    });
+
+class $$PersonalGoalsTableFilterComposer
+    extends Composer<_$AppDatabase, $PersonalGoalsTable> {
+  $$PersonalGoalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exerciseName => $composableBuilder(
+    column: $table.exerciseName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PersonalGoalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PersonalGoalsTable> {
+  $$PersonalGoalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exerciseName => $composableBuilder(
+    column: $table.exerciseName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PersonalGoalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PersonalGoalsTable> {
+  $$PersonalGoalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<double> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get exerciseName => $composableBuilder(
+    column: $table.exerciseName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PersonalGoalsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PersonalGoalsTable,
+          PersonalGoal,
+          $$PersonalGoalsTableFilterComposer,
+          $$PersonalGoalsTableOrderingComposer,
+          $$PersonalGoalsTableAnnotationComposer,
+          $$PersonalGoalsTableCreateCompanionBuilder,
+          $$PersonalGoalsTableUpdateCompanionBuilder,
+          (
+            PersonalGoal,
+            BaseReferences<_$AppDatabase, $PersonalGoalsTable, PersonalGoal>,
+          ),
+          PersonalGoal,
+          PrefetchHooks Function()
+        > {
+  $$PersonalGoalsTableTableManager(_$AppDatabase db, $PersonalGoalsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PersonalGoalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PersonalGoalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PersonalGoalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<double> targetValue = const Value.absent(),
+                Value<String?> exerciseName = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PersonalGoalsCompanion(
+                id: id,
+                type: type,
+                targetValue: targetValue,
+                exerciseName: exerciseName,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String type,
+                required double targetValue,
+                Value<String?> exerciseName = const Value.absent(),
+                required String createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PersonalGoalsCompanion.insert(
+                id: id,
+                type: type,
+                targetValue: targetValue,
+                exerciseName: exerciseName,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PersonalGoalsTable, PersonalGoal>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PersonalGoalsTable,
+                    PersonalGoal
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PersonalGoalsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PersonalGoalsTable,
+      PersonalGoal,
+      $$PersonalGoalsTableFilterComposer,
+      $$PersonalGoalsTableOrderingComposer,
+      $$PersonalGoalsTableAnnotationComposer,
+      $$PersonalGoalsTableCreateCompanionBuilder,
+      $$PersonalGoalsTableUpdateCompanionBuilder,
+      (
+        PersonalGoal,
+        BaseReferences<_$AppDatabase, $PersonalGoalsTable, PersonalGoal>,
+      ),
+      PersonalGoal,
+      PrefetchHooks Function()
+    >;
 typedef $$AppMetadataTableCreateCompanionBuilder =
     AppMetadataCompanion Function({
       required String key,
@@ -6241,6 +6828,8 @@ class $AppDatabaseManager {
         _db,
         _db.scheduledTrainingSessions,
       );
+  $$PersonalGoalsTableTableManager get personalGoals =>
+      $$PersonalGoalsTableTableManager(_db, _db.personalGoals);
   $$AppMetadataTableTableManager get appMetadata =>
       $$AppMetadataTableTableManager(_db, _db.appMetadata);
 }
