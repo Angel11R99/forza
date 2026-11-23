@@ -9,6 +9,7 @@ import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/workout_log_repository.dart';
 import '../../../data/repositories/training_schedule_repository.dart';
 import '../../../data/repositories/personal_goal_repository.dart';
+import '../../../data/repositories/backup_repository.dart';
 import '../../../domain/models/workout_record.dart';
 import '../../../domain/models/scheduled_training_session.dart';
 import '../../../domain/models/personal_goal.dart';
@@ -21,6 +22,7 @@ class AppShellViewModel extends ChangeNotifier {
     WorkoutLogRepository? workoutLogRepository,
     TrainingScheduleRepository? trainingScheduleRepository,
     PersonalGoalRepository? personalGoalRepository,
+    BackupRepository? backupRepository,
   }) : _database = database ?? AppDatabase.instance,
        _settingsRepository =
            settingsRepository ??
@@ -37,13 +39,24 @@ class AppShellViewModel extends ChangeNotifier {
            ),
        _personalGoalRepository =
            personalGoalRepository ??
-           PersonalGoalRepository(database: database ?? AppDatabase.instance);
+           PersonalGoalRepository(database: database ?? AppDatabase.instance) {
+    _backupRepository =
+        backupRepository ??
+        BackupRepository(
+          database: _database,
+          settingsRepository: _settingsRepository,
+          workoutLogRepository: _workoutLogRepository,
+          scheduleRepository: _trainingScheduleRepository,
+          goalRepository: _personalGoalRepository,
+        );
+  }
 
   final AppDatabase _database;
   final TrainingSettingsRepository _settingsRepository;
   final WorkoutLogRepository _workoutLogRepository;
   final TrainingScheduleRepository _trainingScheduleRepository;
   final PersonalGoalRepository _personalGoalRepository;
+  late final BackupRepository _backupRepository;
 
   TrainingSettings _trainingSettings = const TrainingSettings();
   List<WorkoutRecord> _workoutRecords = const [];
@@ -227,6 +240,26 @@ class AppShellViewModel extends ChangeNotifier {
       notifyListeners();
     }
     return moved;
+  }
+
+  Future<String> exportBackup({required String appearanceMode}) =>
+      _backupRepository.exportJson(appearanceMode: appearanceMode);
+
+  ValidatedForzaBackup validateBackup(String contents) =>
+      _backupRepository.validate(contents);
+
+  Future<void> restoreBackup(ValidatedForzaBackup backup) async {
+    await _backupRepository.restore(backup);
+    _trainingSettings = backup.settings;
+    _workoutRecords = backup.records;
+    _scheduledSessions = backup.schedule;
+    _personalGoals = backup.goals;
+    _needsFirstRunSetup = false;
+    _hasActiveWorkout = backup.activeWorkout != null;
+    _activeWorkoutDate = backup.activeWorkout == null
+        ? null
+        : DateTime.parse(backup.activeWorkout!['scheduledDate']! as String);
+    notifyListeners();
   }
 
   static DateTime _dateOnly(DateTime date) =>

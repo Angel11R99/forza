@@ -10,6 +10,7 @@ import '../../features/home/views/home_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
 import '../../features/profile/models/profile_settings.dart';
 import '../../features/profile/views/profile_view.dart';
+import '../../features/profile/views/backup_restore_page.dart';
 import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
 import 'forza_brand.dart';
@@ -170,6 +171,21 @@ class _AppScaffoldState extends State<AppScaffold>
     await _saveTrainingSettings(updated);
   }
 
+  Future<void> _openBackupRestore() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => BackupRestorePage(
+          exportBackup: (mode) => _viewModel.exportBackup(appearanceMode: mode),
+          validateBackup: _viewModel.validateBackup,
+          restoreBackup: _viewModel.restoreBackup,
+          appearanceMode: _appearanceName(widget.appearance.mode),
+          onAppearanceModeChanged: (mode) =>
+              widget.appearance.setMode(_themeMode(mode)),
+        ),
+      ),
+    );
+  }
+
   Future<void> _startHomeWorkout() async {
     final trainingSettings = _viewModel.trainingSettings;
     final days = trainingSettings.trainingDays.toList()..sort();
@@ -277,6 +293,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       trainingSettings: _viewModel.trainingSettings,
                       themeMode: widget.appearance.mode,
                       onThemeModeChanged: widget.appearance.setMode,
+                      onManageBackups: _openBackupRestore,
                       onTrainingSettingsChanged: (settings) =>
                           _updateTrainingSettings(settings),
                     ),
@@ -387,6 +404,18 @@ class _AppScaffoldState extends State<AppScaffold>
     );
   }
 }
+
+String _appearanceName(ThemeMode mode) => switch (mode) {
+  ThemeMode.system => 'system',
+  ThemeMode.light => 'light',
+  ThemeMode.dark => 'dark',
+};
+
+ThemeMode _themeMode(String mode) => switch (mode) {
+  'light' => ThemeMode.light,
+  'dark' => ThemeMode.dark,
+  _ => ThemeMode.system,
+};
 
 class _AppDestination {
   const _AppDestination({

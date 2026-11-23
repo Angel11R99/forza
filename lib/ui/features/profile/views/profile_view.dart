@@ -16,12 +16,14 @@ class ProfileView extends StatefulWidget {
     required this.onTrainingSettingsChanged,
     required this.themeMode,
     required this.onThemeModeChanged,
+    required this.onManageBackups,
   });
 
   final TrainingSettings trainingSettings;
   final ValueChanged<TrainingSettings> onTrainingSettingsChanged;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
+  final VoidCallback onManageBackups;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -154,6 +156,12 @@ class _ProfileViewState extends State<ProfileView> {
                       subtitle:
                           'Peso ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()} · háptica ${_preferences.hapticsEnabled ? 'activa' : 'desactivada'}',
                       onTap: _editPreferences,
+                    ),
+                    _ProfileOption(
+                      icon: Icons.backup_outlined,
+                      title: 'Exportar y restaurar datos',
+                      subtitle: 'Crear un respaldo o recuperar tus datos',
+                      onTap: widget.onManageBackups,
                     ),
                     _ProfileOption(
                       icon: Icons.notifications_none_rounded,
