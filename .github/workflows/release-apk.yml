@@ -3,13 +3,16 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: Release type
+        description: "Choose a release type; examples from v1.2.3: patch→v1.2.4, minor→v1.3.0, major→v2.0.0, alpha→v1.2.4-alpha.1, beta→v1.2.4-beta.1, rc→v1.2.4-rc.1."
         required: true
         type: choice
         options:
           - patch
           - minor
           - major
+          - alpha
+          - beta
+          - rc
 permissions:
   contents: write
 jobs:
@@ -30,16 +33,20 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          [[ "$RELEASE_TYPE" == "patch" || "$RELEASE_TYPE" == "minor" || "$RELEASE_TYPE" == "major" ]] || { echo 'Select patch, minor or major.' >&2; exit 1; }
+          [[ "$RELEASE_TYPE" =~ ^(patch|minor|major|alpha|beta|rc)$ ]] || { echo 'Select a listed release type.' >&2; exit 1; }
           [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]] || { echo 'Configure ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD repository secrets.' >&2; exit 1; }
-          LATEST_RELEASE=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName --jq '.[].tagName' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1 || true)
+          LATEST_RELEASE=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName --jq '.[].tagName' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$' | head -n 1 || true)
           if [[ -z "$LATEST_RELEASE" ]]; then
             BASE_VERSION=$(sed -nE 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)(\+[0-9]+)?[[:space:]]*$/\1/p' pubspec.yaml)
             [[ -n "$BASE_VERSION" ]] || { echo 'Could not read the base version from pubspec.yaml.' >&2; exit 1; }
             LATEST_RELEASE="v$BASE_VERSION"
             echo "No previous GitHub Release found; using pubspec.yaml baseline $LATEST_RELEASE."
           fi
-          VERSION=$(python .github/scripts/next_release_version.py "$LATEST_RELEASE" "$RELEASE_TYPE")
+          git tag --list 'v*' > "$RUNNER_TEMP/forza-tags.txt"
+          VERSION=$(python .github/scripts/next_release_version.py "$LATEST_RELEASE" "$RELEASE_TYPE" "$RUNNER_TEMP/forza-tags.txt")
+          if [[ "$RELEASE_TYPE" == "alpha" || "$RELEASE_TYPE" == "beta" || "$RELEASE_TYPE" == "rc" ]]; then
+            echo "IS_PRERELEASE=true" >> "$GITHUB_ENV"
+          fi
           echo "Publishing $RELEASE_TYPE release $VERSION (previous: $LATEST_RELEASE)."
           ! git tag -l "$VERSION" | grep -q . || { echo "Tag $VERSION already exists." >&2; exit 1; }
           ! gh release view "$VERSION" >/dev/null 2>&1 || { echo "Release $VERSION already exists." >&2; exit 1; }
@@ -68,4 +75,8 @@ jobs:
           cp build/app/outputs/flutter-apk/app-release.apk "dist/forza-${VERSION}.apk"
           git tag "$VERSION" "$GITHUB_SHA"
           git push origin "$VERSION"
-          gh release create "$VERSION" "dist/forza-${VERSION}.apk" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "FORZA $VERSION" --generate-notes
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            gh release create "$VERSION" "dist/forza-${VERSION}.apk" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "FORZA $VERSION" --generate-notes --prerelease
+          else
+            gh release create "$VERSION" "dist/forza-${VERSION}.apk" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "FORZA $VERSION" --generate-notes
+          fi

@@ -12,7 +12,16 @@ La rama `main` ya tiene protección aplicada en GitHub: requiere Pull Request, u
 
 ## APK firmado
 
-El workflow **Publish Android APK** solo se inicia manualmente desde Actions, con `main` seleccionado y por el propietario del repositorio. El formulario presenta un selector `patch`, `minor` o `major`, y calcula el tag desde el último GitHub Release. `patch` incrementa el último número hasta `.99`; el siguiente patch sube minor y reinicia patch, o sube major si minor ya está en `9`. `minor` incrementa el número central y reinicia patch; desde `9` pasa al siguiente major. `major` incrementa el primer número y reinicia los otros dos. Si todavía no hay releases, usa la versión de `pubspec.yaml` como base. Ejemplo: desde `v1.9.0`, `major` produce `v2.0.0`; desde `v1.9.99`, `patch` también produce `v2.0.0`.
+El workflow **Publish Android APK** solo se inicia manualmente desde Actions, con `main` seleccionado y por el propietario del repositorio. El selector ofrece seis tipos; la descripción del campo muestra un ejemplo para cada uno, partiendo de `v1.2.3`:
+
+- `patch`: `v1.2.3` → `v1.2.4`.
+- `minor`: `v1.2.3` → `v1.3.0`.
+- `major`: `v1.2.3` → `v2.0.0`.
+- `alpha`: `v1.2.3` → `v1.2.4-alpha.1`.
+- `beta`: `v1.2.4-alpha.1` → `v1.2.4-beta.1`.
+- `rc` (release candidate): `v1.2.4-beta.1` → `v1.2.4-rc.1`.
+
+Los releases `alpha`, `beta` y `rc` se publican marcados como preliminares en GitHub. Sus números se incrementan por canal; al elegir `patch` después de una preliminar se publica la versión estable de esa misma base. `patch` sube el último número hasta `.99`; al desbordar, incrementa minor y reinicia patch, o incrementa major si minor ya está en `9`. `minor` reinicia patch y, al pasar de `9`, incrementa major. Si todavía no hay releases, usa la versión de `pubspec.yaml` como base.
 
 Configura estos repository secrets con la clave de firma de producción existente:
 
@@ -21,7 +30,7 @@ Configura estos repository secrets con la clave de firma de producción existent
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
 
-No se genera una clave nueva. Sin cualquiera de estos secretos, la publicación falla antes de compilar. El workflow valida, ejecuta análisis y pruebas, genera únicamente el APK release firmado, crea el tag y adjunta `forza-vX.Y.Z.apk` con notas automáticas. No ejecutes el workflow desde una rama distinta de `main`.
+No se genera una clave nueva. Sin cualquiera de estos secretos, la publicación falla antes de compilar. El workflow valida, ejecuta análisis y pruebas, genera únicamente el APK release firmado, crea el tag y adjunta `forza-vVERSION.apk` con notas automáticas. No ejecutes el workflow desde una rama distinta de `main`.
 
 ## Límites de GitHub
 
