@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'router.dart';
 import 'theme/appearance_controller.dart';
 import 'theme/app_theme.dart';
+import 'localization/locale_controller.dart';
+import 'localization/generated/app_localizations.dart';
 
 class ForzaApp extends StatefulWidget {
   const ForzaApp({super.key});
@@ -14,23 +16,26 @@ class ForzaApp extends StatefulWidget {
 
 class _ForzaAppState extends State<ForzaApp> {
   final _appearance = AppearanceController();
+  final _localeController = LocaleController();
 
   @override
   void initState() {
     super.initState();
     _appearance.restore();
+    _localeController.restore();
   }
 
   @override
   void dispose() {
     _appearance.dispose();
+    _localeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: _appearance,
+      listenable: Listenable.merge([_appearance, _localeController]),
       builder: (context, _) => MaterialApp(
         title: 'FORZA',
         debugShowCheckedModeBanner: false,
@@ -61,12 +66,19 @@ class _ForzaAppState extends State<ForzaApp> {
             child: child ?? const SizedBox.shrink(),
           );
         },
-        locale: const Locale('es', 'DO'),
-        supportedLocales: const [Locale('es', 'DO')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        locale: _localeController.locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
         initialRoute: AppRoutes.home,
         onGenerateRoute: (settings) =>
-            AppRouter.onGenerateRoute(settings, appearance: _appearance),
+            AppRouter.onGenerateRoute(
+              settings,
+              appearance: _appearance,
+              localeController: _localeController,
+            ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'theme/appearance_controller.dart';
 import '../ui/core/widgets/app_scaffold.dart';
+import 'localization/locale_controller.dart';
 
 abstract final class AppRoutes {
   static const home = '/';
@@ -15,6 +16,7 @@ abstract final class AppRouter {
   static Route<void> onGenerateRoute(
     RouteSettings settings, {
     required AppearanceController appearance,
+    required LocaleController localeController,
   }) {
     final initialIndex = switch (settings.name) {
       AppRoutes.home => 0,
@@ -28,7 +30,11 @@ abstract final class AppRouter {
     return MaterialPageRoute<void>(
       settings: settings,
       builder: (_) =>
-          AppScaffold(initialIndex: initialIndex, appearance: appearance),
+          AppScaffold(
+            initialIndex: initialIndex,
+            appearance: appearance,
+            localeController: localeController,
+          ),
     );
   }
 }

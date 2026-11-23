@@ -15,16 +15,19 @@ import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
 import 'forza_brand.dart';
 import '../view_models/app_shell_view_model.dart';
+import '../../../app/localization/locale_controller.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({
     super.key,
     this.initialIndex = 0,
     required this.appearance,
+    required this.localeController,
   });
 
   final int initialIndex;
   final AppearanceController appearance;
+  final LocaleController localeController;
 
   @override
   State<AppScaffold> createState() => _AppScaffoldState();
@@ -293,6 +296,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       trainingSettings: _viewModel.trainingSettings,
                       themeMode: widget.appearance.mode,
                       onThemeModeChanged: widget.appearance.setMode,
+                      localeController: widget.localeController,
                       onManageBackups: _openBackupRestore,
                       onTrainingSettingsChanged: (settings) =>
                           _updateTrainingSettings(settings),

@@ -5,6 +5,51 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../models/profile_settings.dart';
+import '../../../../app/localization/locale_controller.dart';
+import '../../../../app/localization/localization_extensions.dart';
+
+class AppLanguagePage extends StatelessWidget {
+  const AppLanguagePage({super.key, required this.localeController});
+
+  final LocaleController localeController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: localeController,
+      builder: (context, _) => Scaffold(
+        appBar: AppBar(title: Text(context.l10n.settingsLanguageTitle)),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.x6),
+            children: [
+              Text(context.l10n.settingsLanguageDescription,
+                  style: Theme.of(context).textTheme.bodyLarge),
+              const SizedBox(height: AppSpacing.x4),
+              RadioGroup<String?>(
+                groupValue: localeController.locale?.languageCode,
+                onChanged: localeController.setLanguageCode,
+                child: Column(children: [
+                  RadioListTile<String?>(
+                    value: null,
+                    title: Text(context.l10n.settingsLanguageAutomatic),
+                    subtitle: Text(context.l10n.settingsLanguageSystemDescription),
+                  ),
+                  RadioListTile<String?>(
+                    value: 'es', title: Text(context.l10n.settingsLanguageSpanish),
+                  ),
+                  RadioListTile<String?>(
+                    value: 'en', title: Text(context.l10n.settingsLanguageEnglish),
+                  ),
+                ]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key, required this.profile});
@@ -155,7 +200,7 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Apariencia')),
+      appBar: AppBar(title: Text(context.l10n.settingsAppearanceTitle)),
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -168,7 +213,7 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
           children: [
             const SizedBox(height: AppSpacing.x4),
             Text(
-              'Elige tu tema',
+              context.l10n.settingsThemeTitle,
               style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: AppSpacing.x2),
@@ -188,18 +233,18 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
                   children: [
                     RadioListTile<ThemeMode>(
                       value: ThemeMode.system,
-                      title: const Text('Según el dispositivo'),
-                      subtitle: const Text('Sigue el tema del sistema.'),
+                      title: Text(context.l10n.settingsThemeSystem),
+                      subtitle: Text(context.l10n.settingsThemeSystemDescription),
                     ),
                     const Divider(height: 1, indent: 56),
                     RadioListTile<ThemeMode>(
                       value: ThemeMode.light,
-                      title: const Text('Claro'),
+                      title: Text(context.l10n.settingsThemeLight),
                     ),
                     const Divider(height: 1, indent: 56),
                     RadioListTile<ThemeMode>(
                       value: ThemeMode.dark,
-                      title: const Text('Oscuro'),
+                      title: Text(context.l10n.settingsThemeDark),
                     ),
                   ],
                 ),

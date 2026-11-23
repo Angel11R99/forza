@@ -8,6 +8,8 @@ import '../../onboarding/views/account_access_pages.dart';
 import '../../onboarding/views/onboarding_view.dart';
 import '../models/profile_settings.dart';
 import 'profile_settings_pages.dart';
+import '../../../../app/localization/locale_controller.dart';
+import '../../../../app/localization/localization_extensions.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({
@@ -17,6 +19,7 @@ class ProfileView extends StatefulWidget {
     required this.themeMode,
     required this.onThemeModeChanged,
     required this.onManageBackups,
+    required this.localeController,
   });
 
   final TrainingSettings trainingSettings;
@@ -24,6 +27,7 @@ class ProfileView extends StatefulWidget {
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
   final VoidCallback onManageBackups;
+  final LocaleController localeController;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -105,6 +109,16 @@ class _ProfileViewState extends State<ProfileView> {
                 _ProfileSection(
                   title: 'Cuenta',
                   options: [
+                    _ProfileOption(
+                      icon: Icons.language_rounded,
+                      title: context.l10n.settingsLanguageSelection,
+                      subtitle: widget.localeController.locale?.languageCode == 'en'
+                          ? context.l10n.settingsLanguageEnglish
+                          : widget.localeController.locale?.languageCode == 'es'
+                              ? context.l10n.settingsLanguageSpanish
+                              : context.l10n.settingsLanguageAutomatic,
+                      onTap: _editLanguage,
+                    ),
                     _ProfileOption(
                       icon: Icons.person_outline_rounded,
                       title: 'Editar perfil',
@@ -240,6 +254,14 @@ class _ProfileViewState extends State<ProfileView> {
           themeMode: widget.themeMode,
           onThemeModeChanged: widget.onThemeModeChanged,
         ),
+      ),
+    );
+  }
+
+  void _editLanguage() {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => AppLanguagePage(localeController: widget.localeController),
       ),
     );
   }
