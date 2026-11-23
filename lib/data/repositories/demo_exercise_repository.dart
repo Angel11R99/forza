@@ -83,6 +83,8 @@ class DemoExerciseRepository implements ExerciseRepository {
           final matchesQuery =
               normalizedQuery.isEmpty ||
               _foldForSearch(exercise.name).contains(normalizedQuery) ||
+              _foldForSearch(exercise.englishName ?? '')
+                  .contains(normalizedQuery) ||
               _foldForSearch(exercise.muscleGroup).contains(normalizedQuery) ||
               _foldForSearch(exercise.equipment).contains(normalizedQuery);
           final matchesMuscle =

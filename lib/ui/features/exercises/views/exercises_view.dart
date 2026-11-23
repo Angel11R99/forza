@@ -172,27 +172,6 @@ class _ExercisesViewState extends State<ExercisesView> {
                   context.l10n.exerciseLibrarySubtitle,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                if (Localizations.localeOf(context).languageCode == 'en') ...[
-                  const SizedBox(height: AppSpacing.x3),
-                  AppSurfaceCard(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.info_outline_rounded,
-                          color: context.appColors.accent,
-                        ),
-                        const SizedBox(width: AppSpacing.x2),
-                        Expanded(
-                          child: Text(
-                            context.l10n.exerciseCatalogSpanishNotice,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
                 const SizedBox(height: AppSpacing.x6),
                 Row(
                   children: [

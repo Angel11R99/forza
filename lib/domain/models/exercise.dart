@@ -5,6 +5,8 @@ class Exercise {
     required this.muscleGroup,
     required this.equipment,
     required this.instructions,
+    this.englishName,
+    this.englishInstructions = const [],
     this.level,
     this.summary,
     this.alternativeIds = const [],
@@ -18,6 +20,8 @@ class Exercise {
   final String? level;
   final String? summary;
   final List<String> instructions;
+  final String? englishName;
+  final List<String> englishInstructions;
   final List<String> alternativeIds;
   final ExerciseAnimation? animation;
 
@@ -30,6 +34,10 @@ class Exercise {
       level: _optionalString(json, 'level'),
       summary: _optionalString(json, 'summary'),
       instructions: _stringList(json, 'instructions'),
+      englishName: _optionalString(json, 'englishName'),
+      englishInstructions: json.containsKey('englishInstructions')
+          ? _stringList(json, 'englishInstructions')
+          : const [],
       alternativeIds: json.containsKey('alternativeIds')
           ? _stringList(json, 'alternativeIds')
           : const [],

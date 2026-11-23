@@ -24,7 +24,7 @@ class ExerciseListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accessibilityLabel = context.l10n.exerciseCardSemantics(
-      exercise.name,
+      localizedExerciseName(context, exercise),
       localizedExerciseMuscleGroup(context, exercise.muscleGroup),
       localizedExerciseEquipment(context, exercise.equipment),
     );
@@ -54,7 +54,7 @@ class ExerciseListCard extends StatelessWidget {
     children: [
       ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.control),
-        child: SizedBox(width: 68, height: 68, child: _animation()),
+        child: SizedBox(width: 68, height: 68, child: _animation(context)),
       ),
       const SizedBox(width: AppSpacing.x4),
       Expanded(
@@ -63,7 +63,7 @@ class ExerciseListCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              exercise.name,
+              localizedExerciseName(context, exercise),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium,
@@ -94,14 +94,14 @@ class ExerciseListCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: Center(child: _animation())),
+        Expanded(child: Center(child: _animation(context))),
         const SizedBox(height: AppSpacing.x2),
         SizedBox(
           height: titleHeight,
           child: Align(
             alignment: Alignment.topLeft,
             child: Text(
-              exercise.name,
+              localizedExerciseName(context, exercise),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: titleStyle,
@@ -125,10 +125,10 @@ class ExerciseListCard extends StatelessWidget {
     );
   }
 
-  Widget _animation() => ExerciseAnimationView(
+  Widget _animation(BuildContext context) => ExerciseAnimationView(
     exerciseId: exercise.id,
     animation: exercise.animation,
-    label: exercise.name,
+    label: localizedExerciseName(context, exercise),
     fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
   );
 }

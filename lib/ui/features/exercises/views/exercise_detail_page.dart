@@ -27,6 +27,8 @@ class ExerciseDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final guideNotes = ExerciseGuideNotes.forExercise(exercise);
+    final exerciseName = localizedExerciseName(context, exercise);
+    final instructions = localizedExerciseInstructions(context, exercise);
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.exerciseDetailTitle)),
       body: SafeArea(
@@ -58,7 +60,7 @@ class ExerciseDetailPage extends StatelessWidget {
                             _ExercisePreview(exercise: exercise),
                             const SizedBox(height: AppSpacing.x6),
                             Text(
-                              exercise.name,
+                              exerciseName,
                               style: Theme.of(context).textTheme.displaySmall,
                             ),
                             if (exercise.summary case final summary?) ...[
@@ -101,14 +103,14 @@ class ExerciseDetailPage extends StatelessWidget {
                                 children: [
                                   for (
                                     var i = 0;
-                                    i < exercise.instructions.length;
+                                    i < instructions.length;
                                     i++
                                   ) ...[
                                     _InstructionCard(
                                       index: i + 1,
-                                      text: exercise.instructions[i],
+                                      text: instructions[i],
                                     ),
-                                    if (i < exercise.instructions.length - 1)
+                                    if (i < instructions.length - 1)
                                       const Divider(height: 1, indent: 66),
                                   ],
                                 ],
@@ -269,7 +271,7 @@ class _ExercisePreview extends StatelessWidget {
               child: ExerciseAnimationView(
                 exerciseId: exercise.id,
                 animation: exercise.animation,
-                label: exercise.name,
+                label: localizedExerciseName(context, exercise),
                 fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
                 showControls: true,
               ),

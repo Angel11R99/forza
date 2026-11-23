@@ -1,6 +1,22 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/localization/localization_extensions.dart';
+import '../../../../domain/models/exercise.dart';
+
+String localizedExerciseName(BuildContext context, Exercise exercise) {
+  final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+  return isEnglish ? exercise.englishName ?? exercise.name : exercise.name;
+}
+
+List<String> localizedExerciseInstructions(
+  BuildContext context,
+  Exercise exercise,
+) {
+  final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+  return isEnglish && exercise.englishInstructions.isNotEmpty
+      ? exercise.englishInstructions
+      : exercise.instructions;
+}
 
 String localizedExerciseMuscleGroup(BuildContext context, String value) =>
     switch (value) {
@@ -45,5 +61,38 @@ String localizedExerciseEquipment(BuildContext context, String value) =>
       'Rodillo' => context.l10n.exerciseEquipmentRoller,
       'Rueda abdominal' => context.l10n.exerciseEquipmentAbWheel,
       'Trineo' => context.l10n.exerciseEquipmentSled,
+      _ => value,
+    };
+
+String localizedTrainingExerciseName(BuildContext context, String value) =>
+    switch (value) {
+      'Press con mancuernas' => context.l10n.trainingNameDumbbellPress,
+      'Sentadilla goblet' => context.l10n.trainingNameGobletSquat,
+      'Remo con mancuerna' => context.l10n.trainingNameDumbbellRow,
+      'Peso muerto rumano' => context.l10n.trainingNameRomanianDeadlift,
+      'Press de hombros' => context.l10n.trainingNameShoulderPress,
+      'Sentadilla con barra' => context.l10n.trainingNameBarbellSquat,
+      'Press de banca con barra' => context.l10n.trainingNameBarbellBench,
+      'Remo con barra' => context.l10n.trainingNameBarbellRow,
+      'Peso muerto con barra' => context.l10n.trainingNameBarbellDeadlift,
+      'Press de pecho con banda' => context.l10n.trainingNameBandChestPress,
+      'Remo con banda' => context.l10n.trainingNameBandRow,
+      'Sentadilla con banda' => context.l10n.trainingNameBandSquat,
+      'Separación de banda' => context.l10n.trainingNameBandPullApart,
+      'Press de pecho en máquina' => context.l10n.trainingNameMachineChestPress,
+      'Prensa de piernas' => context.l10n.trainingNameLegPress,
+      'Jalón al pecho' => context.l10n.trainingNameLatPulldown,
+      'Remo sentado' => context.l10n.trainingNameSeatedRow,
+      'Flexiones' => context.l10n.trainingNamePushUp,
+      'Flexiones inclinadas' => context.l10n.trainingNameInclinePushUp,
+      'Pike push-up' => context.l10n.trainingNamePikePushUp,
+      'Zancadas' => context.l10n.trainingNameLunges,
+      'Sentadilla con peso corporal' =>
+        context.l10n.trainingNameBodyweightSquat,
+      'Elevación de pantorrillas' => context.l10n.trainingNameCalfRaise,
+      'Puente de glúteos' => context.l10n.trainingNameGluteBridge,
+      'Bird-dog' => context.l10n.trainingNameBirdDog,
+      'Dead bug' => context.l10n.trainingNameDeadBug,
+      'Plancha' => context.l10n.trainingNamePlank,
       _ => value,
     };

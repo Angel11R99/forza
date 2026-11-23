@@ -4,6 +4,7 @@ import '../../../../domain/models/exercise.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/localization/localization_extensions.dart';
+import '../models/exercise_localized_labels.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../widgets/exercise_list_card.dart';
 
@@ -49,7 +50,9 @@ class ExerciseAlternativesPage extends StatelessWidget {
                         ForzaEyebrow(label: context.l10n.exerciseEyebrow),
                         const SizedBox(height: AppSpacing.x3),
                         Text(
-                          context.l10n.exerciseAlternativesTo(exercise.name),
+                          context.l10n.exerciseAlternativesTo(
+                            localizedExerciseName(context, exercise),
+                          ),
                           style: Theme.of(context).textTheme.displaySmall,
                         ),
                         const SizedBox(height: AppSpacing.x2),
