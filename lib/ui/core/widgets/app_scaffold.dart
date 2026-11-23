@@ -435,6 +435,7 @@ class _BottomNavigationDestinationState
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    final labelStyle = Theme.of(context).textTheme.labelSmall;
     return Semantics(
       button: true,
       selected: widget.selected,
@@ -473,11 +474,10 @@ class _BottomNavigationDestinationState
               ),
               Text(
                 widget.destination.label,
-                style: TextStyle(
+                style: labelStyle?.copyWith(
                   color: widget.selected ? colors.accent : colors.textSecondary,
-                  fontSize: 12,
                   fontWeight: widget.selected
-                      ? FontWeight.w700
+                      ? FontWeight.w600
                       : FontWeight.w500,
                 ),
               ),
