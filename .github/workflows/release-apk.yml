@@ -1,9 +1,9 @@
-name: Publicar APK de Android
+name: Publish Android APK
 on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: Tipo de cambio para esta versión
+        description: Release type
         required: true
         type: choice
         options:
