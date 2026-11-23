@@ -1,4 +1,5 @@
 import '../../../../domain/models/exercise.dart';
+import '../../../../app/localization/generated/app_localizations.dart';
 
 class ExerciseGuideNotes {
   const ExerciseGuideNotes._();
@@ -306,4 +307,53 @@ class ExerciseGuideNote {
   final List<String> commonMistakes;
   final String source;
   final String sourceUrl;
+
+  List<String> commonMistakesFor(AppLocalizations l10n) {
+    final text = switch (source) {
+      'ACE · Peso muerto y peso muerto rumano' =>
+        l10n.exerciseGuideDeadliftMistakes,
+      'ACE · Sentadilla con peso corporal' => l10n.exerciseGuideSquatMistakes,
+      'ACE · Zancada hacia delante' => l10n.exerciseGuideLungeMistakes,
+      'ACE · Flexión de brazos' => l10n.exerciseGuidePushUpMistakes,
+      'ACE · Press de pecho' => l10n.exerciseGuideChestPressMistakes,
+      'ACE · Remo inclinado' => l10n.exerciseGuideRowMistakes,
+      'ACE · Dominadas supinas' => l10n.exerciseGuidePullUpMistakes,
+      'ACE · Plancha frontal' => l10n.exerciseGuidePlankMistakes,
+      'ACE · Crunch' => l10n.exerciseGuideCrunchMistakes,
+      'ACE · Curl de bíceps' => l10n.exerciseGuideCurlMistakes,
+      'ACE · Press de hombros sentado' =>
+        l10n.exerciseGuideShoulderPressMistakes,
+      'ACE · Curl femoral acostado' => l10n.exerciseGuideLegCurlMistakes,
+      'ACE · Extensión de pierna de pie' =>
+        l10n.exerciseGuideLegExtensionMistakes,
+      'ACE · Elevación de pantorrillas de pie' =>
+        l10n.exerciseGuideCalfRaiseMistakes,
+      'ACE · Step-up' => l10n.exerciseGuideStepUpMistakes,
+      'ACE · Puente de glúteos' => l10n.exerciseGuideGluteBridgeMistakes,
+      _ => l10n.exerciseGuideRomanianDeadliftMistakes,
+    };
+    return text.split('\n');
+  }
+
+  String sourceFor(AppLocalizations l10n) => switch (source) {
+    'ACE · Peso muerto y peso muerto rumano' =>
+      l10n.exerciseGuideDeadliftSource,
+    'ACE · Sentadilla con peso corporal' => l10n.exerciseGuideSquatSource,
+    'ACE · Zancada hacia delante' => l10n.exerciseGuideLungeSource,
+    'ACE · Flexión de brazos' => l10n.exerciseGuidePushUpSource,
+    'ACE · Press de pecho' => l10n.exerciseGuideChestPressSource,
+    'ACE · Remo inclinado' => l10n.exerciseGuideRowSource,
+    'ACE · Dominadas supinas' => l10n.exerciseGuidePullUpSource,
+    'ACE · Plancha frontal' => l10n.exerciseGuidePlankSource,
+    'ACE · Crunch' => l10n.exerciseGuideCrunchSource,
+    'ACE · Curl de bíceps' => l10n.exerciseGuideCurlSource,
+    'ACE · Press de hombros sentado' => l10n.exerciseGuideShoulderPressSource,
+    'ACE · Curl femoral acostado' => l10n.exerciseGuideLegCurlSource,
+    'ACE · Extensión de pierna de pie' => l10n.exerciseGuideLegExtensionSource,
+    'ACE · Elevación de pantorrillas de pie' =>
+      l10n.exerciseGuideCalfRaiseSource,
+    'ACE · Step-up' => l10n.exerciseGuideStepUpSource,
+    'ACE · Puente de glúteos' => l10n.exerciseGuideGluteBridgeSource,
+    _ => l10n.exerciseGuideRomanianDeadliftSource,
+  };
 }

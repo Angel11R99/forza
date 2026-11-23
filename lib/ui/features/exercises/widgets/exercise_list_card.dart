@@ -3,9 +3,11 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../../domain/models/exercise.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import 'exercise_animation.dart';
+import '../models/exercise_localized_labels.dart';
 
 class ExerciseListCard extends StatelessWidget {
   const ExerciseListCard({
@@ -21,11 +23,11 @@ class ExerciseListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accessibilityLabel = [
+    final accessibilityLabel = context.l10n.exerciseCardSemantics(
       exercise.name,
-      exercise.muscleGroup,
-      exercise.equipment,
-    ].join(', ');
+      localizedExerciseMuscleGroup(context, exercise.muscleGroup),
+      localizedExerciseEquipment(context, exercise.equipment),
+    );
 
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
@@ -68,7 +70,7 @@ class ExerciseListCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.x1),
             Text(
-              '${exercise.muscleGroup}  ·  ${exercise.equipment}',
+              '${localizedExerciseMuscleGroup(context, exercise.muscleGroup)}  ·  ${localizedExerciseEquipment(context, exercise.equipment)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium,
@@ -112,7 +114,7 @@ class ExerciseListCard extends StatelessWidget {
           child: Align(
             alignment: Alignment.topLeft,
             child: Text(
-              exercise.muscleGroup,
+              localizedExerciseMuscleGroup(context, exercise.muscleGroup),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: categoryStyle,

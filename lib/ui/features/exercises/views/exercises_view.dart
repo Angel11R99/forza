@@ -6,6 +6,7 @@ import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../models/exercise_filter_selection.dart';
@@ -119,7 +120,7 @@ class _ExercisesViewState extends State<ExercisesView> {
               const Icon(Icons.error_outline_rounded, size: 36),
               const SizedBox(height: AppSpacing.x3),
               Text(
-                'No pudimos cargar los ejercicios.',
+                context.l10n.exerciseLoadError,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -127,7 +128,7 @@ class _ExercisesViewState extends State<ExercisesView> {
               OutlinedButton.icon(
                 onPressed: _loadCatalog,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Reintentar'),
+                label: Text(context.l10n.exerciseRetry),
               ),
             ],
           ),
@@ -160,17 +161,38 @@ class _ExercisesViewState extends State<ExercisesView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ForzaEyebrow(label: 'Ejercicios'),
+                ForzaEyebrow(label: context.l10n.exerciseEyebrow),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Ejercicios',
+                  context.l10n.exerciseLibraryTitle,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
-                  'Encuentra movimientos para tu próxima sesión.',
+                  context.l10n.exerciseLibrarySubtitle,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                if (Localizations.localeOf(context).languageCode == 'en') ...[
+                  const SizedBox(height: AppSpacing.x3),
+                  AppSurfaceCard(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          color: context.appColors.accent,
+                        ),
+                        const SizedBox(width: AppSpacing.x2),
+                        Expanded(
+                          child: Text(
+                            context.l10n.exerciseCatalogSpanishNotice,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.x6),
                 Row(
                   children: [
@@ -181,12 +203,12 @@ class _ExercisesViewState extends State<ExercisesView> {
                             setState(() => _searchQuery = value),
                         textInputAction: TextInputAction.search,
                         decoration: InputDecoration(
-                          hintText: 'Ejercicio, músculo o equipo',
+                          hintText: context.l10n.exerciseSearchHint,
                           prefixIcon: const Icon(Icons.search_rounded),
                           suffixIcon: _searchQuery.isEmpty
                               ? null
                               : IconButton(
-                                  tooltip: 'Borrar búsqueda',
+                                  tooltip: context.l10n.exerciseClearSearch,
                                   onPressed: () {
                                     _searchController.clear();
                                     setState(() => _searchQuery = '');
@@ -213,8 +235,10 @@ class _ExercisesViewState extends State<ExercisesView> {
                       ),
                       child: IconButton(
                         tooltip: _filters.count == 0
-                            ? 'Abrir filtros'
-                            : 'Filtros activos: ${_filters.count}',
+                            ? context.l10n.exerciseOpenFilters
+                            : context.l10n.exerciseActiveFilters(
+                                _filters.count,
+                              ),
                         onPressed: _openFilters,
                         icon: Badge(
                           isLabelVisible: _filters.count > 0,
@@ -231,14 +255,14 @@ class _ExercisesViewState extends State<ExercisesView> {
                     Expanded(
                       child: Text(
                         _searchQuery.trim().isNotEmpty
-                            ? 'Resultados de búsqueda'
-                            : 'Todos los ejercicios',
+                            ? context.l10n.exerciseSearchResultsTitle
+                            : context.l10n.exerciseAllResultsTitle,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
                     Semantics(
                       liveRegion: true,
-                      label: '${results.length} ejercicios encontrados',
+                      label: context.l10n.exerciseFoundCount(results.length),
                       child: ExcludeSemantics(
                         child: Text(
                           '${results.length}',
@@ -306,13 +330,13 @@ class _EmptyResults extends StatelessWidget {
           const Icon(Icons.search_off_rounded, size: 32),
           const SizedBox(height: AppSpacing.x3),
           Text(
-            'No encontramos ejercicios',
+            context.l10n.exerciseEmptyTitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
-            'Prueba otra búsqueda o quita algunos filtros.',
+            context.l10n.exerciseEmptySubtitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -320,7 +344,7 @@ class _EmptyResults extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onClear,
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Limpiar búsqueda y filtros'),
+            label: Text(context.l10n.exerciseClearSearchAndFilters),
           ),
         ],
       ),

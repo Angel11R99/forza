@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../domain/models/exercise.dart';
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/localization/localization_extensions.dart';
 
 class ExerciseAnimationView extends StatefulWidget {
   const ExerciseAnimationView({
@@ -194,7 +195,7 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     return Semantics(
       image: true,
-      label: 'Animación: ${widget.label}',
+      label: context.l10n.exerciseAnimationLabel(widget.label),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: AppColors.light.surfaceMuted,
@@ -225,8 +226,8 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
                 child: IconButton.filledTonal(
                   onPressed: _togglePlayback,
                   tooltip: _paused
-                      ? 'Reproducir animación'
-                      : 'Pausar animación',
+                      ? context.l10n.exerciseAnimationPlay
+                      : context.l10n.exerciseAnimationPause,
                   icon: Icon(
                     _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
                   ),

@@ -3,8 +3,10 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../models/exercise_filter_selection.dart';
+import '../models/exercise_localized_labels.dart';
 
 class ExerciseFiltersPage extends StatefulWidget {
   const ExerciseFiltersPage({
@@ -58,9 +60,12 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Filtros'),
+        title: Text(context.l10n.exerciseFiltersTitle),
         actions: [
-          TextButton(onPressed: _clear, child: const Text('Limpiar')),
+          TextButton(
+            onPressed: _clear,
+            child: Text(context.l10n.exerciseClearFilters),
+          ),
           const SizedBox(width: AppSpacing.x2),
         ],
       ),
@@ -75,27 +80,31 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ForzaEyebrow(label: 'Ejercicios'),
+              ForzaEyebrow(label: context.l10n.exerciseEyebrow),
               const SizedBox(height: AppSpacing.x3),
               Text(
-                'Ajusta tu búsqueda',
+                context.l10n.exerciseAdjustSearchTitle,
                 style: Theme.of(context).textTheme.displaySmall,
               ),
               const SizedBox(height: AppSpacing.x2),
               Text(
-                'Combina grupo muscular y equipo para encontrar movimientos adecuados.',
+                context.l10n.exerciseFiltersDescription,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: AppSpacing.x8),
               _FilterSection(
-                title: 'Grupo muscular',
+                title: context.l10n.exerciseMuscleGroupFilter,
                 options: widget.repository.muscleGroups,
+                localizeOption: (option) =>
+                    localizedExerciseMuscleGroup(context, option),
                 selected: _muscleGroups,
                 onSelected: (value) => _toggle(_muscleGroups, value),
               ),
               const SizedBox(height: AppSpacing.x8),
               _FilterSection(
-                title: 'Equipo',
+                title: context.l10n.exerciseEquipmentFilter,
+                localizeOption: (option) =>
+                    localizedExerciseEquipment(context, option),
                 options: widget.repository.equipmentTypes,
                 selected: _equipment,
                 onSelected: (value) => _toggle(_equipment, value),
@@ -115,7 +124,7 @@ class _ExerciseFiltersPageState extends State<ExerciseFiltersPage> {
           ),
           child: FilledButton(
             onPressed: _apply,
-            child: Text('Mostrar resultados · $_matchingCount'),
+            child: Text(context.l10n.exerciseShowResults(_matchingCount)),
           ),
         ),
       ),
@@ -135,12 +144,14 @@ class _FilterSection extends StatelessWidget {
     required this.options,
     required this.selected,
     required this.onSelected,
+    this.localizeOption,
   });
 
   final String title;
   final List<String> options;
   final Set<String> selected;
   final ValueChanged<String> onSelected;
+  final String Function(String value)? localizeOption;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +166,7 @@ class _FilterSection extends StatelessWidget {
           children: [
             for (final option in options)
               FilterChip(
-                label: Text(option),
+                label: Text(localizeOption?.call(option) ?? option),
                 selected: selected.contains(option),
                 onSelected: (_) => onSelected(option),
                 checkmarkColor: context.appColors.accent,

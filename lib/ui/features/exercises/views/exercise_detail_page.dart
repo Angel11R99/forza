@@ -5,11 +5,13 @@ import '../../../../domain/repositories/exercise_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../widgets/exercise_list_card.dart';
 import '../widgets/exercise_animation.dart';
 import '../models/exercise_guide_notes.dart';
+import '../models/exercise_localized_labels.dart';
 import 'exercise_alternatives_page.dart';
 
 class ExerciseDetailPage extends StatelessWidget {
@@ -26,7 +28,7 @@ class ExerciseDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final guideNotes = ExerciseGuideNotes.forExercise(exercise);
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle del ejercicio')),
+      appBar: AppBar(title: Text(context.l10n.exerciseDetailTitle)),
       body: SafeArea(
         bottom: false,
         child: LayoutBuilder(
@@ -51,7 +53,7 @@ class ExerciseDetailPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const ForzaEyebrow(label: 'Ejercicios'),
+                            ForzaEyebrow(label: context.l10n.exerciseEyebrow),
                             const SizedBox(height: AppSpacing.x3),
                             _ExercisePreview(exercise: exercise),
                             const SizedBox(height: AppSpacing.x6),
@@ -71,15 +73,25 @@ class ExerciseDetailPage extends StatelessWidget {
                               spacing: AppSpacing.x2,
                               runSpacing: AppSpacing.x2,
                               children: [
-                                _InfoChip(label: exercise.muscleGroup),
-                                _InfoChip(label: exercise.equipment),
+                                _InfoChip(
+                                  label: localizedExerciseMuscleGroup(
+                                    context,
+                                    exercise.muscleGroup,
+                                  ),
+                                ),
+                                _InfoChip(
+                                  label: localizedExerciseEquipment(
+                                    context,
+                                    exercise.equipment,
+                                  ),
+                                ),
                                 if (exercise.level case final level?)
                                   _InfoChip(label: level),
                               ],
                             ),
                             const SizedBox(height: AppSpacing.x8),
                             Text(
-                              'Cómo hacerlo',
+                              context.l10n.exerciseHowTo,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: AppSpacing.x3),
@@ -105,7 +117,7 @@ class ExerciseDetailPage extends StatelessWidget {
                             if (guideNotes != null) ...[
                               const SizedBox(height: AppSpacing.x8),
                               Text(
-                                'Claves técnicas y errores frecuentes',
+                                context.l10n.exerciseGuideHeading,
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               const SizedBox(height: AppSpacing.x3),
@@ -114,7 +126,7 @@ class ExerciseDetailPage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Pautas de una variante de referencia. Compara cada punto con los pasos de este ejercicio.',
+                                      context.l10n.exerciseGuideVariantNote,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -125,7 +137,9 @@ class ExerciseDetailPage extends StatelessWidget {
                                     ),
                                     const SizedBox(height: AppSpacing.x3),
                                     for (final mistake
-                                        in guideNotes.commonMistakes)
+                                        in guideNotes.commonMistakesFor(
+                                          context.l10n,
+                                        ))
                                       Padding(
                                         padding: const EdgeInsets.only(
                                           bottom: AppSpacing.x3,
@@ -156,14 +170,18 @@ class ExerciseDetailPage extends StatelessWidget {
                                         ),
                                       ),
                                     Text(
-                                      'Fuente: ${guideNotes.source}',
+                                      context.l10n.exerciseSourcePrefix(
+                                        guideNotes.sourceFor(context.l10n),
+                                      ),
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall,
                                     ),
                                     const SizedBox(height: AppSpacing.x1),
                                     SelectableText(
-                                      'Enlace de la fuente: ${guideNotes.sourceUrl}',
+                                      context.l10n.exerciseSourceLink(
+                                        guideNotes.sourceUrl,
+                                      ),
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -200,7 +218,7 @@ class ExerciseDetailPage extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: () => _openAlternatives(context),
             icon: const Icon(Icons.swap_horiz_rounded),
-            label: const Text('Ver alternativas'),
+            label: Text(context.l10n.exerciseViewAlternatives),
           ),
         ),
       ),
@@ -262,8 +280,8 @@ class _ExercisePreview extends StatelessWidget {
             bottom: AppSpacing.x2,
             child: Text(
               exercise.animation == null
-                  ? 'Sin ilustración animada · consulta los pasos'
-                  : 'Ilustración orientativa · el ritmo depende de ti',
+                  ? context.l10n.exerciseAnimationUnavailable
+                  : context.l10n.exerciseAnimationIllustrative,
               style: Theme.of(context).textTheme.labelSmall
                   ?.copyWith(color: AppColors.light.textSecondary),
             ),
