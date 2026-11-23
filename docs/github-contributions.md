@@ -12,7 +12,9 @@ La rama `main` ya tiene protección aplicada en GitHub: requiere Pull Request, u
 
 ## APK firmado
 
-El workflow **Publish Android APK** solo se inicia manualmente desde Actions, con `main` seleccionado y por el propietario del repositorio. Configura estos repository secrets con la clave de firma de producción existente:
+El workflow **Publish Android APK** solo se inicia manualmente desde Actions, con `main` seleccionado y por el propietario del repositorio. El formulario presenta un selector `patch`, `minor` o `major`, y calcula el tag desde el último GitHub Release. `patch` incrementa el último número hasta `.99`; el siguiente patch sube minor y reinicia patch, o sube major si minor ya está en `9`. `minor` incrementa el número central y reinicia patch; desde `9` pasa al siguiente major. `major` incrementa el primer número y reinicia los otros dos. Si todavía no hay releases, usa la versión de `pubspec.yaml` como base. Ejemplo: desde `v1.9.0`, `major` produce `v2.0.0`; desde `v1.9.99`, `patch` también produce `v2.0.0`.
+
+Configura estos repository secrets con la clave de firma de producción existente:
 
 - `ANDROID_KEYSTORE_BASE64`: contenido del keystore existente codificado en Base64.
 - `ANDROID_KEYSTORE_PASSWORD`
