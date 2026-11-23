@@ -94,6 +94,26 @@ class WorkoutSetEntries extends Table {
   ];
 }
 
+@TableIndex(
+  name: 'scheduled_training_sessions_date_idx',
+  columns: {#scheduledDate},
+  unique: true,
+)
+class ScheduledTrainingSessions extends Table {
+  TextColumn get id => text()();
+  TextColumn get scheduledDate => text()();
+  TextColumn get originalDate => text().nullable()();
+  IntColumn get sessionIndex => integer()();
+  TextColumn get title => text()();
+  TextColumn get focus => text()();
+  IntColumn get durationMinutes => integer()();
+  IntColumn get exerciseCount => integer()();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 class AppMetadata extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
@@ -110,6 +130,7 @@ class AppMetadata extends Table {
     WorkoutSessions,
     WorkoutSessionExercises,
     WorkoutSetEntries,
+    ScheduledTrainingSessions,
     AppMetadata,
   ],
 )
@@ -122,13 +143,14 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) => migrator.createAll(),
     onUpgrade: (migrator, from, to) async {
       if (from < 2) await migrator.createTable(workoutSetEntries);
+      if (from < 3) await migrator.createTable(scheduledTrainingSessions);
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');
