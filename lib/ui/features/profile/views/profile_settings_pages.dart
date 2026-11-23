@@ -130,17 +130,92 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 }
 
-class AppPreferencesPage extends StatefulWidget {
-  const AppPreferencesPage({
+class AppAppearancePage extends StatefulWidget {
+  const AppAppearancePage({
     super.key,
-    required this.preferences,
     required this.themeMode,
     required this.onThemeModeChanged,
   });
 
-  final AppPreferences preferences;
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
+
+  @override
+  State<AppAppearancePage> createState() => _AppAppearancePageState();
+}
+
+class _AppAppearancePageState extends State<AppAppearancePage> {
+  late ThemeMode _themeMode = widget.themeMode;
+
+  void _selectMode(ThemeMode mode) {
+    setState(() => _themeMode = mode);
+    widget.onThemeModeChanged(mode);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Apariencia')),
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.x6,
+            AppSpacing.x2,
+            AppSpacing.x6,
+            AppSpacing.x8,
+          ),
+          children: [
+            const SizedBox(height: AppSpacing.x4),
+            Text(
+              'Elige tu tema',
+              style: Theme.of(context).textTheme.displaySmall,
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            Text(
+              'Puedes seguir el tema del dispositivo o elegir uno para FORZA.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: AppSpacing.x6),
+            AppSurfaceCard(
+              padding: EdgeInsets.zero,
+              child: RadioGroup<ThemeMode>(
+                groupValue: _themeMode,
+                onChanged: (mode) {
+                  if (mode != null) _selectMode(mode);
+                },
+                child: Column(
+                  children: [
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.system,
+                      title: const Text('Según el dispositivo'),
+                      subtitle: const Text('Sigue el tema del sistema.'),
+                    ),
+                    const Divider(height: 1, indent: 56),
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.light,
+                      title: const Text('Claro'),
+                    ),
+                    const Divider(height: 1, indent: 56),
+                    RadioListTile<ThemeMode>(
+                      value: ThemeMode.dark,
+                      title: const Text('Oscuro'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppPreferencesPage extends StatefulWidget {
+  const AppPreferencesPage({super.key, required this.preferences});
+
+  final AppPreferences preferences;
 
   @override
   State<AppPreferencesPage> createState() => _AppPreferencesPageState();
@@ -172,7 +247,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
             ),
             const SizedBox(height: AppSpacing.x2),
             Text(
-              'Elige cómo quieres ver la información en la app.',
+              'Ajusta las unidades y la forma en que FORZA organiza tu semana.',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x8),
@@ -213,36 +288,6 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
                 ),
                 value: _hapticsEnabled,
                 onChanged: (value) => setState(() => _hapticsEnabled = value),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.x3),
-            SectionHeading(title: 'Apariencia'),
-            AppSurfaceCard(
-              padding: EdgeInsets.zero,
-              child: RadioGroup<ThemeMode>(
-                groupValue: widget.themeMode,
-                onChanged: (mode) {
-                  if (mode != null) widget.onThemeModeChanged(mode);
-                },
-                child: Column(
-                  children: [
-                    RadioListTile<ThemeMode>(
-                      value: ThemeMode.system,
-                      title: const Text('Según el dispositivo'),
-                      subtitle: const Text('Sigue el tema del sistema.'),
-                    ),
-                    const Divider(height: 1, indent: 56),
-                    RadioListTile<ThemeMode>(
-                      value: ThemeMode.light,
-                      title: const Text('Claro'),
-                    ),
-                    const Divider(height: 1, indent: 56),
-                    RadioListTile<ThemeMode>(
-                      value: ThemeMode.dark,
-                      title: const Text('Oscuro'),
-                    ),
-                  ],
-                ),
               ),
             ),
           ],

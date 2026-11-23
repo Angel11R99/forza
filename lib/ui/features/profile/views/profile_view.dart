@@ -143,10 +143,16 @@ class _ProfileViewState extends State<ProfileView> {
                   title: 'Preferencias',
                   options: [
                     _ProfileOption(
+                      icon: Icons.palette_outlined,
+                      title: 'Apariencia',
+                      subtitle: _themeModeLabel(widget.themeMode),
+                      onTap: _editAppearance,
+                    ),
+                    _ProfileOption(
                       icon: Icons.tune_rounded,
-                      title: 'Apariencia y preferencias',
+                      title: 'Preferencias',
                       subtitle:
-                          '${_themeModeLabel(widget.themeMode)} · ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()}',
+                          'Peso ${_preferences.weightUnit} · semana desde ${_preferences.weekStartsOn.toLowerCase()} · háptica ${_preferences.hapticsEnabled ? 'activa' : 'desactivada'}',
                       onTap: _editPreferences,
                     ),
                     _ProfileOption(
@@ -162,7 +168,7 @@ class _ProfileViewState extends State<ProfileView> {
                 const SizedBox(height: AppSpacing.x4),
                 Center(
                   child: Text(
-                    'Los cambios se mantienen mientras la app está abierta.',
+                    'Las preferencias se mantienen mientras la app está abierta.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -212,15 +218,22 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> _editPreferences() async {
     final updated = await Navigator.of(context).push<AppPreferences>(
       MaterialPageRoute<AppPreferences>(
-        builder: (_) => AppPreferencesPage(
-          preferences: _preferences,
+        builder: (_) => AppPreferencesPage(preferences: _preferences),
+      ),
+    );
+    if (updated == null || !mounted) return;
+    setState(() => _preferences = updated);
+  }
+
+  void _editAppearance() {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => AppAppearancePage(
           themeMode: widget.themeMode,
           onThemeModeChanged: widget.onThemeModeChanged,
         ),
       ),
     );
-    if (updated == null || !mounted) return;
-    setState(() => _preferences = updated);
   }
 
   Future<void> _editNotifications() async {
