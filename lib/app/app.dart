@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 
 import 'router.dart';
 import 'theme/appearance_controller.dart';
@@ -36,6 +37,30 @@ class _ForzaAppState extends State<ForzaApp> {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: _appearance.mode,
+        builder: (context, child) {
+          final isDark = switch (_appearance.mode) {
+            ThemeMode.dark => true,
+            ThemeMode.light => false,
+            ThemeMode.system =>
+              MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+          };
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: isDark
+                  ? Brightness.light
+                  : Brightness.dark,
+              statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+              systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarDividerColor: Colors.transparent,
+              systemNavigationBarIconBrightness: isDark
+                  ? Brightness.light
+                  : Brightness.dark,
+              systemNavigationBarContrastEnforced: false,
+            ),
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
         locale: const Locale('es', 'DO'),
         supportedLocales: const [Locale('es', 'DO')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
