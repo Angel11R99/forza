@@ -24,7 +24,7 @@ class ExerciseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final guideNotes = ExerciseGuideNotes.forExercise[exercise.id];
+    final guideNotes = ExerciseGuideNotes.forExercise(exercise);
     return Scaffold(
       appBar: AppBar(title: const Text('Detalle del ejercicio')),
       body: SafeArea(
@@ -105,7 +105,7 @@ class ExerciseDetailPage extends StatelessWidget {
                             if (guideNotes != null) ...[
                               const SizedBox(height: AppSpacing.x8),
                               Text(
-                                'Errores frecuentes',
+                                'Claves técnicas y errores frecuentes',
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               const SizedBox(height: AppSpacing.x3),
@@ -113,6 +113,17 @@ class ExerciseDetailPage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Text(
+                                      'Pautas de una variante de referencia. Compara cada punto con los pasos de este ejercicio.',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                context.appColors.textSecondary,
+                                          ),
+                                    ),
+                                    const SizedBox(height: AppSpacing.x3),
                                     for (final mistake
                                         in guideNotes.commonMistakes)
                                       Padding(
@@ -149,6 +160,17 @@ class ExerciseDetailPage extends StatelessWidget {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall,
+                                    ),
+                                    const SizedBox(height: AppSpacing.x1),
+                                    SelectableText(
+                                      'Enlace de la fuente: ${guideNotes.sourceUrl}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                context.appColors.textSecondary,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -239,7 +261,9 @@ class _ExercisePreview extends StatelessWidget {
             left: AppSpacing.x3,
             bottom: AppSpacing.x2,
             child: Text(
-              'Animación del movimiento',
+              exercise.animation == null
+                  ? 'Sin ilustración animada · consulta los pasos'
+                  : 'Ilustración orientativa · el ritmo depende de ti',
               style: Theme.of(context).textTheme.labelSmall
                   ?.copyWith(color: AppColors.light.textSecondary),
             ),
