@@ -9,6 +9,7 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../widgets/exercise_list_card.dart';
 import '../widgets/exercise_animation.dart';
+import '../models/exercise_guide_notes.dart';
 import 'exercise_alternatives_page.dart';
 
 class ExerciseDetailPage extends StatelessWidget {
@@ -23,6 +24,7 @@ class ExerciseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final guideNotes = ExerciseGuideNotes.forExercise[exercise.id];
     return Scaffold(
       appBar: AppBar(title: const Text('Detalle del ejercicio')),
       body: SafeArea(
@@ -100,6 +102,58 @@ class ExerciseDetailPage extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            if (guideNotes != null) ...[
+                              const SizedBox(height: AppSpacing.x8),
+                              Text(
+                                'Errores frecuentes',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: AppSpacing.x3),
+                              AppSurfaceCard(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    for (final mistake
+                                        in guideNotes.commonMistakes)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: AppSpacing.x3,
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Icon(
+                                              Icons.warning_amber_rounded,
+                                              size: 20,
+                                              color: context
+                                                  .appColors
+                                                  .textSecondary,
+                                            ),
+                                            const SizedBox(
+                                              width: AppSpacing.x2,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                mistake,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    Text(
+                                      'Fuente: ${guideNotes.source}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             const SizedBox(height: AppSpacing.x4),
                           ],
                         ),
