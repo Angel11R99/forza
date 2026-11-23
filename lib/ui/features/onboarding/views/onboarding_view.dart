@@ -197,7 +197,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                     _trainingDays.length,
                     _sessionMinutes,
                   ),
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
@@ -234,16 +235,44 @@ class _OnboardingViewState extends State<OnboardingView> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: AppSpacing.x2),
-                  Text(
-                    session.exercises
-                        .map(
-                          (exercise) => localizedTrainingExerciseName(
-                            context,
-                            exercise.name,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final exercise in session.exercises)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.x1),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: AppSpacing.x1,
+                                  right: AppSpacing.x2,
+                                ),
+                                child: Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  localizedTrainingExerciseName(
+                                    context,
+                                    exercise.name,
+                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                        .join(' · '),
-                    style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                    ],
                   ),
                 ],
               ),
