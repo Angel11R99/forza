@@ -445,12 +445,17 @@ class _StepProgress extends StatelessWidget {
             style: Theme.of(context).textTheme.labelLarge,
           ),
           const SizedBox(height: AppSpacing.x2),
-          LinearProgressIndicator(
-            value: progress,
-            minHeight: 4,
-            backgroundColor: context.appColors.surfaceMuted,
-            color: context.appColors.accent,
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: progress),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOutCubic,
+            builder: (context, animatedProgress, _) => LinearProgressIndicator(
+              value: animatedProgress,
+              minHeight: 4,
+              backgroundColor: context.appColors.surfaceMuted,
+              color: context.appColors.accent,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+            ),
           ),
         ],
       ),
