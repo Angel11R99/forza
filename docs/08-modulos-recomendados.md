@@ -10,7 +10,8 @@ Este documento reúne módulos que pueden ampliar FORZA sin perder el foco en cr
 - **Objetivos personales:** implementados con metas semanales de sesiones y marcas de carga para un ejercicio. Se guardan localmente y se pueden editar o retirar; el avance se calcula desde las sesiones y series registradas.
 - **Calentamiento y movilidad:** implementados antes de cada sesión, con una secuencia breve según el enfoque del entrenamiento y una opción visible para omitirla.
 - **Guías de ejercicios:** implementadas en el detalle con animación disponible e instrucciones numeradas del catálogo. Las notas de errores frecuentes se muestran solo para ejercicios con una fuente curada; por ahora incluyen el peso muerto rumano con barra.
-- **Pendiente de esta secuencia:** ampliar las notas verificadas a más ejercicios y añadir exportación/respaldo.
+- **Exportación y respaldo:** implementados como archivo JSON local. Incluye plan, historial y series, agenda, objetivos, sesión activa y apariencia; al restaurar valida el archivo y pide confirmación antes de reemplazar los datos.
+- **Siguiente mejora posible:** ampliar las notas verificadas de ejercicios. No bloquea los módulos de esta secuencia.
 
 ## Prioridad alta: cerrar el ciclo de entrenamiento
 
@@ -33,7 +34,7 @@ Estos dos módulos se complementan: Inicio conduce a la sesión y el registro al
 
 | Módulo | Propósito | Alcance inicial |
 |---|---|---|
-| Exportación y respaldo | Dar control sobre los datos locales y facilitar el cambio de dispositivo. | Exportar historial y preferencias; restaurar desde un archivo validado. |
+| Exportación y respaldo | Dar control sobre los datos locales y facilitar el cambio de dispositivo. | Implementado: exportar los datos persistidos a JSON y restaurarlos desde un archivo validado. |
 
 ## Secuencia sugerida
 
@@ -41,7 +42,7 @@ Estos dos módulos se complementan: Inicio conduce a la sesión y el registro al
 2. Conectar Inicio, Actividad y el entrenamiento activo a la misma agenda persistente.
 3. Calcular Progreso a partir de los resultados registrados.
 4. Añadir objetivos personales y calentamientos cortos según lo que pidan las personas usuarias.
-5. Incorporar medios de ejercicios y respaldo cuando existan recursos y una necesidad validada.
+5. Incorporar medios de ejercicios adicionales cuando existan recursos y una necesidad validada.
 
 ## Módulos para evaluar más adelante
 

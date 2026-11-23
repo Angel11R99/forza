@@ -14,6 +14,12 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 
 El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El perfil personal, medidas corporales, notificaciones y sincronización entre dispositivos todavía no son datos persistidos. La agenda mantiene 120 días de sesiones próximas y sincroniza Inicio, Actividad y la sesión activa mediante el mismo repositorio.
 
+## Exportar y restaurar datos
+
+Desde Perfil se puede guardar un respaldo JSON o seleccionar uno para restaurarlo. El formato lleva el identificador `FORZA_BACKUP` y una versión propia independiente de la versión del esquema SQLite. La versión 1 contiene el plan, el historial con resultados por serie, la agenda, los objetivos personales, el borrador activo y la apariencia. No incluye el catálogo incluido ni las preferencias de perfil que todavía no se guardan localmente.
+
+La restauración limita el archivo a 10 MB y valida formato, versión, tipos, rangos y duplicados antes de mostrar la confirmación. Al confirmar, reemplaza en una transacción los datos locales incluidos; una operación fallida revierte esos cambios. La apariencia se aplica después de completar la restauración de SQLite. El archivo es una copia local portable, no sincroniza dispositivos ni cifra el contenido.
+
 Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. Los repositorios de `lib/data/repositories/` mantienen aislada la persistencia del ViewModel para permitir añadir una implementación remota más adelante.
 
 | Tabla SQLite | Uso |
