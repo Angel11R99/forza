@@ -361,14 +361,14 @@ class _AppScaffoldState extends State<AppScaffold>
           label: 'FORZA',
           child: ExcludeSemantics(
             child: Container(
-              width: 40,
-              height: 40,
+              width: 64,
+              height: 34,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: context.appColors.accent,
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: ForzaMark(color: context.appColors.inverseText, size: 22),
+              child: ForzaWordmark(color: context.appColors.inverseText),
             ),
           ),
         ),
