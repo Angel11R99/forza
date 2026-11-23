@@ -41,6 +41,6 @@ The validator compares keys and named placeholders, checks empty values, and par
 
 ## Current coverage audit
 
-The language and appearance settings flow is localized, as is the exercise module interface: library states, search, filters, alternatives, detail labels, accessibility text, catalog category/equipment labels, animation controls, and sourced technique notes use both ARB catalogs. Exercise names and the underlying catalog instructions remain Spanish source content; the English library shows a notice about that limitation. Server or imported user content needs a content contract before translating it safely.
+The app's shipped interface is localized in English and Spanish across settings, navigation, home, activity, exercise library/details, progress, onboarding and training, profile/account, backup/restore, validation, and demo content. All 1,324 bundled exercises have English and Spanish names and ordered instructions; group and equipment labels are localized for display. Date and number formatting follows the active locale.
 
-Home, activity, progress, onboarding/training, profile/account, backup/restore, shared navigation, form validation, and demo content still need feature-by-feature ARB migration. Some date formatting is explicitly pinned to `es_DO`. Full bilingual coverage is not yet complete.
+User-entered profile values and content imported from outside the bundled catalog are displayed as entered. They are not automatically translated, to avoid changing personal data or the meaning of externally supplied content. New interface strings must use the ARB catalogs; new exercise catalog imports must provide both languages as described in `third_party/exercises-dataset/SOURCE.md`.

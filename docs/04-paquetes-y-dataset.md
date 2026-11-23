@@ -28,7 +28,7 @@ Antes de añadir cada paquete:
 
 ## Dataset de ejercicios
 
-Fuente integrada: [jlfernandezfernandez/exercises-dataset-es](https://github.com/jlfernandezfernandez/exercises-dataset-es), derivada de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset) y fijada en `5a5dd652f102c34bb09fcb0db3c2f3ae4dd53cbe`. Proporciona 1.324 ejercicios con nombres e instrucciones en español. La importación conserva texto y metadatos, mapea equipo/grupo a etiquetas FORZA y elimina las referencias a los medios del dataset upstream. El transformador está en `tool/import_exercise_dataset.py`; la licencia y procedencia están en `third_party/exercises-dataset/`.
+Fuente integrada: [jlfernandezfernandez/exercises-dataset-es](https://github.com/jlfernandezfernandez/exercises-dataset-es), fijada en `5a5dd652f102c34bb09fcb0db3c2f3ae4dd53cbe`, más los nombres e instrucciones en inglés de [hasaneyldrm/exercises-dataset](https://github.com/hasaneyldrm/exercises-dataset), fijado en `7455efae41b330c265e7cd4b78dfa848e7ce5ebd`. Los 1.324 IDs coinciden. La importación conserva nombres e instrucciones en ambos idiomas, mapea equipo/grupo a etiquetas FORZA y elimina las referencias a medios del dataset upstream. El transformador está en `tool/import_exercise_dataset.py`; procedencia y licencias están en `third_party/exercises-dataset/`. Regenera ambos idiomas con `python tool/import_exercise_dataset.py <ruta-json-español> <ruta-json-inglés>`.
 
 FORZA incluye además ilustraciones animadas vectoriales bajo `third_party/flow-exercise-dataset/`, separadas del dataset upstream. Su procedencia, alcance de licencia y limitaciones están descritos en `third_party/flow-exercise-dataset/NOTICE.md`.
 
