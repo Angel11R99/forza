@@ -179,8 +179,13 @@ class _AppScaffoldState extends State<AppScaffold>
       trainingSettings.trainingDays,
       now,
     );
-    final sessionDate = activeDate ?? now;
-    final sessionIndex = days.indexOf((activeDate ?? nextSessionDate).weekday);
+    final planned = _viewModel.nextScheduledSession;
+    final sessionDate = activeDate ?? planned?.scheduledDate ?? now;
+    final sessionIndex =
+        planned?.sessionIndex ??
+        days.indexOf((activeDate ?? nextSessionDate).weekday);
+    await _viewModel.markSessionStarted(sessionDate);
+    if (!mounted) return;
     final record = await Navigator.of(context).push<WorkoutRecord>(
       MaterialPageRoute<WorkoutRecord>(
         builder: (_) => TrainingSessionFlow(
@@ -249,6 +254,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       onStartWorkout: _startHomeWorkout,
                       completedDates: _viewModel.completedDates,
                       hasActiveWorkout: _viewModel.hasActiveWorkout,
+                      scheduledSessions: _viewModel.scheduledSessions,
                     ),
                     ActivityView(
                       settings: _viewModel.trainingSettings,
@@ -256,6 +262,9 @@ class _AppScaffoldState extends State<AppScaffold>
                       onWorkoutCompleted: _saveWorkoutRecord,
                       onSessionClosed: _viewModel.refreshActiveWorkout,
                       workoutLogRepository: _viewModel.workoutLogRepository,
+                      scheduledSessions: _viewModel.scheduledSessions,
+                      onRescheduleSession: _viewModel.rescheduleSession,
+                      onSessionStarted: _viewModel.markSessionStarted,
                     ),
                     const ExercisesView(),
                     ProgressView(records: _viewModel.workoutRecords),

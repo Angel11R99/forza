@@ -99,7 +99,7 @@ class TrainingScheduleRepository {
       final source = await (database.select(
         database.scheduledTrainingSessions,
       )..where((row) => row.scheduledDate.equals(sourceKey))).getSingleOrNull();
-      if (source == null || source.status == 'completed') return false;
+      if (source == null || source.status != 'pending') return false;
       final target = await (database.select(
         database.scheduledTrainingSessions,
       )..where((row) => row.scheduledDate.equals(targetKey))).getSingleOrNull();
@@ -121,6 +121,14 @@ class TrainingScheduleRepository {
     await (database.update(database.scheduledTrainingSessions)
           ..where((row) => row.scheduledDate.equals(_key(date))))
         .write(db.ScheduledTrainingSessionsCompanion(status: Value(status)));
+  }
+
+  Future<void> resetInProgress() async {
+    await (database.update(
+      database.scheduledTrainingSessions,
+    )..where((row) => row.status.equals('in_progress'))).write(
+      const db.ScheduledTrainingSessionsCompanion(status: Value('pending')),
+    );
   }
 
   static ScheduledTrainingSession _toModel(db.ScheduledTrainingSession row) =>

@@ -15,6 +15,7 @@ import '../../profile/models/profile_settings.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../data/repositories/workout_log_repository.dart';
+import '../../../../domain/models/scheduled_training_session.dart';
 import 'reschedule_session_page.dart';
 
 class ActivityView extends StatefulWidget {
@@ -25,6 +26,9 @@ class ActivityView extends StatefulWidget {
     required this.onWorkoutCompleted,
     required this.onSessionClosed,
     required this.workoutLogRepository,
+    required this.scheduledSessions,
+    required this.onRescheduleSession,
+    required this.onSessionStarted,
   });
 
   final TrainingSettings settings;
@@ -32,6 +36,9 @@ class ActivityView extends StatefulWidget {
   final Future<void> Function(WorkoutRecord) onWorkoutCompleted;
   final Future<void> Function() onSessionClosed;
   final WorkoutLogRepository workoutLogRepository;
+  final List<ScheduledTrainingSession> scheduledSessions;
+  final Future<bool> Function(DateTime, DateTime) onRescheduleSession;
+  final Future<void> Function(DateTime) onSessionStarted;
 
   @override
   State<ActivityView> createState() => _ActivityViewState();
@@ -41,8 +48,6 @@ class _ActivityViewState extends State<ActivityView> {
   static const _planBuilder = TrainingPlanBuilder();
   late DateTime _selectedDate;
   late DateTime _visibleMonth;
-  final Map<DateTime, _TrainingSession> _movedSessions = {};
-  final Set<DateTime> _removedDefaultSessions = {};
 
   @override
   void initState() {
@@ -93,10 +98,15 @@ class _ActivityViewState extends State<ActivityView> {
     );
     if (!mounted || target == null) return;
 
+    final moved = await widget.onRescheduleSession(source, target);
+    if (!mounted) return;
+    if (!moved) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ese día ya tiene una sesión.')),
+      );
+      return;
+    }
     setState(() {
-      _movedSessions.remove(source);
-      _removedDefaultSessions.add(source);
-      _movedSessions[target] = session;
       _selectedDate = target;
       _visibleMonth = DateTime(target.year, target.month);
     });
@@ -107,16 +117,21 @@ class _ActivityViewState extends State<ActivityView> {
   }
 
   Future<void> _startSession() async {
+    final planned = _scheduledForDate(_selectedDate);
+    await widget.onSessionStarted(_selectedDate);
+    if (!mounted) return;
     final record = await Navigator.of(context).push<WorkoutRecord>(
       MaterialPageRoute<WorkoutRecord>(
         builder: (_) => TrainingSessionFlow(
           settings: widget.settings,
           workoutLogRepository: widget.workoutLogRepository,
-          sessionIndex: _sessionIndexForDate(_selectedDate),
+          sessionIndex:
+              planned?.sessionIndex ?? _sessionIndexForDate(_selectedDate),
           scheduledDate: _selectedDate,
         ),
       ),
     );
+    if (!mounted) return;
     await widget.onSessionClosed();
     if (record == null || !mounted) return;
     await widget.onWorkoutCompleted(record);
@@ -314,6 +329,8 @@ class _ActivityViewState extends State<ActivityView> {
                   isCompleted: widget.records.any(
                     (record) => _isSameDay(record.date, _selectedDate),
                   ),
+                  isInProgress:
+                      _scheduledForDate(_selectedDate)?.isInProgress ?? false,
                   canComplete: !_dateOnly(_selectedDate)
                       .isAfter(_dateOnly(DateTime.now())),
                   onReschedule: _reschedule,
@@ -330,9 +347,27 @@ class _ActivityViewState extends State<ActivityView> {
 
   _TrainingSession? _sessionForDate(DateTime date) {
     final normalizedDate = _dateOnly(date);
-    final movedSession = _movedSessions[normalizedDate];
-    if (movedSession != null) return movedSession;
-    if (_removedDefaultSessions.contains(normalizedDate)) return null;
+    final persisted = _scheduledForDate(normalizedDate);
+    if (persisted != null) {
+      return _TrainingSession(
+        title: persisted.title,
+        detail: persisted.focus,
+        duration: '${persisted.durationMinutes} min',
+        exerciseCount: persisted.exerciseCount,
+        icon: switch (persisted.sessionIndex % 3) {
+          0 => Icons.fitness_center_rounded,
+          1 => Icons.directions_run_rounded,
+          _ => Icons.bolt_rounded,
+        },
+      );
+    }
+    if (widget.scheduledSessions.any(
+      (item) =>
+          item.originalDate != null &&
+          _isSameDay(item.originalDate!, normalizedDate),
+    )) {
+      return null;
+    }
 
     final plannedSessions = _planBuilder
         .buildWeek(
@@ -360,6 +395,13 @@ class _ActivityViewState extends State<ActivityView> {
         _ => Icons.bolt_rounded,
       },
     );
+  }
+
+  ScheduledTrainingSession? _scheduledForDate(DateTime date) {
+    for (final session in widget.scheduledSessions) {
+      if (_isSameDay(session.scheduledDate, date)) return session;
+    }
+    return null;
   }
 
   int _sessionIndexForDate(DateTime date) {
@@ -428,6 +470,7 @@ class _DayDetailCard extends StatelessWidget {
     required this.date,
     required this.session,
     required this.isCompleted,
+    required this.isInProgress,
     required this.canComplete,
     required this.onReschedule,
     required this.onStart,
@@ -437,6 +480,7 @@ class _DayDetailCard extends StatelessWidget {
   final DateTime date;
   final _TrainingSession? session;
   final bool isCompleted;
+  final bool isInProgress;
   final bool canComplete;
   final VoidCallback onReschedule;
   final VoidCallback onStart;
@@ -550,6 +594,24 @@ class _DayDetailCard extends StatelessWidget {
               ),
             ),
           ],
+          if (isInProgress) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.x3),
+              decoration: BoxDecoration(
+                color: context.appColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(AppRadius.control),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.play_circle_outline_rounded, size: 19),
+                  SizedBox(width: AppSpacing.x2),
+                  Text('Entrenamiento en curso'),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: AppSpacing.x3),
           SizedBox(
             width: double.infinity,
@@ -558,14 +620,16 @@ class _DayDetailCard extends StatelessWidget {
               icon: const Icon(Icons.play_arrow_rounded, size: 18),
               label: Text(
                 canComplete
-                    ? isCompleted
+                    ? isInProgress
+                          ? 'Continuar entrenamiento'
+                          : isCompleted
                           ? 'Repetir entrenamiento'
                           : 'Empezar sesión'
                     : 'Sesión programada',
               ),
             ),
           ),
-          if (!isCompleted && canComplete) ...[
+          if (!isCompleted && !isInProgress && canComplete) ...[
             const SizedBox(height: AppSpacing.x2),
             SizedBox(
               width: double.infinity,

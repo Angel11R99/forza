@@ -9,6 +9,7 @@ import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../profile/models/profile_settings.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
+import '../../../../domain/models/scheduled_training_session.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({
@@ -20,6 +21,7 @@ class HomeView extends StatelessWidget {
     required this.onEditPlan,
     required this.completedDates,
     this.hasActiveWorkout = false,
+    this.scheduledSessions = const [],
   });
 
   final VoidCallback onShowActivity;
@@ -29,6 +31,7 @@ class HomeView extends StatelessWidget {
   final VoidCallback onEditPlan;
   final Set<DateTime> completedDates;
   final bool hasActiveWorkout;
+  final List<ScheduledTrainingSession> scheduledSessions;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +39,24 @@ class HomeView extends StatelessWidget {
       MediaQuery.sizeOf(context).width,
     );
     final now = DateTime.now();
-    final nextTrainingDate = _nextTrainingDate(settings.trainingDays, now);
+    final activeSession = scheduledSessions
+        .where((session) => session.isInProgress)
+        .firstOrNull;
+    final upcomingSession = scheduledSessions
+        .where(
+          (session) =>
+              session.status == 'pending' &&
+              !DateTime(
+                session.scheduledDate.year,
+                session.scheduledDate.month,
+                session.scheduledDate.day,
+              ).isBefore(DateTime(now.year, now.month, now.day)),
+        )
+        .firstOrNull;
+    final plannedSession = activeSession ?? upcomingSession;
+    final nextTrainingDate =
+        plannedSession?.scheduledDate ??
+        _nextTrainingDate(settings.trainingDays, now);
     final greeting = switch (now.hour) {
       < 12 => 'Buenos días',
       < 19 => 'Buenas tardes',
@@ -112,6 +132,7 @@ class HomeView extends StatelessWidget {
                   onPressed: onStartWorkout,
                   sessionDate: nextTrainingDate,
                   hasActiveWorkout: hasActiveWorkout,
+                  scheduledSession: plannedSession,
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
@@ -122,6 +143,7 @@ class HomeView extends StatelessWidget {
                 _WeeklySummary(
                   settings: settings,
                   completedDates: completedDates,
+                  scheduledSessions: scheduledSessions,
                   onTap: onShowActivity,
                 ),
               ],
@@ -139,12 +161,14 @@ class _TodayWorkoutCard extends StatelessWidget {
     required this.onPressed,
     required this.sessionDate,
     required this.hasActiveWorkout,
+    required this.scheduledSession,
   });
 
   final TrainingSettings settings;
   final VoidCallback onPressed;
   final DateTime sessionDate;
   final bool hasActiveWorkout;
+  final ScheduledTrainingSession? scheduledSession;
 
   static const _planBuilder = TrainingPlanBuilder();
 
@@ -152,15 +176,17 @@ class _TodayWorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final days = settings.trainingDays.toList()..sort();
     final todayIndex = days.indexOf(sessionDate.weekday);
-    final exerciseCount = _planBuilder
-        .buildSession(
-          sessionIndex: todayIndex < 0 ? 0 : todayIndex,
-          sessionMinutes: settings.sessionMinutes,
-          goal: settings.goal,
-          experience: settings.experience,
-          equipment: settings.equipment,
-        )
-        .length;
+    final exerciseCount =
+        scheduledSession?.exerciseCount ??
+        _planBuilder
+            .buildSession(
+              sessionIndex: todayIndex < 0 ? 0 : todayIndex,
+              sessionMinutes: settings.sessionMinutes,
+              goal: settings.goal,
+              experience: settings.experience,
+              equipment: settings.equipment,
+            )
+            .length;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.x6),
       decoration: BoxDecoration(
@@ -196,7 +222,7 @@ class _TodayWorkoutCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
-            '${settings.sessionMinutes} min por sesión   ·   $exerciseCount ejercicios',
+            '${scheduledSession?.durationMinutes ?? settings.sessionMinutes} min por sesión   ·   $exerciseCount ejercicios',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: context.appColors.inverseText.withValues(alpha: 0.82),
             ),
@@ -228,11 +254,13 @@ class _WeeklySummary extends StatelessWidget {
   const _WeeklySummary({
     required this.settings,
     required this.completedDates,
+    required this.scheduledSessions,
     required this.onTap,
   });
 
   final TrainingSettings settings;
   final Set<DateTime> completedDates;
+  final List<ScheduledTrainingSession> scheduledSessions;
   final VoidCallback onTap;
 
   @override
@@ -241,10 +269,31 @@ class _WeeklySummary extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final weekStart = today.subtract(Duration(days: today.weekday - 1));
-    final completedCount = days.where((weekday) {
-      final scheduled = weekStart.add(Duration(days: weekday - 1));
-      return completedDates.any((date) => _sameDate(date, scheduled));
-    }).length;
+    final weekEnd = weekStart.add(const Duration(days: 7));
+    final persistedWeek = scheduledSessions
+        .where(
+          (session) =>
+              !session.scheduledDate.isBefore(weekStart) &&
+              session.scheduledDate.isBefore(weekEnd),
+        )
+        .toList(growable: false);
+    final completedCount = persistedWeek.isEmpty
+        ? days.where((weekday) {
+            final scheduled = weekStart.add(Duration(days: weekday - 1));
+            return completedDates.any((date) => _sameDate(date, scheduled));
+          }).length
+        : persistedWeek
+              .where(
+                (session) =>
+                    session.isCompleted ||
+                    completedDates.any(
+                      (date) => _sameDate(date, session.scheduledDate),
+                    ),
+              )
+              .length;
+    final weeklyTarget = persistedWeek.isEmpty
+        ? days.length
+        : persistedWeek.length;
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
       borderColor: Theme.of(context).brightness == Brightness.dark
@@ -262,7 +311,7 @@ class _WeeklySummary extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '$completedCount de ${days.length} sesiones',
+                      '$completedCount de $weeklyTarget sesiones',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
@@ -280,18 +329,29 @@ class _WeeklySummary extends StatelessWidget {
               const SizedBox(height: AppSpacing.x4),
               Row(
                 children: [
-                  for (final weekday in days)
-                    Expanded(
-                      child: _WeekdayProgress(
-                        weekday: weekday,
-                        date: weekStart.add(Duration(days: weekday - 1)),
-                        completedDates: completedDates,
-                        isToday: _sameDate(
-                          weekStart.add(Duration(days: weekday - 1)),
-                          today,
+                  if (persistedWeek.isNotEmpty)
+                    for (final session in persistedWeek)
+                      Expanded(
+                        child: _WeekdayProgress(
+                          weekday: session.scheduledDate.weekday,
+                          date: session.scheduledDate,
+                          completedDates: completedDates,
+                          isToday: _sameDate(session.scheduledDate, today),
+                        ),
+                      )
+                  else
+                    for (final weekday in days)
+                      Expanded(
+                        child: _WeekdayProgress(
+                          weekday: weekday,
+                          date: weekStart.add(Duration(days: weekday - 1)),
+                          completedDates: completedDates,
+                          isToday: _sameDate(
+                            weekStart.add(Duration(days: weekday - 1)),
+                            today,
+                          ),
                         ),
                       ),
-                    ),
                 ],
               ),
               const SizedBox(height: AppSpacing.x3),
