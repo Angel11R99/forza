@@ -501,11 +501,8 @@ class _StepProgress extends StatelessWidget {
   }
 }
 
-String _goalLabel(BuildContext context, String goal) => switch (goal) {
-  'Ganar fuerza' => context.l10n.onboardingStrengthGoal,
-  'Ganar músculo' => context.l10n.onboardingMuscleGoal,
-  _ => context.l10n.onboardingHabitGoal,
-};
+String _goalLabel(BuildContext context, String goal) =>
+    context.localizeTrainingGoal(goal);
 
 String _experienceLabel(BuildContext context, String experience) =>
     switch (experience) {

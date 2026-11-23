@@ -400,9 +400,5 @@ String _weekStartLabel(BuildContext context, String day) => day == 'Lunes'
     ? context.l10n.profileWeekMonday
     : context.l10n.profileWeekSunday;
 
-String _localizedGoal(BuildContext context, String goal) => switch (goal) {
-  'Ganar fuerza' => context.l10n.onboardingStrengthGoal,
-  'Ganar músculo' => context.l10n.onboardingMuscleGoal,
-  'Crear el hábito' => context.l10n.onboardingHabitGoal,
-  _ => goal,
-};
+String _localizedGoal(BuildContext context, String goal) =>
+    context.localizeTrainingGoal(goal);

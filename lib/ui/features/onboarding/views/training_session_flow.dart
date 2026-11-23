@@ -1282,12 +1282,8 @@ String _localizedPlanTitle(BuildContext context, String title) =>
       _ => context.l10n.onboardingFullBody,
     };
 
-String _localizedGoal(BuildContext context, String goal) => switch (goal) {
-  'Ganar fuerza' => context.l10n.onboardingStrengthGoal,
-  'Ganar músculo' => context.l10n.onboardingMuscleGoal,
-  'Crear el hábito' => context.l10n.onboardingHabitGoal,
-  _ => goal,
-};
+String _localizedGoal(BuildContext context, String goal) =>
+    context.localizeTrainingGoal(goal);
 
 String _localizedExerciseDetail(BuildContext context, String detail) {
   final parts = detail.split(' · ');

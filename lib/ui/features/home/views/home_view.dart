@@ -225,7 +225,7 @@ class _TodayWorkoutCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.x4),
           Text(
-            settings.goal,
+            context.localizeTrainingGoal(settings.goal),
             style: Theme.of(context).textTheme.headlineSmall
                 ?.copyWith(color: context.appColors.inverseText),
           ),
