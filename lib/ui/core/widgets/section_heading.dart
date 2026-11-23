@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 
 class SectionHeading extends StatelessWidget {
@@ -32,6 +33,10 @@ class SectionHeading extends StatelessWidget {
                 foregroundColor: context.appColors.accent,
                 minimumSize: const Size(48, 48),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.small),
+                ),
+                overlayColor: context.appColors.accentSoft,
               ),
               child: Text(actionLabel!),
             ),
