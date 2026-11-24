@@ -3725,6 +3725,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upper body'**
   String get progressUpperBody;
+
+  /// No description provided for @sessionStartTimedSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Start 30 second set'**
+  String get sessionStartTimedSet;
+
+  /// No description provided for @sessionTimedSetRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause timed set'**
+  String get sessionTimedSetRunning;
 }
 
 class _AppLocalizationsDelegate

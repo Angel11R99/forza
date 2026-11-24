@@ -14,6 +14,9 @@ import '../../../../domain/models/workout_record.dart';
 import '../../../../data/repositories/workout_log_repository.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
+import '../../../../data/repositories/demo_exercise_repository.dart';
+import '../../../../domain/models/exercise.dart';
+import '../../exercises/widgets/exercise_animation.dart';
 
 class TrainingSessionFlow extends StatefulWidget {
   const TrainingSessionFlow({
@@ -37,6 +40,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   static const _planBuilder = TrainingPlanBuilder();
   WorkoutLogRepository get _workoutRepository => widget.workoutLogRepository;
   final Map<int, List<WorkoutSetResult>> _setResults = {};
+  final Set<String> _completedSets = {};
+  List<Exercise> _catalog = const [];
   bool _restoring = true;
 
   PlannedTrainingSession get _plannedSession => _planBuilder.buildWeek(
@@ -77,8 +82,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   int _currentExercise = 0;
   int _remainingRestSeconds = 45;
   int _elapsedSeconds = 0;
+  int _timedRemainingSeconds = 30;
+  bool _timedSetRunning = false;
+  bool _resumeTimedSet = false;
   Timer? _restTimer;
   Timer? _sessionTimer;
+  Timer? _timedSetTimer;
 
   @override
   void initState() {
@@ -88,6 +97,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   Future<void> _restoreDraft() async {
     try {
+      await DemoExerciseRepository.instance.load();
+      _catalog = DemoExerciseRepository.instance.search();
       final raw = await _workoutRepository.loadActiveWorkout();
       if (raw != null) {
         final draft = jsonDecode(raw) as Map<String, Object?>;
@@ -103,6 +114,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           );
           _elapsedSeconds = draft['elapsedSeconds'] as int? ?? 0;
           _remainingRestSeconds = draft['remainingRestSeconds'] as int? ?? 45;
+          _timedRemainingSeconds = draft['timedRemainingSeconds'] as int? ?? 30;
+          _resumeTimedSet = draft['resumeTimedSet'] as bool? ?? false;
           _resumeScreen = _SessionScreen.values.firstWhere(
             (screen) => screen.name == draft['resumeScreen'],
             orElse: () => _SessionScreen.exerciseList,
@@ -113,6 +126,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             final result = WorkoutSetResult.fromJson(item);
             (_setResults[result.exercisePosition] ??= []).add(result);
           }
+          _completedSets.addAll(
+            (draft['completedSets'] as List<Object?>? ?? const [])
+                .whereType<String>(),
+          );
         }
       }
     } on Object {
@@ -132,12 +149,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       'currentExercise': _currentExercise,
       'elapsedSeconds': _elapsedSeconds,
       'remainingRestSeconds': _remainingRestSeconds,
+      'timedRemainingSeconds': _timedRemainingSeconds,
+      'resumeTimedSet': _timedSetRunning || _resumeTimedSet,
       'resumeScreen':
           (_screen == _SessionScreen.paused ? _resumeScreen : _screen).name,
       'sets': [
         for (final sets in _setResults.values)
           ...sets.map((set) => set.toJson()),
       ],
+      'completedSets': _completedSets.toList(),
     });
   }
 
@@ -145,6 +165,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   void dispose() {
     _restTimer?.cancel();
     _sessionTimer?.cancel();
+    _timedSetTimer?.cancel();
     super.dispose();
   }
 
@@ -468,19 +489,23 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             exercise: _exercises[index],
             index: index,
             current: index == _currentExercise,
-            completed: index < _currentExercise,
-            onTap: () {
-              _restTimer?.cancel();
-              setState(() {
-                _currentExercise = index;
-                _screen = _SessionScreen.exerciseList;
-              });
-              _saveDraft();
-            },
+            completed: _isExerciseComplete(index),
+            onTap: index <= _currentExercise
+                ? () {
+                    _restTimer?.cancel();
+                    setState(() {
+                      _currentExercise = index;
+                      _screen = _SessionScreen.exerciseList;
+                    });
+                    _saveDraft();
+                  }
+                : () {},
           ),
           const SizedBox(height: AppSpacing.x3),
         ],
         if (_currentExercise < _exercises.length) ...[
+          _buildGuidedExercise(context),
+          const SizedBox(height: AppSpacing.x4),
           Text(
             context.l10n.sessionSetLog,
             style: Theme.of(context).textTheme.titleLarge,
@@ -495,6 +520,29 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               label: context.l10n.sessionSet(setIndex + 1),
               isTimed: _exercises[_currentExercise].isTimed,
               result: _resultFor(_currentExercise, setIndex),
+              canComplete: _exercises[_currentExercise].isTimed
+                  ? (_resultFor(_currentExercise, setIndex)?.durationSeconds ??
+                            0) >
+                        0
+                  : (_resultFor(_currentExercise, setIndex)?.repetitions ?? 0) >
+                        0,
+              completed: _completedSets.contains('$_currentExercise:$setIndex'),
+              onCompletedChanged: (completed) {
+                final result = _resultFor(_currentExercise, setIndex);
+                final hasValue = _exercises[_currentExercise].isTimed
+                    ? (result?.durationSeconds ?? 0) > 0
+                    : (result?.repetitions ?? 0) > 0;
+                if (completed && !hasValue) return;
+                setState(() {
+                  final key = '$_currentExercise:$setIndex';
+                  if (completed) {
+                    _completedSets.add(key);
+                  } else {
+                    _completedSets.remove(key);
+                  }
+                });
+                _saveDraft();
+              },
               onChanged: (result) {
                 final sets = _setResults.putIfAbsent(
                   _currentExercise,
@@ -526,6 +574,90 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         const SizedBox(height: AppSpacing.x2),
         const _SessionSaveNote(),
       ],
+    );
+  }
+
+  Widget _buildGuidedExercise(BuildContext context) {
+    final current = _exercises[_currentExercise];
+    final matched = _catalog.cast<Exercise?>().firstWhere(
+      (exercise) =>
+          exercise != null &&
+          (exercise.name.toLowerCase() == current.name.toLowerCase() ||
+              (exercise.englishName?.toLowerCase() ==
+                  current.name.toLowerCase())),
+      orElse: () => null,
+    );
+    final instructions = matched == null
+        ? const <String>[]
+        : localizedExerciseInstructions(context, matched);
+    return AppSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.sessionProgress(
+              _currentExercise + 1,
+              _exercises.length,
+            ),
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          const SizedBox(height: AppSpacing.x2),
+          if (matched != null) ...[
+            SizedBox(
+              height: 190,
+              width: double.infinity,
+              child: ExerciseAnimationView(
+                exerciseId: matched.id,
+                animation: matched.animation,
+                label: localizedTrainingExerciseName(context, current.name),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x3),
+          ],
+          Text(
+            localizedTrainingExerciseName(context, current.name),
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: AppSpacing.x2),
+          for (var i = 0; i < instructions.length; i++) ...[
+            Text(
+              '${i + 1}. ${instructions[i]}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (i < instructions.length - 1)
+              const SizedBox(height: AppSpacing.x2),
+          ],
+          if (instructions.isEmpty)
+            Text(
+              _localizedExerciseDetail(context, current.detail),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          if (current.isTimed) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Center(
+              child: Text(
+                '00:${_timedRemainingSeconds.toString().padLeft(2, '0')}',
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _timedSetRunning ? _pauseTimedSet : _startTimedSet,
+                icon: Icon(
+                  _timedSetRunning ? Icons.pause_rounded : Icons.timer_outlined,
+                ),
+                label: Text(
+                  _timedSetRunning
+                      ? context.l10n.sessionTimedSetRunning
+                      : context.l10n.sessionStartTimedSet,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -677,7 +809,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               const SizedBox(width: AppSpacing.x4),
               Expanded(
                 child: Text(
-                  context.l10n.sessionExercisesCompleted(_exercises.length),
+                  context.l10n.sessionExercisesCompleted(
+                    _completedExerciseCount,
+                  ),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -719,7 +853,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               _SummaryMetric(
                 icon: Icons.fitness_center_rounded,
                 label: context.l10n.sessionExerciseCount,
-                value: '${_exercises.length}',
+                value: '$_completedExerciseCount',
               ),
               const Divider(height: AppSpacing.x6),
               _SummaryMetric(
@@ -767,7 +901,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ],
         ),
         _SessionScreen.exerciseList => FilledButton(
-          onPressed: _completeCurrentExercise,
+          onPressed: _isExerciseComplete(_currentExercise)
+              ? _completeCurrentExercise
+              : null,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 13),
             child: Text(
@@ -797,9 +933,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             ),
             const SizedBox(height: AppSpacing.x2),
             OutlinedButton(
-              onPressed: () =>
-                  setState(() => _screen = _SessionScreen.confirmAbandon),
-              child: Text(context.l10n.sessionAbandonButton),
+              onPressed: _finishEarly,
+              child: Text(context.l10n.sessionFinish),
             ),
           ],
         ),
@@ -865,6 +1000,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   }
 
   void _completeCurrentExercise() {
+    if (!_isExerciseComplete(_currentExercise)) return;
     if (_currentExercise >= _exercises.length - 1) {
       _restTimer?.cancel();
       _sessionTimer?.cancel();
@@ -876,6 +1012,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     setState(() {
       _currentExercise++;
       _remainingRestSeconds = 45;
+      _timedRemainingSeconds = 30;
       _screen = _SessionScreen.rest;
     });
     _saveDraft();
@@ -912,6 +1049,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   void _pause() {
     _resumeScreen = _screen;
     _restTimer?.cancel();
+    _resumeTimedSet = _timedSetRunning;
+    _timedSetTimer?.cancel();
+    _timedSetRunning = false;
     _sessionTimer?.cancel();
     setState(() => _screen = _SessionScreen.paused);
     _saveDraft();
@@ -924,13 +1064,91 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       _startSessionTimer();
     }
     if (_resumeScreen == _SessionScreen.rest) _startRestTimer();
+    if (_resumeScreen == _SessionScreen.exerciseList && _resumeTimedSet) {
+      _resumeTimedSet = false;
+      _startTimedSet();
+    }
     _saveDraft();
   }
 
+  void _startTimedSet() {
+    if (!_exercises[_currentExercise].isTimed ||
+        _isExerciseComplete(_currentExercise)) {
+      return;
+    }
+    _timedSetTimer?.cancel();
+    if (_timedRemainingSeconds == 0) {
+      setState(() => _timedRemainingSeconds = 30);
+    }
+    setState(() => _timedSetRunning = true);
+    _timedSetTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return timer.cancel();
+      if (_timedRemainingSeconds <= 1) {
+        timer.cancel();
+        final setIndex =
+            List.generate(
+              _exercises[_currentExercise].setCount,
+              (index) => index,
+            ).firstWhere(
+              (index) => !_completedSets.contains('$_currentExercise:$index'),
+            );
+        final sets = _setResults.putIfAbsent(_currentExercise, () => []);
+        final existing = sets.indexWhere((set) => set.setIndex == setIndex);
+        final result = WorkoutSetResult(
+          exercisePosition: _currentExercise,
+          setIndex: setIndex,
+          durationSeconds: 30,
+        );
+        setState(() {
+          _timedRemainingSeconds = 0;
+          _timedSetRunning = false;
+          _completedSets.add('$_currentExercise:$setIndex');
+          if (existing < 0) {
+            sets.add(result);
+          } else {
+            sets[existing] = result;
+          }
+        });
+        _saveDraft();
+      } else {
+        setState(() => _timedRemainingSeconds--);
+      }
+    });
+  }
+
+  void _pauseTimedSet() {
+    _timedSetTimer?.cancel();
+    setState(() => _timedSetRunning = false);
+  }
+
   Future<void> _finishWithRecord() async {
+    await _saveRecord();
+  }
+
+  Future<void> _finishEarly() async {
+    if (_completedSets.isEmpty) {
+      setState(() => _screen = _SessionScreen.confirmAbandon);
+      return;
+    }
+    await _saveRecord();
+  }
+
+  Future<void> _saveRecord() async {
+    _restTimer?.cancel();
+    _sessionTimer?.cancel();
     final durationMinutes = (_elapsedSeconds / 60).ceil().clamp(1, 99);
     await _workoutRepository.clearActiveWorkout();
     if (!mounted) return;
+    final results = [for (final sets in _setResults.values) ...sets]
+        .where(
+          (result) => _completedSets.contains(
+            '${result.exercisePosition}:${result.setIndex}',
+          ),
+        )
+        .toList(growable: false);
+    final completedPositions = results
+        .map((result) => result.exercisePosition)
+        .toSet();
     Navigator.of(context).pop(
       WorkoutRecord(
         scheduledDate: widget.scheduledDate,
@@ -938,12 +1156,24 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         title: _plannedSession.title,
         goal: widget.settings.goal,
         durationMinutes: durationMinutes,
-        exerciseCount: _exercises.length,
-        exercises: _exercises.map((exercise) => exercise.name).toList(),
-        setResults: [for (final sets in _setResults.values) ...sets],
+        exerciseCount: completedPositions.length,
+        exercises: [
+          for (final index in completedPositions.toList()..sort())
+            _exercises[index].name,
+        ],
+        setResults: results,
       ),
     );
   }
+
+  bool _isExerciseComplete(int exercise) => List.generate(
+    _exercises[exercise].setCount,
+    (index) => index,
+  ).every((index) => _completedSets.contains('$exercise:$index'));
+  int get _completedExerciseCount =>
+      {for (final key in _completedSets) int.tryParse(key.split(':').first)}
+          .whereType<int>()
+          .length;
 
   WorkoutSetResult? _resultFor(int exercise, int set) {
     for (final result in _setResults[exercise] ?? const <WorkoutSetResult>[]) {
@@ -1004,12 +1234,18 @@ class _WorkoutSetEditor extends StatelessWidget {
     required this.label,
     required this.isTimed,
     required this.result,
+    required this.canComplete,
+    required this.completed,
+    required this.onCompletedChanged,
     required this.onChanged,
   });
 
   final String label;
   final bool isTimed;
   final WorkoutSetResult? result;
+  final bool canComplete;
+  final bool completed;
+  final ValueChanged<bool> onCompletedChanged;
   final ValueChanged<WorkoutSetResult> onChanged;
 
   @override
@@ -1021,7 +1257,22 @@ class _WorkoutSetEditor extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: Theme.of(context).textTheme.titleSmall),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              Checkbox(
+                value: completed,
+                onChanged: completed || canComplete
+                    ? (value) => onCompletedChanged(value ?? false)
+                    : null,
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.x2),
           Row(
             children: [
