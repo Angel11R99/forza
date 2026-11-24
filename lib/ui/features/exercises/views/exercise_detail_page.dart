@@ -97,25 +97,40 @@ class ExerciseDetailPage extends StatelessWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: AppSpacing.x3),
-                            AppSurfaceCard(
-                              padding: EdgeInsets.zero,
-                              child: Column(
-                                children: [
-                                  for (
-                                    var i = 0;
-                                    i < instructions.length;
-                                    i++
-                                  ) ...[
-                                    _InstructionCard(
-                                      index: i + 1,
-                                      text: instructions[i],
+                            for (var i = 0; i < instructions.length; i++) ...[
+                              AppSurfaceCard(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${context.l10n.exerciseInstructionStep} ${i + 1}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color:
+                                                context.appColors.textPrimary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
-                                    if (i < instructions.length - 1)
-                                      const Divider(height: 1, indent: 66),
+                                    const SizedBox(height: AppSpacing.x2),
+                                    Text(
+                                      instructions[i],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color:
+                                                context.appColors.textSecondary,
+                                            height: 1.45,
+                                          ),
+                                    ),
                                   ],
-                                ],
+                                ),
                               ),
-                            ),
+                              if (i < instructions.length - 1)
+                                const SizedBox(height: AppSpacing.x3),
+                            ],
                             if (guideNotes != null) ...[
                               const SizedBox(height: AppSpacing.x8),
                               Text(
@@ -311,46 +326,6 @@ class _InfoChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.control),
       ),
       child: Text(label, style: Theme.of(context).textTheme.labelLarge),
-    );
-  }
-}
-
-class _InstructionCard extends StatelessWidget {
-  const _InstructionCard({required this.index, required this.text});
-
-  final int index;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.x4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: context.appColors.accentSoft,
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              '$index',
-              style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: context.appColors.accent),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.x3),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.x1),
-              child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

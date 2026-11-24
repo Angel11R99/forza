@@ -392,6 +392,12 @@ abstract class AppLocalizations {
   /// **'How to do it'**
   String get exerciseHowTo;
 
+  /// No description provided for @exerciseInstructionStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get exerciseInstructionStep;
+
   /// No description provided for @exerciseGuideHeading.
   ///
   /// In en, this message translates to:
