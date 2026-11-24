@@ -32,12 +32,8 @@ class LocaleController extends ChangeNotifier {
       _ => null,
     };
     if (_locale == next) return;
+    await _repository.saveLanguageCode(next?.languageCode);
     _locale = next;
     notifyListeners();
-    try {
-      await _repository.saveLanguageCode(next?.languageCode);
-    } on Object {
-      // Keep the selection for the current run if storage is unavailable.
-    }
   }
 }

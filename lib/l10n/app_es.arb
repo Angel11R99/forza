@@ -309,6 +309,8 @@
   "profileWeekStartTitle": "Inicio de semana",
   "profileHapticTitle": "Respuesta háptica",
   "profileSavePreferences": "Guardar preferencias",
+  "profileSettingsLoadFailed": "No se pudieron cargar tus preferencias. Inténtalo otra vez.",
+  "profileSettingsSaveFailed": "No se pudieron guardar tus preferencias. Inténtalo otra vez.",
   "profileNotificationsPageTitle": "Notificaciones",
   "profileWorkoutReminders": "Recordatorios de entrenamiento",
   "profileReminderDescription": "Elige una hora que te funcione.",

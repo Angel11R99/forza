@@ -1,0 +1,106 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:forza/data/repositories/profile_settings_repository.dart';
+import 'package:forza/ui/features/profile/models/profile_settings.dart';
+
+void main() {
+  test(
+    'saves and restores every profile preference without writing defaults',
+    () async {
+      final storage = _MemoryProfilePreferencesStorage();
+      final firstRepository = ProfileSettingsRepository(storage: storage);
+
+      final defaultPreferences = await firstRepository.loadAppPreferences();
+      expect(defaultPreferences.weightUnit, 'kg');
+      expect(defaultPreferences.weekStartsOn, 'Lunes');
+      expect(defaultPreferences.hapticsEnabled, isTrue);
+      final defaultNotifications = await firstRepository.loadNotifications();
+      expect(defaultNotifications.workoutReminders, isTrue);
+      expect(defaultNotifications.weeklySummary, isTrue);
+      expect(defaultNotifications.personalRecordAlerts, isFalse);
+      expect(defaultNotifications.reminderHour, 18);
+      expect(defaultNotifications.reminderMinute, 0);
+      final defaultPrivacy = await firstRepository.loadPrivacy();
+      expect(defaultPrivacy.privateProfile, isTrue);
+      expect(defaultPrivacy.shareWorkoutActivity, isFalse);
+      expect(storage.values, isEmpty);
+
+      const appPreferences = AppPreferences(
+        weightUnit: 'lb',
+        weekStartsOn: 'Domingo',
+        hapticsEnabled: false,
+      );
+      const notifications = NotificationSettings(
+        workoutReminders: false,
+        weeklySummary: false,
+        personalRecordAlerts: true,
+        reminderHour: 7,
+        reminderMinute: 35,
+      );
+      const privacy = PrivacySettings(
+        privateProfile: false,
+        shareWorkoutActivity: true,
+      );
+      await firstRepository.saveAppPreferences(appPreferences);
+      await firstRepository.saveNotifications(notifications);
+      await firstRepository.savePrivacy(privacy);
+
+      final reopenedRepository = ProfileSettingsRepository(storage: storage);
+      final restoredAppPreferences = await reopenedRepository
+          .loadAppPreferences();
+      final restoredNotifications = await reopenedRepository
+          .loadNotifications();
+      final restoredPrivacy = await reopenedRepository.loadPrivacy();
+
+      expect(restoredAppPreferences.weightUnit, 'lb');
+      expect(restoredAppPreferences.weekStartsOn, 'Domingo');
+      expect(restoredAppPreferences.hapticsEnabled, isFalse);
+      expect(restoredNotifications.workoutReminders, isFalse);
+      expect(restoredNotifications.weeklySummary, isFalse);
+      expect(restoredNotifications.personalRecordAlerts, isTrue);
+      expect(restoredNotifications.reminderHour, 7);
+      expect(restoredNotifications.reminderMinute, 35);
+      expect(restoredPrivacy.privateProfile, isFalse);
+      expect(restoredPrivacy.shareWorkoutActivity, isTrue);
+    },
+  );
+
+  test('does not turn malformed saved preferences into defaults', () async {
+    final storage = _MemoryProfilePreferencesStorage()
+      ..values['profile_app_preferences_v1'] = '{invalid';
+    final repository = ProfileSettingsRepository(storage: storage);
+
+    await expectLater(repository.loadAppPreferences(), throwsFormatException);
+    expect(storage.values['profile_app_preferences_v1'], '{invalid');
+  });
+
+  test('reports failed writes and validates reminder ranges', () async {
+    final storage = _MemoryProfilePreferencesStorage()..failWrites = true;
+    final repository = ProfileSettingsRepository(storage: storage);
+
+    await expectLater(
+      repository.saveAppPreferences(const AppPreferences(weightUnit: 'lb')),
+      throwsStateError,
+    );
+    await expectLater(
+      repository.saveNotifications(
+        const NotificationSettings(reminderHour: 24),
+      ),
+      throwsArgumentError,
+    );
+    expect(storage.values, isEmpty);
+  });
+}
+
+class _MemoryProfilePreferencesStorage implements ProfilePreferencesStorage {
+  final Map<String, String> values = {};
+  bool failWrites = false;
+
+  @override
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async {
+    if (failWrites) throw StateError('write failed');
+    values[key] = value;
+  }
+}
