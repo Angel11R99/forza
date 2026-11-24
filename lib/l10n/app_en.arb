@@ -256,6 +256,12 @@
   "homeDurationExercises": "{minutes} min per session · {count} exercises",
   "homeContinueWorkout": "Continue workout",
   "homeViewTodaySession": "View today's session",
+  "homeSessionAvailableOn": "Available on {weekday}",
+  "@homeSessionAvailableOn": {
+    "placeholders": {
+      "weekday": {"type": "String"}
+    }
+  },
   "homeWeeklySessionCount": "{done} of {target} sessions",
   "homeThisWeek": "This week",
   "homeWeeklyGoal": "Your goal is {count, plural, =1{1 session per week.} other{{count} sessions per week.}}",

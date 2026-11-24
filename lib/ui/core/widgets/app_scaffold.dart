@@ -327,7 +327,7 @@ class _AppScaffoldState extends State<AppScaffold>
     await _synchronizeWorkoutRemindersSafely();
   }
 
-  Future<void> _startHomeWorkout() async {
+  Future<void> _startHomeWorkout(DateTime selectedSessionDate) async {
     final trainingSettings = _viewModel.trainingSettings;
     final days = trainingSettings.trainingDays.toList()..sort();
     final now = DateTime.now();
@@ -337,11 +337,20 @@ class _AppScaffoldState extends State<AppScaffold>
       now,
     );
     final planned = _viewModel.nextScheduledSession;
-    final sessionDate = activeDate ?? planned?.scheduledDate ?? now;
+    final sessionDate =
+        activeDate ?? planned?.scheduledDate ?? selectedSessionDate;
+    final today = DateTime(now.year, now.month, now.day);
+    final sessionDay = DateTime(
+      sessionDate.year,
+      sessionDate.month,
+      sessionDate.day,
+    );
+    if (sessionDay.isAfter(today)) return;
     final sessionIndex =
         planned?.sessionIndex ??
         days.indexOf((activeDate ?? nextSessionDate).weekday);
-    await _viewModel.markSessionStarted(sessionDate);
+    final started = await _viewModel.markSessionStarted(sessionDate);
+    if (!started) return;
     await _synchronizeWorkoutRemindersSafely();
     if (!mounted) return;
     final record = await Navigator.of(context).push<WorkoutRecord>(
@@ -397,9 +406,11 @@ class _AppScaffoldState extends State<AppScaffold>
     await _synchronizeWorkoutRemindersSafely();
   }
 
-  Future<void> _markSessionStartedAndSync(DateTime date) async {
-    await _viewModel.markSessionStarted(date);
+  Future<bool> _markSessionStartedAndSync(DateTime date) async {
+    final started = await _viewModel.markSessionStarted(date);
+    if (!started) return false;
     await _synchronizeWorkoutRemindersSafely();
+    return true;
   }
 
   Future<bool> _rescheduleSessionAndSync(DateTime from, DateTime to) async {

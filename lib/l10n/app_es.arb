@@ -256,6 +256,12 @@
   "homeDurationExercises": "{minutes} min por sesión · {count} ejercicios",
   "homeContinueWorkout": "Continuar entrenamiento",
   "homeViewTodaySession": "Ver sesión de hoy",
+  "homeSessionAvailableOn": "Disponible el {weekday}",
+  "@homeSessionAvailableOn": {
+    "placeholders": {
+      "weekday": {"type": "String"}
+    }
+  },
   "homeWeeklySessionCount": "{done} de {target} sesiones",
   "homeThisWeek": "Esta semana",
   "homeWeeklyGoal": "Tu meta es {count, plural, =1{1 sesión semanal.} other{{count} sesiones semanales.}}",

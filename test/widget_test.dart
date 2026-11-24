@@ -33,7 +33,7 @@ void main() {
         onShowActivity: () {},
         onShowProfile: () {},
         settings: const TrainingSettings(goal: 'Ganar fuerza'),
-        onStartWorkout: () {},
+        onStartWorkout: (_) {},
         onEditPlan: () {},
         completedDates: const {},
       ),

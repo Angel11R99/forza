@@ -248,7 +248,9 @@ class AppShellViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> markSessionStarted(DateTime date) async {
+  Future<bool> markSessionStarted(DateTime date) async {
+    final today = _dateOnly(DateTime.now());
+    if (_dateOnly(date).isAfter(today)) return false;
     await _trainingScheduleRepository.ensureUpcoming(
       _trainingSettings,
       from: date,
@@ -257,6 +259,7 @@ class AppShellViewModel extends ChangeNotifier {
     await _trainingScheduleRepository.setStatus(date, 'in_progress');
     _scheduledSessions = await _trainingScheduleRepository.load();
     notifyListeners();
+    return true;
   }
 
   Future<void> savePersonalGoal(PersonalGoal goal) async {
