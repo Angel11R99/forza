@@ -1106,6 +1106,30 @@ abstract class AppLocalizations {
   /// **'I trained outside the app'**
   String get activityCompletedOutside;
 
+  /// No description provided for @activitySkipSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip workout'**
+  String get activitySkipSession;
+
+  /// No description provided for @activitySessionSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout skipped'**
+  String get activitySessionSkipped;
+
+  /// No description provided for @activityUndoSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo skip'**
+  String get activityUndoSkip;
+
+  /// No description provided for @activitySkipUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout is pending again'**
+  String get activitySkipUndone;
+
   /// No description provided for @activityChangeDay.
   ///
   /// In en, this message translates to:

@@ -621,6 +621,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activityCompletedOutside => 'I trained outside the app';
 
   @override
+  String get activitySkipSession => 'Skip workout';
+
+  @override
+  String get activitySessionSkipped => 'Workout skipped';
+
+  @override
+  String get activityUndoSkip => 'Undo skip';
+
+  @override
+  String get activitySkipUndone => 'Workout is pending again';
+
+  @override
   String get activityChangeDay => 'Change day';
 
   @override

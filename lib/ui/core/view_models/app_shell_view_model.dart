@@ -260,6 +260,22 @@ class AppShellViewModel extends ChangeNotifier {
     return moved;
   }
 
+  Future<bool> skipSession(DateTime date) async {
+    final changed = await _trainingScheduleRepository.skip(date);
+    if (!changed) return false;
+    _scheduledSessions = await _trainingScheduleRepository.load();
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> undoSkipSession(DateTime date) async {
+    final changed = await _trainingScheduleRepository.undoSkip(date);
+    if (!changed) return false;
+    _scheduledSessions = await _trainingScheduleRepository.load();
+    notifyListeners();
+    return true;
+  }
+
   Future<String> exportBackup({required String appearanceMode}) =>
       _backupRepository.exportJson(appearanceMode: appearanceMode);
 

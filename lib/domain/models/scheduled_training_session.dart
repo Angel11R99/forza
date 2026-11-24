@@ -45,4 +45,5 @@ class ScheduledTrainingSession {
   bool get isMoved => originalDate != null;
   bool get isInProgress => status == 'in_progress';
   bool get isCompleted => status == 'completed';
+  bool get isSkipped => status == 'skipped';
 }

@@ -129,9 +129,47 @@ class TrainingScheduleRepository {
   }
 
   Future<void> setStatus(DateTime date, String status) async {
+    if (!const {
+      'pending',
+      'in_progress',
+      'completed',
+      'skipped',
+    }.contains(status)) {
+      throw ArgumentError.value(status, 'status', 'Unsupported session status');
+    }
     await (database.update(database.scheduledTrainingSessions)
           ..where((row) => row.scheduledDate.equals(_key(date))))
         .write(db.ScheduledTrainingSessionsCompanion(status: Value(status)));
+  }
+
+  Future<bool> skip(DateTime date) async {
+    final changed =
+        await (database.update(database.scheduledTrainingSessions)..where(
+              (row) =>
+                  row.scheduledDate.equals(_key(date)) &
+                  row.status.equals('pending'),
+            ))
+            .write(
+              const db.ScheduledTrainingSessionsCompanion(
+                status: Value('skipped'),
+              ),
+            );
+    return changed == 1;
+  }
+
+  Future<bool> undoSkip(DateTime date) async {
+    final changed =
+        await (database.update(database.scheduledTrainingSessions)..where(
+              (row) =>
+                  row.scheduledDate.equals(_key(date)) &
+                  row.status.equals('skipped'),
+            ))
+            .write(
+              const db.ScheduledTrainingSessionsCompanion(
+                status: Value('pending'),
+              ),
+            );
+    return changed == 1;
   }
 
   Future<void> resetInProgress() async {

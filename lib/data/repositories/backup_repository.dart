@@ -350,7 +350,12 @@ class BackupRepository {
         count < 0) {
       throw const FormatException('Una sesión programada no es válida.');
     }
-    if (!const {'pending', 'in_progress', 'completed'}.contains(status)) {
+    if (!const {
+      'pending',
+      'in_progress',
+      'completed',
+      'skipped',
+    }.contains(status)) {
       throw const FormatException('El estado de una sesión no es válido.');
     }
     final planVersion = json['planVersion'] as int? ?? 1;

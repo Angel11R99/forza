@@ -8,7 +8,7 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 - Sesiones terminadas: fecha planificada, fecha de finalización, objetivo, duración, cantidad de ejercicios, IDs estables del catálogo, versión y snapshot del plan de origen, y si se marcaron como completadas fuera de la app.
 - Resultados por serie: repeticiones o duración y carga registrada para cada ejercicio de una sesión.
 - Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
-- Agenda: sesiones de los próximos 120 días, fecha original al reprogramar, estado pendiente/en curso/completada y snapshot de la rutina que corresponde a cada sesión.
+- Agenda: sesiones de los próximos 120 días, fecha original al reprogramar, estado pendiente/en curso/completada/omitida y snapshot de la rutina que corresponde a cada sesión. Omitir una sesión no crea un registro de entrenamiento y se puede deshacer desde Actividad.
 - Objetivos personales: sesiones completadas por semana o carga máxima objetivo por ejercicio.
 - Metadatos: finalización del onboarding y control de importaciones.
 
@@ -96,7 +96,7 @@ El servidor no debe interpretar ni exponer los códigos internos del onboarding.
 | `GET /v1/me/workout-sessions/{sessionId}` | Ver el resumen y detalle de una sesión. | Devuelve el resumen más ejercicios ordenados; `404` si no pertenece al usuario o no existe. |
 | `POST /v1/me/workout-sessions/{sessionId}/complete` | Confirmar fin desde el flujo de entrenamiento. | Recibe `completedAt` y los datos finales de ejercicios/duración. Repetir la misma clave de idempotencia devuelve el mismo resultado. |
 
-La agenda local ya representa sesiones planificadas como recursos independientes y guarda las reprogramaciones en SQLite. La propuesta de API remota aún no define endpoints para consultar o editar esas sesiones; habrá que añadirlos si se implementa sincronización. No hay hoy sincronización remota.
+La agenda local ya representa sesiones planificadas como recursos independientes y guarda las reprogramaciones y omisiones en SQLite. La propuesta de API remota aún no define endpoints para consultar o editar esas sesiones; habrá que añadirlos si se implementa sincronización. No hay hoy sincronización remota.
 
 ### Orden sugerido de implementación remota
 
