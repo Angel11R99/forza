@@ -1931,6 +1931,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionTitleCompleted => 'Workout complete';
 
   @override
+  String get sessionTitleCooldown => 'Cool-down';
+
+  @override
   String get sessionTitleSummary => 'Workout summary';
 
   @override
@@ -2112,6 +2115,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionSummaryButton => 'View workout summary';
+
+  @override
+  String get sessionCooldownOfferDescription =>
+      'You can finish with gentle movements for the areas you worked. This is optional and you can skip it at any time.';
+
+  @override
+  String get sessionCooldownStart => 'View cool-down';
+
+  @override
+  String get sessionCooldownNext => 'Next movement';
+
+  @override
+  String get sessionCooldownSkip => 'Skip cool-down and view summary';
+
+  @override
+  String get sessionCooldownHeadline => 'Ease out at your own pace';
+
+  @override
+  String get sessionCooldownDescription =>
+      'Move slowly and stay within a pain-free range. You can skip any step.';
+
+  @override
+  String get sessionCooldownHipsTitle => 'Hip flexor stretch';
+
+  @override
+  String get sessionCooldownHipsInstructions =>
+      'Kneel on one knee with your other foot forward. Gently move your hips forward without arching your back. Switch sides.';
+
+  @override
+  String get sessionCooldownBackTitle => 'Cat-cow';
+
+  @override
+  String get sessionCooldownBackInstructions =>
+      'Start on your hands and knees. Gently round your back, then return to a comfortable position without straining your neck.';
+
+  @override
+  String get sessionCooldownChestTitle => 'Chest opener';
+
+  @override
+  String get sessionCooldownChestInstructions =>
+      'Place your forearm on a sturdy doorframe and gently turn your torso away. Switch sides.';
+
+  @override
+  String get sessionCooldownShouldersTitle => 'Cross-body shoulder stretch';
+
+  @override
+  String get sessionCooldownShouldersInstructions =>
+      'Bring one arm across your chest and gently draw it closer with your other hand. Keep your shoulder relaxed and switch sides.';
+
+  @override
+  String get sessionCooldownCoreTitle => 'Gentle torso rotation';
+
+  @override
+  String get sessionCooldownCoreInstructions =>
+      'Standing tall, gently turn your torso from side to side without bouncing and stay within a comfortable range.';
+
+  @override
+  String get sessionCooldownArmsTitle => 'Triceps stretch';
+
+  @override
+  String get sessionCooldownArmsInstructions =>
+      'Raise one arm, bend your elbow, and gently assist with your other hand. Do not pull on your neck; switch sides.';
+
+  @override
+  String get sessionCooldownTwentySecondsEachSide => '20 sec per side';
+
+  @override
+  String get sessionCooldownSixReps => '6 gentle repetitions';
 
   @override
   String get sessionRecordNote =>

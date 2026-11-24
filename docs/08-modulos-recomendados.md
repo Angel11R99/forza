@@ -9,7 +9,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 - **Progreso básico:** historial y detalle usan datos persistidos. El resumen de 30 días calcula series, repeticiones y volumen; las sesiones registradas como realizadas fuera de la app no aportan series.
 - **Objetivos personales:** metas semanales de sesiones y de carga por ejercicio se guardan localmente y se calculan desde las sesiones/series.
 - **Medidas corporales:** peso y perímetros opcionales por fecha, con validación, edición/eliminación, evolución del peso y respaldo local.
-- **Calentamiento:** hay una secuencia breve opcional antes del entrenamiento. No hay una fase de vuelta a la calma confirmada.
+- **Calentamiento y vuelta a la calma:** hay secuencias breves opcionales antes y después del entrenamiento. La vuelta a la calma se adapta a los grupos musculares de la sesión, muestra instrucciones por paso y se puede omitir; no modifica los resultados ni la duración registrada.
 - **Guías de ejercicios:** catálogo local de 1.324 ejercicios, instrucciones en español e inglés y 1.260 medios animados. 509 ejercicios reciben notas técnicas de familias con fuentes; 815 variantes permanecen sin notas curadas y conservan las instrucciones y el fallback. El inventario por ID y grupo está en [notas técnicas pendientes](11-inventario-notas-tecnicas.md).
 - **Respaldo:** exportación/restauración local en JSON con validación y confirmación antes de reemplazar datos. No incluye catálogo ni preferencias de perfil que aún no persisten.
 

@@ -1941,6 +1941,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sessionTitleCompleted => 'Entrenamiento completado';
 
   @override
+  String get sessionTitleCooldown => 'Vuelta a la calma';
+
+  @override
   String get sessionTitleSummary => 'Resumen de sesión';
 
   @override
@@ -2121,6 +2124,74 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sessionSummaryButton => 'Ver resumen de sesión';
+
+  @override
+  String get sessionCooldownOfferDescription =>
+      'Puedes cerrar con movimientos suaves de las zonas trabajadas. Es opcional y puedes saltarla en cualquier momento.';
+
+  @override
+  String get sessionCooldownStart => 'Ver vuelta a la calma';
+
+  @override
+  String get sessionCooldownNext => 'Siguiente movimiento';
+
+  @override
+  String get sessionCooldownSkip => 'Omitir vuelta a la calma e ir al resumen';
+
+  @override
+  String get sessionCooldownHeadline => 'Baja el ritmo a tu manera';
+
+  @override
+  String get sessionCooldownDescription =>
+      'Haz cada movimiento despacio y sin dolor. Puedes omitir cualquier paso.';
+
+  @override
+  String get sessionCooldownHipsTitle => 'Flexor de cadera';
+
+  @override
+  String get sessionCooldownHipsInstructions =>
+      'Coloca una rodilla en el suelo y el otro pie delante. Lleva suavemente la cadera hacia delante sin arquear la espalda. Cambia de lado.';
+
+  @override
+  String get sessionCooldownBackTitle => 'Gato-vaca';
+
+  @override
+  String get sessionCooldownBackInstructions =>
+      'Apoya manos y rodillas. Redondea la espalda suavemente y luego vuelve a una posición cómoda, sin forzar el cuello.';
+
+  @override
+  String get sessionCooldownChestTitle => 'Apertura de pecho';
+
+  @override
+  String get sessionCooldownChestInstructions =>
+      'Apoya el antebrazo en un marco firme y gira suavemente el torso hacia el lado contrario. Cambia de lado.';
+
+  @override
+  String get sessionCooldownShouldersTitle => 'Cruce de hombro';
+
+  @override
+  String get sessionCooldownShouldersInstructions =>
+      'Lleva un brazo por delante del pecho y acércalo suavemente con la otra mano. Mantén el hombro relajado y cambia de lado.';
+
+  @override
+  String get sessionCooldownCoreTitle => 'Rotación suave de torso';
+
+  @override
+  String get sessionCooldownCoreInstructions =>
+      'De pie, gira el torso suavemente de un lado al otro sin rebotes y dentro de un rango cómodo.';
+
+  @override
+  String get sessionCooldownArmsTitle => 'Estiramiento de tríceps';
+
+  @override
+  String get sessionCooldownArmsInstructions =>
+      'Eleva un brazo, dobla el codo y acompaña suavemente con la otra mano. No tires del cuello; cambia de lado.';
+
+  @override
+  String get sessionCooldownTwentySecondsEachSide => '20 s por lado';
+
+  @override
+  String get sessionCooldownSixReps => '6 repeticiones suaves';
 
   @override
   String get sessionRecordNote =>
