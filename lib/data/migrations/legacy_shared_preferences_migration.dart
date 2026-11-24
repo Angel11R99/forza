@@ -17,7 +17,7 @@ class LegacySharedPreferencesMigration {
   }) : _preferences =
            preferences ?? SharedLegacyPreferenceStore(SharedPreferencesAsync());
 
-  static const _migrationKey = 'migration_shared_preferences_v1';
+  static const migrationKey = 'migration_shared_preferences_v1';
   static const _completeKey = 'training_setup_complete';
   static const _daysKey = 'training_days';
   static const _minutesKey = 'training_session_minutes';
@@ -34,7 +34,7 @@ class LegacySharedPreferencesMigration {
   Future<void> run() async {
     final marker = await (database.select(
       database.appMetadata,
-    )..where((row) => row.key.equals(_migrationKey))).getSingleOrNull();
+    )..where((row) => row.key.equals(migrationKey))).getSingleOrNull();
     if (marker?.value == 'true') return;
 
     final savedDays = await _preferences.getStringList(_daysKey);
@@ -99,7 +99,7 @@ class LegacySharedPreferencesMigration {
     await database
         .into(database.appMetadata)
         .insertOnConflictUpdate(
-          AppMetadataCompanion.insert(key: _migrationKey, value: 'true'),
+          AppMetadataCompanion.insert(key: migrationKey, value: 'true'),
         );
   }
 }

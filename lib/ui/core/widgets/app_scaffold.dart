@@ -283,12 +283,21 @@ class _AppScaffoldState extends State<AppScaffold>
           exportBackup: (mode) => _viewModel.exportBackup(appearanceMode: mode),
           validateBackup: _viewModel.validateBackup,
           restoreBackup: _restoreBackupAndReminders,
+          resetUserData: _resetUserDataAndReminders,
           appearanceMode: _appearanceName(widget.appearance.mode),
           onAppearanceModeChanged: (mode) =>
               widget.appearance.setMode(_themeMode(mode)),
         ),
       ),
     );
+    if (mounted && _viewModel.needsFirstRunSetup) {
+      await _startFirstRunSetup();
+    }
+  }
+
+  Future<void> _resetUserDataAndReminders() async {
+    await _viewModel.resetUserData();
+    await _synchronizeWorkoutRemindersSafely();
   }
 
   Future<void> _startHomeWorkout() async {

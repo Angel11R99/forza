@@ -27,6 +27,7 @@ Auditoría del código de `main` al 24-11-2026. SQLite local mediante Drift es l
 - La migración de `shared_preferences` usa un marcador idempotente y guarda registros por fecha. Si el proceso se interrumpe antes del marcador, una segunda ejecución puede reintentar sin duplicar registros y ahora no sobrescribe un plan SQLite existente con valores heredados.
 - Las migraciones Drift v2–v5 conservan las tablas existentes; los tests de migración cubren los saltos a v5 desde v2 y v4.
 - Tema e idioma persisten antes de cambiar el estado visible; los errores se muestran y no anuncian un guardado exitoso.
+- El reinicio local confirma antes de actuar y puede exportar JSON primero. Borra plan, agenda, historial/series, metas, medidas y borrador activo en una transacción; conserva `shared_preferences` (idioma, tema, unidades, hápticos, privacidad y recordatorios), catálogo y permisos del sistema. Mantiene el marcador de migración heredada para evitar que datos antiguos reaparezcan.
 
 ## Verificación de ciclo de vida
 

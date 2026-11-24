@@ -1772,6 +1772,66 @@ abstract class AppLocalizations {
   /// **'We couldn\'t process the file. Try again.'**
   String get backupGenericError;
 
+  /// No description provided for @profileResetSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset local data'**
+  String get profileResetSectionTitle;
+
+  /// No description provided for @profileResetSectionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete workout data from this device. You can save a backup first; app preferences and appearance will be kept.'**
+  String get profileResetSectionDescription;
+
+  /// No description provided for @profileResetAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset data'**
+  String get profileResetAction;
+
+  /// No description provided for @profileResetConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete local data?'**
+  String get profileResetConfirmTitle;
+
+  /// No description provided for @profileResetConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes your plan, schedule, workout history and sets, goals, measurements, and active workout. Language, theme, units, haptics, privacy, and reminder settings will be kept. The exercise catalog is not deleted.'**
+  String get profileResetConfirmMessage;
+
+  /// No description provided for @profileResetBackupOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a JSON backup before deleting'**
+  String get profileResetBackupOption;
+
+  /// No description provided for @profileResetConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete data'**
+  String get profileResetConfirmButton;
+
+  /// No description provided for @profileResetBackupCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'No data was deleted because the backup was not saved.'**
+  String get profileResetBackupCancelled;
+
+  /// No description provided for @profileResetCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Data deleted. Set up a new plan to continue.'**
+  String get profileResetCompleted;
+
+  /// No description provided for @profileResetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Data could not be deleted. The reset was not completed.'**
+  String get profileResetFailed;
+
   /// No description provided for @accountWelcomeTitle.
   ///
   /// In en, this message translates to:

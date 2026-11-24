@@ -993,6 +993,42 @@ class AppLocalizationsEs extends AppLocalizations {
       'No pudimos procesar el archivo. Inténtalo de nuevo.';
 
   @override
+  String get profileResetSectionTitle => 'Restablecer datos locales';
+
+  @override
+  String get profileResetSectionDescription =>
+      'Borra los datos de entrenamiento de este dispositivo. Puedes guardar un respaldo antes; se conservarán idioma, apariencia y preferencias de la app.';
+
+  @override
+  String get profileResetAction => 'Restablecer datos';
+
+  @override
+  String get profileResetConfirmTitle => '¿Borrar los datos locales?';
+
+  @override
+  String get profileResetConfirmMessage =>
+      'Se eliminarán el plan, la agenda, el historial y sus series, las metas, las medidas y la sesión en curso. Se conservarán idioma, tema, unidad, hápticos, privacidad y ajustes de recordatorios. El catálogo de ejercicios no se borra.';
+
+  @override
+  String get profileResetBackupOption =>
+      'Guardar un respaldo JSON antes de borrar';
+
+  @override
+  String get profileResetConfirmButton => 'Borrar datos';
+
+  @override
+  String get profileResetBackupCancelled =>
+      'No se borraron datos porque el respaldo no se guardó.';
+
+  @override
+  String get profileResetCompleted =>
+      'Datos eliminados. Configura un nuevo plan para continuar.';
+
+  @override
+  String get profileResetFailed =>
+      'No se pudieron borrar los datos. No se completó el reinicio.';
+
+  @override
   String get accountWelcomeTitle => 'Entrena a tu ritmo.';
 
   @override

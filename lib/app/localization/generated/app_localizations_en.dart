@@ -988,6 +988,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupGenericError => 'We couldn\'t process the file. Try again.';
 
   @override
+  String get profileResetSectionTitle => 'Reset local data';
+
+  @override
+  String get profileResetSectionDescription =>
+      'Delete workout data from this device. You can save a backup first; app preferences and appearance will be kept.';
+
+  @override
+  String get profileResetAction => 'Reset data';
+
+  @override
+  String get profileResetConfirmTitle => 'Delete local data?';
+
+  @override
+  String get profileResetConfirmMessage =>
+      'This deletes your plan, schedule, workout history and sets, goals, measurements, and active workout. Language, theme, units, haptics, privacy, and reminder settings will be kept. The exercise catalog is not deleted.';
+
+  @override
+  String get profileResetBackupOption => 'Save a JSON backup before deleting';
+
+  @override
+  String get profileResetConfirmButton => 'Delete data';
+
+  @override
+  String get profileResetBackupCancelled =>
+      'No data was deleted because the backup was not saved.';
+
+  @override
+  String get profileResetCompleted =>
+      'Data deleted. Set up a new plan to continue.';
+
+  @override
+  String get profileResetFailed =>
+      'Data could not be deleted. The reset was not completed.';
+
+  @override
   String get accountWelcomeTitle => 'Train at your own pace.';
 
   @override
