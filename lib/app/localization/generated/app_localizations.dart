@@ -1229,7 +1229,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileEditSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Name, email, and goal'**
+  /// **'Name and training goal'**
   String get profileEditSubtitle;
 
   /// No description provided for @profileAccountAccess.
@@ -1241,8 +1241,20 @@ abstract class AppLocalizations {
   /// No description provided for @profileAccountAccessSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign-in options'**
+  /// **'Optional · your data stays on this device'**
   String get profileAccountAccessSubtitle;
+
+  /// No description provided for @profileGoogleConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected with Google'**
+  String get profileGoogleConnected;
+
+  /// No description provided for @profileGuestDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No account · data saved on this device'**
+  String get profileGuestDescription;
 
   /// No description provided for @profilePrivacy.
   ///
@@ -1589,8 +1601,14 @@ abstract class AppLocalizations {
   /// No description provided for @profileAccountConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Account confirmation'**
+  /// **'Review profile'**
   String get profileAccountConfirmation;
+
+  /// No description provided for @profileReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review profile'**
+  String get profileReviewTitle;
 
   /// No description provided for @profileName.
   ///
@@ -1613,8 +1631,14 @@ abstract class AppLocalizations {
   /// No description provided for @profileConfirmDetails.
   ///
   /// In en, this message translates to:
-  /// **'Confirm details'**
+  /// **'Save details'**
   String get profileConfirmDetails;
+
+  /// No description provided for @profileSaveDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Save profile'**
+  String get profileSaveDetails;
 
   /// No description provided for @profileThemeDevice.
   ///
@@ -1847,152 +1871,74 @@ abstract class AppLocalizations {
   /// No description provided for @accountWelcomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Train at your own pace.'**
+  /// **'An account is optional.'**
   String get accountWelcomeTitle;
 
   /// No description provided for @accountWelcomeDescription.
   ///
   /// In en, this message translates to:
-  /// **'Create a space to organize your workouts and track your progress.'**
+  /// **'You can use Forza without signing in. If you connect Google, we show your name, email, and photo; your workouts stay on this device and are not synced.'**
   String get accountWelcomeDescription;
 
-  /// No description provided for @accountCreate.
+  /// No description provided for @accountSignInWithGoogle.
   ///
   /// In en, this message translates to:
-  /// **'Create account'**
-  String get accountCreate;
+  /// **'Continue with Google'**
+  String get accountSignInWithGoogle;
 
-  /// No description provided for @accountExisting.
+  /// No description provided for @accountSwitchGoogle.
   ///
   /// In en, this message translates to:
-  /// **'I already have an account'**
-  String get accountExisting;
+  /// **'Switch Google account'**
+  String get accountSwitchGoogle;
 
-  /// No description provided for @accountContinue.
+  /// No description provided for @accountContinueWithoutAccount.
   ///
   /// In en, this message translates to:
-  /// **'Continue exploring'**
-  String get accountContinue;
+  /// **'Continue without an account'**
+  String get accountContinueWithoutAccount;
 
-  /// No description provided for @accountNewEyebrow.
+  /// No description provided for @accountSignOut.
   ///
   /// In en, this message translates to:
-  /// **'New account'**
-  String get accountNewEyebrow;
+  /// **'Sign out'**
+  String get accountSignOut;
 
-  /// No description provided for @accountCreateDescription.
+  /// No description provided for @accountSignOutTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign up to set up your training space.'**
-  String get accountCreateDescription;
+  /// **'Sign out?'**
+  String get accountSignOutTitle;
 
-  /// No description provided for @accountSignIn.
+  /// No description provided for @accountSignOutMessage.
   ///
   /// In en, this message translates to:
-  /// **'Sign in'**
-  String get accountSignIn;
+  /// **'This disconnects your Google account from Forza. Your local workouts and preferences stay on this device.'**
+  String get accountSignOutMessage;
 
-  /// No description provided for @accountSignInEyebrow.
+  /// No description provided for @accountLocalDataNote.
   ///
   /// In en, this message translates to:
-  /// **'Welcome back'**
-  String get accountSignInEyebrow;
+  /// **'Signing in or out with Google does not delete workouts, preferences, or backups. Forza does not upload or sync this data.'**
+  String get accountLocalDataNote;
 
-  /// No description provided for @accountSignInDescription.
+  /// No description provided for @accountConfigurationRequired.
   ///
   /// In en, this message translates to:
-  /// **'Continue with your email and password.'**
-  String get accountSignInDescription;
+  /// **'Google sign-in could not start. Check the Android or iOS OAuth setup and try again.'**
+  String get accountConfigurationRequired;
 
-  /// No description provided for @accountRecover.
+  /// No description provided for @accountProviderUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Recover password'**
-  String get accountRecover;
+  /// **'Google is unavailable. Check your connection or try again.'**
+  String get accountProviderUnavailable;
 
-  /// No description provided for @accountRecoverEyebrow.
+  /// No description provided for @accountAuthenticationFailed.
   ///
   /// In en, this message translates to:
-  /// **'Account recovery'**
-  String get accountRecoverEyebrow;
-
-  /// No description provided for @accountRecoverDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter the email linked to your account to continue recovery.'**
-  String get accountRecoverDescription;
-
-  /// No description provided for @accountEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'Email address'**
-  String get accountEmail;
-
-  /// No description provided for @accountPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get accountPassword;
-
-  /// No description provided for @accountConfirmPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm password'**
-  String get accountConfirmPassword;
-
-  /// No description provided for @accountPasswordLengthError.
-  ///
-  /// In en, this message translates to:
-  /// **'Use at least 8 characters.'**
-  String get accountPasswordLengthError;
-
-  /// No description provided for @accountPasswordMismatchError.
-  ///
-  /// In en, this message translates to:
-  /// **'Passwords don\'t match.'**
-  String get accountPasswordMismatchError;
-
-  /// No description provided for @accountSignInPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account? Sign in'**
-  String get accountSignInPrompt;
-
-  /// No description provided for @accountForgotPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot your password?'**
-  String get accountForgotPassword;
-
-  /// No description provided for @accountCreateNew.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a new account'**
-  String get accountCreateNew;
-
-  /// No description provided for @accountUnavailableNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Account access isn\'t available yet.'**
-  String get accountUnavailableNote;
-
-  /// No description provided for @accountEmailRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your email address.'**
-  String get accountEmailRequired;
-
-  /// No description provided for @accountEmailInvalid.
-  ///
-  /// In en, this message translates to:
-  /// **'Check the email format.'**
-  String get accountEmailInvalid;
-
-  /// No description provided for @accountUnavailableMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Account access will be available soon.'**
-  String get accountUnavailableMessage;
+  /// **'We couldn\'t complete sign-in. Try again.'**
+  String get accountAuthenticationFailed;
 
   /// No description provided for @onboardingSkip.
   ///

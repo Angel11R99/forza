@@ -692,13 +692,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileEdit => 'Editar perfil';
 
   @override
-  String get profileEditSubtitle => 'Nombre, correo y objetivo';
+  String get profileEditSubtitle => 'Nombre y objetivo de entrenamiento';
 
   @override
   String get profileAccountAccess => 'Cuenta y acceso';
 
   @override
-  String get profileAccountAccessSubtitle => 'Opciones de inicio de sesión';
+  String get profileAccountAccessSubtitle =>
+      'Opcional · tus datos siguen en este dispositivo';
+
+  @override
+  String get profileGoogleConnected => 'Conectado con Google';
+
+  @override
+  String get profileGuestDescription =>
+      'Sin cuenta · datos guardados en este dispositivo';
 
   @override
   String get profilePrivacy => 'Privacidad';
@@ -892,7 +900,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileReviewComplete => 'Revisión de datos completada.';
 
   @override
-  String get profileAccountConfirmation => 'Confirmación de cuenta';
+  String get profileAccountConfirmation => 'Revisar perfil';
+
+  @override
+  String get profileReviewTitle => 'Revisar perfil';
 
   @override
   String get profileName => 'Nombre';
@@ -904,7 +915,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileGoal => 'Objetivo';
 
   @override
-  String get profileConfirmDetails => 'Confirmar datos';
+  String get profileConfirmDetails => 'Guardar datos';
+
+  @override
+  String get profileSaveDetails => 'Guardar perfil';
 
   @override
   String get profileThemeDevice => 'Según el dispositivo';
@@ -1036,84 +1050,46 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudieron borrar los datos. No se completó el reinicio.';
 
   @override
-  String get accountWelcomeTitle => 'Entrena a tu ritmo.';
+  String get accountWelcomeTitle => 'Una cuenta es opcional.';
 
   @override
   String get accountWelcomeDescription =>
-      'Crea un espacio para organizar tus entrenamientos y seguir tu progreso.';
+      'Puedes usar Forza sin iniciar sesión. Si conectas Google, mostramos tu nombre, correo y foto; tus entrenamientos siguen en este dispositivo y no se sincronizan.';
 
   @override
-  String get accountCreate => 'Crear cuenta';
+  String get accountSignInWithGoogle => 'Continuar con Google';
 
   @override
-  String get accountExisting => 'Ya tengo una cuenta';
+  String get accountSwitchGoogle => 'Cambiar cuenta de Google';
 
   @override
-  String get accountContinue => 'Continuar explorando';
+  String get accountContinueWithoutAccount => 'Seguir sin cuenta';
 
   @override
-  String get accountNewEyebrow => 'Nueva cuenta';
+  String get accountSignOut => 'Cerrar sesión';
 
   @override
-  String get accountCreateDescription =>
-      'Regístrate para preparar tu espacio de entrenamiento.';
+  String get accountSignOutTitle => '¿Cerrar sesión?';
 
   @override
-  String get accountSignIn => 'Iniciar sesión';
+  String get accountSignOutMessage =>
+      'Se cerrará la cuenta de Google en Forza. Tus entrenamientos y preferencias locales permanecerán en este dispositivo.';
 
   @override
-  String get accountSignInEyebrow => 'Bienvenido de vuelta';
+  String get accountLocalDataNote =>
+      'Iniciar o cerrar sesión con Google no borra entrenamientos, preferencias ni respaldos. Forza no sube estos datos ni los sincroniza.';
 
   @override
-  String get accountSignInDescription => 'Continúa con tu correo y contraseña.';
+  String get accountConfigurationRequired =>
+      'No se pudo iniciar Google. Revisa la configuración OAuth de Android o iOS y vuelve a intentarlo.';
 
   @override
-  String get accountRecover => 'Recuperar contraseña';
+  String get accountProviderUnavailable =>
+      'Google no está disponible. Comprueba tu conexión o inténtalo otra vez.';
 
   @override
-  String get accountRecoverEyebrow => 'Recuperación de acceso';
-
-  @override
-  String get accountRecoverDescription =>
-      'Escribe el correo asociado a tu cuenta para continuar con la recuperación.';
-
-  @override
-  String get accountEmail => 'Correo electrónico';
-
-  @override
-  String get accountPassword => 'Contraseña';
-
-  @override
-  String get accountConfirmPassword => 'Confirmar contraseña';
-
-  @override
-  String get accountPasswordLengthError => 'Usa al menos 8 caracteres.';
-
-  @override
-  String get accountPasswordMismatchError => 'Las contraseñas no coinciden.';
-
-  @override
-  String get accountSignInPrompt => '¿Ya tienes cuenta? Inicia sesión';
-
-  @override
-  String get accountForgotPassword => '¿Olvidaste tu contraseña?';
-
-  @override
-  String get accountCreateNew => 'Crear una cuenta nueva';
-
-  @override
-  String get accountUnavailableNote =>
-      'El acceso a la cuenta aún no está disponible.';
-
-  @override
-  String get accountEmailRequired => 'Escribe tu correo electrónico.';
-
-  @override
-  String get accountEmailInvalid => 'Revisa el formato del correo.';
-
-  @override
-  String get accountUnavailableMessage =>
-      'El acceso a la cuenta estará disponible próximamente.';
+  String get accountAuthenticationFailed =>
+      'No se pudo completar el acceso. Inténtalo de nuevo.';
 
   @override
   String get onboardingSkip => 'Omitir por ahora';

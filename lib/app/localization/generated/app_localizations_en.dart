@@ -688,13 +688,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEdit => 'Edit profile';
 
   @override
-  String get profileEditSubtitle => 'Name, email, and goal';
+  String get profileEditSubtitle => 'Name and training goal';
 
   @override
   String get profileAccountAccess => 'Account and access';
 
   @override
-  String get profileAccountAccessSubtitle => 'Sign-in options';
+  String get profileAccountAccessSubtitle =>
+      'Optional · your data stays on this device';
+
+  @override
+  String get profileGoogleConnected => 'Connected with Google';
+
+  @override
+  String get profileGuestDescription =>
+      'No account · data saved on this device';
 
   @override
   String get profilePrivacy => 'Privacy';
@@ -888,7 +896,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileReviewComplete => 'Data review complete.';
 
   @override
-  String get profileAccountConfirmation => 'Account confirmation';
+  String get profileAccountConfirmation => 'Review profile';
+
+  @override
+  String get profileReviewTitle => 'Review profile';
 
   @override
   String get profileName => 'Name';
@@ -900,7 +911,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileGoal => 'Goal';
 
   @override
-  String get profileConfirmDetails => 'Confirm details';
+  String get profileConfirmDetails => 'Save details';
+
+  @override
+  String get profileSaveDetails => 'Save profile';
 
   @override
   String get profileThemeDevice => 'Follow device';
@@ -1030,84 +1044,46 @@ class AppLocalizationsEn extends AppLocalizations {
       'Data could not be deleted. The reset was not completed.';
 
   @override
-  String get accountWelcomeTitle => 'Train at your own pace.';
+  String get accountWelcomeTitle => 'An account is optional.';
 
   @override
   String get accountWelcomeDescription =>
-      'Create a space to organize your workouts and track your progress.';
+      'You can use Forza without signing in. If you connect Google, we show your name, email, and photo; your workouts stay on this device and are not synced.';
 
   @override
-  String get accountCreate => 'Create account';
+  String get accountSignInWithGoogle => 'Continue with Google';
 
   @override
-  String get accountExisting => 'I already have an account';
+  String get accountSwitchGoogle => 'Switch Google account';
 
   @override
-  String get accountContinue => 'Continue exploring';
+  String get accountContinueWithoutAccount => 'Continue without an account';
 
   @override
-  String get accountNewEyebrow => 'New account';
+  String get accountSignOut => 'Sign out';
 
   @override
-  String get accountCreateDescription =>
-      'Sign up to set up your training space.';
+  String get accountSignOutTitle => 'Sign out?';
 
   @override
-  String get accountSignIn => 'Sign in';
+  String get accountSignOutMessage =>
+      'This disconnects your Google account from Forza. Your local workouts and preferences stay on this device.';
 
   @override
-  String get accountSignInEyebrow => 'Welcome back';
+  String get accountLocalDataNote =>
+      'Signing in or out with Google does not delete workouts, preferences, or backups. Forza does not upload or sync this data.';
 
   @override
-  String get accountSignInDescription =>
-      'Continue with your email and password.';
+  String get accountConfigurationRequired =>
+      'Google sign-in could not start. Check the Android or iOS OAuth setup and try again.';
 
   @override
-  String get accountRecover => 'Recover password';
+  String get accountProviderUnavailable =>
+      'Google is unavailable. Check your connection or try again.';
 
   @override
-  String get accountRecoverEyebrow => 'Account recovery';
-
-  @override
-  String get accountRecoverDescription =>
-      'Enter the email linked to your account to continue recovery.';
-
-  @override
-  String get accountEmail => 'Email address';
-
-  @override
-  String get accountPassword => 'Password';
-
-  @override
-  String get accountConfirmPassword => 'Confirm password';
-
-  @override
-  String get accountPasswordLengthError => 'Use at least 8 characters.';
-
-  @override
-  String get accountPasswordMismatchError => 'Passwords don\'t match.';
-
-  @override
-  String get accountSignInPrompt => 'Already have an account? Sign in';
-
-  @override
-  String get accountForgotPassword => 'Forgot your password?';
-
-  @override
-  String get accountCreateNew => 'Create a new account';
-
-  @override
-  String get accountUnavailableNote => 'Account access isn\'t available yet.';
-
-  @override
-  String get accountEmailRequired => 'Enter your email address.';
-
-  @override
-  String get accountEmailInvalid => 'Check the email format.';
-
-  @override
-  String get accountUnavailableMessage =>
-      'Account access will be available soon.';
+  String get accountAuthenticationFailed =>
+      'We couldn\'t complete sign-in. Try again.';
 
   @override
   String get onboardingSkip => 'Skip for now';

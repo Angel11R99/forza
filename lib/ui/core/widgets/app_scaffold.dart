@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/workout_record.dart';
 import '../../../data/repositories/backup_repository.dart';
+import '../../../data/repositories/google_account_auth_repository.dart';
 import '../../../data/repositories/profile_settings_repository.dart';
 import '../../../data/repositories/workout_reminder_repository.dart';
 import '../../../app/theme/appearance_controller.dart';
@@ -18,6 +19,7 @@ import '../../features/profile/views/profile_view.dart';
 import '../../features/profile/views/backup_restore_page.dart';
 import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
+import '../../features/onboarding/view_models/account_auth_view_model.dart';
 import '../view_models/app_shell_view_model.dart';
 import '../../../app/localization/locale_controller.dart';
 import '../../../app/localization/localization_extensions.dart';
@@ -28,6 +30,7 @@ class AppScaffold extends StatefulWidget {
     this.initialIndex = 0,
     this.viewModel,
     this.profileSettingsRepository,
+    this.accountAuthViewModel,
     this.workoutReminderRepository,
     required this.appearance,
     required this.localeController,
@@ -36,6 +39,7 @@ class AppScaffold extends StatefulWidget {
   final int initialIndex;
   final AppShellViewModel? viewModel;
   final ProfileSettingsRepository? profileSettingsRepository;
+  final AccountAuthViewModel? accountAuthViewModel;
   final WorkoutReminderRepository? workoutReminderRepository;
   final AppearanceController appearance;
   final LocaleController localeController;
@@ -49,6 +53,7 @@ class _AppScaffoldState extends State<AppScaffold>
   late int _selectedIndex;
   late final AppShellViewModel _viewModel;
   late final ProfileSettingsRepository _profileSettingsRepository;
+  late final AccountAuthViewModel _accountAuthViewModel;
   late final WorkoutReminderRepository _workoutReminderRepository;
   late final AnimationController _moduleController;
   late final CurvedAnimation _moduleTransition;
@@ -87,6 +92,9 @@ class _AppScaffoldState extends State<AppScaffold>
     _viewModel = widget.viewModel ?? AppShellViewModel();
     _profileSettingsRepository =
         widget.profileSettingsRepository ?? ProfileSettingsRepository();
+    _accountAuthViewModel =
+        widget.accountAuthViewModel ??
+        AccountAuthViewModel(repository: GoogleAccountAuthRepository());
     _workoutReminderRepository =
         widget.workoutReminderRepository ?? WorkoutReminderRepository();
     WidgetsBinding.instance.addObserver(this);
@@ -120,6 +128,9 @@ class _AppScaffoldState extends State<AppScaffold>
       ..dispose();
     _moduleTransition.dispose();
     _viewModel.dispose();
+    if (widget.accountAuthViewModel == null) {
+      _accountAuthViewModel.dispose();
+    }
     super.dispose();
   }
 
@@ -468,6 +479,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     ),
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
+                      accountAuthViewModel: _accountAuthViewModel,
                       profileSettingsRepository: _profileSettingsRepository,
                       onNotificationsChanged: _saveNotificationSettings,
                       themeMode: widget.appearance.mode,
@@ -662,7 +674,9 @@ class _BottomNavigationDestinationState
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.x1,
+                  ),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(

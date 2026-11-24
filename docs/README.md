@@ -4,7 +4,7 @@
 
 ## En una frase
 
-FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local implementados. No existe backend, autenticación real ni sincronización remota. Este índice enlaza la documentación de arquitectura, UI y datos; el estado funcional y las prioridades vigentes están en [README](../README.md), [auditoría de módulos](07-auditoria-modulos-indispensables.md) y [módulos recomendados](08-modulos-recomendados.md).
+FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local implementados. Google Sign-In es opcional y solo muestra la identidad del proveedor; no existe cuenta de servidor ni sincronización remota. Este índice enlaza la documentación de arquitectura, UI y datos; el estado funcional y las prioridades vigentes están en [README](../README.md), [auditoría de módulos](07-auditoria-modulos-indispensables.md) y [módulos recomendados](08-modulos-recomendados.md).
 
 ## Documentos
 
@@ -14,12 +14,13 @@ FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local im
 - [Paquetes y dataset](04-paquetes-y-dataset.md): opciones de pub.dev, criterios de selección y condiciones de medios.
 - [Agentes y skills](05-agentes-y-skills.md): roles recomendados, skills que ayudan y cómo colaborar con agentes.
 - [Propuesta Gym Bro](12-diseno-gym-bro.md): alcance MVP, UX, consentimiento, rachas, sincronización, seguridad, costes y alertas; pendiente de aprobación antes de implementar.
+- [Configuración de Google Sign-In](google-sign-in-setup.md): IDs OAuth y pasos de Android/iOS; no contiene secretos ni configuración de backend.
 
 ## Alcance que se asume
 
 - La navegación usa `MaterialApp`/`Navigator` y widgets Flutter propios: barra inferior en pantallas estrechas y `NavigationRail` en anchas.
 - La apariencia y el idioma se guardan localmente; preferencias del plan (incluidos movimientos a evitar), agenda, sesiones, series y objetivos usan SQLite/Drift.
-- Los accesos de cuenta son demostrativos. No hay proveedor de identidad, backend ni sincronización.
+- El acceso con Google es opcional y solo muestra identidad del proveedor. No hay cuenta de servidor ni sincronización.
 - El catálogo tiene 1.324 ejercicios y 1.257 animaciones vectoriales locales con fallback escrito/visual. Los medios upstream de terceros no se redistribuyen.
 
 ## Estado del proyecto consultado
@@ -28,7 +29,7 @@ El árbol `lib/` contiene las cinco áreas de navegación, configuración de pla
 
 ## Decisiones de la primera entrega
 
-1. Entregar una demo navegable de UI con contenido de presentación; datos reales, persistencia y autenticación quedan fuera.
+1. Entregar una demo navegable de UI con datos reales locales; el acceso opcional con Google no crea cuenta de servidor ni sincroniza.
 2. Usar cinco pestañas: Inicio, Actividad, Ejercicios, Progreso y Perfil. El plugin iOS admite cinco y Android usa fallback Flutter.
 3. Mantener sin HEX el acento hasta validarlo en Figma. No distribuir imágenes o GIFs de terceros hasta confirmar sus términos de licencia.
 

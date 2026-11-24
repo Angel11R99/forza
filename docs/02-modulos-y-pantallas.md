@@ -14,13 +14,13 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 
 ## Estado de implementación
 
-- **Acceso (A1–A4):** bienvenida, crear cuenta, iniciar sesión y recuperar contraseña, disponibles desde Perfil. Los formularios validan datos localmente y muestran que la acción es solo de demostración: no crean cuentas, no inician sesión ni envían correos.
+- **Acceso (A1–A4):** Perfil ofrece modo invitado y conexión opcional con Google. Nombre, correo y foto solo aparecen al conectar el proveedor; no se solicita correo manualmente ni se crea cuenta de servidor. Los entrenamientos permanecen locales y cambiar/cerrar sesión no los borra. Ver [configuración OAuth](google-sign-in-setup.md).
 - **Configuración de plan (B1–B5):** resumen de personalización, preparación local del plan, selección de día, detalle de ejercicios y confirmación final. Las preferencias del plan, incluidos los movimientos a evitar, se guardan en SQLite; la rutina filtra el catálogo local por equipo y exclusiones, y explica las opciones compatibles o si no hay alternativas. No es un diagnóstico médico ni usa generación remota.
 - **Sesión de entrenamiento (C1, C3–C8):** preparación, descanso temporizado, lista de ejercicios, pausa, confirmación de abandono, finalización y resumen, accesibles desde una sesión programada en Actividad. Al terminar o marcar una sesión realizada, su resumen y ejercicios se agregan al historial SQLite. C2 no aparece en el panel de capas.
 - **Actividad (D2–D4):** calendario mensual, detalle del día y reprogramación de sesiones planificadas. La agenda de 120 días y sus cambios de fecha se guardan en SQLite y se comparten con Inicio y el entrenamiento; estados actuales: pendiente, en curso y completada. Aún no existe un estado para omitir una sesión ([#15](https://github.com/Angel11R99/forza/issues/15)).
 - **Ejercicios (E1–E5):** biblioteca local de 1.324 ejercicios con nombres e instrucciones en español e inglés, búsqueda por ejercicio/músculo/equipo, filtros combinables, detalle y alternativas. La interfaz, las etiquetas de grupo/equipo y las notas técnicas admiten ambos idiomas. `ExerciseRepository` carga el JSON incluido y la UI muestra estados de carga/error. El catálogo es de solo lectura y no está en SQLite; no hay API. Un asset vectorial independiente aporta animaciones a 1.257 ejercicios; los demás muestran el icono de su grupo muscular.
 - **Progreso (F1–F6):** historial y detalle usan sesiones y series reales guardadas en SQLite; el resumen de los últimos 30 días calcula series, repeticiones y volumen. Las medidas corporales se guardan por fecha, se pueden editar o eliminar y forman parte del respaldo. La evolución de fuerza compara la mayor carga con peso de cada sesión, por ejercicio y periodo; excluye sesiones sin cargas registradas. Los récords se derivan de las series guardadas e indican fecha y unidad.
-- **Perfil/Cuenta (G1–G6):** plan, tema, idioma y preferencias del perfil persisten localmente. Los recordatorios opcionales usan las sesiones pendientes de la agenda y requieren permiso del sistema; el resumen semanal y las alertas de récord no aparecen porque todavía no hay eventos reales para generarlos. El nombre/correo, acceso y privacidad no autentican, publican ni sincronizan datos ([#5](https://github.com/Angel11R99/forza/issues/5), [#7](https://github.com/Angel11R99/forza/issues/7), [#12](https://github.com/Angel11R99/forza/issues/12)).
+- **Perfil/Cuenta (G1–G6):** plan, tema, idioma y preferencias persisten localmente. Los recordatorios opcionales usan la agenda y requieren permiso del sistema; el resumen semanal y las alertas de récord se omiten si no hay eventos reales. Google solo muestra identidad del proveedor; no publica ni sincroniza datos. #5 requiere configurar IDs OAuth de Android/iOS del proyecto para probar login real. Ver [configuración](google-sign-in-setup.md), [#7](https://github.com/Angel11R99/forza/issues/7) y [#12](https://github.com/Angel11R99/forza/issues/12).
 
 ## Inventario legible del panel de capas
 
@@ -61,7 +61,7 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 - `G5 - Privacidad y cuenta`.
 - `G6 - Confirmacion de cuenta`.
 
-El panel no mostró ninguna capa C2; se conserva ese hueco de numeración sin inventar una pantalla. Las etiquetas de B y C ya se verificaron en el panel, pero aún falta una comparación visual detallada de sus contenidos. No inferir que la autenticación es real ni añadir borrado de cuenta solo por la presencia de esos frames.
+El panel no mostró ninguna capa C2; se conserva ese hueco de numeración sin inventar una pantalla. A2–A4 describen los frames originales de Figma, no los formularios actuales: Perfil muestra acceso opcional con Google y no pide contraseña/correo manual. La integración del proveedor no crea una cuenta de servidor; no añadir borrado de cuenta solo por la presencia de esos frames.
 
 ## Componentes candidatos compartidos
 

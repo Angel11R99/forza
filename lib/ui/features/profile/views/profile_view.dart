@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/localization/device_time_format.dart';
@@ -9,6 +11,7 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../../onboarding/views/account_access_pages.dart';
 import '../../onboarding/views/onboarding_view.dart';
+import '../../onboarding/view_models/account_auth_view_model.dart';
 import '../models/profile_settings.dart';
 import 'profile_settings_pages.dart';
 import '../../../../app/localization/locale_controller.dart';
@@ -20,6 +23,7 @@ class ProfileView extends StatefulWidget {
     required this.trainingSettings,
     required this.onTrainingSettingsChanged,
     required this.profileSettingsRepository,
+    required this.accountAuthViewModel,
     this.onNotificationsChanged,
     required this.themeMode,
     required this.onThemeModeChanged,
@@ -34,6 +38,7 @@ class ProfileView extends StatefulWidget {
   final VoidCallback onManageBackups;
   final LocaleController localeController;
   final ProfileSettingsRepository profileSettingsRepository;
+  final AccountAuthViewModel accountAuthViewModel;
   final Future<bool> Function(
     NotificationSettings previous,
     NotificationSettings updated,
@@ -47,7 +52,6 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   ForzaProfile _profile = const ForzaProfile(
     fullName: 'Atleta FORZA',
-    email: 'atleta@example.com',
     goal: 'Ganar fuerza',
   );
   AppPreferences _preferences = const AppPreferences();
@@ -59,6 +63,7 @@ class _ProfileViewState extends State<ProfileView> {
   void initState() {
     super.initState();
     _loadProfileSettings();
+    unawaited(widget.accountAuthViewModel.restore());
   }
 
   Future<void> _loadProfileSettings() async {
@@ -124,44 +129,65 @@ class _ProfileViewState extends State<ProfileView> {
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                AppSurfaceCard(
-                  padding: const EdgeInsets.all(AppSpacing.x4),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: context.appColors.accentSoft,
-                        foregroundColor: context.appColors.accent,
-                        child: Text(
-                          _initials(displayProfile.fullName),
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                ListenableBuilder(
+                  listenable: widget.accountAuthViewModel,
+                  builder: (context, _) {
+                    final account = widget.accountAuthViewModel.account;
+                    final googleName = account?.displayName?.trim();
+                    final displayName = googleName == null || googleName.isEmpty
+                        ? displayProfile.fullName
+                        : googleName;
+                    final photoUrl = account?.photoUrl;
+                    return AppSurfaceCard(
+                      padding: const EdgeInsets.all(AppSpacing.x4),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundColor: context.appColors.accentSoft,
+                            foregroundColor: context.appColors.accent,
+                            backgroundImage: photoUrl == null
+                                ? null
+                                : NetworkImage(photoUrl),
+                            child: photoUrl == null
+                                ? Text(
+                                    _initials(displayName),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge,
+                                  )
+                                : null,
+                          ),
+                          const SizedBox(width: AppSpacing.x4),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  displayName,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                const SizedBox(height: AppSpacing.x1),
+                                Text(
+                                  account?.email ??
+                                      context.l10n.profileGuestDescription,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: AppSpacing.x2),
+                                Text(
+                                  displayProfile.goal,
+                                  style: Theme.of(context).textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: context.appColors.accent,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: AppSpacing.x4),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              displayProfile.fullName,
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: AppSpacing.x1),
-                            Text(
-                              displayProfile.email,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            const SizedBox(height: AppSpacing.x2),
-                            Text(
-                              displayProfile.goal,
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(color: context.appColors.accent),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 _ProfileSection(
@@ -273,7 +299,11 @@ class _ProfileViewState extends State<ProfileView> {
 
   void _openAccountAccess() {
     Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(builder: (_) => const AccountWelcomePage()),
+      MaterialPageRoute<void>(
+        builder: (_) => AccountWelcomePage(
+          accountAuthViewModel: widget.accountAuthViewModel,
+        ),
+      ),
     );
   }
 
@@ -287,11 +317,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (updated == null || !mounted) return;
     setState(() {
       widget.onTrainingSettingsChanged(updated);
-      _profile = ForzaProfile(
-        fullName: _profile.fullName,
-        email: _profile.email,
-        goal: updated.goal,
-      );
+      _profile = ForzaProfile(fullName: _profile.fullName, goal: updated.goal);
     });
   }
 
@@ -384,10 +410,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (!await _ensureProfileSettingsLoaded() || !mounted) return;
     final updated = await Navigator.of(context).push<PrivacySettings>(
       MaterialPageRoute<PrivacySettings>(
-        builder: (_) => PrivacyAccountPage(
-          settings: _privacy,
-          profile: _localizedProfile(context),
-        ),
+        builder: (_) => PrivacyAccountPage(settings: _privacy),
       ),
     );
     if (updated == null || !mounted) return;
@@ -405,7 +428,6 @@ class _ProfileViewState extends State<ProfileView> {
     fullName: _profile.fullName == 'Atleta FORZA'
         ? context.l10n.profileDefaultName
         : _profile.fullName,
-    email: _profile.email,
     goal: _localizedGoal(context, _profile.goal),
   );
 }

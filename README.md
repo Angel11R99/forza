@@ -19,7 +19,7 @@ FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y co
 
 ## Estado actual
 
-La app guarda localmente en SQLite (Drift) las preferencias del plan —incluidos movimientos que prefieres evitar—, agenda de 120 días, sesiones terminadas con resultados por serie, objetivos personales, medidas corporales y borrador de la sesión activa. También permite exportar y restaurar un respaldo JSON local. La apariencia, el idioma y los ajustes de perfil se conservan localmente. No hay backend, cuentas reales ni sincronización remota.
+La app guarda localmente en SQLite (Drift) las preferencias del plan —incluidos movimientos que prefieres evitar—, agenda de 120 días, sesiones terminadas con resultados por serie, objetivos personales, medidas corporales y borrador de la sesión activa. También permite exportar y restaurar un respaldo JSON local. La apariencia, el idioma y los ajustes de perfil se conservan localmente. Google Sign-In es opcional y solo muestra la identidad del proveedor; no hay cuenta de servidor ni sincronización remota.
 
 El registro de series, recuperación de sesión, agenda sincronizada entre Inicio/Actividad/entrenamiento, medidas corporales persistentes, evolución de fuerza y récords desde los datos guardados, métricas de series y respaldo ya están implementados. Consulta [auditoría y prioridades](docs/07-auditoria-modulos-indispensables.md) y [módulos recomendados](docs/08-modulos-recomendados.md) para el estado vigente.
 

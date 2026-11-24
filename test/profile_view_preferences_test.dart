@@ -6,6 +6,9 @@ import 'package:forza/app/localization/locale_preferences.dart';
 import 'package:forza/app/localization/locale_repository.dart';
 import 'package:forza/app/theme/app_theme.dart';
 import 'package:forza/data/repositories/profile_settings_repository.dart';
+import 'package:forza/domain/models/account_identity.dart';
+import 'package:forza/domain/repositories/account_auth_repository.dart';
+import 'package:forza/ui/features/onboarding/view_models/account_auth_view_model.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
 import 'package:forza/ui/features/profile/views/profile_view.dart';
 
@@ -33,8 +36,11 @@ void main() {
     final locale = LocaleController(
       repository: LocaleRepository(_MemoryLocalePreferences()),
     );
+    final accountAuth = AccountAuthViewModel(
+      repository: _GuestAccountAuthRepository(),
+    );
 
-    await tester.pumpWidget(_app(repository, locale));
+    await tester.pumpWidget(_app(repository, locale, accountAuth));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Weight lb'), findsOneWidget);
@@ -43,28 +49,54 @@ void main() {
     expect(find.textContaining('Reminder at 7:35'), findsOneWidget);
     expect(find.text('Visible profile'), findsOneWidget);
     locale.dispose();
+    accountAuth.dispose();
   });
 }
 
-Widget _app(ProfileSettingsRepository repository, LocaleController locale) =>
-    MaterialApp(
-      theme: AppTheme.light,
-      locale: const Locale('en', 'US'),
-      supportedLocales: const [Locale('en'), Locale('en', 'US'), Locale('es')],
-      localizationsDelegates: [
-        AppLocalizations.delegate,
-        ...GlobalMaterialLocalizations.delegates,
-      ],
-      home: ProfileView(
-        trainingSettings: const TrainingSettings(),
-        onTrainingSettingsChanged: (_) {},
-        profileSettingsRepository: repository,
-        themeMode: ThemeMode.system,
-        onThemeModeChanged: (_) async {},
-        onManageBackups: () {},
-        localeController: locale,
-      ),
-    );
+Widget _app(
+  ProfileSettingsRepository repository,
+  LocaleController locale,
+  AccountAuthViewModel accountAuth,
+) => MaterialApp(
+  theme: AppTheme.light,
+  locale: const Locale('en', 'US'),
+  supportedLocales: const [Locale('en'), Locale('en', 'US'), Locale('es')],
+  localizationsDelegates: [
+    AppLocalizations.delegate,
+    ...GlobalMaterialLocalizations.delegates,
+  ],
+  home: ProfileView(
+    trainingSettings: const TrainingSettings(),
+    onTrainingSettingsChanged: (_) {},
+    accountAuthViewModel: accountAuth,
+    profileSettingsRepository: repository,
+    themeMode: ThemeMode.system,
+    onThemeModeChanged: (_) async {},
+    onManageBackups: () {},
+    localeController: locale,
+  ),
+);
+
+class _GuestAccountAuthRepository implements AccountAuthRepository {
+  @override
+  AccountIdentity? get currentAccount => null;
+
+  @override
+  Stream<AccountIdentity?> get accountChanges =>
+      const Stream<AccountIdentity?>.empty();
+
+  @override
+  Future<void> initialize() async {}
+
+  @override
+  Future<AccountIdentity?> restore() async => null;
+
+  @override
+  Future<AccountIdentity?> signInWithGoogle() async => null;
+
+  @override
+  Future<void> signOut() async {}
+}
 
 class _MemoryProfilePreferencesStorage implements ProfilePreferencesStorage {
   final Map<String, String> values = {};
