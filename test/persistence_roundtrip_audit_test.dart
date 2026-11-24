@@ -3,14 +3,17 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:forza/data/database/app_database.dart' hide PersonalGoal;
+import 'package:forza/data/database/app_database.dart'
+    hide BodyMeasurement, PersonalGoal;
 import 'package:forza/data/migrations/legacy_shared_preferences_migration.dart';
 import 'package:forza/data/repositories/backup_repository.dart';
+import 'package:forza/data/repositories/body_measurement_repository.dart';
 import 'package:forza/data/repositories/personal_goal_repository.dart';
 import 'package:forza/data/repositories/training_schedule_repository.dart';
 import 'package:forza/data/repositories/training_settings_repository.dart';
 import 'package:forza/data/repositories/workout_log_repository.dart';
 import 'package:forza/domain/models/personal_goal.dart';
+import 'package:forza/domain/models/body_measurement.dart';
 import 'package:forza/domain/models/workout_record.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
 
@@ -28,6 +31,7 @@ void main() {
       var scheduleRepository = TrainingScheduleRepository(database: database);
       var workoutRepository = WorkoutLogRepository(database: database);
       var goalRepository = PersonalGoalRepository(database: database);
+      var measurementRepository = BodyMeasurementRepository(database: database);
       var backupRepository = BackupRepository(
         database: database,
         settingsRepository: settingsRepository,
@@ -110,6 +114,13 @@ void main() {
         createdAt: DateTime(2026, 1, 1),
       );
       await goalRepository.save(goal);
+      final bodyMeasurement = BodyMeasurement(
+        date: DateTime(2026, 1, 5),
+        weightKg: 72.4,
+        waistCm: 84,
+        chestCm: 98,
+      );
+      await measurementRepository.save(bodyMeasurement);
       await goalRepository.save(
         PersonalGoal(
           id: goal.id,
@@ -142,6 +153,17 @@ void main() {
         await backupRepository.exportJson(appearanceMode: 'dark'),
       );
       expect(backup.planVersion, 2);
+      expect(backup.bodyMeasurements.single.weightKg, 72.4);
+      final legacyBackupJson = jsonDecode(
+        await backupRepository.exportJson(appearanceMode: 'dark'),
+      ) as Map<String, Object?>;
+      legacyBackupJson.remove('bodyMeasurements');
+      expect(
+        backupRepository
+            .validate(jsonEncode(legacyBackupJson))
+            .bodyMeasurements,
+        isEmpty,
+      );
       expect(
         backup.schedule.any((session) => session.status == 'skipped'),
         isTrue,
@@ -153,6 +175,7 @@ void main() {
       scheduleRepository = TrainingScheduleRepository(database: database);
       workoutRepository = WorkoutLogRepository(database: database);
       goalRepository = PersonalGoalRepository(database: database);
+      measurementRepository = BodyMeasurementRepository(database: database);
       backupRepository = BackupRepository(
         database: database,
         settingsRepository: settingsRepository,
@@ -186,6 +209,7 @@ void main() {
       );
       expect(jsonDecode((await workoutRepository.loadActiveWorkout())!), draft);
       expect((await goalRepository.load()).single.targetValue, 4);
+      expect((await measurementRepository.load()).single.waistCm, 84);
 
       await settingsRepository.save(
         const TrainingSettings(
@@ -208,6 +232,9 @@ void main() {
       );
       await workoutRepository.clearActiveWorkout();
       await goalRepository.delete(goal.id);
+      await measurementRepository.save(
+        BodyMeasurement(date: DateTime(2026, 1, 6), weightKg: 65),
+      );
       await backupRepository.restore(backup);
 
       final restoredSettings = await settingsRepository.load();
@@ -222,6 +249,11 @@ void main() {
       ]);
       expect((await scheduleRepository.load()).any((s) => s.isSkipped), isTrue);
       expect((await goalRepository.load()).single.targetValue, 4);
+      final restoredMeasurement = (await measurementRepository.load()).single;
+      expect(restoredMeasurement.id, bodyMeasurement.id);
+      expect(restoredMeasurement.weightKg, bodyMeasurement.weightKg);
+      expect(restoredMeasurement.chestCm, bodyMeasurement.chestCm);
+      expect(restoredMeasurement.waistCm, bodyMeasurement.waistCm);
       expect(jsonDecode((await workoutRepository.loadActiveWorkout())!), draft);
       expect(backup.appearanceMode, 'dark');
     } finally {

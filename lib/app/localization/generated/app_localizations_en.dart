@@ -228,6 +228,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get exerciseSourceOpenFailure => 'Couldn\'t open the source.';
+
+  @override
   String get exerciseViewAlternatives => 'View alternatives';
 
   @override
@@ -971,10 +974,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String backupConfirmMessage(
     Object date,
     Object goals,
+    Object measurements,
     Object records,
     Object schedule,
   ) {
-    return 'Local data will be replaced with the backup from $date. It includes $records workout history entries, $schedule scheduled workouts, and $goals goals. This cannot be undone.';
+    return 'Local data will be replaced with the backup from $date. It includes $records workout history entries, $schedule scheduled workouts, $goals goals, and $measurements measurement entries. This cannot be undone.';
   }
 
   @override
@@ -1728,7 +1732,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressMeasurementsSavedNote =>
-      'This entry is kept while the app is open.';
+      'Your measurements are saved on this device.';
+
+  @override
+  String get progressMeasurementsEmpty =>
+      'No measurements yet. Log your weight and measurements to track changes over time.';
+
+  @override
+  String get progressEditMeasurement => 'Edit measurement';
+
+  @override
+  String get progressDeleteMeasurement => 'Delete measurement';
+
+  @override
+  String get progressDeleteMeasurementTitle => 'Delete entry';
+
+  @override
+  String get progressDeleteMeasurementBody =>
+      'Do you want to remove the measurements from this day? This cannot be undone.';
+
+  @override
+  String get progressSaveFailed => 'The entry could not be saved. Try again.';
+
+  @override
+  String progressValueRange(Object maximum, Object minimum, Object unit) {
+    return 'Allowed range: $minimum–$maximum $unit';
+  }
 
   @override
   String get progressInvalidValue => 'Enter a valid value.';

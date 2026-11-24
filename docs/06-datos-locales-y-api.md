@@ -10,15 +10,16 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 - Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
 - Agenda: sesiones de los próximos 120 días, fecha original al reprogramar, estado pendiente/en curso/completada/omitida y snapshot de la rutina que corresponde a cada sesión. Omitir una sesión no crea un registro de entrenamiento y se puede deshacer desde Actividad.
 - Objetivos personales: sesiones completadas por semana o carga máxima objetivo por ejercicio.
+- Medidas corporales: un registro por fecha, peso requerido y perímetros opcionales en centímetros.
 - Metadatos: finalización del onboarding y control de importaciones.
 - Apariencia (sistema/claro/oscuro) e idioma elegido: preferencias simples guardadas con `shared_preferences`.
 - Preferencias del perfil: unidad de peso, primer día de semana, hápticos, recordatorios/hora y opciones de privacidad; se guardan localmente con `shared_preferences`. Los recordatorios usan solo las sesiones pendientes de la agenda y requieren permiso explícito de notificaciones del sistema.
 
-El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El nombre/correo de perfil son demostrativos; las opciones de privacidad solo se guardan localmente. FORZA programa avisos locales para próximas sesiones pendientes, usa la zona horaria IANA del dispositivo y vuelve a sincronizar al abrir/reanudar la app o cambiar agenda/preferencias. Se mantienen como máximo 50 avisos próximos, con programación inexacta en Android para no pedir permiso de alarma exacta; Android puede retrasarlos y los fabricantes pueden restringir la ejecución en segundo plano. No hay resumen semanal, alertas de récord, medidas corporales, publicación social ni sincronización entre dispositivos. El inventario con ciclo de vida y pruebas está en `docs/09-auditoria-persistencia.md`.
+El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El nombre/correo de perfil son demostrativos; las opciones de privacidad solo se guardan localmente. FORZA programa avisos locales para próximas sesiones pendientes, usa la zona horaria IANA del dispositivo y vuelve a sincronizar al abrir/reanudar la app o cambiar agenda/preferencias. Se mantienen como máximo 50 avisos próximos, con programación inexacta en Android para no pedir permiso de alarma exacta; Android puede retrasarlos y los fabricantes pueden restringir la ejecución en segundo plano. No hay resumen semanal, alertas de récord, publicación social ni sincronización entre dispositivos. El inventario con ciclo de vida y pruebas está en `docs/09-auditoria-persistencia.md`.
 
 ## Exportar y restaurar datos
 
-Desde Perfil se puede guardar un respaldo JSON o seleccionar uno para restaurarlo. El formato lleva el identificador `FORZA_BACKUP` y una versión propia independiente de la versión del esquema SQLite. La versión 1 contiene el plan, el historial con resultados por serie, la agenda, los objetivos personales, el borrador activo y la apariencia. No incluye el catálogo incluido, el idioma ni las preferencias de perfil almacenadas en `shared_preferences`.
+Desde Perfil se puede guardar un respaldo JSON o seleccionar uno para restaurarlo. El formato lleva el identificador `FORZA_BACKUP` y una versión propia independiente de la versión del esquema SQLite. La versión 1 contiene el plan, el historial con resultados por serie, la agenda, los objetivos personales, medidas corporales, el borrador activo y la apariencia. Los respaldos anteriores que no contienen medidas se siguen aceptando. No incluye el catálogo incluido, el idioma ni las preferencias de perfil almacenadas en `shared_preferences`.
 
 La restauración limita el archivo a 10 MB y valida formato, versión, tipos, rangos y duplicados antes de mostrar la confirmación. Al confirmar, reemplaza en una transacción los datos locales incluidos; una operación fallida revierte esos cambios. La apariencia se aplica después de completar la restauración de SQLite. El archivo es una copia local portable, no sincroniza dispositivos ni cifra el contenido.
 
@@ -34,9 +35,10 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 | `workout_set_entries` | Resultados registrados por ejercicio y serie. |
 | `scheduled_training_sessions` | Agenda próxima, reprogramaciones, estado, versión y rutina congelada para cada sesión. |
 | `personal_goals` | Metas elegidas y objetivos de sesiones o carga. |
+| `body_measurements` | Peso y perímetros corporales, con un registro por fecha. |
 | `app_metadata` | Marcadores, importaciones y borrador del entrenamiento activo. |
 
-La versión actual del esquema es `5`. La migración `0005_plan_versions_and_snapshots.sql` añade IDs de catálogo, versión del plan y snapshots serializados; los registros anteriores conservan los valores predeterminados de versión `1` y los snapshots vacíos o nulos. Las instantáneas serializadas están en `drift_schemas/schema_v1.json` a `schema_v5.json`. Las actualizaciones preservan el historial existente.
+La versión actual del esquema es `6`. La migración `0006_body_measurements.sql` añade la tabla de medidas sin cambiar los datos existentes. Los snapshots de estructura están en `drift_schemas/schema_v1.json` a `schema_v6.json`. Las actualizaciones preservan el historial y el registro corporal empieza vacío en las instalaciones existentes.
 
 ## Importación de instalaciones anteriores
 

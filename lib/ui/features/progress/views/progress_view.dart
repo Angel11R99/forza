@@ -9,6 +9,7 @@ import '../../../core/widgets/forza_brand.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../domain/models/personal_goal.dart';
+import '../../../../domain/models/body_measurement.dart';
 import '../models/progress_models.dart';
 import 'progress_detail_pages.dart';
 import 'personal_goal_editor_page.dart';
@@ -21,12 +22,19 @@ class ProgressView extends StatefulWidget {
     this.goals = const [],
     required this.onSaveGoal,
     required this.onDeleteGoal,
+    required this.measurements,
+    required this.onSaveMeasurement,
+    required this.onDeleteMeasurement,
   });
 
   final List<WorkoutRecord> records;
   final List<PersonalGoal> goals;
   final Future<void> Function(PersonalGoal) onSaveGoal;
   final Future<void> Function(String) onDeleteGoal;
+  final List<BodyMeasurement> measurements;
+  final Future<void> Function(BodyMeasurement, {BodyMeasurement? previous})
+  onSaveMeasurement;
+  final Future<void> Function(DateTime) onDeleteMeasurement;
 
   @override
   State<ProgressView> createState() => _ProgressViewState();
@@ -191,6 +199,23 @@ class _ProgressViewState extends State<ProgressView> {
                       ),
                     ),
                 const SizedBox(height: AppSpacing.x8),
+                SectionHeading(
+                  title: context.l10n.progressBodyTrend,
+                  actionLabel: context.l10n.progressRegisterMeasurements,
+                  onAction: _openBodyEvolution,
+                ),
+                AppSurfaceCard(
+                  child: widget.measurements.isEmpty
+                      ? Text(
+                          context.l10n.progressMeasurementsEmpty,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        )
+                      : Text(
+                          '${_formatShortDate(widget.measurements.last.date, Localizations.localeOf(context).toLanguageTag())} · ${widget.measurements.last.weightKg.toStringAsFixed(1)} kg',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                ),
+                const SizedBox(height: AppSpacing.x8),
                 SectionHeading(title: context.l10n.progressHistory),
                 if (sessions.isEmpty)
                   AppSurfaceCard(
@@ -228,6 +253,18 @@ class _ProgressViewState extends State<ProgressView> {
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => SessionDetailPage(session: session),
+      ),
+    );
+  }
+
+  Future<void> _openBodyEvolution() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => BodyEvolutionPage(
+          measurements: widget.measurements,
+          onSaveMeasurement: widget.onSaveMeasurement,
+          onDeleteMeasurement: widget.onDeleteMeasurement,
+        ),
       ),
     );
   }

@@ -229,6 +229,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get exerciseSourceOpenFailure => 'No se pudo abrir la fuente.';
+
+  @override
   String get exerciseViewAlternatives => 'Ver alternativas';
 
   @override
@@ -975,10 +978,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String backupConfirmMessage(
     Object date,
     Object goals,
+    Object measurements,
     Object records,
     Object schedule,
   ) {
-    return 'Se reemplazarán los datos locales por los del respaldo del $date. Incluye $records sesiones de historial, $schedule sesiones de agenda y $goals objetivos. Esta acción no se puede deshacer.';
+    return 'Se reemplazarán los datos locales por los del respaldo del $date. Incluye $records sesiones de historial, $schedule sesiones de agenda, $goals objetivos y $measurements registros de medidas. Esta acción no se puede deshacer.';
   }
 
   @override
@@ -1736,7 +1740,33 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get progressMeasurementsSavedNote =>
-      'Este registro se conserva mientras la app está abierta.';
+      'Tus medidas se guardan en este dispositivo.';
+
+  @override
+  String get progressMeasurementsEmpty =>
+      'Aún no hay medidas. Registra tu peso y medidas para consultar su evolución.';
+
+  @override
+  String get progressEditMeasurement => 'Editar medida';
+
+  @override
+  String get progressDeleteMeasurement => 'Eliminar medida';
+
+  @override
+  String get progressDeleteMeasurementTitle => 'Eliminar registro';
+
+  @override
+  String get progressDeleteMeasurementBody =>
+      '¿Quieres eliminar las medidas de este día? Esta acción no se puede deshacer.';
+
+  @override
+  String get progressSaveFailed =>
+      'No se pudo guardar el registro. Inténtalo de nuevo.';
+
+  @override
+  String progressValueRange(Object maximum, Object minimum, Object unit) {
+    return 'Rango permitido: $minimum–$maximum $unit';
+  }
 
   @override
   String get progressInvalidValue => 'Ingresa un valor válido.';

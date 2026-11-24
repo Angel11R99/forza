@@ -84,49 +84,6 @@ abstract final class ProgressDemoData {
     ),
   ];
 
-  static List<MeasurementEntry> measurements(DateTime today) => [
-    MeasurementEntry(
-      date: _dayBefore(today, 84),
-      weightKg: 81.2,
-      chestCm: 101,
-      waistCm: 92,
-      hipsCm: 103,
-      armCm: 34,
-    ),
-    MeasurementEntry(
-      date: _dayBefore(today, 63),
-      weightKg: 80.6,
-      chestCm: 101,
-      waistCm: 91,
-      hipsCm: 103,
-      armCm: 34,
-    ),
-    MeasurementEntry(
-      date: _dayBefore(today, 42),
-      weightKg: 80.1,
-      chestCm: 100,
-      waistCm: 90,
-      hipsCm: 102,
-      armCm: 34.5,
-    ),
-    MeasurementEntry(
-      date: _dayBefore(today, 21),
-      weightKg: 79.7,
-      chestCm: 100,
-      waistCm: 89,
-      hipsCm: 102,
-      armCm: 34.5,
-    ),
-    MeasurementEntry(
-      date: _dayBefore(today, 7),
-      weightKg: 79.2,
-      chestCm: 100,
-      waistCm: 88,
-      hipsCm: 101,
-      armCm: 35,
-    ),
-  ];
-
   static const strengthValuesKg = <double>[40, 42.5, 45, 47.5, 50, 52.5];
   static const strengthLabels = <String>['S1', 'S2', 'S3', 'S4', 'S5', 'S6'];
 

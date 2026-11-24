@@ -69,9 +69,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
           content: Text(
             context.l10n.backupConfirmMessage(
               _date(backup.exportedAt),
+              backup.goals.length,
+              backup.bodyMeasurements.length,
               backup.records.length,
               backup.schedule.length,
-              backup.goals.length,
             ),
           ),
           actions: [

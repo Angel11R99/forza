@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../domain/models/exercise.dart';
 import '../../../../domain/repositories/exercise_repository.dart';
@@ -19,10 +20,12 @@ class ExerciseDetailPage extends StatelessWidget {
     super.key,
     required this.exercise,
     required this.repository,
+    this.sourceLinkLauncher,
   });
 
   final Exercise exercise;
   final ExerciseRepository repository;
+  final Future<bool> Function(Uri uri)? sourceLinkLauncher;
 
   @override
   Widget build(BuildContext context) {
@@ -195,17 +198,25 @@ class ExerciseDetailPage extends StatelessWidget {
                                           .bodySmall,
                                     ),
                                     const SizedBox(height: AppSpacing.x1),
-                                    SelectableText(
-                                      context.l10n.exerciseSourceLink(
+                                    TextButton.icon(
+                                      onPressed: () => _openSource(
+                                        context,
                                         guideNotes.sourceUrl,
                                       ),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                            color:
-                                                context.appColors.textSecondary,
-                                          ),
+                                      icon: const Icon(Icons.open_in_new),
+                                      label: Text(
+                                        context.l10n.exerciseSourceLink(
+                                          guideNotes.sourceUrl,
+                                        ),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        alignment: Alignment.centerLeft,
+                                        minimumSize: const Size(48, 48),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.padded,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -259,6 +270,28 @@ class ExerciseDetailPage extends StatelessWidget {
             ExerciseDetailPage(exercise: selected, repository: repository),
       ),
     );
+  }
+
+  Future<void> _openSource(BuildContext context, String sourceUrl) async {
+    final uri = Uri.tryParse(sourceUrl);
+    if (uri == null || uri.scheme != 'https') return;
+    try {
+      final open =
+          sourceLinkLauncher ??
+          (uri) => launchUrl(uri, mode: LaunchMode.externalApplication);
+      final opened = await open(uri);
+      if (!opened && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.exerciseSourceOpenFailure)),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.exerciseSourceOpenFailure)),
+        );
+      }
+    }
   }
 }
 
