@@ -343,6 +343,43 @@ class AppShellViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> resetUserData() async {
+    await _database.transaction(() async {
+      await _database.delete(_database.scheduledTrainingSessions).go();
+      await _database.delete(_database.workoutSessions).go();
+      await _database.delete(_database.personalGoals).go();
+      await _database.delete(_database.bodyMeasurements).go();
+      await _database.delete(_database.trainingPlans).go();
+      await (_database.delete(_database.appMetadata)..where(
+            (row) => row.key.isIn(const {
+              'training_setup_complete',
+              'active_workout_v1',
+            }),
+          ))
+          .go();
+      await _database
+          .into(_database.appMetadata)
+          .insertOnConflictUpdate(
+            AppMetadataCompanion.insert(
+              key: LegacySharedPreferencesMigration.migrationKey,
+              value: 'true',
+            ),
+          );
+    });
+
+    _trainingSettings = const TrainingSettings();
+    _workoutRecords = const [];
+    _scheduledSessions = const [];
+    _personalGoals = const [];
+    _bodyMeasurements = const [];
+    _needsFirstRunSetup = true;
+    _hasActiveWorkout = false;
+    _activeWorkoutDate = null;
+    _streakAnimationRevision = 0;
+    _streakAnimationFrom = 0;
+    notifyListeners();
+  }
+
   void _scheduleStreakRollover() {
     _streakRolloverTimer?.cancel();
     final now = DateTime.now();

@@ -110,3 +110,7 @@ La agenda local ya representa sesiones planificadas como recursos independientes
 4. Añadir endpoints para medidas/progreso o cuenta únicamente cuando esas funciones guarden datos en la app y tengan campos/retención definidos.
 
 La migración a un backend no consiste en mover el archivo SQLite del dispositivo. Se conserva el modelo de dominio y se añade una implementación remota de los repositorios con caché SQLite y sincronización explícita.
+
+### Reinicio local
+
+Desde Perfil > Respaldo y restauración, el usuario puede reiniciar los datos locales tras una confirmación explícita y, de forma opcional, guardar primero un respaldo JSON. Se eliminan el plan, las sesiones de agenda, el historial con ejercicios y series, las metas, las medidas corporales y el borrador de entrenamiento. Si el selector de archivo se cancela, no se ejecuta el borrado. Se conservan el idioma, tema, unidades, hápticos, privacidad, recordatorios, el catálogo incluido en la app y los permisos que gestiona el sistema operativo. Al terminar, la app vuelve a solicitar la configuración de un plan. El marcador de migración evita reimportar registros heredados eliminados.
