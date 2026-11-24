@@ -27,7 +27,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 
 ## Mejoras posteriores
 
-- **Cobertura de medios autorizados:** inventariar los 67 ejercicios sin animación y buscar recursos con licencia comprobable; conservar fallback si no hay permiso ([#17](https://github.com/Angel11R99/forza/issues/17)).
+- **Cobertura de medios autorizados:** hay 1.260 ejercicios con fotogramas y 64 con fallback. Se añadieron tres coincidencias de la fuente CC0 y se inventariaron los casos restantes; mantener fallback si la fuente no representa con precisión el ejercicio ([#17](https://github.com/Angel11R99/forza/issues/17); [inventario](10-inventario-medios-ejercicios.md)).
 - **Vuelta a la calma:** valorar una secuencia breve y opcional al terminar, sin bloquear la finalización ([#19](https://github.com/Angel11R99/forza/issues/19)).
 - **Accesibilidad y adaptación:** revisar Android/iOS, tamaño de texto, contraste, targets, lectores de pantalla, navegación y temas ([#20](https://github.com/Angel11R99/forza/issues/20)).
 - **Cuenta:** autenticación opcional solo si se decide ofrecer cuentas o sincronización entre dispositivos ([#5](https://github.com/Angel11R99/forza/issues/5)).

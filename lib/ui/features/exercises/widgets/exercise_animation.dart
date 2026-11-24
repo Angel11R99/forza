@@ -47,7 +47,6 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
     '1366',
     '3420',
     '0826',
-    '2141',
     '3655',
     '1460',
     '3666',
@@ -89,14 +88,12 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
     '1767',
     '0857',
     '3637',
-    '1429',
     '1367',
     '1311',
     '2363',
     '0858',
     '1604',
     '1428',
-    '0859',
   };
 
   Timer? _timer;
@@ -193,31 +190,43 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
     }
 
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final frame = animation.frames[frameIndex];
+    final isSvg = frame.toLowerCase().endsWith('.svg');
     return Semantics(
       image: true,
       label: context.l10n.exerciseAnimationLabel(widget.label),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.light.surfaceMuted,
+          color: isSvg ? AppColors.light.surfaceMuted : const Color(0xFF111315),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Stack(
           fit: StackFit.expand,
           children: [
             ExcludeSemantics(
-              child: SvgPicture.asset(
-                animation.frames[frameIndex],
-                fit: BoxFit.contain,
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFF111111),
-                  BlendMode.srcIn,
-                ),
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  widget.fallbackIcon,
-                  size: 56,
-                  color: context.appColors.textSecondary,
-                ),
-              ),
+              child: isSvg
+                  ? SvgPicture.asset(
+                      frame,
+                      fit: BoxFit.contain,
+                      colorFilter: const ColorFilter.mode(
+                        Color(0xFF111111),
+                        BlendMode.srcIn,
+                      ),
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        widget.fallbackIcon,
+                        size: 56,
+                        color: context.appColors.textSecondary,
+                      ),
+                    )
+                  : Image.asset(
+                      frame,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        widget.fallbackIcon,
+                        size: 56,
+                        color: context.appColors.textSecondary,
+                      ),
+                    ),
             ),
             if (widget.showControls && !reduceMotion)
               Positioned(

@@ -98,6 +98,7 @@ flutter:
     - assets/data/exercises.json
     - assets/exercise_animations/
     - assets/licenses/flow-exercise-dataset/
+    - assets/licenses/open-exercise-illustrations/
     - assets/fonts/barlow/OFL-Barlow.txt
     - assets/fonts/barlow/OFL-BarlowCondensed.txt
 
