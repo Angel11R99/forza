@@ -209,6 +209,9 @@ class ExerciseDetailPage extends StatelessWidget {
                                           guideNotes.sourceUrl,
                                         ),
                                         textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          decoration: TextDecoration.underline,
+                                        ),
                                       ),
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,

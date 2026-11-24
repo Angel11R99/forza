@@ -47,6 +47,10 @@ void main() {
 
     final sourceLink = find.textContaining('Enlace de la fuente:');
     expect(sourceLink, findsOneWidget);
+    expect(
+      tester.widget<Text>(sourceLink).style?.decoration,
+      TextDecoration.underline,
+    );
     await tester.tap(sourceLink);
     await tester.pump();
 
