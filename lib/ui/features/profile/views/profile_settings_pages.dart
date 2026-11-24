@@ -30,7 +30,8 @@ class AppLanguagePage extends StatelessWidget {
               const SizedBox(height: AppSpacing.x4),
               RadioGroup<String?>(
                 groupValue: localeController.locale?.languageCode,
-                onChanged: localeController.setLanguageCode,
+                onChanged: (languageCode) =>
+                    _saveLanguage(context, languageCode),
                 child: Column(
                   children: [
                     RadioListTile<String?>(
@@ -56,6 +57,17 @@ class AppLanguagePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _saveLanguage(BuildContext context, String? languageCode) async {
+    try {
+      await localeController.setLanguageCode(languageCode);
+    } on Object {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileSettingsSaveFailed)),
+      );
+    }
   }
 }
 
@@ -195,7 +207,7 @@ class AppAppearancePage extends StatefulWidget {
   });
 
   final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeModeChanged;
+  final Future<void> Function(ThemeMode) onThemeModeChanged;
 
   @override
   State<AppAppearancePage> createState() => _AppAppearancePageState();
@@ -204,9 +216,16 @@ class AppAppearancePage extends StatefulWidget {
 class _AppAppearancePageState extends State<AppAppearancePage> {
   late ThemeMode _themeMode = widget.themeMode;
 
-  void _selectMode(ThemeMode mode) {
-    setState(() => _themeMode = mode);
-    widget.onThemeModeChanged(mode);
+  Future<void> _selectMode(ThemeMode mode) async {
+    try {
+      await widget.onThemeModeChanged(mode);
+      if (mounted) setState(() => _themeMode = mode);
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileSettingsSaveFailed)),
+      );
+    }
   }
 
   @override

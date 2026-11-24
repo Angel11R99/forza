@@ -309,6 +309,8 @@
   "profileWeekStartTitle": "Week starts on",
   "profileHapticTitle": "Haptic feedback",
   "profileSavePreferences": "Save preferences",
+  "profileSettingsLoadFailed": "Your preferences could not be loaded. Please try again.",
+  "profileSettingsSaveFailed": "Your preferences could not be saved. Please try again.",
   "profileNotificationsPageTitle": "Notifications",
   "profileWorkoutReminders": "Workout reminders",
   "profileReminderDescription": "Choose a time that works for you.",

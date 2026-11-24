@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
@@ -16,6 +17,7 @@ class ProfileView extends StatefulWidget {
     super.key,
     required this.trainingSettings,
     required this.onTrainingSettingsChanged,
+    required this.profileSettingsRepository,
     required this.themeMode,
     required this.onThemeModeChanged,
     required this.onManageBackups,
@@ -25,9 +27,10 @@ class ProfileView extends StatefulWidget {
   final TrainingSettings trainingSettings;
   final ValueChanged<TrainingSettings> onTrainingSettingsChanged;
   final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeModeChanged;
+  final Future<void> Function(ThemeMode) onThemeModeChanged;
   final VoidCallback onManageBackups;
   final LocaleController localeController;
+  final ProfileSettingsRepository profileSettingsRepository;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -42,6 +45,49 @@ class _ProfileViewState extends State<ProfileView> {
   AppPreferences _preferences = const AppPreferences();
   NotificationSettings _notifications = const NotificationSettings();
   PrivacySettings _privacy = const PrivacySettings();
+  bool _profileSettingsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileSettings();
+  }
+
+  Future<void> _loadProfileSettings() async {
+    try {
+      final preferences = await widget.profileSettingsRepository
+          .loadAppPreferences();
+      final notifications = await widget.profileSettingsRepository
+          .loadNotifications();
+      final privacy = await widget.profileSettingsRepository.loadPrivacy();
+      if (!mounted) return;
+      setState(() {
+        _preferences = preferences;
+        _notifications = notifications;
+        _privacy = privacy;
+        _profileSettingsLoaded = true;
+      });
+    } on Object {
+      if (mounted) setState(() => _profileSettingsLoaded = false);
+    }
+  }
+
+  Future<bool> _ensureProfileSettingsLoaded() async {
+    if (!_profileSettingsLoaded) await _loadProfileSettings();
+    if (_profileSettingsLoaded) return true;
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileSettingsLoadFailed)),
+      );
+    }
+    return false;
+  }
+
+  void _showSettingsSaveError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.profileSettingsSaveFailed)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,12 +297,20 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _editPreferences() async {
+    if (!await _ensureProfileSettingsLoaded() || !mounted) return;
     final updated = await Navigator.of(context).push<AppPreferences>(
       MaterialPageRoute<AppPreferences>(
         builder: (_) => AppPreferencesPage(preferences: _preferences),
       ),
     );
     if (updated == null || !mounted) return;
+    try {
+      await widget.profileSettingsRepository.saveAppPreferences(updated);
+    } on Object {
+      if (mounted) _showSettingsSaveError();
+      return;
+    }
+    if (!mounted) return;
     setState(() => _preferences = updated);
   }
 
@@ -281,16 +335,25 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _editNotifications() async {
+    if (!await _ensureProfileSettingsLoaded() || !mounted) return;
     final updated = await Navigator.of(context).push<NotificationSettings>(
       MaterialPageRoute<NotificationSettings>(
         builder: (_) => NotificationsSettingsPage(settings: _notifications),
       ),
     );
     if (updated == null || !mounted) return;
+    try {
+      await widget.profileSettingsRepository.saveNotifications(updated);
+    } on Object {
+      if (mounted) _showSettingsSaveError();
+      return;
+    }
+    if (!mounted) return;
     setState(() => _notifications = updated);
   }
 
   Future<void> _editPrivacy() async {
+    if (!await _ensureProfileSettingsLoaded() || !mounted) return;
     final updated = await Navigator.of(context).push<PrivacySettings>(
       MaterialPageRoute<PrivacySettings>(
         builder: (_) => PrivacyAccountPage(
@@ -300,6 +363,13 @@ class _ProfileViewState extends State<ProfileView> {
       ),
     );
     if (updated == null || !mounted) return;
+    try {
+      await widget.profileSettingsRepository.savePrivacy(updated);
+    } on Object {
+      if (mounted) _showSettingsSaveError();
+      return;
+    }
+    if (!mounted) return;
     setState(() => _privacy = updated);
   }
 

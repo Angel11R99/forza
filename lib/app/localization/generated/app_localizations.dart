@@ -1436,6 +1436,18 @@ abstract class AppLocalizations {
   /// **'Save preferences'**
   String get profileSavePreferences;
 
+  /// No description provided for @profileSettingsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your preferences could not be loaded. Please try again.'**
+  String get profileSettingsLoadFailed;
+
+  /// No description provided for @profileSettingsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your preferences could not be saved. Please try again.'**
+  String get profileSettingsSaveFailed;
+
   /// No description provided for @profileNotificationsPageTitle.
   ///
   /// In en, this message translates to:

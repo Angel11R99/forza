@@ -28,18 +28,14 @@ class AppearanceController extends ChangeNotifier {
 
   Future<void> setMode(ThemeMode mode) async {
     if (_mode == mode) return;
-    _mode = mode;
-    notifyListeners();
     final value = switch (mode) {
       ThemeMode.light => 'light',
       ThemeMode.dark => 'dark',
       ThemeMode.system => 'system',
     };
-    try {
-      await _preferences.write(_storageKey, value);
-    } on Object {
-      // Keep the selected appearance for this run if saving fails.
-    }
+    await _preferences.write(_storageKey, value);
+    _mode = mode;
+    notifyListeners();
   }
 }
 

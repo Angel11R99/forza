@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/workout_record.dart';
+import '../../../data/repositories/profile_settings_repository.dart';
 import '../../../app/theme/appearance_controller.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -37,6 +38,7 @@ class _AppScaffoldState extends State<AppScaffold>
     with SingleTickerProviderStateMixin {
   late int _selectedIndex;
   final _viewModel = AppShellViewModel();
+  final _profileSettingsRepository = ProfileSettingsRepository();
   late final AnimationController _moduleController;
   late final CurvedAnimation _moduleTransition;
   late final Animation<Offset> _moduleOffset;
@@ -297,6 +299,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     ),
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
+                      profileSettingsRepository: _profileSettingsRepository,
                       themeMode: widget.appearance.mode,
                       onThemeModeChanged: widget.appearance.setMode,
                       localeController: widget.localeController,

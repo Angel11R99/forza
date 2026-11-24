@@ -805,6 +805,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSavePreferences => 'Save preferences';
 
   @override
+  String get profileSettingsLoadFailed =>
+      'Your preferences could not be loaded. Please try again.';
+
+  @override
+  String get profileSettingsSaveFailed =>
+      'Your preferences could not be saved. Please try again.';
+
+  @override
   String get profileNotificationsPageTitle => 'Notifications';
 
   @override
