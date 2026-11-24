@@ -1806,7 +1806,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressRecordsDescription =>
-      'Your best results across different exercises.';
+      'Records calculated from your saved sets, with date and unit. Ties keep the first date.';
+
+  @override
+  String get progressRecordsEmpty =>
+      'There are no records yet. Log repetitions, load, or duration in a set to get started.';
 
   @override
   String get progressRecordNoMeasurements => 'Body weight';

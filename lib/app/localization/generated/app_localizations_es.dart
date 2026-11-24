@@ -1815,7 +1815,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get progressRecordsDescription =>
-      'Tus mejores marcas en distintos ejercicios.';
+      'Marcas calculadas desde tus series guardadas; muestran fecha y unidad. Si empatan, se conserva la primera fecha.';
+
+  @override
+  String get progressRecordsEmpty =>
+      'Todavía no hay marcas. Registra repeticiones, carga o duración en una serie para empezar.';
 
   @override
   String get progressRecordNoMeasurements => 'Peso corporal';

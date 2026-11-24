@@ -7,9 +7,9 @@ import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../domain/models/body_measurement.dart';
-import '../data/progress_demo_data.dart';
 import '../models/progress_models.dart';
 import '../models/strength_evolution.dart';
+import '../models/personal_records.dart';
 import '../widgets/progress_line_chart.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
@@ -844,11 +844,13 @@ class _MeasurementField extends StatelessWidget {
 }
 
 class PersonalRecordsPage extends StatelessWidget {
-  const PersonalRecordsPage({super.key});
+  const PersonalRecordsPage({super.key, required this.records});
+
+  final List<WorkoutRecord> records;
 
   @override
   Widget build(BuildContext context) {
-    final records = ProgressDemoData.records(DateTime.now());
+    final personalRecords = buildPersonalRecords(records);
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.progressPersonalRecords)),
@@ -875,11 +877,31 @@ class PersonalRecordsPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                for (final record in records)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                    child: _RecordCard(record: record),
-                  ),
+                if (personalRecords.isEmpty)
+                  AppSurfaceCard(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.emoji_events_outlined,
+                          color: context.appColors.textSecondary,
+                        ),
+                        const SizedBox(width: AppSpacing.x3),
+                        Expanded(
+                          child: Text(
+                            context.l10n.progressRecordsEmpty,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  for (final record in personalRecords)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                      child: _RecordCard(record: record),
+                    ),
               ],
             ),
           ),
@@ -928,7 +950,7 @@ class _RecordCard extends StatelessWidget {
             ),
           ),
           Text(
-            '${record.value} ${record.unit}',
+            '${record.value % 1 == 0 ? record.value.toInt() : record.value} ${record.unit}',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ],
