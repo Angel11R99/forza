@@ -9,6 +9,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 - **Progreso básico:** historial y detalle usan datos persistidos. El resumen de 30 días calcula series, repeticiones y volumen; las sesiones registradas como realizadas fuera de la app no aportan series.
 - **Objetivos personales:** metas semanales de sesiones y de carga por ejercicio se guardan localmente y se calculan desde las sesiones/series.
 - **Medidas corporales:** peso y perímetros opcionales por fecha, con validación, edición/eliminación, evolución del peso y respaldo local.
+- **Accesibilidad y adaptación:** la navegación conserva etiquetas semánticas, selección y acciones; sus targets son de 48 dp y respeta movimiento reducido. Encabezados y pestañas se adaptan a 320 px y texto 2×. El contraste de texto y acciones está comprobado en ambos temas. Inicio, Actividad, Ejercicios y teclado se revisaron en emulador Android; iOS queda sin validar porque no hay simulador disponible.
 - **Calentamiento y vuelta a la calma:** hay secuencias breves opcionales antes y después del entrenamiento. La vuelta a la calma se adapta a los grupos musculares de la sesión, muestra instrucciones por paso y se puede omitir; no modifica los resultados ni la duración registrada.
 - **Guías de ejercicios:** catálogo local de 1.324 ejercicios, instrucciones en español e inglés y 1.260 medios animados. 509 ejercicios reciben notas técnicas de familias con fuentes; 815 variantes permanecen sin notas curadas y conservan las instrucciones y el fallback. El inventario por ID y grupo está en [notas técnicas pendientes](11-inventario-notas-tecnicas.md).
 - **Respaldo:** exportación/restauración local en JSON con validación y confirmación antes de reemplazar datos. No incluye catálogo ni preferencias de perfil que aún no persisten.
@@ -28,8 +29,6 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 ## Mejoras posteriores
 
 - **Cobertura de medios autorizados:** hay 1.260 ejercicios con fotogramas y 64 con fallback. Se añadieron tres coincidencias de la fuente CC0 y se inventariaron los casos restantes; mantener fallback si la fuente no representa con precisión el ejercicio ([#17](https://github.com/Angel11R99/forza/issues/17); [inventario](10-inventario-medios-ejercicios.md)).
-- **Vuelta a la calma:** valorar una secuencia breve y opcional al terminar, sin bloquear la finalización ([#19](https://github.com/Angel11R99/forza/issues/19)).
-- **Accesibilidad y adaptación:** revisar Android/iOS, tamaño de texto, contraste, targets, lectores de pantalla, navegación y temas ([#20](https://github.com/Angel11R99/forza/issues/20)).
 - **Cuenta:** autenticación opcional solo si se decide ofrecer cuentas o sincronización entre dispositivos ([#5](https://github.com/Angel11R99/forza/issues/5)).
 - **Gym Bro:** investigación futura dependiente de decisiones de cuenta, persistencia y privacidad; diseñar primero y solicitar aprobación antes de cualquier backend ([#22](https://github.com/Angel11R99/forza/issues/22)).
 

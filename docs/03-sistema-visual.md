@@ -58,5 +58,14 @@ Evitar que el ejemplo se copie con un color de acento inventado. Conectar despu�
 - Tratar 393 × 852 como el tamaño de referencia de un frame, no como tamaño fijo de dispositivo.
 - Usar SafeArea, constraints, scroll y widgets flexibles; evitar `Positioned` absoluto para contenido común.
 - Verificar targets táctiles, contraste, escalado de texto, labels semánticos en iconos funcionales y foco visible.
+- En pantallas estrechas y con texto ampliado, apilar los encabezados con acciones y conservar una sola línea en las etiquetas de navegación.
+- Respetar `disableAnimations` en cambios de destino y exponer nombre, selección y acción de cada pestaña en Semantics.
 - Imágenes remotas: definir proporción, `BoxFit`, placeholder, error y caché; evitar saltos de layout.
 - Revisar modo oscuro solo si el producto lo solicita; no asumir que el panel oscuro de Figma representa una variante oscura de la app.
+
+### Validación de accesibilidad y adaptación
+
+- Prueba de widgets: shell a 320 × 800 con escalado de texto 2× y movimiento reducido, y a 800 × 320 en horizontal; comprueba nombres, acción, selección y target táctil mínimo de 48 dp en navegación.
+- Contraste automatizado: texto primario/secundario y acciones principales con al menos 4,5:1 en los fondos de los temas claro y oscuro.
+- Emulador Android 16 (API 36): navegación y búsqueda de ejercicios; el teclado en pantalla deja visible el campo de búsqueda. La pantalla Inicio también se inspeccionó con escala de fuente del sistema en 2×.
+- No hay simulador iOS disponible en este entorno; VoiceOver y pruebas en dispositivo iOS siguen pendientes.
