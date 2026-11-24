@@ -17,10 +17,10 @@ El archivo muestra frames agrupados por letra (A–G). A continuación se conser
 - **Acceso (A1–A4):** bienvenida, crear cuenta, iniciar sesión y recuperar contraseña, disponibles desde Perfil. Los formularios validan datos localmente y muestran que la acción es solo de demostración: no crean cuentas, no inician sesión ni envían correos.
 - **Configuración de plan (B1–B5):** resumen de personalización, preparación local del plan, selección de día, detalle de ejercicios y confirmación final. Las preferencias del plan se guardan localmente en SQLite; la rutina usa ejercicios del catálogo local, sin generación remota. La barra anuncia las preferencias mientras se configuran y cada día anuncia su selección, duración y cantidad de ejercicios. La comparación visual detallada queda pendiente.
 - **Sesión de entrenamiento (C1, C3–C8):** preparación, descanso temporizado, lista de ejercicios, pausa, confirmación de abandono, finalización y resumen, accesibles desde una sesión programada en Actividad. Al terminar o marcar una sesión realizada, su resumen y ejercicios se agregan al historial SQLite. C2 no aparece en el panel de capas.
-- **Actividad (D2–D4):** calendario mensual, detalle del día y flujo de reprogramación con datos de ejemplo. El cambio de fecha se conserva durante la sesión abierta de la app, sin persistencia.
+- **Actividad (D2–D4):** calendario mensual, detalle del día y reprogramación de sesiones planificadas. La agenda de 120 días y sus cambios de fecha se guardan en SQLite y se comparten con Inicio y el entrenamiento; estados actuales: pendiente, en curso y completada. Aún no existe un estado para omitir una sesión ([#15](https://github.com/Angel11R99/forza/issues/15)).
 - **Ejercicios (E1–E5):** biblioteca local de 1.324 ejercicios con nombres e instrucciones en español e inglés, búsqueda por ejercicio/músculo/equipo, filtros combinables, detalle y alternativas. La interfaz, las etiquetas de grupo/equipo y las notas técnicas admiten ambos idiomas. `ExerciseRepository` carga el JSON incluido y la UI muestra estados de carga/error. El catálogo es de solo lectura y no está en SQLite; no hay API. Un asset vectorial independiente aporta animaciones a 1.257 ejercicios; los demás muestran el icono de su grupo muscular.
-- **Progreso (F1–F6):** historial y detalle de sesión usan sesiones terminadas guardadas en SQLite. Evolución de fuerza/corporal, medidas y récords todavía muestran datos temporales/de ejemplo.
-- **Perfil/Cuenta (G1–G6):** configuración de entrenamiento guardada en SQLite; edición de datos, unidades, comienzo de semana, notificaciones y privacidad siguen siendo una experiencia local de demostración. No hay autenticación ni sincronización.
+- **Progreso (F1–F6):** historial y detalle usan sesiones y series reales guardadas en SQLite; el resumen de los últimos 30 días calcula series, repeticiones y volumen. Evolución de fuerza, evolución corporal, registro de medidas y récords todavía muestran datos de demostración ([#9](https://github.com/Angel11R99/forza/issues/9), [#10](https://github.com/Angel11R99/forza/issues/10), [#11](https://github.com/Angel11R99/forza/issues/11)).
+- **Perfil/Cuenta (G1–G6):** configuración del plan, tema e idioma persisten localmente. Edición de perfil, unidades, inicio de semana, notificaciones y privacidad son demostrativos y no se guardan; los formularios de acceso no autentican. No hay sincronización ([#5](https://github.com/Angel11R99/forza/issues/5), [#7](https://github.com/Angel11R99/forza/issues/7), [#12](https://github.com/Angel11R99/forza/issues/12)).
 
 ## Inventario legible del panel de capas
 
@@ -72,7 +72,7 @@ El panel no mostró ninguna capa C2; se conserva ese hueco de numeración sin in
 - Gráfico de progreso y tarjeta de métrica.
 - Filas y controles de preferencias, toggles, campos de perfil.
 
-Reusar el paquete que ya se eligió para iconos y navbar. Esta lista describe sus espacios visuales, no exige dibujar glifos ni construir una barra propietaria.
+Reutilizar la navegación existente en `AppScaffold`. Esta lista describe espacios visuales, no exige añadir paquetes de iconos o navbar.
 
 ## Estructura de rutas ilustrativa
 

@@ -1,10 +1,10 @@
 # FORZA · Guía de implementación
 
-> Guía basada en el archivo [`FORZA — Premium Fitness Experience.fig`](figma/FORZA%20%E2%80%94%20Premium%20Fitness%20Experience.fig) y el starter Flutter que existe en `C:\Users\User\Documents\forza` al 20-11-2026.
+> Guía basada en el archivo [`FORZA — Premium Fitness Experience.fig`](figma/FORZA%20%E2%80%94%20Premium%20Fitness%20Experience.fig) y el estado del repositorio al 24-11-2026. Cuando esta guía difiera del código, prevalece el código y debe corregirse la documentación.
 
 ## En una frase
 
-Implementar las pantallas y el lenguaje visual FORZA en Flutter, reutilizando paquetes maduros para navegación, iconos y gráficos. La primera entrega es de UI y navegación; los datos reales, persistencia, autenticación y animaciones de ejercicios se conectan en etapas posteriores.
+FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local implementados. No existe backend, autenticación real ni sincronización remota. Este índice enlaza la documentación de arquitectura, UI y datos; el estado funcional y las prioridades vigentes están en [README](../README.md), [auditoría de módulos](07-auditoria-modulos-indispensables.md) y [módulos recomendados](08-modulos-recomendados.md).
 
 ## Documentos
 
@@ -16,15 +16,14 @@ Implementar las pantallas y el lenguaje visual FORZA en Flutter, reutilizando pa
 
 ## Alcance que se asume
 
-- El proyecto objetivo es Flutter y el repositorio consultado es `C:\Users\User\Documents\forza`.
-- La navegación del primer hito usa `Navigator`/`MaterialApp`; en iOS se integra `native_glass_navbar ^2.0.0` y en Android su fallback visual Flutter.
-- El foco de esta guía es estructura visual, color, espaciado, componentes de interfaz y rutas.
-- Animaciones de ejercicios: integrarlas en otra fase, después de resolver derechos de uso de cada medio.
-- Las páginas de ajustes y perfil aparecen en el Figma; su backend y lógica de cuenta no forman parte de una primera entrega visual.
+- La navegación usa `MaterialApp`/`Navigator` y widgets Flutter propios: barra inferior en pantallas estrechas y `NavigationRail` en anchas.
+- La apariencia y el idioma se guardan localmente; preferencias del plan, agenda, sesiones, series y objetivos usan SQLite/Drift.
+- Los accesos de cuenta son demostrativos. No hay proveedor de identidad, backend ni sincronización.
+- El catálogo tiene 1.324 ejercicios y 1.257 animaciones vectoriales locales con fallback escrito/visual. Los medios upstream de terceros no se redistribuyen.
 
 ## Estado del proyecto consultado
 
-El árbol `lib/` contiene la base FORZA, las cinco áreas de navegación, acceso A1–A4, plan de demostración B1–B5, sesión de entrenamiento C1 y C3–C8, y los flujos de Actividad D2–D4, Ejercicios E1–E5, Progreso F1–F6 y Perfil/Cuenta G1–G6. C2 no aparece en el panel de capas. `material_ui ^1.11.1` y `native_glass_navbar ^2.0.0` están declarados y resueltos en `pubspec.lock`. No hay backend ni persistencia.
+El árbol `lib/` contiene las cinco áreas de navegación, configuración de plan, sesión guiada, calendario y reprogramación persistentes, catálogo local de ejercicios, historial y progreso. Las pantallas de medidas corporales, evolución de fuerza y récords aún usan datos de demostración; unidades, inicio de semana, notificaciones y privacidad no se guardan. `material_ui ^1.11.1` está declarado; `native_glass_navbar` no forma parte de `pubspec.yaml` ni `pubspec.lock`. No hay backend ni sincronización.
 
 ## Decisiones de la primera entrega
 

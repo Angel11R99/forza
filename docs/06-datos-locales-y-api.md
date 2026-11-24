@@ -96,7 +96,7 @@ El servidor no debe interpretar ni exponer los códigos internos del onboarding.
 | `GET /v1/me/workout-sessions/{sessionId}` | Ver el resumen y detalle de una sesión. | Devuelve el resumen más ejercicios ordenados; `404` si no pertenece al usuario o no existe. |
 | `POST /v1/me/workout-sessions/{sessionId}/complete` | Confirmar fin desde el flujo de entrenamiento. | Recibe `completedAt` y los datos finales de ejercicios/duración. Repetir la misma clave de idempotencia devuelve el mismo resultado. |
 
-Para soportar edición o reprogramación real del calendario habrá que incorporar sesiones planificadas como recurso independiente o permitir actualizar `scheduledDate`; no debe fingirse que el flujo local actual ya guarda esa operación.
+La agenda local ya representa sesiones planificadas como recursos independientes y guarda las reprogramaciones en SQLite. La propuesta de API remota aún no define endpoints para consultar o editar esas sesiones; habrá que añadirlos si se implementa sincronización. No hay hoy sincronización remota.
 
 ### Orden sugerido de implementación remota
 
