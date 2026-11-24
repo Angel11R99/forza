@@ -12,7 +12,7 @@ La rama `main` ya tiene protección aplicada en GitHub: requiere Pull Request, u
 
 ## APK firmado
 
-El workflow **Publish Android APK** solo se inicia manualmente desde Actions, con `main` seleccionado y por el propietario del repositorio. El selector ofrece seis tipos; la descripción del campo muestra un ejemplo para cada uno, partiendo de `v1.2.3`:
+El workflow **Publish Android APK** solo se inicia manualmente desde Actions, con `main` seleccionado y por el propietario del repositorio. El formulario usa una etiqueta y una ayuda breves para que el selector sea fácil de leer; aquí se conservan los ejemplos completos. Ofrece seis tipos, partiendo de `v1.2.3`:
 
 - `patch`: `v1.2.3` → `v1.2.4`.
 - `minor`: `v1.2.3` → `v1.3.0`.

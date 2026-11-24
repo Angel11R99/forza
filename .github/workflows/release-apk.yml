@@ -2,8 +2,8 @@ name: Publish Android APK
 on:
   workflow_dispatch:
     inputs:
-      release_type:
-        description: "Choose a release type; examples from v1.2.3: patch→v1.2.4, minor→v1.3.0, major→v2.0.0, alpha→v1.2.4-alpha.1, beta→v1.2.4-beta.1, rc→v1.2.4-rc.1."
+      tipo_de_version:
+        description: "Elige el tipo de versión. Guía: docs/github-contributions.md."
         required: true
         type: choice
         options:
@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - name: Validate release request and signing secrets
         env:
-          RELEASE_TYPE: ${{ inputs.release_type }}
+          RELEASE_TYPE: ${{ inputs.tipo_de_version }}
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
