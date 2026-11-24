@@ -1192,6 +1192,27 @@ class AppLocalizationsEs extends AppLocalizations {
       'Elige al menos una opción para preparar los ejercicios.';
 
   @override
+  String get onboardingAvoidMovementTitle =>
+      'Movimientos que prefieres evitar (opcional)';
+
+  @override
+  String get onboardingAvoidMovementDescription =>
+      'Selecciona ejercicios que prefieres no incluir. Esta preferencia no es un diagnóstico médico; consulta a un profesional si tienes dudas de salud.';
+
+  @override
+  String onboardingAvoidedMovementSummary(String movements) {
+    return 'Movimientos excluidos: $movements';
+  }
+
+  @override
+  String get onboardingAvoidedMovementApplied =>
+      'La rutina prioriza opciones compatibles cuando están disponibles. Revisa cada ejercicio antes de empezar.';
+
+  @override
+  String get onboardingNoCompatibleExercises =>
+      'No hay ejercicios compatibles con el equipo y las exclusiones elegidas. Ajusta tus preferencias para generar una rutina.';
+
+  @override
   String get onboardingPreviewTitle => 'Así queda tu semana';
 
   @override

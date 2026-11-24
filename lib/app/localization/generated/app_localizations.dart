@@ -2114,6 +2114,36 @@ abstract class AppLocalizations {
   /// **'Choose at least one option to prepare your workouts.'**
   String get onboardingEquipmentRequired;
 
+  /// No description provided for @onboardingAvoidMovementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements you prefer to avoid (optional)'**
+  String get onboardingAvoidMovementTitle;
+
+  /// No description provided for @onboardingAvoidMovementDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select exercises you prefer to leave out. This preference is not a medical diagnosis; consult a professional if you have health concerns.'**
+  String get onboardingAvoidMovementDescription;
+
+  /// No description provided for @onboardingAvoidedMovementSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded movements: {movements}'**
+  String onboardingAvoidedMovementSummary(String movements);
+
+  /// No description provided for @onboardingAvoidedMovementApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan prioritizes compatible options when available. Review each exercise before starting.'**
+  String get onboardingAvoidedMovementApplied;
+
+  /// No description provided for @onboardingNoCompatibleExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises match the selected equipment and exclusions. Adjust your preferences to generate a plan.'**
+  String get onboardingNoCompatibleExercises;
+
   /// No description provided for @onboardingPreviewTitle.
   ///
   /// In en, this message translates to:

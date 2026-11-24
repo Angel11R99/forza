@@ -45,6 +45,7 @@ void main() {
         goal: 'Ganar fuerza',
         experience: 'Estoy empezando',
         equipment: {'Mancuernas'},
+        avoidedExerciseIds: {'1700'},
       );
       await settingsRepository.save(initialSettings);
       expect(await settingsRepository.currentPlanVersion, 1);
@@ -57,6 +58,7 @@ void main() {
         goal: 'Ganar músculo',
         experience: 'Tengo algo de experiencia',
         equipment: {'Mancuernas'},
+        avoidedExerciseIds: {'1700'},
       );
       await settingsRepository.save(updatedSettings);
       expect(await settingsRepository.currentPlanVersion, 2);
@@ -158,12 +160,14 @@ void main() {
         await backupRepository.exportJson(appearanceMode: 'dark'),
       ) as Map<String, Object?>;
       legacyBackupJson.remove('bodyMeasurements');
-      expect(
-        backupRepository
-            .validate(jsonEncode(legacyBackupJson))
-            .bodyMeasurements,
-        isEmpty,
+      (legacyBackupJson['trainingSettings'] as Map<String, Object?>).remove(
+        'avoidedExerciseIds',
       );
+      final legacyBackup = backupRepository.validate(
+        jsonEncode(legacyBackupJson),
+      );
+      expect(legacyBackup.bodyMeasurements, isEmpty);
+      expect(legacyBackup.settings.avoidedExerciseIds, isEmpty);
       expect(
         backup.schedule.any((session) => session.status == 'skipped'),
         isTrue,
@@ -190,6 +194,10 @@ void main() {
       expect(reopenedSettings.sessionMinutes, updatedSettings.sessionMinutes);
       expect(reopenedSettings.trainingDays, updatedSettings.trainingDays);
       expect(reopenedSettings.equipment, updatedSettings.equipment);
+      expect(
+        reopenedSettings.avoidedExerciseIds,
+        updatedSettings.avoidedExerciseIds,
+      );
       expect(await settingsRepository.currentPlanVersion, 2);
       expect(await settingsRepository.setupComplete, isTrue);
       expect(
@@ -243,6 +251,10 @@ void main() {
       expect(restoredSettings.sessionMinutes, updatedSettings.sessionMinutes);
       expect(restoredSettings.trainingDays, updatedSettings.trainingDays);
       expect(restoredSettings.equipment, updatedSettings.equipment);
+      expect(
+        restoredSettings.avoidedExerciseIds,
+        updatedSettings.avoidedExerciseIds,
+      );
       expect(await settingsRepository.currentPlanVersion, 2);
       expect((await workoutRepository.load()).map((r) => r.title), [
         'Sesión actualizada',

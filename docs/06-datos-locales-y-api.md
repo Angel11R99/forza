@@ -4,7 +4,7 @@
 
 FORZA usa SQLite local a través de Drift. La base se crea en el directorio de documentos de la aplicación con el nombre `forza`; el archivo y su ruta son responsabilidad de `drift_flutter`. La app puede guardar y leer estos datos sin red:
 
-- Preferencias del plan: objetivo, experiencia, duración por sesión, días elegidos y equipo disponible.
+- Preferencias del plan: objetivo, experiencia, duración por sesión, días, equipo y movimientos que el usuario prefiere evitar.
 - Sesiones terminadas: fecha planificada, fecha de finalización, objetivo, duración, cantidad de ejercicios, IDs estables del catálogo, versión y snapshot del plan de origen, y si se marcaron como completadas fuera de la app.
 - Resultados por serie: repeticiones o duración y carga registrada para cada ejercicio de una sesión.
 - Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
@@ -27,7 +27,7 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 
 | Tabla SQLite | Uso |
 |---|---|
-| `training_plans` | Preferencias, datos principales y versión creciente del plan activo. |
+| `training_plans` | Preferencias, IDs de movimientos a evitar, datos principales y versión creciente del plan activo. |
 | `training_plan_days` | Días de la semana elegidos para entrenar. |
 | `training_plan_equipment` | Equipo disponible elegido por el usuario. |
 | `workout_sessions` | Historial y resumen de sesiones terminadas, con versión y snapshot del plan de origen. |
@@ -38,7 +38,7 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 | `body_measurements` | Peso y perímetros corporales, con un registro por fecha. |
 | `app_metadata` | Marcadores, importaciones y borrador del entrenamiento activo. |
 
-La versión actual del esquema es `6`. La migración `0006_body_measurements.sql` añade la tabla de medidas sin cambiar los datos existentes. Los snapshots de estructura están en `drift_schemas/schema_v1.json` a `schema_v6.json`. Las actualizaciones preservan el historial y el registro corporal empieza vacío en las instalaciones existentes.
+La versión actual del esquema es `7`. La migración `0007_avoided_exercise_preferences.sql` añade exclusiones opcionales al plan; las instalaciones existentes empiezan sin exclusiones. Los snapshots de estructura están en `drift_schemas/schema_v1.json` a `schema_v7.json`. Las actualizaciones preservan el historial y las medidas existentes.
 
 ## Importación de instalaciones anteriores
 

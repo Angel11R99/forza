@@ -22,6 +22,7 @@ class TrainingSettings {
     this.goal = 'Ganar fuerza',
     this.experience = 'Estoy empezando',
     this.equipment = const {'Mancuernas', 'Barra'},
+    this.avoidedExerciseIds = const {},
   });
 
   final Set<int> trainingDays;
@@ -29,6 +30,7 @@ class TrainingSettings {
   final String goal;
   final String experience;
   final Set<String> equipment;
+  final Set<String> avoidedExerciseIds;
 
   int get daysPerWeek => trainingDays.length;
 }

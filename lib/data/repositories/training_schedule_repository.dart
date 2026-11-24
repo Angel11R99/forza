@@ -33,6 +33,7 @@ class TrainingScheduleRepository {
       goal: settings.goal,
       experience: settings.experience,
       equipment: settings.equipment,
+      avoidedExerciseIds: settings.avoidedExerciseIds,
     );
     final activePlan =
         await (database.select(database.trainingPlans)

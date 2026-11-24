@@ -1185,6 +1185,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose at least one option to prepare your workouts.';
 
   @override
+  String get onboardingAvoidMovementTitle =>
+      'Movements you prefer to avoid (optional)';
+
+  @override
+  String get onboardingAvoidMovementDescription =>
+      'Select exercises you prefer to leave out. This preference is not a medical diagnosis; consult a professional if you have health concerns.';
+
+  @override
+  String onboardingAvoidedMovementSummary(String movements) {
+    return 'Excluded movements: $movements';
+  }
+
+  @override
+  String get onboardingAvoidedMovementApplied =>
+      'The plan prioritizes compatible options when available. Review each exercise before starting.';
+
+  @override
+  String get onboardingNoCompatibleExercises =>
+      'No exercises match the selected equipment and exclusions. Adjust your preferences to generate a plan.';
+
+  @override
   String get onboardingPreviewTitle => 'Here\'s your week';
 
   @override

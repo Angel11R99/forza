@@ -225,6 +225,7 @@ class _TodayWorkoutCard extends StatelessWidget {
               goal: settings.goal,
               experience: settings.experience,
               equipment: settings.equipment,
+              avoidedExerciseIds: settings.avoidedExerciseIds,
             )
             .length;
     return Container(

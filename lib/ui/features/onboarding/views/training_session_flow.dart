@@ -56,6 +56,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         goal: widget.settings.goal,
         experience: widget.settings.experience,
         equipment: widget.settings.equipment,
+        avoidedExerciseIds: widget.settings.avoidedExerciseIds,
       )[widget.sessionIndex.clamp(0, widget.settings.trainingDays.length - 1)];
 
   List<_SessionExercise> get _exercises => _plannedSession.exercises
