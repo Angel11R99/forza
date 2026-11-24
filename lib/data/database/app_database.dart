@@ -178,14 +178,16 @@ class AppDatabase extends _$AppDatabase {
           workoutSessionExercises,
           workoutSessionExercises.catalogId,
         );
-        await migrator.addColumn(
-          scheduledTrainingSessions,
-          scheduledTrainingSessions.planVersion,
-        );
-        await migrator.addColumn(
-          scheduledTrainingSessions,
-          scheduledTrainingSessions.planSnapshot,
-        );
+        if (from >= 3) {
+          await migrator.addColumn(
+            scheduledTrainingSessions,
+            scheduledTrainingSessions.planVersion,
+          );
+          await migrator.addColumn(
+            scheduledTrainingSessions,
+            scheduledTrainingSessions.planSnapshot,
+          );
+        }
       }
     },
     beforeOpen: (_) async {
