@@ -10,7 +10,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 - **Objetivos personales:** metas semanales de sesiones y de carga por ejercicio se guardan localmente y se calculan desde las sesiones/series.
 - **Medidas corporales:** peso y perímetros opcionales por fecha, con validación, edición/eliminación, evolución del peso y respaldo local.
 - **Calentamiento:** hay una secuencia breve opcional antes del entrenamiento. No hay una fase de vuelta a la calma confirmada.
-- **Guías de ejercicios:** catálogo local de 1.324 ejercicios, instrucciones en español e inglés y 1.257 animaciones vectoriales. Las notas técnicas curadas cubren familias con fuentes; el resto conserva instrucciones del catálogo y un fallback visual.
+- **Guías de ejercicios:** catálogo local de 1.324 ejercicios, instrucciones en español e inglés y 1.260 medios animados. 509 ejercicios reciben notas técnicas de familias con fuentes; 815 variantes permanecen sin notas curadas y conservan las instrucciones y el fallback. El inventario por ID y grupo está en [notas técnicas pendientes](11-inventario-notas-tecnicas.md).
 - **Respaldo:** exportación/restauración local en JSON con validación y confirmación antes de reemplazar datos. No incluye catálogo ni preferencias de perfil que aún no persisten.
 
 ## Siguiente trabajo

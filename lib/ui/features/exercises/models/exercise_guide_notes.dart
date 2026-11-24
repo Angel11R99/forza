@@ -114,6 +114,16 @@ class ExerciseGuideNotes {
     sourceUrl: 'https://www.acefitness.org/resources/everyone/exercise-library/186/seated-shoulder-press/',
   );
 
+  static final _lateralRaise = ExerciseGuideNote(
+    commonMistakes: [
+      'Elevar los hombros o encogerlos durante la repetición.',
+      'Balancear el torso o arquear la zona lumbar para levantar más carga.',
+      'Doblar las muñecas o continuar elevando los brazos por encima de los hombros.',
+    ],
+    source: 'ACE · Elevación lateral',
+    sourceUrl: 'https://www.acefitness.org/resources/everyone/exercise-library/26/lateral-raise/',
+  );
+
   static final _legCurl = ExerciseGuideNote(
     commonMistakes: [
       'Arquear la espalda o levantar la cadera para ayudar a doblar la rodilla.',
@@ -200,6 +210,10 @@ class ExerciseGuideNotes {
       'overhead press',
     ])) {
       return _shoulderPress;
+    }
+    if (_containsAny(name, ['elevacion lateral', 'lateral raise']) &&
+        !_containsAny(name, ['frontal', 'front', 'trasera', 'rear'])) {
+      return _lateralRaise;
     }
     if (_containsAny(name, ['remo', 'row']) &&
         !_containsAny(name, ['vertical', 'ergometro'])) {
@@ -323,6 +337,7 @@ class ExerciseGuideNote {
       'ACE · Curl de bíceps' => l10n.exerciseGuideCurlMistakes,
       'ACE · Press de hombros sentado' =>
         l10n.exerciseGuideShoulderPressMistakes,
+      'ACE · Elevación lateral' => l10n.exerciseGuideLateralRaiseMistakes,
       'ACE · Curl femoral acostado' => l10n.exerciseGuideLegCurlMistakes,
       'ACE · Extensión de pierna de pie' =>
         l10n.exerciseGuideLegExtensionMistakes,
@@ -348,6 +363,7 @@ class ExerciseGuideNote {
     'ACE · Crunch' => l10n.exerciseGuideCrunchSource,
     'ACE · Curl de bíceps' => l10n.exerciseGuideCurlSource,
     'ACE · Press de hombros sentado' => l10n.exerciseGuideShoulderPressSource,
+    'ACE · Elevación lateral' => l10n.exerciseGuideLateralRaiseSource,
     'ACE · Curl femoral acostado' => l10n.exerciseGuideLegCurlSource,
     'ACE · Extensión de pierna de pie' => l10n.exerciseGuideLegExtensionSource,
     'ACE · Elevación de pantorrillas de pie' =>
