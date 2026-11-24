@@ -79,6 +79,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   _SessionScreen _screen = _SessionScreen.preparation;
   _SessionScreen _resumeScreen = _SessionScreen.exerciseList;
+  _SessionScreen _exitReturnScreen = _SessionScreen.preparation;
   int _currentExercise = 0;
   int _remainingRestSeconds = 45;
   int _elapsedSeconds = 0;
@@ -185,6 +186,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           icon: const Icon(Icons.arrow_back_rounded),
         ),
         actions: [
+          if (_screen != _SessionScreen.confirmAbandon)
+            IconButton(
+              tooltip: context.l10n.sessionExitTitle,
+              onPressed: _requestExit,
+              icon: const Icon(Icons.close_rounded),
+            ),
           if (_screen == _SessionScreen.exerciseList ||
               _screen == _SessionScreen.rest)
             IconButton(
@@ -954,7 +961,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             ),
             const SizedBox(height: AppSpacing.x2),
             TextButton(
-              onPressed: () => setState(() => _screen = _SessionScreen.paused),
+              onPressed: _restoreFromExitConfirmation,
               child: Text(context.l10n.sessionKeep),
             ),
           ],
@@ -1055,6 +1062,34 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     _sessionTimer?.cancel();
     setState(() => _screen = _SessionScreen.paused);
     _saveDraft();
+  }
+
+  void _requestExit() {
+    _exitReturnScreen = _screen;
+    if (_screen == _SessionScreen.exerciseList ||
+        _screen == _SessionScreen.rest) {
+      _resumeScreen = _screen;
+      _restTimer?.cancel();
+      _resumeTimedSet = _timedSetRunning;
+      _timedSetTimer?.cancel();
+      _timedSetRunning = false;
+      _sessionTimer?.cancel();
+      _saveDraft();
+    }
+    setState(() => _screen = _SessionScreen.confirmAbandon);
+  }
+
+  void _restoreFromExitConfirmation() {
+    setState(() => _screen = _exitReturnScreen);
+    if (_exitReturnScreen == _SessionScreen.exerciseList ||
+        _exitReturnScreen == _SessionScreen.rest) {
+      _startSessionTimer();
+    }
+    if (_exitReturnScreen == _SessionScreen.rest) _startRestTimer();
+    if (_exitReturnScreen == _SessionScreen.exerciseList && _resumeTimedSet) {
+      _resumeTimedSet = false;
+      _startTimedSet();
+    }
   }
 
   void _resume() {
@@ -1195,7 +1230,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       case _SessionScreen.paused:
         _resume();
       case _SessionScreen.confirmAbandon:
-        setState(() => _screen = _SessionScreen.paused);
+        _restoreFromExitConfirmation();
       case _SessionScreen.completed:
         setState(() => _screen = _SessionScreen.summary);
       case _SessionScreen.summary:
