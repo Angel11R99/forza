@@ -962,11 +962,6 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             const SizedBox(height: AppSpacing.x2),
             TextButton(
               onPressed: _restoreFromExitConfirmation,
-              style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.small),
-                ),
-              ),
               child: Text(context.l10n.sessionKeep),
             ),
           ],
