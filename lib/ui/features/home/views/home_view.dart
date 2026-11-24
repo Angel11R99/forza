@@ -244,16 +244,20 @@ class _TodayWorkoutCard extends StatelessWidget {
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.x2),
-              Text(
-                _sameDate(sessionDate, DateTime.now())
-                    ? context.l10n.homeTodaySession
-                    : context.l10n.homeNextSessionLabel(
-                        DateFormat.E(localeName)
-                            .format(sessionDate)
-                            .toUpperCase(),
-                      ),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: context.appColors.inverseText.withValues(alpha: 0.82),
+              Flexible(
+                child: Text(
+                  _sameDate(sessionDate, DateTime.now())
+                      ? context.l10n.homeTodaySession
+                      : context.l10n.homeNextSessionLabel(
+                          DateFormat.E(localeName)
+                              .format(sessionDate)
+                              .toUpperCase(),
+                        ),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: context.appColors.inverseText.withValues(
+                      alpha: 0.82,
+                    ),
+                  ),
                 ),
               ),
             ],

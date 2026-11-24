@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       tipo_de_version:
-        description: "Elige el tipo de versión. Guía: docs/github-contributions.md."
+        description: "Desde 1.0.0: patch (arreglo)→1.0.1; minor (función)→1.1.0; major (cambio grande)→2.0.0. alpha/beta/rc: pruebas."
         required: true
         type: choice
         options:
