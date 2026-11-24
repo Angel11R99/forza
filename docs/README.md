@@ -13,6 +13,7 @@ FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local im
 - [Sistema visual](03-sistema-visual.md): colores confirmados, reglas de forma y adaptación responsive.
 - [Paquetes y dataset](04-paquetes-y-dataset.md): opciones de pub.dev, criterios de selección y condiciones de medios.
 - [Agentes y skills](05-agentes-y-skills.md): roles recomendados, skills que ayudan y cómo colaborar con agentes.
+- [Propuesta Gym Bro](12-diseno-gym-bro.md): alcance MVP, UX, consentimiento, rachas, sincronización, seguridad, costes y alertas; pendiente de aprobación antes de implementar.
 
 ## Alcance que se asume
 
