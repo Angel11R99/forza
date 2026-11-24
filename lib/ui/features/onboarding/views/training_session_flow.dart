@@ -87,6 +87,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   int _timedRemainingSeconds = 30;
   bool _timedSetRunning = false;
   bool _resumeTimedSet = false;
+  int _cooldownIndex = 0;
   Timer? _restTimer;
   Timer? _sessionTimer;
   Timer? _timedSetTimer;
@@ -117,6 +118,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           _elapsedSeconds = draft['elapsedSeconds'] as int? ?? 0;
           _remainingRestSeconds = draft['remainingRestSeconds'] as int? ?? 45;
           _timedRemainingSeconds = draft['timedRemainingSeconds'] as int? ?? 30;
+          _cooldownIndex = (draft['cooldownIndex'] as int? ?? 0).clamp(0, 2);
           _resumeTimedSet = draft['resumeTimedSet'] as bool? ?? false;
           _resumeScreen = _SessionScreen.values.firstWhere(
             (screen) => screen.name == draft['resumeScreen'],
@@ -152,6 +154,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       'elapsedSeconds': _elapsedSeconds,
       'remainingRestSeconds': _remainingRestSeconds,
       'timedRemainingSeconds': _timedRemainingSeconds,
+      'cooldownIndex': _cooldownIndex,
       'resumeTimedSet': _timedSetRunning || _resumeTimedSet,
       'resumeScreen':
           (_screen == _SessionScreen.paused ? _resumeScreen : _screen).name,
@@ -260,6 +263,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     _SessionScreen.paused => context.l10n.sessionTitlePaused,
     _SessionScreen.confirmAbandon => context.l10n.sessionTitleConfirmAbandon,
     _SessionScreen.completed => context.l10n.sessionTitleCompleted,
+    _SessionScreen.cooldown => context.l10n.sessionTitleCooldown,
     _SessionScreen.summary => context.l10n.sessionTitleSummary,
   };
 
@@ -271,8 +275,28 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     _SessionScreen.paused => _buildPaused(context),
     _SessionScreen.confirmAbandon => _buildConfirmAbandon(context),
     _SessionScreen.completed => _buildCompleted(context),
+    _SessionScreen.cooldown => _buildCooldown(context),
     _SessionScreen.summary => _buildSummary(context),
   };
+
+  List<_CooldownFocus> get _cooldownMovements {
+    final movements = <_CooldownFocus>[];
+    for (final exercise in _exercises) {
+      final focus = switch (exercise.focus) {
+        'Piernas' => _CooldownFocus.legs,
+        'Espalda' => _CooldownFocus.back,
+        'Pecho' => _CooldownFocus.chest,
+        'Hombros' => _CooldownFocus.shoulders,
+        'Core' => _CooldownFocus.core,
+        'Brazos' => _CooldownFocus.arms,
+        _ => null,
+      };
+      if (focus != null && !movements.contains(focus)) movements.add(focus);
+      if (movements.length == 3) break;
+    }
+    if (movements.isEmpty) movements.add(_CooldownFocus.legs);
+    return movements;
+  }
 
   List<_WarmupMovement> get _warmupMovements =>
       switch (widget.sessionIndex % 3) {
@@ -826,10 +850,94 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
+        Text(
+          context.l10n.sessionCooldownOfferDescription,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: AppSpacing.x4),
         const _SessionSaveNote(),
       ],
     );
   }
+
+  Widget _buildCooldown(BuildContext context) {
+    final movements = _cooldownMovements;
+    final movement = movements[_cooldownIndex.clamp(0, movements.length - 1)];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SessionEyebrow(label: context.l10n.sessionTitleCooldown),
+        const SizedBox(height: AppSpacing.x3),
+        Text(
+          context.l10n.sessionCooldownHeadline,
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppSpacing.x2),
+        Text(
+          context.l10n.sessionCooldownDescription,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const SizedBox(height: AppSpacing.x4),
+        LinearProgressIndicator(value: (_cooldownIndex + 1) / movements.length),
+        const SizedBox(height: AppSpacing.x2),
+        Text(
+          context.l10n.sessionProgress(_cooldownIndex + 1, movements.length),
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        const SizedBox(height: AppSpacing.x4),
+        AppSurfaceCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(movement.icon, size: 28, color: context.appColors.accent),
+              const SizedBox(height: AppSpacing.x3),
+              Text(
+                _cooldownTitle(context, movement),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: AppSpacing.x2),
+              Text(
+                _cooldownInstructions(context, movement),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: AppSpacing.x3),
+              Text(
+                _cooldownDuration(context, movement),
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _cooldownTitle(BuildContext context, _CooldownFocus focus) =>
+      switch (focus) {
+        _CooldownFocus.legs => context.l10n.sessionCooldownHipsTitle,
+        _CooldownFocus.back => context.l10n.sessionCooldownBackTitle,
+        _CooldownFocus.chest => context.l10n.sessionCooldownChestTitle,
+        _CooldownFocus.shoulders => context.l10n.sessionCooldownShouldersTitle,
+        _CooldownFocus.core => context.l10n.sessionCooldownCoreTitle,
+        _CooldownFocus.arms => context.l10n.sessionCooldownArmsTitle,
+      };
+
+  String _cooldownInstructions(BuildContext context, _CooldownFocus focus) =>
+      switch (focus) {
+        _CooldownFocus.legs => context.l10n.sessionCooldownHipsInstructions,
+        _CooldownFocus.back => context.l10n.sessionCooldownBackInstructions,
+        _CooldownFocus.chest => context.l10n.sessionCooldownChestInstructions,
+        _CooldownFocus.shoulders =>
+          context.l10n.sessionCooldownShouldersInstructions,
+        _CooldownFocus.core => context.l10n.sessionCooldownCoreInstructions,
+        _CooldownFocus.arms => context.l10n.sessionCooldownArmsInstructions,
+      };
+
+  String _cooldownDuration(BuildContext context, _CooldownFocus focus) =>
+      switch (focus) {
+        _CooldownFocus.core => context.l10n.sessionCooldownSixReps,
+        _ => context.l10n.sessionCooldownTwentySecondsEachSide,
+      };
 
   Widget _buildSummary(BuildContext context) {
     final durationMinutes = (_elapsedSeconds / 60).ceil().clamp(1, 99);
@@ -966,12 +1074,44 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             ),
           ],
         ),
-        _SessionScreen.completed => FilledButton(
-          onPressed: () => setState(() => _screen = _SessionScreen.summary),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 13),
-            child: Text(context.l10n.sessionViewSummary),
-          ),
+        _SessionScreen.completed => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton(
+              onPressed: _startCooldown,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                child: Text(context.l10n.sessionCooldownStart),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            TextButton(
+              onPressed: _skipCooldown,
+              child: Text(context.l10n.sessionViewSummary),
+            ),
+          ],
+        ),
+        _SessionScreen.cooldown => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton.icon(
+              onPressed: _nextCooldownMovement,
+              icon: const Icon(Icons.arrow_forward_rounded),
+              label: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                child: Text(
+                  _cooldownIndex == _cooldownMovements.length - 1
+                      ? context.l10n.sessionViewSummary
+                      : context.l10n.sessionCooldownNext,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            TextButton(
+              onPressed: _skipCooldown,
+              child: Text(context.l10n.sessionCooldownSkip),
+            ),
+          ],
         ),
         _SessionScreen.summary => const SizedBox.shrink(),
       },
@@ -988,6 +1128,28 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       ),
     ),
   );
+
+  void _startCooldown() {
+    _cooldownIndex = 0;
+    _resumeScreen = _SessionScreen.cooldown;
+    setState(() => _screen = _SessionScreen.cooldown);
+    _saveDraft();
+  }
+
+  void _nextCooldownMovement() {
+    if (_cooldownIndex >= _cooldownMovements.length - 1) {
+      _skipCooldown();
+      return;
+    }
+    setState(() => _cooldownIndex++);
+    _saveDraft();
+  }
+
+  void _skipCooldown() {
+    setState(() => _screen = _SessionScreen.summary);
+    _resumeScreen = _SessionScreen.summary;
+    _saveDraft();
+  }
 
   void _start() {
     _elapsedSeconds = 0;
@@ -1259,6 +1421,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         _restoreFromExitConfirmation();
       case _SessionScreen.completed:
         setState(() => _screen = _SessionScreen.summary);
+      case _SessionScreen.cooldown:
+        setState(() => _screen = _SessionScreen.completed);
       case _SessionScreen.summary:
         _finishWithRecord();
     }
@@ -1273,7 +1437,21 @@ enum _SessionScreen {
   paused,
   confirmAbandon,
   completed,
+  cooldown,
   summary,
+}
+
+enum _CooldownFocus { legs, back, chest, shoulders, core, arms }
+
+extension on _CooldownFocus {
+  IconData get icon => switch (this) {
+    _CooldownFocus.legs => Icons.accessibility_new_rounded,
+    _CooldownFocus.back => Icons.sports_gymnastics_rounded,
+    _CooldownFocus.chest => Icons.fitness_center_rounded,
+    _CooldownFocus.shoulders => Icons.accessibility_new_rounded,
+    _CooldownFocus.core => Icons.self_improvement_rounded,
+    _CooldownFocus.arms => Icons.fitness_center_rounded,
+  };
 }
 
 class _WarmupMovement {

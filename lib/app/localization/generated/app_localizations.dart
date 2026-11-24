@@ -3389,6 +3389,12 @@ abstract class AppLocalizations {
   /// **'Workout complete'**
   String get sessionTitleCompleted;
 
+  /// No description provided for @sessionTitleCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cool-down'**
+  String get sessionTitleCooldown;
+
   /// No description provided for @sessionTitleSummary.
   ///
   /// In en, this message translates to:
@@ -3706,6 +3712,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View workout summary'**
   String get sessionSummaryButton;
+
+  /// No description provided for @sessionCooldownOfferDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can finish with gentle movements for the areas you worked. This is optional and you can skip it at any time.'**
+  String get sessionCooldownOfferDescription;
+
+  /// No description provided for @sessionCooldownStart.
+  ///
+  /// In en, this message translates to:
+  /// **'View cool-down'**
+  String get sessionCooldownStart;
+
+  /// No description provided for @sessionCooldownNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next movement'**
+  String get sessionCooldownNext;
+
+  /// No description provided for @sessionCooldownSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip cool-down and view summary'**
+  String get sessionCooldownSkip;
+
+  /// No description provided for @sessionCooldownHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Ease out at your own pace'**
+  String get sessionCooldownHeadline;
+
+  /// No description provided for @sessionCooldownDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Move slowly and stay within a pain-free range. You can skip any step.'**
+  String get sessionCooldownDescription;
+
+  /// No description provided for @sessionCooldownHipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip flexor stretch'**
+  String get sessionCooldownHipsTitle;
+
+  /// No description provided for @sessionCooldownHipsInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Kneel on one knee with your other foot forward. Gently move your hips forward without arching your back. Switch sides.'**
+  String get sessionCooldownHipsInstructions;
+
+  /// No description provided for @sessionCooldownBackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cat-cow'**
+  String get sessionCooldownBackTitle;
+
+  /// No description provided for @sessionCooldownBackInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Start on your hands and knees. Gently round your back, then return to a comfortable position without straining your neck.'**
+  String get sessionCooldownBackInstructions;
+
+  /// No description provided for @sessionCooldownChestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest opener'**
+  String get sessionCooldownChestTitle;
+
+  /// No description provided for @sessionCooldownChestInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your forearm on a sturdy doorframe and gently turn your torso away. Switch sides.'**
+  String get sessionCooldownChestInstructions;
+
+  /// No description provided for @sessionCooldownShouldersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross-body shoulder stretch'**
+  String get sessionCooldownShouldersTitle;
+
+  /// No description provided for @sessionCooldownShouldersInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring one arm across your chest and gently draw it closer with your other hand. Keep your shoulder relaxed and switch sides.'**
+  String get sessionCooldownShouldersInstructions;
+
+  /// No description provided for @sessionCooldownCoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle torso rotation'**
+  String get sessionCooldownCoreTitle;
+
+  /// No description provided for @sessionCooldownCoreInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Standing tall, gently turn your torso from side to side without bouncing and stay within a comfortable range.'**
+  String get sessionCooldownCoreInstructions;
+
+  /// No description provided for @sessionCooldownArmsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Triceps stretch'**
+  String get sessionCooldownArmsTitle;
+
+  /// No description provided for @sessionCooldownArmsInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise one arm, bend your elbow, and gently assist with your other hand. Do not pull on your neck; switch sides.'**
+  String get sessionCooldownArmsInstructions;
+
+  /// No description provided for @sessionCooldownTwentySecondsEachSide.
+  ///
+  /// In en, this message translates to:
+  /// **'20 sec per side'**
+  String get sessionCooldownTwentySecondsEachSide;
+
+  /// No description provided for @sessionCooldownSixReps.
+  ///
+  /// In en, this message translates to:
+  /// **'6 gentle repetitions'**
+  String get sessionCooldownSixReps;
 
   /// No description provided for @sessionRecordNote.
   ///
