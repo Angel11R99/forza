@@ -625,6 +625,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get activityCompletedOutside => 'Ya entrené fuera de la app';
 
   @override
+  String get activitySkipSession => 'Omitir sesión';
+
+  @override
+  String get activitySessionSkipped => 'Sesión omitida';
+
+  @override
+  String get activityUndoSkip => 'Deshacer omisión';
+
+  @override
+  String get activitySkipUndone => 'La sesión vuelve a estar pendiente';
+
+  @override
   String get activityChangeDay => 'Cambiar día';
 
   @override

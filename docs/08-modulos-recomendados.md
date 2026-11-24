@@ -5,7 +5,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 ## Implementado
 
 - **Registro de series y recuperación:** SQLite guarda repeticiones, carga o duración por serie y el borrador de una sesión activa para reanudarla.
-- **Agenda compartida:** Inicio, Actividad y entrenamiento consultan sesiones de los próximos 120 días desde SQLite. Las reprogramaciones sobreviven al reinicio; los estados disponibles son pendiente, en curso y completada.
+- **Agenda compartida:** Inicio, Actividad y entrenamiento consultan sesiones de los próximos 120 días desde SQLite. Las reprogramaciones y omisiones sobreviven al reinicio; las sesiones omitidas se pueden restaurar desde Actividad y no se cuentan como completadas.
 - **Progreso básico:** historial y detalle usan datos persistidos. El resumen de 30 días calcula series, repeticiones y volumen; las sesiones registradas como realizadas fuera de la app no aportan series.
 - **Objetivos personales:** metas semanales de sesiones y de carga por ejercicio se guardan localmente y se calculan desde las sesiones/series.
 - **Calentamiento:** hay una secuencia breve opcional antes del entrenamiento. No hay una fase de vuelta a la calma confirmada.
@@ -17,7 +17,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 | Módulo | Issue | Qué falta |
 |---|---|---|
 | Flujo de entrenamiento guiado | [#3](https://github.com/Angel11R99/forza/issues/3) | Hacer explícitas las fases, acciones, objetivos y avance; mantener disponible la instrucción y distinguir actividad por tiempo de series por repeticiones. |
-| Versionado de rutina y omisiones | [#13](https://github.com/Angel11R99/forza/issues/13), [#15](https://github.com/Angel11R99/forza/issues/15) | Guardar snapshot/versión de rutina por sesión y permitir omitir una sesión sin contarla como completada. |
+| Versionado de rutina | [#13](https://github.com/Angel11R99/forza/issues/13) | Guardar snapshot/versión de rutina por sesión. |
 | Preferencias y localización horaria | [#7](https://github.com/Angel11R99/forza/issues/7), [#6](https://github.com/Angel11R99/forza/issues/6) | Auditar preferencias persistidas y respetar formatos horarios del dispositivo. |
 | Recordatorios | [#12](https://github.com/Angel11R99/forza/issues/12) | Programar y cancelar avisos locales con permisos, horario y zona horaria correctos. |
 | Medidas y métricas | [#9](https://github.com/Angel11R99/forza/issues/9), [#10](https://github.com/Angel11R99/forza/issues/10), [#11](https://github.com/Angel11R99/forza/issues/11) | Persistir medidas y reemplazar gráficas/records de demostración con cálculos verificables sobre registros reales. |

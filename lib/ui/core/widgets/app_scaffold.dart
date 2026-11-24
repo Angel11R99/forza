@@ -285,6 +285,8 @@ class _AppScaffoldState extends State<AppScaffold>
                       scheduledSessions: _viewModel.scheduledSessions,
                       onRescheduleSession: _viewModel.rescheduleSession,
                       onSessionStarted: _viewModel.markSessionStarted,
+                      onSkipSession: _viewModel.skipSession,
+                      onUndoSkipSession: _viewModel.undoSkipSession,
                     ),
                     const ExercisesView(),
                     ProgressView(

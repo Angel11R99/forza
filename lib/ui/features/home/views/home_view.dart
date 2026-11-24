@@ -337,10 +337,11 @@ class _WeeklySummary extends StatelessWidget {
         : persistedWeek
               .where(
                 (session) =>
-                    session.isCompleted ||
-                    completedDates.any(
-                      (date) => _sameDate(date, session.scheduledDate),
-                    ),
+                    !session.isSkipped &&
+                    (session.isCompleted ||
+                        completedDates.any(
+                          (date) => _sameDate(date, session.scheduledDate),
+                        )),
               )
               .length;
     final weeklyTarget = persistedWeek.isEmpty

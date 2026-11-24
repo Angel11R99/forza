@@ -30,6 +30,8 @@ class ActivityView extends StatefulWidget {
     required this.scheduledSessions,
     required this.onRescheduleSession,
     required this.onSessionStarted,
+    required this.onSkipSession,
+    required this.onUndoSkipSession,
   });
 
   final TrainingSettings settings;
@@ -40,6 +42,8 @@ class ActivityView extends StatefulWidget {
   final List<ScheduledTrainingSession> scheduledSessions;
   final Future<bool> Function(DateTime, DateTime) onRescheduleSession;
   final Future<void> Function(DateTime) onSessionStarted;
+  final Future<bool> Function(DateTime) onSkipSession;
+  final Future<bool> Function(DateTime) onUndoSkipSession;
 
   @override
   State<ActivityView> createState() => _ActivityViewState();
@@ -174,6 +178,21 @@ class _ActivityViewState extends State<ActivityView> {
         completedOutsideApp: true,
       ),
     );
+  }
+
+  Future<void> _skipSession() async {
+    final skipped = await widget.onSkipSession(_dateOnly(_selectedDate));
+    if (!mounted || !skipped) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.activitySessionSkipped)),
+    );
+  }
+
+  Future<void> _undoSkipSession() async {
+    final restored = await widget.onUndoSkipSession(_dateOnly(_selectedDate));
+    if (!mounted || !restored) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(context.l10n.activitySkipUndone)));
   }
 
   @override
@@ -357,11 +376,15 @@ class _ActivityViewState extends State<ActivityView> {
                   ),
                   isInProgress:
                       _scheduledForDate(_selectedDate)?.isInProgress ?? false,
+                  isSkipped:
+                      _scheduledForDate(_selectedDate)?.isSkipped ?? false,
                   canComplete: !_dateOnly(_selectedDate)
                       .isAfter(_dateOnly(DateTime.now())),
                   onReschedule: _reschedule,
                   onStart: _startSession,
                   onMarkCompleted: _markSessionCompleted,
+                  onSkip: _skipSession,
+                  onUndoSkip: _undoSkipSession,
                 ),
               ],
             ),
@@ -500,10 +523,13 @@ class _DayDetailCard extends StatelessWidget {
     required this.session,
     required this.isCompleted,
     required this.isInProgress,
+    required this.isSkipped,
     required this.canComplete,
     required this.onReschedule,
     required this.onStart,
     required this.onMarkCompleted,
+    required this.onSkip,
+    required this.onUndoSkip,
   });
 
   final DateTime date;
@@ -511,10 +537,13 @@ class _DayDetailCard extends StatelessWidget {
   final _TrainingSession? session;
   final bool isCompleted;
   final bool isInProgress;
+  final bool isSkipped;
   final bool canComplete;
   final VoidCallback onReschedule;
   final VoidCallback onStart;
   final VoidCallback onMarkCompleted;
+  final VoidCallback onSkip;
+  final VoidCallback onUndoSkip;
 
   @override
   Widget build(BuildContext context) {
@@ -642,31 +671,70 @@ class _DayDetailCard extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: AppSpacing.x3),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: canComplete ? onStart : null,
-              icon: const Icon(Icons.play_arrow_rounded, size: 18),
-              label: Text(
-                canComplete
-                    ? isInProgress
-                          ? context.l10n.activityContinueWorkout
-                          : isCompleted
-                          ? context.l10n.activityRepeatWorkout
-                          : context.l10n.activityStartSession
-                    : context.l10n.activityScheduledSession,
+          if (isSkipped) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.x3),
+              decoration: BoxDecoration(
+                color: context.appColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(AppRadius.control),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.remove_circle_outline_rounded, size: 19),
+                  const SizedBox(width: AppSpacing.x2),
+                  Text(context.l10n.activitySessionSkipped),
+                ],
               ),
             ),
-          ),
-          if (!isCompleted && !isInProgress && canComplete) ...[
-            const SizedBox(height: AppSpacing.x2),
+            const SizedBox(height: AppSpacing.x3),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: onMarkCompleted,
-                icon: const Icon(Icons.check_rounded, size: 18),
-                label: Text(context.l10n.activityCompletedOutside),
+                onPressed: onUndoSkip,
+                icon: const Icon(Icons.undo_rounded, size: 18),
+                label: Text(context.l10n.activityUndoSkip),
+              ),
+            ),
+          ] else ...[
+            const SizedBox(height: AppSpacing.x3),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: canComplete ? onStart : null,
+                icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                label: Text(
+                  canComplete
+                      ? isInProgress
+                            ? context.l10n.activityContinueWorkout
+                            : isCompleted
+                            ? context.l10n.activityRepeatWorkout
+                            : context.l10n.activityStartSession
+                      : context.l10n.activityScheduledSession,
+                ),
+              ),
+            ),
+          ],
+          if (!isCompleted && !isInProgress && !isSkipped) ...[
+            if (canComplete) ...[
+              const SizedBox(height: AppSpacing.x2),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: onMarkCompleted,
+                  icon: const Icon(Icons.check_rounded, size: 18),
+                  label: Text(context.l10n.activityCompletedOutside),
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.x2),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton.icon(
+                onPressed: onSkip,
+                icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
+                label: Text(context.l10n.activitySkipSession),
               ),
             ),
             const SizedBox(height: AppSpacing.x2),
