@@ -15,8 +15,8 @@ class LocaleController extends ChangeNotifier {
     try {
       final code = await _repository.loadLanguageCode();
       _locale = switch (code) {
-        'en' => const Locale('en'),
-        'es' => const Locale('es'),
+        'en' => _localeForLanguage('en'),
+        'es' => _localeForLanguage('es'),
         _ => null,
       };
     } on Object {
@@ -27,13 +27,24 @@ class LocaleController extends ChangeNotifier {
 
   Future<void> setLanguageCode(String? languageCode) async {
     final next = switch (languageCode) {
-      'en' => const Locale('en'),
-      'es' => const Locale('es'),
+      'en' => _localeForLanguage('en'),
+      'es' => _localeForLanguage('es'),
       _ => null,
     };
     if (_locale == next) return;
     await _repository.saveLanguageCode(next?.languageCode);
     _locale = next;
     notifyListeners();
+  }
+
+  Locale _localeForLanguage(String languageCode) {
+    final countryCode = WidgetsFlutterBinding.ensureInitialized()
+        .platformDispatcher
+        .locale
+        .countryCode;
+    return Locale(
+      languageCode,
+      countryCode?.isEmpty == true ? null : countryCode,
+    );
   }
 }

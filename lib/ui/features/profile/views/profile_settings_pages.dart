@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../app/localization/device_time_format.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
@@ -452,7 +453,7 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                       leading: const Icon(Icons.schedule_rounded),
                       title: Text(context.l10n.profileReminderTime),
                       trailing: Text(
-                        _reminderTime.format(context),
+                        formatDeviceTimeOfDay(context, _reminderTime),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       onTap: _pickReminderTime,

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../app/localization/device_time_format.dart';
 import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
@@ -237,6 +238,7 @@ class _ProfileViewState extends State<ProfileView> {
                       subtitle: _notifications.workoutReminders
                           ? context.l10n.profileReminderAt(
                               _formatTime(
+                                context,
                                 _notifications.reminderHour,
                                 _notifications.reminderMinute,
                               ),
@@ -457,8 +459,8 @@ String _initials(String name) {
   return initials.isEmpty ? 'F' : initials;
 }
 
-String _formatTime(int hour, int minute) =>
-    '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+String _formatTime(BuildContext context, int hour, int minute) =>
+    formatDeviceTimeOfDay(context, TimeOfDay(hour: hour, minute: minute));
 
 String _themeModeLabel(BuildContext context, ThemeMode mode) => switch (mode) {
   ThemeMode.system => context.l10n.settingsThemeSystem,

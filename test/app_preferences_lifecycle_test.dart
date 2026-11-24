@@ -64,6 +64,22 @@ void main() {
       locale.dispose();
     },
   );
+
+  testWidgets('choosing Spanish preserves the device region', (tester) async {
+    tester.binding.platformDispatcher.localeTestValue = const Locale(
+      'es',
+      'DO',
+    );
+    addTearDown(tester.binding.platformDispatcher.clearLocaleTestValue);
+    final locale = LocaleController(
+      repository: LocaleRepository(_MemoryLocalePreferences()),
+    );
+
+    await locale.setLanguageCode('es');
+
+    expect(locale.locale, const Locale('es', 'DO'));
+    locale.dispose();
+  });
 }
 
 class _MemoryAppearancePreferences implements AppearancePreferences {
