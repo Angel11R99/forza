@@ -40,7 +40,7 @@ void main() {
     expect(find.textContaining('Weight lb'), findsOneWidget);
     expect(find.textContaining('week starts Sunday'), findsOneWidget);
     expect(find.textContaining('haptics off'), findsOneWidget);
-    expect(find.text('Reminder at 07:35'), findsOneWidget);
+    expect(find.textContaining('Reminder at 7:35'), findsOneWidget);
     expect(find.text('Visible profile'), findsOneWidget);
     locale.dispose();
   });
@@ -49,7 +49,8 @@ void main() {
 Widget _app(ProfileSettingsRepository repository, LocaleController locale) =>
     MaterialApp(
       theme: AppTheme.light,
-      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en', 'US'),
+      supportedLocales: const [Locale('en'), Locale('en', 'US'), Locale('es')],
       localizationsDelegates: [
         AppLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,

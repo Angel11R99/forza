@@ -12,6 +12,8 @@ FORZA uses Flutter's generated `gen-l10n` API, `flutter_localizations`, `intl`, 
 
 The user's selected language is independent of business data and currency. Locale aware display formatting should use the active `Localizations.localeOf(context)` with `DateFormat` or `NumberFormat`; do not use a locale to infer a transaction's currency.
 
+Keep the device's country/region when resolving a supported language so regional conventions remain available even when the interface strings fall back to Spanish or English. Time values are stored as hour/minute integers. Display them with `formatDeviceTimeOfDay`: `MediaQuery.alwaysUse24HourFormat` takes priority when enabled; otherwise the regional time convention is used. `es_DO` uses a 12-hour time picker and `es_ES` retains 24 hours. The standard Material locale data marks `es_DO` as 24-hour, so `DominicanMaterialLocalizationsDelegate` supplies the regional 12-hour fallback while still allowing the device's 24-hour setting to override it.
+
 ## Adding localization to a new feature
 
 1. Add feature-scoped keys to **both** ARB files. Prefix keys with the feature name, for example `workoutEmptyTitle`.
