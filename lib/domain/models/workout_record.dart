@@ -9,6 +9,9 @@ class WorkoutRecord {
     this.exercises = const [],
     this.completedOutsideApp = false,
     this.setResults = const [],
+    this.exerciseIds = const [],
+    this.planVersion = 1,
+    this.planSnapshot = '',
   });
 
   final DateTime scheduledDate;
@@ -20,6 +23,9 @@ class WorkoutRecord {
   final List<String> exercises;
   final bool completedOutsideApp;
   final List<WorkoutSetResult> setResults;
+  final List<String?> exerciseIds;
+  final int planVersion;
+  final String planSnapshot;
 
   DateTime get date =>
       DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day);
@@ -34,6 +40,9 @@ class WorkoutRecord {
     'exercises': exercises,
     'completedOutsideApp': completedOutsideApp,
     'setResults': setResults.map((set) => set.toJson()).toList(),
+    'exerciseIds': exerciseIds,
+    'planVersion': planVersion,
+    'planSnapshot': planSnapshot,
   };
 
   factory WorkoutRecord.fromJson(Map<String, Object?> json) => WorkoutRecord(
@@ -51,6 +60,11 @@ class WorkoutRecord {
         .whereType<Map<String, Object?>>()
         .map(WorkoutSetResult.fromJson)
         .toList(growable: false),
+    exerciseIds: (json['exerciseIds'] as List<Object?>? ?? const [])
+        .map((id) => id as String?)
+        .toList(growable: false),
+    planVersion: json['planVersion'] as int? ?? 1,
+    planSnapshot: json['planSnapshot'] as String? ?? '',
   );
 }
 

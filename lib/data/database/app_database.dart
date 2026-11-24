@@ -8,6 +8,7 @@ class TrainingPlans extends Table {
   TextColumn get goal => text()();
   TextColumn get experience => text()();
   IntColumn get sessionMinutes => integer()();
+  IntColumn get version => integer().withDefault(const Constant(1))();
   TextColumn get createdAt => text()();
   TextColumn get updatedAt => text()();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
@@ -57,6 +58,8 @@ class WorkoutSessions extends Table {
   TextColumn get completedAt => text()();
   TextColumn get title => text()();
   TextColumn get goal => text()();
+  IntColumn get planVersion => integer().withDefault(const Constant(1))();
+  TextColumn get planSnapshot => text().nullable()();
   IntColumn get durationMinutes => integer()();
   IntColumn get exerciseCount => integer()();
   BoolColumn get completedOutsideApp => boolean()();
@@ -71,6 +74,7 @@ class WorkoutSessionExercises extends Table {
       text().references(WorkoutSessions, #id, onDelete: KeyAction.cascade)();
   IntColumn get position => integer()();
   TextColumn get name => text()();
+  TextColumn get catalogId => text().nullable()();
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
@@ -108,6 +112,8 @@ class ScheduledTrainingSessions extends Table {
   TextColumn get focus => text()();
   IntColumn get durationMinutes => integer()();
   IntColumn get exerciseCount => integer()();
+  IntColumn get planVersion => integer().withDefault(const Constant(1))();
+  TextColumn get planSnapshot => text().withDefault(const Constant(''))();
   TextColumn get status => text().withDefault(const Constant('pending'))();
 
   @override
@@ -155,7 +161,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -164,6 +170,23 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) await migrator.createTable(workoutSetEntries);
       if (from < 3) await migrator.createTable(scheduledTrainingSessions);
       if (from < 4) await migrator.createTable(personalGoals);
+      if (from < 5) {
+        await migrator.addColumn(trainingPlans, trainingPlans.version);
+        await migrator.addColumn(workoutSessions, workoutSessions.planVersion);
+        await migrator.addColumn(workoutSessions, workoutSessions.planSnapshot);
+        await migrator.addColumn(
+          workoutSessionExercises,
+          workoutSessionExercises.catalogId,
+        );
+        await migrator.addColumn(
+          scheduledTrainingSessions,
+          scheduledTrainingSessions.planVersion,
+        );
+        await migrator.addColumn(
+          scheduledTrainingSessions,
+          scheduledTrainingSessions.planSnapshot,
+        );
+      }
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

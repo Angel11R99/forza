@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 
 import '../../domain/models/scheduled_training_session.dart';
@@ -32,6 +34,11 @@ class TrainingScheduleRepository {
       experience: settings.experience,
       equipment: settings.equipment,
     );
+    final activePlan =
+        await (database.select(database.trainingPlans)
+              ..where((row) => row.id.equals(db.AppDatabase.activePlanId)))
+            .getSingleOrNull();
+    final planVersion = activePlan?.version ?? 1;
     await database.transaction(() async {
       for (var offset = 0; offset <= daysAhead; offset++) {
         final date = start.add(Duration(days: offset));
@@ -54,6 +61,8 @@ class TrainingScheduleRepository {
                   focus: session.focus,
                   duration: session.durationMinutes,
                   exerciseCount: session.exercises.length,
+                  planVersion: planVersion,
+                  planSnapshot: jsonEncode(session.toJson()),
                 ),
               );
         } else if (existing.originalDate == null &&
@@ -67,6 +76,8 @@ class TrainingScheduleRepository {
               focus: Value(session.focus),
               durationMinutes: Value(session.durationMinutes),
               exerciseCount: Value(session.exercises.length),
+              planVersion: Value(planVersion),
+              planSnapshot: Value(jsonEncode(session.toJson())),
             ),
           );
         }
@@ -144,6 +155,8 @@ class TrainingScheduleRepository {
         durationMinutes: row.durationMinutes,
         exerciseCount: row.exerciseCount,
         status: row.status,
+        planVersion: row.planVersion,
+        planSnapshot: row.planSnapshot,
       );
 
   static db.ScheduledTrainingSessionsCompanion _companion({
@@ -154,6 +167,8 @@ class TrainingScheduleRepository {
     required String focus,
     required int duration,
     required int exerciseCount,
+    required int planVersion,
+    required String planSnapshot,
   }) => db.ScheduledTrainingSessionsCompanion.insert(
     id: id,
     scheduledDate: _key(date),
@@ -162,6 +177,8 @@ class TrainingScheduleRepository {
     focus: focus,
     durationMinutes: duration,
     exerciseCount: exerciseCount,
+    planVersion: Value(planVersion),
+    planSnapshot: Value(planSnapshot),
   );
 
   static DateTime _dateOnly(DateTime date) =>

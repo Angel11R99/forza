@@ -25,12 +25,16 @@ class TrainingSessionFlow extends StatefulWidget {
     required this.workoutLogRepository,
     this.sessionIndex = 0,
     required this.scheduledDate,
+    this.plannedSession,
+    this.planVersion = 1,
   });
 
   final TrainingSettings settings;
   final WorkoutLogRepository workoutLogRepository;
   final int sessionIndex;
   final DateTime scheduledDate;
+  final PlannedTrainingSession? plannedSession;
+  final int planVersion;
 
   @override
   State<TrainingSessionFlow> createState() => _TrainingSessionFlowState();
@@ -44,24 +48,20 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   List<Exercise> _catalog = const [];
   bool _restoring = true;
 
-  PlannedTrainingSession get _plannedSession => _planBuilder.buildWeek(
-    trainingDays: widget.settings.trainingDays,
-    sessionMinutes: widget.settings.sessionMinutes,
-    goal: widget.settings.goal,
-    experience: widget.settings.experience,
-    equipment: widget.settings.equipment,
-  )[widget.sessionIndex.clamp(0, widget.settings.trainingDays.length - 1)];
-
-  List<_SessionExercise> get _exercises => _planBuilder
-      .buildSession(
-        sessionIndex: widget.sessionIndex,
+  PlannedTrainingSession get _plannedSession =>
+      widget.plannedSession ??
+      _planBuilder.buildWeek(
+        trainingDays: widget.settings.trainingDays,
         sessionMinutes: widget.settings.sessionMinutes,
         goal: widget.settings.goal,
         experience: widget.settings.experience,
         equipment: widget.settings.equipment,
-      )
+      )[widget.sessionIndex.clamp(0, widget.settings.trainingDays.length - 1)];
+
+  List<_SessionExercise> get _exercises => _plannedSession.exercises
       .map(
         (exercise) => _SessionExercise(
+          catalogId: exercise.catalogId,
           name: exercise.name,
           focus: exercise.focus,
           isTimed: exercise.timed,
@@ -494,6 +494,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         for (var index = 0; index < _exercises.length; index++) ...[
           _ExerciseSessionCard(
             exercise: _exercises[index],
+            exerciseName: _localizedSessionExerciseName(
+              context,
+              _exercises[index],
+            ),
             index: index,
             current: index == _currentExercise,
             completed: _isExerciseComplete(index),
@@ -586,14 +590,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   Widget _buildGuidedExercise(BuildContext context) {
     final current = _exercises[_currentExercise];
-    final matched = _catalog.cast<Exercise?>().firstWhere(
-      (exercise) =>
-          exercise != null &&
-          (exercise.name.toLowerCase() == current.name.toLowerCase() ||
-              (exercise.englishName?.toLowerCase() ==
-                  current.name.toLowerCase())),
-      orElse: () => null,
-    );
+    final matched = _catalogExerciseFor(current);
     final instructions = matched == null
         ? const <String>[]
         : localizedExerciseInstructions(context, matched);
@@ -616,13 +613,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               child: ExerciseAnimationView(
                 exerciseId: matched.id,
                 animation: matched.animation,
-                label: localizedTrainingExerciseName(context, current.name),
+                label: localizedExerciseName(context, matched),
               ),
             ),
             const SizedBox(height: AppSpacing.x3),
           ],
           Text(
-            localizedTrainingExerciseName(context, current.name),
+            matched == null
+                ? localizedTrainingExerciseName(context, current.name)
+                : localizedExerciseName(context, matched),
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: AppSpacing.x2),
@@ -1194,8 +1193,14 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         exerciseCount: completedPositions.length,
         exercises: [
           for (final index in completedPositions.toList()..sort())
-            _exercises[index].name,
+            _recordExerciseName(index),
         ],
+        exerciseIds: [
+          for (final index in completedPositions.toList()..sort())
+            _exercises[index].catalogId,
+        ],
+        planVersion: widget.planVersion,
+        planSnapshot: jsonEncode(_plannedSession.toJson()),
         setResults: results,
       ),
     );
@@ -1205,6 +1210,26 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     _exercises[exercise].setCount,
     (index) => index,
   ).every((index) => _completedSets.contains('$exercise:$index'));
+
+  Exercise? _catalogExerciseFor(_SessionExercise planned) {
+    for (final exercise in _catalog) {
+      if (exercise.id == planned.catalogId) return exercise;
+    }
+    return null;
+  }
+
+  String _localizedSessionExerciseName(
+    BuildContext context,
+    _SessionExercise planned,
+  ) {
+    final exercise = _catalogExerciseFor(planned);
+    return exercise == null
+        ? localizedTrainingExerciseName(context, planned.name)
+        : localizedExerciseName(context, exercise);
+  }
+
+  String _recordExerciseName(int index) =>
+      _catalogExerciseFor(_exercises[index])?.name ?? _exercises[index].name;
   int get _completedExerciseCount =>
       {for (final key in _completedSets) int.tryParse(key.split(':').first)}
           .whereType<int>()
@@ -1376,6 +1401,7 @@ class _WorkoutSetEditor extends StatelessWidget {
 
 class _SessionExercise {
   const _SessionExercise({
+    required this.catalogId,
     required this.name,
     required this.focus,
     this.isTimed = false,
@@ -1384,6 +1410,7 @@ class _SessionExercise {
     this.detail = '',
   });
 
+  final String catalogId;
   final String name;
   final String focus;
   final bool isTimed;
@@ -1429,6 +1456,7 @@ class _SessionEyebrow extends StatelessWidget {
 class _ExerciseSessionCard extends StatelessWidget {
   const _ExerciseSessionCard({
     required this.exercise,
+    required this.exerciseName,
     required this.index,
     required this.current,
     required this.completed,
@@ -1436,6 +1464,7 @@ class _ExerciseSessionCard extends StatelessWidget {
   });
 
   final _SessionExercise exercise;
+  final String exerciseName;
   final int index;
   final bool current;
   final bool completed;
@@ -1484,7 +1513,7 @@ class _ExerciseSessionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      localizedTrainingExerciseName(context, exercise.name),
+                      exerciseName,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: AppSpacing.x1),

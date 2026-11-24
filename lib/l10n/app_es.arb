@@ -690,5 +690,9 @@
   "progressLegsCore": "Piernas y core",
   "progressUpperBody": "Tren superior",
   "sessionStartTimedSet": "Iniciar serie de 30 segundos",
-  "sessionTimedSetRunning": "Pausar serie cronometrada"
+  "sessionTimedSetRunning": "Pausar serie cronometrada",
+  "trainingNameBandReverseFly": "Apertura inversa con banda",
+  "trainingNamePikeToCobra": "Flexiones de pica a cobra",
+  "trainingNameJumpSquat": "Sentadilla con salto",
+  "trainingNameSidePlank": "Plancha lateral inclinada"
 }

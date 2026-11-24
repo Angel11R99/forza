@@ -5,10 +5,10 @@
 FORZA usa SQLite local a través de Drift. La base se crea en el directorio de documentos de la aplicación con el nombre `forza`; el archivo y su ruta son responsabilidad de `drift_flutter`. La app puede guardar y leer estos datos sin red:
 
 - Preferencias del plan: objetivo, experiencia, duración por sesión, días elegidos y equipo disponible.
-- Sesiones terminadas: fecha planificada, fecha de finalización, objetivo, duración, cantidad de ejercicios, lista de ejercicios y si se marcaron como completadas fuera de la app.
+- Sesiones terminadas: fecha planificada, fecha de finalización, objetivo, duración, cantidad de ejercicios, IDs estables del catálogo, versión y snapshot del plan de origen, y si se marcaron como completadas fuera de la app.
 - Resultados por serie: repeticiones o duración y carga registrada para cada ejercicio de una sesión.
 - Borrador de entrenamiento activo: ejercicio actual, tiempo transcurrido y series registradas, guardados en `app_metadata` para recuperar la sesión.
-- Agenda: sesiones de los próximos 120 días, fecha original al reprogramar y estado pendiente, en curso o completada.
+- Agenda: sesiones de los próximos 120 días, fecha original al reprogramar, estado pendiente/en curso/completada y snapshot de la rutina que corresponde a cada sesión.
 - Objetivos personales: sesiones completadas por semana o carga máxima objetivo por ejercicio.
 - Metadatos: finalización del onboarding y control de importaciones.
 
@@ -24,17 +24,17 @@ Las tablas actuales están declaradas en `lib/data/database/app_database.dart`. 
 
 | Tabla SQLite | Uso |
 |---|---|
-| `training_plans` | Preferencias y datos principales del plan activo. |
+| `training_plans` | Preferencias, datos principales y versión creciente del plan activo. |
 | `training_plan_days` | Días de la semana elegidos para entrenar. |
 | `training_plan_equipment` | Equipo disponible elegido por el usuario. |
-| `workout_sessions` | Historial y resumen de sesiones terminadas. |
-| `workout_session_exercises` | Ejercicios guardados en cada resumen, ordenados por posición. |
+| `workout_sessions` | Historial y resumen de sesiones terminadas, con versión y snapshot del plan de origen. |
+| `workout_session_exercises` | Ejercicios guardados en cada resumen, ordenados por posición y vinculados por ID de catálogo cuando aplica. |
 | `workout_set_entries` | Resultados registrados por ejercicio y serie. |
-| `scheduled_training_sessions` | Agenda próxima, reprogramaciones y estado de cada sesión. |
+| `scheduled_training_sessions` | Agenda próxima, reprogramaciones, estado, versión y rutina congelada para cada sesión. |
 | `personal_goals` | Metas elegidas y objetivos de sesiones o carga. |
 | `app_metadata` | Marcadores, importaciones y borrador del entrenamiento activo. |
 
-La versión actual del esquema es `4`. Las migraciones están en `database/migrations/sqlite/0001_initial.sql` a `0004_personal_goals.sql`; las instantáneas serializadas están en `drift_schemas/schema_v1.json` a `schema_v4.json`. Las actualizaciones crean las tablas nuevas sin alterar el historial existente.
+La versión actual del esquema es `5`. La migración `0005_plan_versions_and_snapshots.sql` añade IDs de catálogo, versión del plan y snapshots serializados; los registros anteriores conservan los valores predeterminados de versión `1` y los snapshots vacíos o nulos. Las instantáneas serializadas están en `drift_schemas/schema_v1.json` a `schema_v5.json`. Las actualizaciones preservan el historial existente.
 
 ## Importación de instalaciones anteriores
 

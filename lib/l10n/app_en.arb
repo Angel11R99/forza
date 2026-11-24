@@ -690,5 +690,9 @@
   "progressLegsCore": "Legs and core",
   "progressUpperBody": "Upper body",
   "sessionStartTimedSet": "Start 30 second set",
-  "sessionTimedSetRunning": "Pause timed set"
+  "sessionTimedSetRunning": "Pause timed set",
+  "trainingNameBandReverseFly": "Band reverse fly",
+  "trainingNamePikeToCobra": "Pike-to-cobra push-up",
+  "trainingNameJumpSquat": "Jump squat",
+  "trainingNameSidePlank": "Incline side plank"
 }

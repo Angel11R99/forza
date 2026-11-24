@@ -64,6 +64,9 @@ class WorkoutLogRepository {
           durationMinutes: session.durationMinutes,
           exerciseCount: session.exerciseCount,
           exercises: exercises.map((row) => row.name).toList(growable: false),
+          exerciseIds: [for (final exercise in exercises) exercise.catalogId],
+          planVersion: session.planVersion,
+          planSnapshot: session.planSnapshot ?? '',
           completedOutsideApp: session.completedOutsideApp,
           setResults: sets
               .map(
@@ -104,6 +107,14 @@ class WorkoutLogRepository {
               completedAt: record.completedAt.toIso8601String(),
               title: record.title,
               goal: record.goal,
+              planVersion: Value(
+                record.planSnapshot.isEmpty
+                    ? activePlan?.version ?? record.planVersion
+                    : record.planVersion,
+              ),
+              planSnapshot: Value(
+                record.planSnapshot.isEmpty ? null : record.planSnapshot,
+              ),
               durationMinutes: record.durationMinutes,
               exerciseCount: record.exerciseCount,
               completedOutsideApp: record.completedOutsideApp,
@@ -119,6 +130,11 @@ class WorkoutLogRepository {
                 sessionId: id,
                 position: index,
                 name: exerciseNames[index],
+                catalogId: Value(
+                  index < record.exerciseIds.length
+                      ? record.exerciseIds[index]
+                      : null,
+                ),
               ),
           ]);
         });
