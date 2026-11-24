@@ -2107,4 +2107,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get progressUpperBody => 'Tren superior';
+
+  @override
+  String get sessionStartTimedSet => 'Iniciar serie de 30 segundos';
+
+  @override
+  String get sessionTimedSetRunning => 'Pausar serie cronometrada';
 }

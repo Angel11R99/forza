@@ -2100,4 +2100,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressUpperBody => 'Upper body';
+
+  @override
+  String get sessionStartTimedSet => 'Start 30 second set';
+
+  @override
+  String get sessionTimedSetRunning => 'Pause timed set';
 }

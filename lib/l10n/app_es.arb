@@ -688,5 +688,7 @@
   "profileDefaultName": "Atleta FORZA",
   "progressTotalStrength": "Fuerza total",
   "progressLegsCore": "Piernas y core",
-  "progressUpperBody": "Tren superior"
+  "progressUpperBody": "Tren superior",
+  "sessionStartTimedSet": "Iniciar serie de 30 segundos",
+  "sessionTimedSetRunning": "Pausar serie cronometrada"
 }
