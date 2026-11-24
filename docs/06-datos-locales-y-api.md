@@ -11,12 +11,13 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 - Agenda: sesiones de los próximos 120 días, fecha original al reprogramar, estado pendiente/en curso/completada/omitida y snapshot de la rutina que corresponde a cada sesión. Omitir una sesión no crea un registro de entrenamiento y se puede deshacer desde Actividad.
 - Objetivos personales: sesiones completadas por semana o carga máxima objetivo por ejercicio.
 - Metadatos: finalización del onboarding y control de importaciones.
+- Apariencia (sistema/claro/oscuro) e idioma elegido: preferencias simples guardadas con `shared_preferences`.
 
-El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El perfil personal, medidas corporales, notificaciones y sincronización entre dispositivos todavía no son datos persistidos. La agenda mantiene 120 días de sesiones próximas y sincroniza Inicio, Actividad y la sesión activa mediante el mismo repositorio.
+El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. Los campos personales, unidades, primer día de semana, hápticos, recordatorios y privacidad siguen siendo estados temporales de las pantallas; el issue #7 cubre su persistencia. Medidas corporales y sincronización entre dispositivos todavía no están implementadas. La agenda mantiene 120 días de sesiones próximas y sincroniza Inicio, Actividad y la sesión activa mediante el mismo repositorio. El inventario con ciclo de vida y pruebas está en `docs/09-auditoria-persistencia.md`.
 
 ## Exportar y restaurar datos
 
-Desde Perfil se puede guardar un respaldo JSON o seleccionar uno para restaurarlo. El formato lleva el identificador `FORZA_BACKUP` y una versión propia independiente de la versión del esquema SQLite. La versión 1 contiene el plan, el historial con resultados por serie, la agenda, los objetivos personales, el borrador activo y la apariencia. No incluye el catálogo incluido ni las preferencias de perfil que todavía no se guardan localmente.
+Desde Perfil se puede guardar un respaldo JSON o seleccionar uno para restaurarlo. El formato lleva el identificador `FORZA_BACKUP` y una versión propia independiente de la versión del esquema SQLite. La versión 1 contiene el plan, el historial con resultados por serie, la agenda, los objetivos personales, el borrador activo y la apariencia. No incluye el catálogo incluido, el idioma ni las preferencias de perfil que todavía no se guardan localmente.
 
 La restauración limita el archivo a 10 MB y valida formato, versión, tipos, rangos y duplicados antes de mostrar la confirmación. Al confirmar, reemplaza en una transacción los datos locales incluidos; una operación fallida revierte esos cambios. La apariencia se aplica después de completar la restauración de SQLite. El archivo es una copia local portable, no sincroniza dispositivos ni cifra el contenido.
 
