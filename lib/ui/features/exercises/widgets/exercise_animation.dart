@@ -197,7 +197,9 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
       label: context.l10n.exerciseAnimationLabel(widget.label),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: isSvg ? AppColors.light.surfaceMuted : const Color(0xFF111315),
+          color: isSvg
+              ? context.appColors.surfaceMuted
+              : const Color(0xFF111315),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Stack(
@@ -208,8 +210,8 @@ class _ExerciseAnimationViewState extends State<ExerciseAnimationView>
                   ? SvgPicture.asset(
                       frame,
                       fit: BoxFit.contain,
-                      colorFilter: const ColorFilter.mode(
-                        Color(0xFF111111),
+                      colorFilter: ColorFilter.mode(
+                        context.appColors.textPrimary,
                         BlendMode.srcIn,
                       ),
                       errorBuilder: (context, error, stackTrace) => Icon(

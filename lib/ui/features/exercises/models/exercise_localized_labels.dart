@@ -31,6 +31,102 @@ String localizedExerciseMuscleGroup(BuildContext context, String value) =>
       _ => value,
     };
 
+String localizedExerciseTargetMuscle(BuildContext context, String value) {
+  if (Localizations.localeOf(context).languageCode == 'en') {
+    return _targetMusclesEnglish[value] ?? value;
+  }
+  return _targetMusclesSpanish[value] ?? value;
+}
+
+String localizedExerciseSupportingMuscle(BuildContext context, String value) {
+  if (Localizations.localeOf(context).languageCode == 'en') {
+    return _supportingMusclesEnglish[value] ?? value;
+  }
+  return _supportingMusclesSpanish[value] ?? value;
+}
+
+const _targetMusclesEnglish = <String, String>{
+  'abs': 'abdominals',
+  'calves': 'calves',
+  'delts': 'deltoids',
+  'glutes': 'glutes',
+  'hamstrings': 'hamstrings',
+  'lats': 'latissimus dorsi',
+  'quads': 'quadriceps',
+  'spine': 'spinal erectors',
+  'traps': 'trapezius',
+};
+
+const _targetMusclesSpanish = <String, String>{
+  'abductors': 'abductores',
+  'abs': 'abdominales',
+  'adductors': 'aductores',
+  'biceps': 'bíceps',
+  'calves': 'pantorrillas',
+  'cardiovascular system': 'sistema cardiovascular',
+  'delts': 'deltoides',
+  'forearms': 'antebrazos',
+  'glutes': 'glúteos',
+  'hamstrings': 'isquiotibiales',
+  'lats': 'dorsales',
+  'levator scapulae': 'elevador de la escápula',
+  'pectorals': 'pectorales',
+  'quads': 'cuádriceps',
+  'serratus anterior': 'serrato anterior',
+  'spine': 'zona de la columna',
+  'traps': 'trapecios',
+  'triceps': 'tríceps',
+  'upper back': 'espalda alta',
+};
+
+const _supportingMusclesEnglish = <String, String>{
+  'lats': 'latissimus dorsi',
+  'traps': 'trapezius',
+};
+
+const _supportingMusclesSpanish = <String, String>{
+  'abdominals': 'abdominales',
+  'ankle stabilizers': 'estabilizadores del tobillo',
+  'ankles': 'tobillos',
+  'back': 'espalda',
+  'biceps': 'bíceps',
+  'brachialis': 'braquial',
+  'calves': 'pantorrillas',
+  'chest': 'pecho',
+  'core': 'core',
+  'deltoids': 'deltoides',
+  'feet': 'pies',
+  'forearms': 'antebrazos',
+  'glutes': 'glúteos',
+  'grip muscles': 'músculos de agarre',
+  'groin': 'ingle',
+  'hamstrings': 'isquiotibiales',
+  'hands': 'manos',
+  'hip flexors': 'flexores de cadera',
+  'inner thighs': 'cara interna de los muslos',
+  'latissimus dorsi': 'dorsal ancho',
+  'lats': 'dorsales',
+  'lower abs': 'abdomen inferior',
+  'lower back': 'zona lumbar',
+  'obliques': 'oblicuos',
+  'quadriceps': 'cuádriceps',
+  'rear deltoids': 'deltoides posteriores',
+  'rhomboids': 'romboides',
+  'rotator cuff': 'manguito rotador',
+  'shins': 'espinillas',
+  'shoulders': 'hombros',
+  'soleus': 'sóleo',
+  'sternocleidomastoid': 'esternocleidomastoideo',
+  'trapezius': 'trapecio',
+  'traps': 'trapecios',
+  'triceps': 'tríceps',
+  'upper back': 'espalda alta',
+  'upper chest': 'pecho superior',
+  'wrist extensors': 'extensores de la muñeca',
+  'wrist flexors': 'flexores de la muñeca',
+  'wrists': 'muñecas',
+};
+
 String localizedExerciseEquipment(BuildContext context, String value) =>
     switch (value) {
       'Asistido' => context.l10n.exerciseEquipmentAssisted,

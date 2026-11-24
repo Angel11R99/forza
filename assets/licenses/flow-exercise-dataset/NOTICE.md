@@ -16,8 +16,11 @@ repository does not give permission to use it.
 Flow adds a coarse movement-pattern classification and a custom media mapping.
 The inherited `muscleGroup` field is deliberately omitted: Flow's import often
 derived it from a secondary muscle, so it is not a reliable primary-muscle label.
-The exported `target` and `secondaryMuscles` remain upstream-derived and have
-not received a full professional review.
+The UI shows the exported `target` and `secondaryMuscles` as catalog metadata;
+they remain upstream-derived and have not received a full professional review.
+The short benefit sentence is generated from the target and stretch/cardio
+classification; it is general exercise information, not professional coaching
+or a medical recommendation.
 
 ## Custom artwork — CC0-1.0 dedication, limited evidence
 

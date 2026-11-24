@@ -248,6 +248,56 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get exerciseFlipHint => 'Toca o desliza';
+
+  @override
+  String get exerciseFlipSemanticsFront =>
+      'Toca o desliza para ver para qué sirve y qué músculos trabaja';
+
+  @override
+  String get exerciseFlipSemanticsBack =>
+      'Toca o desliza para volver a la animación';
+
+  @override
+  String get exerciseInfoHeading => 'Para qué sirve';
+
+  @override
+  String get exerciseInfoPrimaryMuscle => 'Músculo principal';
+
+  @override
+  String get exerciseInfoCatalogGroup => 'Grupo del catálogo';
+
+  @override
+  String get exerciseInfoBenefitUnavailable =>
+      'Sigue los pasos del ejercicio para conocer su enfoque.';
+
+  @override
+  String get exerciseInfoSupportingMuscles => 'También trabaja';
+
+  @override
+  String exerciseInfoBenefitStrength(Object muscle) {
+    return 'Fortalece $muscle y mejora el control de este movimiento.';
+  }
+
+  @override
+  String exerciseInfoBenefitMobility(Object muscle) {
+    return 'Mejora la movilidad de $muscle mediante un estiramiento controlado.';
+  }
+
+  @override
+  String get exerciseInfoBenefitCardio =>
+      'Desarrolla la resistencia cardiovascular y el acondicionamiento general.';
+
+  @override
+  String get exerciseInfoNoSupportingMuscles =>
+      'El catálogo no indica músculos secundarios.';
+
+  @override
+  String exerciseInfoMoreMuscles(int count) {
+    return 'y $count más';
+  }
+
+  @override
   String get exerciseAnimationPlay => 'Reproducir animación';
 
   @override

@@ -64,6 +64,8 @@ void main() {
     englishName: 'Test movement',
     muscleGroup: 'Pecho',
     equipment: 'Peso corporal',
+    target: 'pectorals',
+    secondaryMuscles: ['triceps', 'deltoids'],
     instructions: [
       'Coloca las manos en el suelo, un poco más separadas que los hombros.',
       'Baja el cuerpo de forma controlada y vuelve a empujar hasta extender los brazos.',
@@ -115,6 +117,26 @@ void main() {
         expect(find.text('$stepLabel 2'), findsOneWidget);
         expect(find.text(instructions[0]), findsOneWidget);
         expect(find.text(instructions[1]), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('exercise-flip-card')));
+        await tester.pumpAndSettle();
+        expect(
+          find.text(languageCode == 'es' ? 'pectorales' : 'pectorals'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(languageCode == 'es' ? 'Músculo principal' : 'Main target'),
+          findsOneWidget,
+        );
+        final infoFace = tester.widget<Container>(
+          find.byKey(const Key('exercise-info-face')),
+        );
+        expect(
+          (infoFace.decoration! as BoxDecoration).color,
+          brightness == Brightness.light
+              ? AppColors.light.surface
+              : AppColors.dark.surface,
+        );
 
         final firstCard = find.ancestor(
           of: find.text('$stepLabel 1'),

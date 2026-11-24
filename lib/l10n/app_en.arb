@@ -123,6 +123,28 @@
   "exerciseAnimationUnavailable": "No animation available · follow the steps",
   "exerciseAnimationIllustrative": "Illustration for reference · pace is up to you",
   "exerciseAnimationLabel": "Exercise animation: {name}",
+  "exerciseFlipHint": "Tap or swipe",
+  "exerciseFlipSemanticsFront": "Tap or swipe to see what this exercise does and which muscles it works",
+  "exerciseFlipSemanticsBack": "Tap or swipe to return to the animation",
+  "exerciseInfoHeading": "What it does",
+  "exerciseInfoPrimaryMuscle": "Main target",
+  "exerciseInfoCatalogGroup": "Catalog group",
+  "exerciseInfoBenefitUnavailable": "Follow the exercise steps to understand its focus.",
+  "exerciseInfoSupportingMuscles": "Also works",
+  "exerciseInfoBenefitStrength": "Builds strength in {muscle} and improves control of this movement.",
+  "exerciseInfoBenefitMobility": "Improves {muscle} mobility with a controlled stretch.",
+  "exerciseInfoBenefitCardio": "Builds cardiovascular endurance and overall conditioning.",
+  "exerciseInfoNoSupportingMuscles": "The catalog does not list supporting muscles.",
+  "exerciseInfoMoreMuscles": "and {count} more",
+  "@exerciseInfoBenefitStrength": {
+    "placeholders": {"muscle": {}}
+  },
+  "@exerciseInfoBenefitMobility": {
+    "placeholders": {"muscle": {}}
+  },
+  "@exerciseInfoMoreMuscles": {
+    "placeholders": {"count": {"type": "int"}}
+  },
   "@exerciseAnimationLabel": {
     "description": "Accessible label for the exercise animation",
     "placeholders": {

@@ -81,6 +81,14 @@ def convert(
         "instructions": split_instructions(spanish),
         "alternativeIds": [],
     }
+    target = record.get("target")
+    secondary_muscles = record.get("secondary_muscles")
+    if isinstance(target, str) and target:
+        converted["target"] = target
+    if isinstance(secondary_muscles, list) and all(
+        isinstance(muscle, str) and muscle for muscle in secondary_muscles
+    ):
+        converted["secondaryMuscles"] = secondary_muscles
     if english_record is not None:
         english_name = english_record.get("name")
         english_steps_by_language = english_record.get("instruction_steps")
@@ -89,6 +97,20 @@ def convert(
             if isinstance(english_steps_by_language, dict)
             else None
         )
+        if isinstance(english_steps, str):
+            english_steps = split_instructions(english_steps)
+        if english_steps is None:
+            english_instructions = english_record.get("instructions")
+            english_text = (
+                english_instructions.get("en")
+                if isinstance(english_instructions, dict)
+                else None
+            )
+            english_steps = (
+                split_instructions(english_text)
+                if isinstance(english_text, str)
+                else None
+            )
         if not isinstance(english_name, str) or not english_name:
             raise ValueError(f"Missing English name: {record.get('id')}")
         if not isinstance(english_steps, list) or not all(
@@ -121,10 +143,27 @@ def main() -> None:
         if spanish_ids != set(english_by_id):
             raise ValueError("Spanish and English datasets must contain the same IDs.")
 
-    exercises = [
-        convert(record, english_by_id.get(str(record["id"])))
-        for record in records
-    ]
+    previous_exercises: dict[str, dict[str, object]] = {}
+    if OUTPUT.exists():
+        previous = json.loads(OUTPUT.read_text(encoding="utf-8-sig"))
+        if isinstance(previous, list):
+            previous_exercises = {
+                str(exercise["id"]): exercise
+                for exercise in previous
+                if isinstance(exercise, dict) and "id" in exercise
+            }
+
+    exercises = []
+    for record in records:
+        exercise_id = str(record["id"])
+        converted = convert(record, english_by_id.get(exercise_id))
+        previous = previous_exercises.get(exercise_id)
+        if previous is None:
+            exercises.append(converted)
+            continue
+        merged = dict(previous)
+        merged.update(converted)
+        exercises.append(merged)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(
         json.dumps(exercises, ensure_ascii=False, indent=2) + "\n",
