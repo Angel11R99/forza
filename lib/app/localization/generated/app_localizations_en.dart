@@ -247,6 +247,56 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get exerciseFlipHint => 'Tap or swipe';
+
+  @override
+  String get exerciseFlipSemanticsFront =>
+      'Tap or swipe to see what this exercise does and which muscles it works';
+
+  @override
+  String get exerciseFlipSemanticsBack =>
+      'Tap or swipe to return to the animation';
+
+  @override
+  String get exerciseInfoHeading => 'What it does';
+
+  @override
+  String get exerciseInfoPrimaryMuscle => 'Main target';
+
+  @override
+  String get exerciseInfoCatalogGroup => 'Catalog group';
+
+  @override
+  String get exerciseInfoBenefitUnavailable =>
+      'Follow the exercise steps to understand its focus.';
+
+  @override
+  String get exerciseInfoSupportingMuscles => 'Also works';
+
+  @override
+  String exerciseInfoBenefitStrength(Object muscle) {
+    return 'Builds strength in $muscle and improves control of this movement.';
+  }
+
+  @override
+  String exerciseInfoBenefitMobility(Object muscle) {
+    return 'Improves $muscle mobility with a controlled stretch.';
+  }
+
+  @override
+  String get exerciseInfoBenefitCardio =>
+      'Builds cardiovascular endurance and overall conditioning.';
+
+  @override
+  String get exerciseInfoNoSupportingMuscles =>
+      'The catalog does not list supporting muscles.';
+
+  @override
+  String exerciseInfoMoreMuscles(int count) {
+    return 'and $count more';
+  }
+
+  @override
   String get exerciseAnimationPlay => 'Play animation';
 
   @override

@@ -123,6 +123,28 @@
   "exerciseAnimationUnavailable": "Sin ilustración animada · consulta los pasos",
   "exerciseAnimationIllustrative": "Ilustración orientativa · el ritmo depende de ti",
   "exerciseAnimationLabel": "Animación: {name}",
+  "exerciseFlipHint": "Toca o desliza",
+  "exerciseFlipSemanticsFront": "Toca o desliza para ver para qué sirve y qué músculos trabaja",
+  "exerciseFlipSemanticsBack": "Toca o desliza para volver a la animación",
+  "exerciseInfoHeading": "Para qué sirve",
+  "exerciseInfoPrimaryMuscle": "Músculo principal",
+  "exerciseInfoCatalogGroup": "Grupo del catálogo",
+  "exerciseInfoBenefitUnavailable": "Sigue los pasos del ejercicio para conocer su enfoque.",
+  "exerciseInfoSupportingMuscles": "También trabaja",
+  "exerciseInfoBenefitStrength": "Fortalece {muscle} y mejora el control de este movimiento.",
+  "exerciseInfoBenefitMobility": "Mejora la movilidad de {muscle} mediante un estiramiento controlado.",
+  "exerciseInfoBenefitCardio": "Desarrolla la resistencia cardiovascular y el acondicionamiento general.",
+  "exerciseInfoNoSupportingMuscles": "El catálogo no indica músculos secundarios.",
+  "exerciseInfoMoreMuscles": "y {count} más",
+  "@exerciseInfoBenefitStrength": {
+    "placeholders": {"muscle": {}}
+  },
+  "@exerciseInfoBenefitMobility": {
+    "placeholders": {"muscle": {}}
+  },
+  "@exerciseInfoMoreMuscles": {
+    "placeholders": {"count": {"type": "int"}}
+  },
   "@exerciseAnimationLabel": {
     "description": "Descripción accesible de la animación",
     "placeholders": {

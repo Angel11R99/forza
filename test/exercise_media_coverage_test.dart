@@ -21,6 +21,14 @@ void main() {
       );
 
       expect(exercises, hasLength(1324));
+      expect(
+        exercises.every((exercise) => exercise.target?.isNotEmpty ?? false),
+        isTrue,
+      );
+      expect(
+        exercises.every((exercise) => exercise.secondaryMuscles.isNotEmpty),
+        isTrue,
+      );
       expect(animated, hasLength(1260));
       expect(withoutAnimation, hasLength(64));
 

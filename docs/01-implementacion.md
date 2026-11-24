@@ -138,13 +138,15 @@ Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca 
 
 ### Fase 3 · Datos
 
-- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y repositorio asíncrono carga el dataset local fijado en un commit, con 1.324 nombres/instrucciones en español. Las ilustraciones animadas son un asset vectorial local independiente del dataset, con alternativa de icono para ejercicios sin animación. La biblioteca muestra carga/error; búsqueda, filtros, detalle y alternativas consultan el repositorio. Planes e historial se guardan en SQLite mediante Drift; el catálogo de ejercicios permanece como asset. No hay API.
+- **Estado:** modelo `Exercise` trasladado a `domain`, contrato `ExerciseRepository` definido y repositorio asíncrono carga el dataset local fijado en un commit, con 1.324 nombres/instrucciones en español/inglés y metadatos de objetivo muscular. El detalle usa `flutter_flip_card` para ofrecer GIF y ficha informativa con toque/swipe; el importador conserva los assets vectoriales existentes al actualizar los metadatos. La biblioteca muestra carga/error; búsqueda, filtros, detalle y alternativas consultan el repositorio. Planes e historial se guardan en SQLite mediante Drift; el catálogo de ejercicios permanece como asset. No hay API.
 - [x] Definir modelo `Exercise` y contrato `ExerciseRepository` separados de widgets.
 - [x] Incluir el dataset de texto como asset local y separar las ilustraciones vectoriales; omitir las imágenes y GIFs upstream.
 - [ ] Conectar una API solo si aparece un servicio remoto aprobado y necesario.
 - [ ] Si el catálogo pasa a una API, paginar y resolver búsqueda/filtros en el origen; no cargar todos los GIFs de golpe.
 
 ### Fase 4 · Medios animados y pulido
+
+La vuelta 3D de la tarjeta de ejercicio usa `AnimationController`, `Transform` y `GestureDetector`. Se evaluó `flutter_flip_card` 0.0.6, pero su `InkWell` viene de `package:flutter/material.dart` y no reconoce el `Material` de la copia `material_ui` utilizada por FORZA (`No Material widget found`). Para evitar mezclar dos árboles de Material, la tarjeta conserva una única implementación con las primitivas del proyecto.
 
 - **Estado:** la biblioteca y la pantalla de alternativas usan tarjetas que aumentan de alto con `TextScaler`; el calendario mensual adapta las filas y el círculo del día al escalado de texto; Perfil y los datos de sesión, medición y valores de Progreso pueden ocupar varias líneas sin truncamiento. La búsqueda ignora tildes y anuncia los resultados a tecnologías de asistencia. Para #20, `flutter analyze`, pruebas de contraste claro/oscuro y pruebas de layout a 320 px, texto 2×, movimiento reducido y orientación horizontal pasan. En el emulador Android 16 se revisaron Inicio, Actividad, Ejercicios y el teclado en pantalla; no hay simulador iOS en este entorno y quedan pendientes VoiceOver y una comprobación en dispositivo iOS. Los medios siguen fuera hasta resolver su licencia.
 - Solo tras aprobación de licencia: crear un widget de media que acepte miniatura, URL/asset, estado de carga y fallback.

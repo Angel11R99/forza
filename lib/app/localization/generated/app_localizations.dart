@@ -452,6 +452,84 @@ abstract class AppLocalizations {
   /// **'Exercise animation: {name}'**
   String exerciseAnimationLabel(String name);
 
+  /// No description provided for @exerciseFlipHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or swipe'**
+  String get exerciseFlipHint;
+
+  /// No description provided for @exerciseFlipSemanticsFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or swipe to see what this exercise does and which muscles it works'**
+  String get exerciseFlipSemanticsFront;
+
+  /// No description provided for @exerciseFlipSemanticsBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or swipe to return to the animation'**
+  String get exerciseFlipSemanticsBack;
+
+  /// No description provided for @exerciseInfoHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'What it does'**
+  String get exerciseInfoHeading;
+
+  /// No description provided for @exerciseInfoPrimaryMuscle.
+  ///
+  /// In en, this message translates to:
+  /// **'Main target'**
+  String get exerciseInfoPrimaryMuscle;
+
+  /// No description provided for @exerciseInfoCatalogGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog group'**
+  String get exerciseInfoCatalogGroup;
+
+  /// No description provided for @exerciseInfoBenefitUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the exercise steps to understand its focus.'**
+  String get exerciseInfoBenefitUnavailable;
+
+  /// No description provided for @exerciseInfoSupportingMuscles.
+  ///
+  /// In en, this message translates to:
+  /// **'Also works'**
+  String get exerciseInfoSupportingMuscles;
+
+  /// No description provided for @exerciseInfoBenefitStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Builds strength in {muscle} and improves control of this movement.'**
+  String exerciseInfoBenefitStrength(Object muscle);
+
+  /// No description provided for @exerciseInfoBenefitMobility.
+  ///
+  /// In en, this message translates to:
+  /// **'Improves {muscle} mobility with a controlled stretch.'**
+  String exerciseInfoBenefitMobility(Object muscle);
+
+  /// No description provided for @exerciseInfoBenefitCardio.
+  ///
+  /// In en, this message translates to:
+  /// **'Builds cardiovascular endurance and overall conditioning.'**
+  String get exerciseInfoBenefitCardio;
+
+  /// No description provided for @exerciseInfoNoSupportingMuscles.
+  ///
+  /// In en, this message translates to:
+  /// **'The catalog does not list supporting muscles.'**
+  String get exerciseInfoNoSupportingMuscles;
+
+  /// No description provided for @exerciseInfoMoreMuscles.
+  ///
+  /// In en, this message translates to:
+  /// **'and {count} more'**
+  String exerciseInfoMoreMuscles(int count);
+
   /// No description provided for @exerciseAnimationPlay.
   ///
   /// In en, this message translates to:

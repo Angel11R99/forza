@@ -9,6 +9,8 @@ class Exercise {
     this.englishInstructions = const [],
     this.level,
     this.summary,
+    this.target,
+    this.secondaryMuscles = const [],
     this.alternativeIds = const [],
     this.animation,
   });
@@ -19,6 +21,8 @@ class Exercise {
   final String equipment;
   final String? level;
   final String? summary;
+  final String? target;
+  final List<String> secondaryMuscles;
   final List<String> instructions;
   final String? englishName;
   final List<String> englishInstructions;
@@ -33,6 +37,10 @@ class Exercise {
       equipment: _requiredString(json, 'equipment'),
       level: _optionalString(json, 'level'),
       summary: _optionalString(json, 'summary'),
+      target: _optionalString(json, 'target'),
+      secondaryMuscles: json.containsKey('secondaryMuscles')
+          ? _stringList(json, 'secondaryMuscles')
+          : const [],
       instructions: _stringList(json, 'instructions'),
       englishName: _optionalString(json, 'englishName'),
       englishInstructions: json.containsKey('englishInstructions')
