@@ -214,26 +214,27 @@ class _TodayWorkoutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localeName = Localizations.localeOf(context).toLanguageTag();
-    final days = settings.trainingDays.toList()..sort();
-    final todayIndex = days.indexOf(sessionDate.weekday);
     final today = DateTime.now();
     final isFutureSession = DateTime(
       sessionDate.year,
       sessionDate.month,
       sessionDate.day,
     ).isAfter(DateTime(today.year, today.month, today.day));
+    final generatedSession = _planBuilder
+        .buildWeek(
+          trainingDays: settings.trainingDays,
+          sessionMinutes: settings.sessionMinutes,
+          goal: settings.goal,
+          experience: settings.experience,
+          equipment: settings.equipment,
+          avoidedExerciseIds: settings.avoidedExerciseIds,
+        )
+        .where((session) => session.weekday == sessionDate.weekday)
+        .firstOrNull;
     final exerciseCount =
         scheduledSession?.exerciseCount ??
-        _planBuilder
-            .buildSession(
-              sessionIndex: todayIndex < 0 ? 0 : todayIndex,
-              sessionMinutes: settings.sessionMinutes,
-              goal: settings.goal,
-              experience: settings.experience,
-              equipment: settings.equipment,
-              avoidedExerciseIds: settings.avoidedExerciseIds,
-            )
-            .length;
+        generatedSession?.exercises.length ??
+        0;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.x6),
       decoration: BoxDecoration(

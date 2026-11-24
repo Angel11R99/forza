@@ -1193,7 +1193,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingExperienceDescription =>
-      'We\'ll use your answer to adjust your starting workload.';
+      'We\'ll use your answer to adjust the starting sets for each exercise.';
 
   @override
   String get onboardingExperienceBeginner => 'I\'m just getting started';

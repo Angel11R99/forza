@@ -2123,7 +2123,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingExperienceDescription.
   ///
   /// In en, this message translates to:
-  /// **'We\'ll use your answer to adjust your starting workload.'**
+  /// **'We\'ll use your answer to adjust the starting sets for each exercise.'**
   String get onboardingExperienceDescription;
 
   /// No description provided for @onboardingExperienceBeginner.

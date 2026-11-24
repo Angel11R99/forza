@@ -1201,7 +1201,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get onboardingExperienceDescription =>
-      'Usaremos tu respuesta para ajustar la carga inicial.';
+      'Usaremos tu respuesta para ajustar las series iniciales de cada ejercicio.';
 
   @override
   String get onboardingExperienceBeginner => 'Estoy empezando';

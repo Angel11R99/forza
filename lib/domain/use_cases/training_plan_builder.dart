@@ -255,11 +255,12 @@ class TrainingPlanBuilder {
       for (var index = 0; index < days.length; index++)
         PlannedTrainingSession(
           weekday: days[index],
-          title: _sessionTitle(index),
-          focus: _sessionFocus(index),
+          title: _sessionTitle(index, days.length),
+          focus: _sessionFocus(index, days.length),
           durationMinutes: sessionMinutes,
           exercises: buildSession(
             sessionIndex: index,
+            trainingDaysPerWeek: days.length,
             sessionMinutes: sessionMinutes,
             goal: goal,
             experience: experience,
@@ -272,13 +273,17 @@ class TrainingPlanBuilder {
 
   List<PlannedExercise> buildSession({
     required int sessionIndex,
+    required int trainingDaysPerWeek,
     required int sessionMinutes,
     required String goal,
     required String experience,
     required Set<String> equipment,
     Set<String> avoidedExerciseIds = const {},
   }) {
-    if (sessionIndex < 0) {
+    if (sessionIndex < 0 ||
+        trainingDaysPerWeek < 1 ||
+        trainingDaysPerWeek > 7 ||
+        sessionIndex >= trainingDaysPerWeek) {
       throw const FormatException('El índice de sesión no es válido.');
     }
     validateSettings(
@@ -299,11 +304,14 @@ class TrainingPlanBuilder {
         .toList(growable: false);
     if (allAvailable.isEmpty) return const [];
 
-    final focusGroup = sessionIndex % 3;
-    final focused = allAvailable
-        .where((exercise) => _belongsToSession(exercise.focus, focusGroup))
-        .toList(growable: false);
-    final available = focused.length >= 4 ? focused : allAvailable;
+    final focused = trainingDaysPerWeek <= 3
+        ? allAvailable
+        : allAvailable
+              .where(
+                (exercise) => _belongsToSession(exercise.focus, sessionIndex),
+              )
+              .toList(growable: false);
+    final available = focused.isEmpty ? allAvailable : focused;
 
     final offset = sessionIndex % available.length;
     final rotated = [...available.skip(offset), ...available.take(offset)];
@@ -329,23 +337,24 @@ class TrainingPlanBuilder {
   int exerciseCount(int sessionMinutes, {required int availableCount}) =>
       (sessionMinutes / 8).round().clamp(4, 8).clamp(1, availableCount);
 
-  static String _sessionTitle(int index) => switch (index % 3) {
-    0 => 'Tren superior',
-    1 => 'Tren inferior',
-    _ => 'Cuerpo completo',
-  };
+  static String _sessionTitle(int index, int sessionsPerWeek) =>
+      sessionsPerWeek <= 3
+      ? 'Cuerpo completo'
+      : index.isEven
+      ? 'Tren superior'
+      : 'Tren inferior';
 
-  static String _sessionFocus(int index) => switch (index % 3) {
-    0 => 'Pecho, espalda y hombros',
-    1 => 'Piernas y core',
-    _ => 'Rutina de cuerpo completo',
-  };
+  static String _sessionFocus(int index, int sessionsPerWeek) =>
+      sessionsPerWeek <= 3
+      ? 'Rutina de cuerpo completo'
+      : index.isEven
+      ? 'Pecho, espalda y hombros'
+      : 'Piernas y core';
 
   static bool _belongsToSession(String focus, int sessionIndex) {
-    if (sessionIndex == 2) return true;
     final upper = const {'Pecho', 'Espalda', 'Hombros'};
     final lower = const {'Piernas', 'Glúteos', 'Core'};
-    return (sessionIndex == 0 ? upper : lower).contains(focus);
+    return (sessionIndex.isEven ? upper : lower).contains(focus);
   }
 
   static String _repetitions(String goal) => switch (goal) {
