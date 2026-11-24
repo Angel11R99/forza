@@ -50289,6 +50289,22 @@
       "Disminuye gradualmente la intensidad y la velocidad de la máquina antes de bajarte."
     ],
     "alternativeIds": [],
+    "animation": {
+      "frames": [
+        "assets/exercise_animations/cc0-elliptical-start.webp",
+        "assets/exercise_animations/cc0-elliptical-end.webp"
+      ],
+      "sequence": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "frameDurationMs": 650,
+      "license": "CC0-1.0",
+      "attribution": "Open Exercise Illustrations — Marvin Nazari (CC0 1.0)",
+      "source": "https://github.com/MarvinNazari/exercise-images/tree/2786aefa4b36a08faeca8114e0d1eb0af3ef6732"
+    },
     "englishName": "walk elliptical cross trainer",
     "englishInstructions": [
       "Adjust the resistance level and incline of the elliptical machine to your desired settings.",
@@ -51261,6 +51277,22 @@
       "Repite el número de repeticiones deseado."
     ],
     "alternativeIds": [],
+    "animation": {
+      "frames": [
+        "assets/exercise_animations/cc0-wide-grip-pull-up-start.webp",
+        "assets/exercise_animations/cc0-wide-grip-pull-up-end.webp"
+      ],
+      "sequence": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "frameDurationMs": 650,
+      "license": "CC0-1.0",
+      "attribution": "Open Exercise Illustrations — Marvin Nazari (CC0 1.0)",
+      "source": "https://github.com/MarvinNazari/exercise-images/tree/2786aefa4b36a08faeca8114e0d1eb0af3ef6732"
+    },
     "englishName": "wide grip pull-up",
     "englishInstructions": [
       "Hang from a pull-up bar with your palms facing away from you and your hands wider than shoulder-width apart.",
@@ -51416,6 +51448,22 @@
       "Repite el número de repeticiones deseado."
     ],
     "alternativeIds": [],
+    "animation": {
+      "frames": [
+        "assets/exercise_animations/cc0-wrist-roller-start.webp",
+        "assets/exercise_animations/cc0-wrist-roller-end.webp"
+      ],
+      "sequence": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "frameDurationMs": 650,
+      "license": "CC0-1.0",
+      "attribution": "Open Exercise Illustrations — Marvin Nazari (CC0 1.0)",
+      "source": "https://github.com/MarvinNazari/exercise-images/tree/2786aefa4b36a08faeca8114e0d1eb0af3ef6732"
+    },
     "englishName": "wrist rollerer",
     "englishInstructions": [
       "Attach a weight to one end of a rope or bar.",
