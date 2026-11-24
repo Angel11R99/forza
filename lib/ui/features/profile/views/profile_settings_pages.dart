@@ -404,8 +404,6 @@ class NotificationsSettingsPage extends StatefulWidget {
 
 class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
   late bool _workoutReminders = widget.settings.workoutReminders;
-  late bool _weeklySummary = widget.settings.weeklySummary;
-  late bool _recordAlerts = widget.settings.personalRecordAlerts;
   late TimeOfDay _reminderTime = TimeOfDay(
     hour: widget.settings.reminderHour,
     minute: widget.settings.reminderMinute,
@@ -459,23 +457,6 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
                       onTap: _pickReminderTime,
                     ),
                   ],
-                  const Divider(height: 1),
-                  SwitchListTile(
-                    title: Text(context.l10n.profileWeeklySummary),
-                    subtitle: Text(
-                      context.l10n.profileWeeklySummaryDescription,
-                    ),
-                    value: _weeklySummary,
-                    onChanged: (value) =>
-                        setState(() => _weeklySummary = value),
-                  ),
-                  const Divider(height: 1),
-                  SwitchListTile(
-                    title: Text(context.l10n.profilePersonalRecords),
-                    subtitle: Text(context.l10n.profileRecordsSubtitle),
-                    value: _recordAlerts,
-                    onChanged: (value) => setState(() => _recordAlerts = value),
-                  ),
                 ],
               ),
             ),
@@ -487,8 +468,6 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
         onPressed: () => Navigator.of(context).pop(
           NotificationSettings(
             workoutReminders: _workoutReminders,
-            weeklySummary: _weeklySummary,
-            personalRecordAlerts: _recordAlerts,
             reminderHour: _reminderTime.hour,
             reminderMinute: _reminderTime.minute,
           ),

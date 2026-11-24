@@ -12,9 +12,9 @@ FORZA usa SQLite local a través de Drift. La base se crea en el directorio de d
 - Objetivos personales: sesiones completadas por semana o carga máxima objetivo por ejercicio.
 - Metadatos: finalización del onboarding y control de importaciones.
 - Apariencia (sistema/claro/oscuro) e idioma elegido: preferencias simples guardadas con `shared_preferences`.
-- Preferencias del perfil: unidad de peso, primer día de semana, hápticos, recordatorios, hora de recordatorio, resumen semanal, alertas de récord y opciones de privacidad; se guardan localmente con `shared_preferences`.
+- Preferencias del perfil: unidad de peso, primer día de semana, hápticos, recordatorios/hora y opciones de privacidad; se guardan localmente con `shared_preferences`. Los recordatorios usan solo las sesiones pendientes de la agenda y requieren permiso explícito de notificaciones del sistema.
 
-El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El nombre/correo de perfil son demostrativos; las opciones de privacidad y recordatorios se conservan localmente, pero todavía no activan publicación ni avisos. Medidas corporales y sincronización entre dispositivos todavía no están implementadas. La agenda mantiene 120 días de sesiones próximas y sincroniza Inicio, Actividad y la sesión activa mediante el mismo repositorio. El inventario con ciclo de vida y pruebas está en `docs/09-auditoria-persistencia.md`.
+El catálogo de ejercicios sigue en `assets/data/exercises.json`: es un catálogo incluido, de solo lectura, y no se duplica en SQLite. El nombre/correo de perfil son demostrativos; las opciones de privacidad solo se guardan localmente. FORZA programa avisos locales para próximas sesiones pendientes, usa la zona horaria IANA del dispositivo y vuelve a sincronizar al abrir/reanudar la app o cambiar agenda/preferencias. Se mantienen como máximo 50 avisos próximos, con programación inexacta en Android para no pedir permiso de alarma exacta; Android puede retrasarlos y los fabricantes pueden restringir la ejecución en segundo plano. No hay resumen semanal, alertas de récord, medidas corporales, publicación social ni sincronización entre dispositivos. El inventario con ciclo de vida y pruebas está en `docs/09-auditoria-persistencia.md`.
 
 ## Exportar y restaurar datos
 

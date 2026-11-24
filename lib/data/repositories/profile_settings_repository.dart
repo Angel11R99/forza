@@ -69,13 +69,9 @@ class ProfileSettingsRepository {
     final json = await _read(_notificationSettingsKey);
     if (json == null) return const NotificationSettings();
     final workoutReminders = json['workoutReminders'];
-    final weeklySummary = json['weeklySummary'];
-    final recordAlerts = json['personalRecordAlerts'];
     final hour = json['reminderHour'];
     final minute = json['reminderMinute'];
     if (workoutReminders is! bool ||
-        weeklySummary is! bool ||
-        recordAlerts is! bool ||
         hour is! int ||
         hour < 0 ||
         hour > 23 ||
@@ -88,8 +84,6 @@ class ProfileSettingsRepository {
     }
     return NotificationSettings(
       workoutReminders: workoutReminders,
-      weeklySummary: weeklySummary,
-      personalRecordAlerts: recordAlerts,
       reminderHour: hour,
       reminderMinute: minute,
     );
@@ -104,8 +98,6 @@ class ProfileSettingsRepository {
     }
     await _write(_notificationSettingsKey, {
       'workoutReminders': settings.workoutReminders,
-      'weeklySummary': settings.weeklySummary,
-      'personalRecordAlerts': settings.personalRecordAlerts,
       'reminderHour': settings.reminderHour,
       'reminderMinute': settings.reminderMinute,
     });

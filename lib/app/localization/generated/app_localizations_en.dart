@@ -819,7 +819,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileWorkoutReminders => 'Workout reminders';
 
   @override
-  String get profileReminderDescription => 'Choose a time that works for you.';
+  String get profileReminderDescription =>
+      'We\'ll remind you around this time on days with a pending workout.';
+
+  @override
+  String get profileReminderPermissionDenied =>
+      'Allow notifications on your device to receive workout reminders.';
+
+  @override
+  String get profileReminderScheduleFailed =>
+      'Workout reminders could not be updated. Please try again.';
+
+  @override
+  String get workoutReminderNotificationTitle => 'FORZA · today\'s workout';
+
+  @override
+  String get workoutReminderNotificationBody =>
+      'You have a workout scheduled for today. You can do this!';
 
   @override
   String get profileReminderTime => 'Reminder time';
@@ -1536,7 +1552,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileNotificationsDescription =>
-      'Set your notification preferences.';
+      'Reminders use your schedule and need device permission.';
 
   @override
   String get profilePrivacyPageTitle => 'Privacy and account';
