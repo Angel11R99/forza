@@ -3176,8 +3176,14 @@ abstract class AppLocalizations {
   /// No description provided for @progressRecordsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Your best results across different exercises.'**
+  /// **'Records calculated from your saved sets, with date and unit. Ties keep the first date.'**
   String get progressRecordsDescription;
+
+  /// No description provided for @progressRecordsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no records yet. Log repetitions, load, or duration in a set to get started.'**
+  String get progressRecordsEmpty;
 
   /// No description provided for @progressRecordNoMeasurements.
   ///
