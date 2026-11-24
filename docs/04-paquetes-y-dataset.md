@@ -6,16 +6,15 @@ Consulta siempre pub.dev y el `pubspec.lock` antes de instalar: las versiones pu
 
 | Necesidad | Opción para evaluar | Cuándo encaja |
 |---|---|---|
-| Componentes Material | [material_ui](https://pub.dev/packages/material_ui) (`^1.11.1`, resuelto en lockfile) | API Material desacoplada de Flutter SDK para Flutter 3.47+; requerida por `native_glass_navbar` 2.x. |
+| Componentes Material | [material_ui](https://pub.dev/packages/material_ui) (`^1.11.1`, resuelto en lockfile) | API Material usada en la aplicación. No implica el uso de un paquete de navbar nativo. |
 | Calendario | [table_calendar](https://pub.dev/packages/table_calendar) (`^3.3.0`, resuelto en lockfile) | Calendario mensual con selección, marcadores de sesiones, gestos y estilos FORZA; configurado con locale `es_DO` y semana desde lunes. |
 | Rutas | `Navigator`/`MaterialApp` de Flutter | Seleccionado para el primer hito; no se agrega `go_router` mientras no haya necesidad de deep links o redirecciones. |
-| Navbar iOS | [native_glass_navbar](https://pub.dev/packages/native_glass_navbar) (`^2.0.0`, resuelto en lockfile) | Seleccionado junto con `material_ui ^1.11.1`, la API vigente en Flutter 3.50.1. El plugin iOS admite hasta cinco pestañas; Android usa el fallback Flutter. iOS requiere Xcode 27 o posterior. |
-| Navbar lista configurable | [persistent_bottom_nav_bar_v2](https://pub.dev/packages/persistent_bottom_nav_bar_v2) | Alternativa si aún no hay barra elegida y se busca un componente personalizable multiplataforma. Revisar compatibilidad con la versión de Flutter y su integración con el router. |
+| Navegación | Widgets Flutter propios y `NavigationRail` | Implementados directamente en `AppScaffold`; no hay paquetes de navbar externos declarados. |
 | Iconos | [lucide_flutter](https://pub.dev/packages/lucide_flutter) o [phosphor_icons](https://pub.dev/packages/phosphor_icons) | Elegir una sola familia coherente con el Figma. Confirmar versión, mantenimiento y licencia; no cambiar una dependencia existente sin razón. |
 | Gráficos | [fl_chart](https://pub.dev/packages/fl_chart) (`1.3.1` consultado) | Líneas y barras para evolución/actividad; envolver en un widget FORZA para que el paquete no se filtre por todo el código. |
 | Dibujar SVG | [flutter_svg](https://pub.dev/packages/flutter_svg) (`2.5.0` consultado) | Solo si el diseño incluye vectores SVG propios y no se cubre con el paquete iconográfico existente. |
 
-El router y la barra resuelven responsabilidades diferentes. En el primer hito FORZA usa navegación Flutter nativa y un paquete de barra únicamente para la presentación iOS; Android recibe el fallback propio. No se añade otro paquete de navbar.
+`MaterialApp`/`Navigator` gestionan rutas. `AppScaffold` dibuja la barra inferior y la navegación lateral con widgets Flutter, según el ancho disponible. No se usa `native_glass_navbar` ni `persistent_bottom_nav_bar_v2`.
 
 ## Criterio de adopción
 

@@ -1,49 +1,35 @@
 # Módulos recomendados para FORZA
 
-Este documento reúne módulos que pueden ampliar FORZA sin perder el foco en crear un plan, entrenar y entender los resultados. Las prioridades indican el orden sugerido, no una obligación de incluir todo en la primera versión.
+Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena parte del ciclo individual de entrenamiento en local. Las prioridades siguientes se enfocan en los huecos reales y pueden ajustarse según uso y comentarios.
 
-## Avance
+## Implementado
 
-- **Registro de series y recuperación de sesión:** implementados en SQLite. La sesión activa conserva el ejercicio, tiempo y series; cada serie admite repeticiones y carga, o duración para ejercicios cronometrados. Al completar, esos resultados se guardan junto al historial.
-- **Agenda compartida entre Inicio, Actividad y entrenamiento:** implementada en SQLite para los próximos 120 días. Las sesiones conservan su estado pendiente, en curso o completada; las reprogramaciones sobreviven al reinicio y las tres superficies consultan el mismo calendario.
-- **Progreso basado en resultados:** implementado para los últimos 30 días. La vista resume repeticiones, series y volumen (repeticiones × carga); el detalle muestra el registro de cada ejercicio. Las sesiones marcadas fuera de la app no generan métricas de series.
-- **Objetivos personales:** implementados con metas semanales de sesiones y marcas de carga para un ejercicio. Se guardan localmente y se pueden editar o retirar; el avance se calcula desde las sesiones y series registradas.
-- **Calentamiento y movilidad:** implementados antes de cada sesión, con una secuencia breve según el enfoque del entrenamiento y una opción visible para omitirla.
-- **Guías de ejercicios:** implementadas en el detalle con animaciones locales disponibles, instrucciones numeradas y notas técnicas vinculadas a fuentes ACE para familias de movimientos presentes en el catálogo. Los ejercicios sin animación muestran su alternativa visual y los pasos escritos.
-- **Exportación y respaldo:** implementados como archivo JSON local. Incluye plan, historial y series, agenda, objetivos, sesión activa y apariencia; al restaurar valida el archivo y pide confirmación antes de reemplazar los datos.
-- **Siguiente mejora posible:** revisar individualmente las variantes no cubiertas por las familias de notas y ampliar el catálogo de animaciones cuando haya material revisado y autorizado.
+- **Registro de series y recuperación:** SQLite guarda repeticiones, carga o duración por serie y el borrador de una sesión activa para reanudarla.
+- **Agenda compartida:** Inicio, Actividad y entrenamiento consultan sesiones de los próximos 120 días desde SQLite. Las reprogramaciones sobreviven al reinicio; los estados disponibles son pendiente, en curso y completada.
+- **Progreso básico:** historial y detalle usan datos persistidos. El resumen de 30 días calcula series, repeticiones y volumen; las sesiones registradas como realizadas fuera de la app no aportan series.
+- **Objetivos personales:** metas semanales de sesiones y de carga por ejercicio se guardan localmente y se calculan desde las sesiones/series.
+- **Calentamiento:** hay una secuencia breve opcional antes del entrenamiento. No hay una fase de vuelta a la calma confirmada.
+- **Guías de ejercicios:** catálogo local de 1.324 ejercicios, instrucciones en español e inglés y 1.257 animaciones vectoriales. Las notas técnicas curadas cubren familias con fuentes; el resto conserva instrucciones del catálogo y un fallback visual.
+- **Respaldo:** exportación/restauración local en JSON con validación y confirmación antes de reemplazar datos. No incluye catálogo ni preferencias de perfil que aún no persisten.
 
-## Prioridad alta: cerrar el ciclo de entrenamiento
+## Siguiente trabajo
 
-| Módulo | Propósito | Alcance inicial |
+| Módulo | Issue | Qué falta |
 |---|---|---|
-| Inicio / resumen | Ayudar a decidir qué hacer al abrir la app. | Próxima sesión, avance semanal y acceso para iniciar o continuar el entrenamiento. |
-| Registro de series | Guardar el trabajo real hecho en una sesión. | Registrar repeticiones, carga o duración por serie; permitir corregir datos y retomar una sesión en curso. |
+| Flujo de entrenamiento guiado | [#3](https://github.com/Angel11R99/forza/issues/3) | Hacer explícitas las fases, acciones, objetivos y avance; mantener disponible la instrucción y distinguir actividad por tiempo de series por repeticiones. |
+| Versionado de rutina y omisiones | [#13](https://github.com/Angel11R99/forza/issues/13), [#15](https://github.com/Angel11R99/forza/issues/15) | Guardar snapshot/versión de rutina por sesión y permitir omitir una sesión sin contarla como completada. |
+| Preferencias y localización horaria | [#7](https://github.com/Angel11R99/forza/issues/7), [#6](https://github.com/Angel11R99/forza/issues/6) | Auditar preferencias persistidas y respetar formatos horarios del dispositivo. |
+| Recordatorios | [#12](https://github.com/Angel11R99/forza/issues/12) | Programar y cancelar avisos locales con permisos, horario y zona horaria correctos. |
+| Medidas y métricas | [#9](https://github.com/Angel11R99/forza/issues/9), [#10](https://github.com/Angel11R99/forza/issues/10), [#11](https://github.com/Angel11R99/forza/issues/11) | Persistir medidas y reemplazar gráficas/records de demostración con cálculos verificables sobre registros reales. |
+| Instrucciones de ejercicios | [#1](https://github.com/Angel11R99/forza/issues/1), [#2](https://github.com/Angel11R99/forza/issues/2), [#18](https://github.com/Angel11R99/forza/issues/18) | Mejorar presentación y ampliar notas únicamente con técnica verificada, coordinando el alcance con el flujo de sesión. |
+| Datos y portabilidad | [#8](https://github.com/Angel11R99/forza/issues/8), [#16](https://github.com/Angel11R99/forza/issues/16) | Auditar persistencia y ofrecer un reinicio local seguro; el respaldo/restauración ya existe. |
 
-Estos dos módulos se complementan: Inicio conduce a la sesión y el registro alimenta el historial y Progreso. Conviene enlazarlos con la agenda de Actividad para evitar que cada pantalla muestre una versión distinta del plan.
+## Mejoras posteriores
 
-## Prioridad media: apoyar cada sesión
+- **Cobertura de medios autorizados:** inventariar los 67 ejercicios sin animación y buscar recursos con licencia comprobable; conservar fallback si no hay permiso ([#17](https://github.com/Angel11R99/forza/issues/17)).
+- **Vuelta a la calma:** valorar una secuencia breve y opcional al terminar, sin bloquear la finalización ([#19](https://github.com/Angel11R99/forza/issues/19)).
+- **Accesibilidad y adaptación:** revisar Android/iOS, tamaño de texto, contraste, targets, lectores de pantalla, navegación y temas ([#20](https://github.com/Angel11R99/forza/issues/20)).
+- **Cuenta:** autenticación opcional solo si se decide ofrecer cuentas o sincronización entre dispositivos ([#5](https://github.com/Angel11R99/forza/issues/5)).
+- **Gym Bro:** investigación futura dependiente de decisiones de cuenta, persistencia y privacidad; diseñar primero y solicitar aprobación antes de cualquier backend ([#22](https://github.com/Angel11R99/forza/issues/22)).
 
-| Módulo | Propósito | Alcance inicial |
-|---|---|---|
-| Calentamiento y movilidad | Preparar el cuerpo y dar estructura al comienzo y cierre del entrenamiento. | Secuencias breves relacionadas con la sesión, con opción de omitir y sin bloquear el entrenamiento. |
-| Objetivos personales | Dar seguimiento a metas concretas elegidas por la persona. | Metas como sesiones por semana o una marca personal; mostrar avance y permitir editar o retirar una meta. |
-| Guías de ejercicios | Facilitar la ejecución de los movimientos. | Video o animación cuando haya medios disponibles, más instrucciones de técnica y errores frecuentes. |
-
-## Prioridad posterior: portabilidad y continuidad
-
-| Módulo | Propósito | Alcance inicial |
-|---|---|---|
-| Exportación y respaldo | Dar control sobre los datos locales y facilitar el cambio de dispositivo. | Implementado: exportar los datos persistidos a JSON y restaurarlos desde un archivo validado. |
-
-## Secuencia sugerida
-
-1. Completar el registro de series y la recuperación de una sesión interrumpida.
-2. Conectar Inicio, Actividad y el entrenamiento activo a la misma agenda persistente.
-3. Calcular Progreso a partir de los resultados registrados.
-4. Añadir objetivos personales y calentamientos cortos según lo que pidan las personas usuarias.
-5. Incorporar medios de ejercicios adicionales cuando existan recursos y una necesidad validada.
-
-## Módulos para evaluar más adelante
-
-Nutrición, comunidad, retos competitivos y mensajería pueden ampliar el producto, pero agregan contenido, moderación o mantenimiento. Es mejor validarlos después de comprobar que las personas crean un plan, completan sesiones y vuelven a entrenar.
+No distribuir animaciones de terceros sin licencia verificada. Nutrición, feed social, retos competitivos y mensajería general no son requisitos para validar el ciclo personal de entrenamiento.
