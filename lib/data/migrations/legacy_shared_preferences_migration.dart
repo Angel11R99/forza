@@ -13,8 +13,9 @@ class LegacySharedPreferencesMigration {
     required this.database,
     required this.settingsRepository,
     required this.workoutLogRepository,
-    SharedPreferencesAsync? preferences,
-  }) : _preferences = preferences ?? SharedPreferencesAsync();
+    LegacyPreferenceStore? preferences,
+  }) : _preferences =
+           preferences ?? SharedLegacyPreferenceStore(SharedPreferencesAsync());
 
   static const _migrationKey = 'migration_shared_preferences_v1';
   static const _completeKey = 'training_setup_complete';
@@ -28,7 +29,7 @@ class LegacySharedPreferencesMigration {
   final AppDatabase database;
   final TrainingSettingsRepository settingsRepository;
   final WorkoutLogRepository workoutLogRepository;
-  final SharedPreferencesAsync _preferences;
+  final LegacyPreferenceStore _preferences;
 
   Future<void> run() async {
     final marker = await (database.select(
@@ -47,8 +48,13 @@ class LegacySharedPreferencesMigration {
         savedGoal != null ||
         savedExperience != null ||
         savedEquipment != null;
+    final existingPlan =
+        await (database.select(database.trainingPlans)..where(
+              (plan) => plan.id.equals(TrainingSettingsRepository.activePlanId),
+            ))
+            .getSingleOrNull();
 
-    if (hasSavedPlan) {
+    if (hasSavedPlan && existingPlan == null) {
       final defaults = const TrainingSettings();
       final parsedDays = savedDays
           ?.map(int.tryParse)
@@ -96,4 +102,30 @@ class LegacySharedPreferencesMigration {
           AppMetadataCompanion.insert(key: _migrationKey, value: 'true'),
         );
   }
+}
+
+abstract interface class LegacyPreferenceStore {
+  Future<bool?> getBool(String key);
+  Future<int?> getInt(String key);
+  Future<String?> getString(String key);
+  Future<List<String>?> getStringList(String key);
+}
+
+class SharedLegacyPreferenceStore implements LegacyPreferenceStore {
+  const SharedLegacyPreferenceStore(this.preferences);
+
+  final SharedPreferencesAsync preferences;
+
+  @override
+  Future<bool?> getBool(String key) => preferences.getBool(key);
+
+  @override
+  Future<int?> getInt(String key) => preferences.getInt(key);
+
+  @override
+  Future<String?> getString(String key) => preferences.getString(key);
+
+  @override
+  Future<List<String>?> getStringList(String key) =>
+      preferences.getStringList(key);
 }

@@ -2,8 +2,11 @@ import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppearanceController extends ChangeNotifier {
+  AppearanceController({AppearancePreferences? preferences})
+    : _preferences = preferences ?? SharedAppearancePreferences();
+
   static const _storageKey = 'appearance_theme_mode';
-  final SharedPreferencesAsync _preferences = SharedPreferencesAsync();
+  final AppearancePreferences _preferences;
 
   ThemeMode _mode = ThemeMode.system;
   ThemeMode get mode => _mode;
@@ -11,7 +14,7 @@ class AppearanceController extends ChangeNotifier {
   Future<void> restore() async {
     String? saved;
     try {
-      saved = await _preferences.getString(_storageKey);
+      saved = await _preferences.read(_storageKey);
     } on Object {
       // Keep following the system if local preferences are unavailable.
     }
@@ -33,9 +36,28 @@ class AppearanceController extends ChangeNotifier {
       ThemeMode.system => 'system',
     };
     try {
-      await _preferences.setString(_storageKey, value);
+      await _preferences.write(_storageKey, value);
     } on Object {
       // Keep the selected appearance for this run if saving fails.
     }
   }
+}
+
+abstract interface class AppearancePreferences {
+  Future<String?> read(String key);
+  Future<void> write(String key, String value);
+}
+
+class SharedAppearancePreferences implements AppearancePreferences {
+  SharedAppearancePreferences({SharedPreferencesAsync? preferences})
+    : _preferences = preferences ?? SharedPreferencesAsync();
+
+  final SharedPreferencesAsync _preferences;
+
+  @override
+  Future<String?> read(String key) => _preferences.getString(key);
+
+  @override
+  Future<void> write(String key, String value) =>
+      _preferences.setString(key, value);
 }
