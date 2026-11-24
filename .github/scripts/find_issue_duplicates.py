@@ -5,15 +5,33 @@ import subprocess
 from difflib import SequenceMatcher
 
 
-def gh(path):
-    result = subprocess.run(["gh", "api", "--paginate", "--slurp", path], check=True, text=True, capture_output=True)
-    return [item for page in json.loads(result.stdout) for item in page]
+def gh_one(path):
+    """Fetch one GitHub API resource as a dictionary."""
+    result = subprocess.run(
+        ["gh", "api", path], check=True, text=True, capture_output=True
+    )
+    data = json.loads(result.stdout)
+    if not isinstance(data, dict):
+        raise TypeError(f"Expected an object from GitHub API: {path}")
+    return data
+
+
+def gh_many(path):
+    """Fetch a paginated GitHub API collection as a flat list."""
+    result = subprocess.run(
+        ["gh", "api", "--paginate", "--slurp", path],
+        check=True, text=True, capture_output=True
+    )
+    pages = json.loads(result.stdout)
+    if not isinstance(pages, list) or any(not isinstance(page, list) for page in pages):
+        raise TypeError(f"Expected paginated lists from GitHub API: {path}")
+    return [item for page in pages for item in page]
 
 
 repo = os.environ["GH_REPO"]
 number = int(os.environ["ISSUE_NUMBER"])
-current = gh(f"repos/{repo}/issues/{number}")
-all_issues = gh(f"repos/{repo}/issues?state=all&per_page=100&sort=created&direction=desc")
+current = gh_one(f"repos/{repo}/issues/{number}")
+all_issues = gh_many(f"repos/{repo}/issues?state=all&per_page=100&sort=created&direction=desc")
 def words(value):
     return set(re.findall(r"[a-z0-9áéíóúüñ]+", value.lower()))
 
