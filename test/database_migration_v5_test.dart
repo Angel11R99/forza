@@ -41,6 +41,31 @@ void main() {
       await database.close();
     },
   );
+
+  test('migration to v5 creates the latest schedule table from v2', () async {
+    final executor = NativeDatabase.memory(
+      setup: (database) {
+        for (final table in [
+          'training_plans',
+          'workout_sessions',
+          'workout_session_exercises',
+        ]) {
+          database.execute('CREATE TABLE $table (legacy_id TEXT)');
+        }
+        database.execute('PRAGMA user_version = 2');
+      },
+    );
+    final database = AppDatabase(executor);
+
+    final scheduleColumns = await _columnNames(
+      database,
+      'scheduled_training_sessions',
+    );
+
+    expect(scheduleColumns, containsAll(['plan_version', 'plan_snapshot']));
+
+    await database.close();
+  });
 }
 
 Future<Set<String>> _columnNames(AppDatabase database, String table) async {
