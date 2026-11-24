@@ -425,6 +425,7 @@ class _ActivityViewState extends State<ActivityView> {
           goal: widget.settings.goal,
           experience: widget.settings.experience,
           equipment: widget.settings.equipment,
+          avoidedExerciseIds: widget.settings.avoidedExerciseIds,
         )
         .where((session) => session.weekday == date.weekday)
         .toList(growable: false);

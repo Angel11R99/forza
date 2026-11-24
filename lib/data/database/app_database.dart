@@ -8,6 +8,8 @@ class TrainingPlans extends Table {
   TextColumn get goal => text()();
   TextColumn get experience => text()();
   IntColumn get sessionMinutes => integer()();
+  TextColumn get avoidedExerciseIds =>
+      text().withDefault(const Constant('[]'))();
   IntColumn get version => integer().withDefault(const Constant(1))();
   TextColumn get createdAt => text()();
   TextColumn get updatedAt => text()();
@@ -179,7 +181,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -208,6 +210,12 @@ class AppDatabase extends _$AppDatabase {
         }
       }
       if (from < 6) await migrator.createTable(bodyMeasurements);
+      if (from < 7) {
+        await migrator.addColumn(
+          trainingPlans,
+          trainingPlans.avoidedExerciseIds,
+        );
+      }
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

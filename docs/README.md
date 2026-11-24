@@ -17,7 +17,7 @@ FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local im
 ## Alcance que se asume
 
 - La navegación usa `MaterialApp`/`Navigator` y widgets Flutter propios: barra inferior en pantallas estrechas y `NavigationRail` en anchas.
-- La apariencia y el idioma se guardan localmente; preferencias del plan, agenda, sesiones, series y objetivos usan SQLite/Drift.
+- La apariencia y el idioma se guardan localmente; preferencias del plan (incluidos movimientos a evitar), agenda, sesiones, series y objetivos usan SQLite/Drift.
 - Los accesos de cuenta son demostrativos. No hay proveedor de identidad, backend ni sincronización.
 - El catálogo tiene 1.324 ejercicios y 1.257 animaciones vectoriales locales con fallback escrito/visual. Los medios upstream de terceros no se redistribuyen.
 

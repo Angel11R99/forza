@@ -113,4 +113,65 @@ void main() {
       session.exercises.map((exercise) => exercise.catalogId),
     );
   });
+
+  test('avoided movements are replaced with compatible catalog options', () {
+    final sessions = builder.buildWeek(
+      trainingDays: const {DateTime.monday},
+      sessionMinutes: 45,
+      goal: 'Ganar fuerza',
+      experience: 'Estoy empezando',
+      equipment: const {'Mancuernas'},
+      avoidedExerciseIds: const {'1700'},
+    );
+
+    expect(sessions.single.exercises, isNotEmpty);
+    expect(
+      sessions.single.exercises.map((exercise) => exercise.catalogId),
+      isNot(contains('1700')),
+    );
+    expect(
+      sessions.single.exercises.every(
+        (exercise) => builder.exerciseOptions.any(
+          (option) =>
+              option.catalogId == exercise.catalogId &&
+              (option.equipment == null || option.equipment == 'Mancuernas'),
+        ),
+      ),
+      isTrue,
+    );
+  });
+
+  test('shows no alternatives when every catalog movement is avoided', () {
+    final allAvoided = builder.exerciseOptions
+        .map((exercise) => exercise.catalogId)
+        .toSet();
+    final sessions = builder.buildWeek(
+      trainingDays: const {DateTime.monday},
+      sessionMinutes: 45,
+      goal: 'Ganar fuerza',
+      experience: 'Estoy empezando',
+      equipment: const {
+        'Peso corporal',
+        'Mancuernas',
+        'Barra',
+        'Banda elástica',
+        'Polea',
+        'Máquina de palanca',
+      },
+      avoidedExerciseIds: allAvoided,
+    );
+
+    expect(sessions.single.exercises, isEmpty);
+    expect(
+      () => builder.buildWeek(
+        trainingDays: const {DateTime.monday},
+        sessionMinutes: 45,
+        goal: 'Ganar fuerza',
+        experience: 'Estoy empezando',
+        equipment: const {'Mancuernas'},
+        avoidedExerciseIds: const {'unknown'},
+      ),
+      throwsFormatException,
+    );
+  });
 }

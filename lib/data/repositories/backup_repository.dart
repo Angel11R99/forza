@@ -196,6 +196,9 @@ class BackupRepository {
               goal: backup.settings.goal,
               experience: backup.settings.experience,
               sessionMinutes: backup.settings.sessionMinutes,
+              avoidedExerciseIds: Value(
+                jsonEncode(backup.settings.avoidedExerciseIds.toList()..sort()),
+              ),
               version: Value(backup.planVersion),
               createdAt: now,
               updatedAt: now,
@@ -448,10 +451,19 @@ class BackupRepository {
       json['equipment'],
       'equipment',
     ).map((value) => _string(value, 'equipment')).toSet();
+    final avoidedExerciseIds = json.containsKey('avoidedExerciseIds')
+        ? _list(
+            json['avoidedExerciseIds'],
+            'avoidedExerciseIds',
+          ).map((value) => _string(value, 'avoidedExerciseIds')).toSet()
+        : <String>{};
     final minutes = _integer(json['sessionMinutes'], 'sessionMinutes');
     final goal = _string(json['goal'], 'goal');
     final experience = _string(json['experience'], 'experience');
     if (days.toSet().length != days.length ||
+        (json['avoidedExerciseIds'] is List &&
+            (json['avoidedExerciseIds'] as List).length !=
+                avoidedExerciseIds.length) ||
         days.any((day) => day < 1 || day > 7) ||
         minutes < 20 ||
         minutes > 90 ||
@@ -465,6 +477,7 @@ class BackupRepository {
       goal: goal,
       experience: experience,
       equipment: equipment,
+      avoidedExerciseIds: avoidedExerciseIds,
     );
     return TrainingSettings(
       trainingDays: days.toSet(),
@@ -472,6 +485,7 @@ class BackupRepository {
       goal: goal,
       experience: experience,
       equipment: equipment,
+      avoidedExerciseIds: avoidedExerciseIds,
     );
   }
 
@@ -521,6 +535,7 @@ class BackupRepository {
     'goal': settings.goal,
     'experience': settings.experience,
     'equipment': settings.equipment.toList()..sort(),
+    'avoidedExerciseIds': settings.avoidedExerciseIds.toList()..sort(),
   };
 
   static Map<String, Object?> _scheduleToJson(

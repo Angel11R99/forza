@@ -107,8 +107,32 @@ class PlannedTrainingSession {
   }
 }
 
+class TrainingExerciseOption {
+  const TrainingExerciseOption({
+    required this.catalogId,
+    required this.name,
+    required this.focus,
+    required this.equipment,
+  });
+
+  final String catalogId;
+  final String name;
+  final String focus;
+  final String? equipment;
+}
+
 class TrainingPlanBuilder {
   const TrainingPlanBuilder();
+
+  List<TrainingExerciseOption> get exerciseOptions => List.unmodifiable([
+    for (final exercise in _catalog)
+      TrainingExerciseOption(
+        catalogId: exercise.catalogId,
+        name: exercise.name,
+        focus: exercise.focus,
+        equipment: exercise.equipment,
+      ),
+  ]);
 
   static const _catalog = <_ExerciseTemplate>[
     _ExerciseTemplate(
@@ -216,6 +240,7 @@ class TrainingPlanBuilder {
     required String goal,
     required String experience,
     required Set<String> equipment,
+    Set<String> avoidedExerciseIds = const {},
   }) {
     validateSettings(
       trainingDays: trainingDays,
@@ -223,6 +248,7 @@ class TrainingPlanBuilder {
       goal: goal,
       experience: experience,
       equipment: equipment,
+      avoidedExerciseIds: avoidedExerciseIds,
     );
     final days = trainingDays.toList()..sort();
     return [
@@ -238,6 +264,7 @@ class TrainingPlanBuilder {
             goal: goal,
             experience: experience,
             equipment: equipment,
+            avoidedExerciseIds: avoidedExerciseIds,
           ),
         ),
     ];
@@ -249,6 +276,7 @@ class TrainingPlanBuilder {
     required String goal,
     required String experience,
     required Set<String> equipment,
+    Set<String> avoidedExerciseIds = const {},
   }) {
     if (sessionIndex < 0) {
       throw const FormatException('El índice de sesión no es válido.');
@@ -259,6 +287,7 @@ class TrainingPlanBuilder {
       goal: goal,
       experience: experience,
       equipment: equipment,
+      avoidedExerciseIds: avoidedExerciseIds,
     );
     final allAvailable = _catalog
         .where(
@@ -266,6 +295,7 @@ class TrainingPlanBuilder {
               exercise.equipment == null ||
               equipment.contains(exercise.equipment),
         )
+        .where((exercise) => !avoidedExerciseIds.contains(exercise.catalogId))
         .toList(growable: false);
     if (allAvailable.isEmpty) return const [];
 
@@ -330,6 +360,7 @@ class TrainingPlanBuilder {
     required String goal,
     required String experience,
     required Set<String> equipment,
+    Set<String> avoidedExerciseIds = const {},
   }) {
     if (trainingDays.isEmpty ||
         trainingDays.any((day) => day < 1 || day > 7) ||
@@ -355,6 +386,12 @@ class TrainingPlanBuilder {
           'Máquina de palanca',
         }.containsAll(equipment)) {
       throw const FormatException('Las preferencias del plan no son válidas.');
+    }
+    final validIds = _catalog.map((exercise) => exercise.catalogId).toSet();
+    if (!validIds.containsAll(avoidedExerciseIds)) {
+      throw const FormatException(
+        'La lista de movimientos a evitar no es válida.',
+      );
     }
   }
 }

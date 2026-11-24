@@ -32,6 +32,9 @@ class _OnboardingViewState extends State<OnboardingView> {
   late final Set<int> _trainingDays = {...widget.initialSettings.trainingDays};
   late int _sessionMinutes = widget.initialSettings.sessionMinutes;
   late final Set<String> _equipment = {...widget.initialSettings.equipment};
+  late final Set<String> _avoidedExerciseIds = {
+    ...widget.initialSettings.avoidedExerciseIds,
+  };
 
   static const _goals = ['Ganar fuerza', 'Ganar músculo', 'Crear el hábito'];
   static const _equipmentOptions = [
@@ -115,7 +118,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                             width: double.infinity,
                             child: FilledButton(
                               onPressed: _step == 4
-                                  ? _finish
+                                  ? (_canCreatePlan ? _finish : null)
                                   : _step == 3 && _equipment.isEmpty
                                   ? null
                                   : _next,
@@ -149,6 +152,17 @@ class _OnboardingViewState extends State<OnboardingView> {
       ? context.l10n.onboardingCreateMyPlan
       : context.l10n.onboardingContinue;
 
+  bool get _canCreatePlan => _planBuilder
+      .buildWeek(
+        trainingDays: _trainingDays,
+        sessionMinutes: _sessionMinutes,
+        goal: _goal,
+        experience: _experience,
+        equipment: _equipment,
+        avoidedExerciseIds: _avoidedExerciseIds,
+      )
+      .any((session) => session.exercises.isNotEmpty);
+
   Widget _buildStep(BuildContext context) {
     return switch (_step) {
       0 => _buildGoalStep(context),
@@ -166,6 +180,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       goal: _goal,
       experience: _experience,
       equipment: _equipment,
+      avoidedExerciseIds: _avoidedExerciseIds,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,6 +233,32 @@ class _OnboardingViewState extends State<OnboardingView> {
                   ),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
+                if (_avoidedExerciseIds.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    context.l10n.onboardingAvoidedMovementSummary(
+                      _planBuilder.exerciseOptions
+                          .where(
+                            (exercise) => _avoidedExerciseIds.contains(
+                              exercise.catalogId,
+                            ),
+                          )
+                          .map(
+                            (exercise) => localizedTrainingExerciseName(
+                              context,
+                              exercise.name,
+                            ),
+                          )
+                          .join(', '),
+                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    context.l10n.onboardingAvoidedMovementApplied,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ],
             ),
           ),
@@ -238,40 +279,50 @@ class _OnboardingViewState extends State<OnboardingView> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      for (final exercise in session.exercises)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.x1),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: AppSpacing.x1,
-                                  right: AppSpacing.x2,
-                                ),
-                                child: Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                    shape: BoxShape.circle,
+                      if (session.exercises.isEmpty)
+                        Text(
+                          context.l10n.onboardingNoCompatibleExercises,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        )
+                      else
+                        for (final exercise in session.exercises)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.x1,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: AppSpacing.x1,
+                                    right: AppSpacing.x2,
+                                  ),
+                                  child: Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  localizedTrainingExerciseName(
-                                    context,
-                                    exercise.name,
+                                Expanded(
+                                  child: Text(
+                                    localizedTrainingExerciseName(
+                                      context,
+                                      exercise.name,
+                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium,
                                   ),
-                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                     ],
                   ),
                 ],
@@ -328,6 +379,39 @@ class _OnboardingViewState extends State<OnboardingView> {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
+        const SizedBox(height: AppSpacing.x8),
+        const Divider(),
+        const SizedBox(height: AppSpacing.x4),
+        Text(
+          context.l10n.onboardingAvoidMovementTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: AppSpacing.x2),
+        Text(
+          context.l10n.onboardingAvoidMovementDescription,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: AppSpacing.x3),
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final exercise in _planBuilder.exerciseOptions)
+              FilterChip(
+                label: Text(
+                  localizedTrainingExerciseName(context, exercise.name),
+                ),
+                selected: _avoidedExerciseIds.contains(exercise.catalogId),
+                onSelected: (selected) => setState(() {
+                  if (selected) {
+                    _avoidedExerciseIds.add(exercise.catalogId);
+                  } else {
+                    _avoidedExerciseIds.remove(exercise.catalogId);
+                  }
+                }),
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -488,6 +572,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         goal: _goal,
         experience: _experience,
         equipment: Set.unmodifiable(_equipment),
+        avoidedExerciseIds: Set.unmodifiable(_avoidedExerciseIds),
       ),
     );
   }

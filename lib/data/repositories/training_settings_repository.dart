@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 
 import '../database/app_database.dart';
@@ -33,6 +35,9 @@ class TrainingSettingsRepository {
     final equipment = await (database.select(
       database.trainingPlanEquipment,
     )..where((row) => row.planId.equals(activePlanId))).get();
+    final avoidedExerciseIds = (jsonDecode(plan.avoidedExerciseIds) as List)
+        .whereType<String>()
+        .toSet();
 
     return TrainingSettings(
       trainingDays: days.map((row) => row.weekday).toSet(),
@@ -40,6 +45,7 @@ class TrainingSettingsRepository {
       goal: plan.goal,
       experience: plan.experience,
       equipment: equipment.map((row) => row.equipment).toSet(),
+      avoidedExerciseIds: avoidedExerciseIds,
     );
   }
 
@@ -57,6 +63,7 @@ class TrainingSettingsRepository {
       goal: settings.goal,
       experience: settings.experience,
       equipment: settings.equipment,
+      avoidedExerciseIds: settings.avoidedExerciseIds,
     );
     final now = DateTime.now().toIso8601String();
     return database.transaction(() async {
@@ -75,6 +82,11 @@ class TrainingSettingsRepository {
               )..where((row) => row.planId.equals(activePlanId))).get())
               .map((row) => row.equipment)
               .toSet();
+      final existingAvoidedExerciseIds = existing == null
+          ? const <String>{}
+          : (jsonDecode(existing.avoidedExerciseIds) as List)
+                .whereType<String>()
+                .toSet();
       final planChanged =
           existing == null ||
           existing.goal != settings.goal ||
@@ -84,9 +96,14 @@ class TrainingSettingsRepository {
           !settings.trainingDays.containsAll(existingDays) ||
           !existingEquipment.containsAll(settings.equipment) ||
           !settings.equipment.containsAll(existingEquipment);
+      final exclusionsChanged =
+          !existingAvoidedExerciseIds.containsAll(
+            settings.avoidedExerciseIds,
+          ) ||
+          !settings.avoidedExerciseIds.containsAll(existingAvoidedExerciseIds);
       final version = existing == null
           ? 1
-          : planChanged
+          : planChanged || exclusionsChanged
           ? existing.version + 1
           : existing.version;
 
@@ -98,6 +115,9 @@ class TrainingSettingsRepository {
               goal: settings.goal,
               experience: settings.experience,
               sessionMinutes: settings.sessionMinutes,
+              avoidedExerciseIds: Value(
+                jsonEncode(settings.avoidedExerciseIds.toList()..sort()),
+              ),
               version: Value(version),
               createdAt: existing?.createdAt ?? now,
               updatedAt: now,
