@@ -443,6 +443,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'ACE · Press de hombros sentado';
 
   @override
+  String get exerciseGuideLateralRaiseMistakes =>
+      'Encoger los hombros en vez de mantenerlos bajos y atrás.\nBalancear el torso o arquear la zona lumbar para levantar más carga.\nDoblar las muñecas o elevar los brazos por encima de los hombros.';
+
+  @override
+  String get exerciseGuideLateralRaiseSource => 'ACE · Elevación lateral';
+
+  @override
   String get exerciseGuideLegCurlMistakes =>
       'Arquear la espalda o levantar la cadera para ayudar a doblar la rodilla.\nMover el muslo cuando la variante pide mantenerlo apoyado.\nDejar volver la resistencia sin control.';
 

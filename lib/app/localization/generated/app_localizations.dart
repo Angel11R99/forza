@@ -812,6 +812,18 @@ abstract class AppLocalizations {
   /// **'ACE · Seated shoulder press'**
   String get exerciseGuideShoulderPressSource;
 
+  /// No description provided for @exerciseGuideLateralRaiseMistakes.
+  ///
+  /// In en, this message translates to:
+  /// **'Shrugging instead of keeping your shoulders down and back.\nSwinging your torso or arching your lower back to lift more weight.\nBending your wrists or raising your arms above shoulder level.'**
+  String get exerciseGuideLateralRaiseMistakes;
+
+  /// No description provided for @exerciseGuideLateralRaiseSource.
+  ///
+  /// In en, this message translates to:
+  /// **'ACE · Lateral raise'**
+  String get exerciseGuideLateralRaiseSource;
+
   /// No description provided for @exerciseGuideLegCurlMistakes.
   ///
   /// In en, this message translates to:

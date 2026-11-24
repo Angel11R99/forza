@@ -440,6 +440,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exerciseGuideShoulderPressSource => 'ACE · Seated shoulder press';
 
   @override
+  String get exerciseGuideLateralRaiseMistakes =>
+      'Shrugging instead of keeping your shoulders down and back.\nSwinging your torso or arching your lower back to lift more weight.\nBending your wrists or raising your arms above shoulder level.';
+
+  @override
+  String get exerciseGuideLateralRaiseSource => 'ACE · Lateral raise';
+
+  @override
   String get exerciseGuideLegCurlMistakes =>
       'Arching your back or lifting your hips to help bend the knee.\nMoving your thigh when the variation asks you to keep it supported.\nLetting the resistance return without control.';
 
