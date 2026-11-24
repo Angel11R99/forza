@@ -215,7 +215,7 @@ abstract final class AppTheme {
           minimumSize: Size(48, 50),
           padding: EdgeInsets.symmetric(horizontal: 22, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderRadius: BorderRadius.circular(AppRadius.small),
           ),
           textStyle: TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -227,7 +227,7 @@ abstract final class AppTheme {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           side: BorderSide(color: colors.divider),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.control),
+            borderRadius: BorderRadius.circular(AppRadius.small),
           ),
           textStyle: TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -262,7 +262,12 @@ abstract final class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: colors.accent),
+        style: TextButton.styleFrom(
+          foregroundColor: colors.accent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.small),
+          ),
+        ),
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith(
