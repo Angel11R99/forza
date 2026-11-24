@@ -216,6 +216,28 @@ class _ProgressViewState extends State<ProgressView> {
                         ),
                 ),
                 const SizedBox(height: AppSpacing.x8),
+                SectionHeading(title: context.l10n.progressStrengthEvolution),
+                AppSurfaceCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.progressStrengthDescription,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: AppSpacing.x2),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: _openStrengthEvolution,
+                          icon: const Icon(Icons.show_chart_rounded),
+                          label: Text(context.l10n.progressStrengthEvolution),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.x8),
                 SectionHeading(title: context.l10n.progressHistory),
                 if (sessions.isEmpty)
                   AppSurfaceCard(
@@ -253,6 +275,14 @@ class _ProgressViewState extends State<ProgressView> {
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => SessionDetailPage(session: session),
+      ),
+    );
+  }
+
+  Future<void> _openStrengthEvolution() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => StrengthEvolutionPage(records: widget.records),
       ),
     );
   }
