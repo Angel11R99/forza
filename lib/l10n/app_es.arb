@@ -97,6 +97,7 @@
   "exerciseAlternativesEmpty": "No hay alternativas disponibles para este ejercicio.",
   "exerciseDetailTitle": "Detalle del ejercicio",
   "exerciseHowTo": "Cómo hacerlo",
+  "exerciseInstructionStep": "Paso",
   "exerciseGuideHeading": "Claves técnicas y errores frecuentes",
   "exerciseGuideVariantNote": "Pautas de una variante de referencia. Compara cada punto con los pasos de este ejercicio.",
   "exerciseSourcePrefix": "Fuente: {source}",

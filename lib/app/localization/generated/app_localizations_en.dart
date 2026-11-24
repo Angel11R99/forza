@@ -208,6 +208,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exerciseHowTo => 'How to do it';
 
   @override
+  String get exerciseInstructionStep => 'Step';
+
+  @override
   String get exerciseGuideHeading => 'Technique cues and common mistakes';
 
   @override

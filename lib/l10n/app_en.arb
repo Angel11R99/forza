@@ -97,6 +97,7 @@
   "exerciseAlternativesEmpty": "No alternatives are available for this exercise.",
   "exerciseDetailTitle": "Exercise details",
   "exerciseHowTo": "How to do it",
+  "exerciseInstructionStep": "Step",
   "exerciseGuideHeading": "Technique cues and common mistakes",
   "exerciseGuideVariantNote": "These cues are based on a reference variation. Compare them with the steps for this exercise.",
   "exerciseSourcePrefix": "Source: {source}",
