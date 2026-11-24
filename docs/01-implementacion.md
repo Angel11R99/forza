@@ -67,6 +67,10 @@ Componentes compartidos candidatos:
 
 El diseño usa superficies claras, texto oscuro, secundarios grises, bloques fotográficos de ejercicios, tarjetas y botones anchos de alto contraste. Validar padding de sistema, teclado, texto largo y pantallas pequeñas.
 
+### Apertura de la app
+
+`LaunchReveal` vive sobre el `Navigator` en `MaterialApp.builder`: cubre la primera ruta sin cambiar onboarding ni navegación y permanece montado al volver del segundo plano. Espera a restaurar la preferencia de tema, anima el círculo durante 620 ms y omite el movimiento si `MediaQuery.disableAnimations` está activo. Android conserva fondos nativos claros/oscuros según el tema del sistema; iOS usa el color semántico `systemBackgroundColor`. La pantalla nativa no contiene una segunda animación.
+
 ## Fases recomendadas
 
 ### Fase 0 · Reconocimiento
