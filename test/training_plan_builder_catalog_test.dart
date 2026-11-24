@@ -60,6 +60,66 @@ void main() {
     }
   });
 
+  test('weekly frequency selects full-body or alternating split sessions', () {
+    const weekdays = [
+      DateTime.monday,
+      DateTime.tuesday,
+      DateTime.wednesday,
+      DateTime.thursday,
+    ];
+    for (final sessionCount in [1, 2, 3]) {
+      final sessions = builder.buildWeek(
+        trainingDays: weekdays.take(sessionCount).toSet(),
+        sessionMinutes: 45,
+        goal: 'Ganar músculo',
+        experience: 'Tengo algo de experiencia',
+        equipment: const {
+          'Peso corporal',
+          'Mancuernas',
+          'Barra',
+          'Banda elástica',
+          'Polea',
+          'Máquina de palanca',
+        },
+      );
+
+      expect(
+        sessions.map((session) => session.title),
+        everyElement('Cuerpo completo'),
+      );
+      for (final session in sessions) {
+        expect(
+          session.exercises.any(
+            (exercise) =>
+                const {'Pecho', 'Espalda', 'Hombros'}.contains(exercise.focus),
+          ),
+          isTrue,
+        );
+        expect(
+          session.exercises.any(
+            (exercise) =>
+                const {'Piernas', 'Glúteos', 'Core'}.contains(exercise.focus),
+          ),
+          isTrue,
+        );
+      }
+    }
+
+    final fourDaySplit = builder.buildWeek(
+      trainingDays: weekdays.toSet(),
+      sessionMinutes: 45,
+      goal: 'Ganar fuerza',
+      experience: 'Entreno hace tiempo',
+      equipment: const {'Peso corporal', 'Mancuernas', 'Barra'},
+    );
+    expect(fourDaySplit.map((session) => session.title), [
+      'Tren superior',
+      'Tren inferior',
+      'Tren superior',
+      'Tren inferior',
+    ]);
+  });
+
   test('rejects invalid plan preferences', () {
     void build({
       Set<int> days = const {DateTime.monday},
@@ -89,6 +149,67 @@ void main() {
       () => build(equipment: {'Equipo desconocido'}),
       throwsFormatException,
     );
+  });
+
+  test('goal, experience, and available time adjust the prescription', () {
+    final base = <String, Object>{
+      'trainingDays': const {DateTime.monday},
+      'sessionMinutes': 45,
+      'equipment': const {'Peso corporal', 'Mancuernas', 'Barra'},
+    };
+    List<PlannedExercise> exercisesFor({
+      required String goal,
+      required String experience,
+    }) => builder
+        .buildWeek(
+          trainingDays: base['trainingDays']! as Set<int>,
+          sessionMinutes: base['sessionMinutes']! as int,
+          goal: goal,
+          experience: experience,
+          equipment: base['equipment']! as Set<String>,
+        )
+        .single
+        .exercises;
+
+    final beginner = exercisesFor(
+      goal: 'Ganar fuerza',
+      experience: 'Estoy empezando',
+    );
+    final experienced = exercisesFor(
+      goal: 'Ganar fuerza',
+      experience: 'Tengo algo de experiencia',
+    );
+    final muscleGoal = exercisesFor(
+      goal: 'Ganar músculo',
+      experience: 'Estoy empezando',
+    );
+    final habitGoal = exercisesFor(
+      goal: 'Crear el hábito',
+      experience: 'Estoy empezando',
+    );
+
+    expect(beginner.first.prescription, '2 series · 6–8 repeticiones');
+    expect(experienced.first.prescription, '3 series · 6–8 repeticiones');
+    expect(muscleGoal.first.prescription, '2 series · 8–12 repeticiones');
+    expect(
+      habitGoal.first.prescription,
+      '2 series · 8–12 repeticiones a ritmo cómodo',
+    );
+
+    final exerciseCounts = [20, 45, 90].map(
+      (minutes) => builder
+          .buildWeek(
+            trainingDays: const {DateTime.monday},
+            sessionMinutes: minutes,
+            goal: 'Ganar fuerza',
+            experience: 'Estoy empezando',
+            equipment: const {'Peso corporal', 'Mancuernas', 'Barra'},
+          )
+          .single
+          .exercises
+          .length,
+    );
+    expect(exerciseCounts, orderedEquals([4, 6, 8]));
   });
 
   test('session snapshots survive JSON serialization', () {

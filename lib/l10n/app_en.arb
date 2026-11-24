@@ -436,7 +436,7 @@
   "onboardingMuscleGoalDescription": "Build muscle consistently",
   "onboardingHabitGoalDescription": "Build a sustainable routine",
   "onboardingExperienceTitle": "What's your experience level?",
-  "onboardingExperienceDescription": "We'll use your answer to adjust your starting workload.",
+  "onboardingExperienceDescription": "We'll use your answer to adjust the starting sets for each exercise.",
   "onboardingExperienceBeginner": "I'm just getting started",
   "onboardingExperienceSome": "I have some experience",
   "onboardingExperienceLong": "I've been training for a while",
