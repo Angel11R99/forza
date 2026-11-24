@@ -7,6 +7,7 @@ import 'theme/appearance_controller.dart';
 import 'theme/app_theme.dart';
 import 'localization/locale_controller.dart';
 import 'localization/generated/app_localizations.dart';
+import '../ui/core/widgets/launch_reveal.dart';
 
 class ForzaApp extends StatefulWidget {
   const ForzaApp({super.key});
@@ -64,7 +65,11 @@ class _ForzaAppState extends State<ForzaApp> {
                   : Brightness.dark,
               systemNavigationBarContrastEnforced: false,
             ),
-            child: child ?? const SizedBox.shrink(),
+            child: LaunchReveal(
+              isDark: isDark,
+              isReady: _appearance.isRestored,
+              child: child ?? const SizedBox.shrink(),
+            ),
           );
         },
         locale: _localeController.locale,

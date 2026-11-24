@@ -10,6 +10,8 @@ class AppearanceController extends ChangeNotifier {
 
   ThemeMode _mode = ThemeMode.system;
   ThemeMode get mode => _mode;
+  bool _isRestored = false;
+  bool get isRestored => _isRestored;
 
   Future<void> restore() async {
     String? saved;
@@ -23,6 +25,7 @@ class AppearanceController extends ChangeNotifier {
       'dark' => ThemeMode.dark,
       _ => ThemeMode.system,
     };
+    _isRestored = true;
     notifyListeners();
   }
 
