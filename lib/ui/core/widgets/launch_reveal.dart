@@ -141,6 +141,7 @@ class _LaunchRevealState extends State<LaunchReveal>
       fontWeight: FontWeight.w800,
       letterSpacing: 1.8,
       color: color,
+      decoration: TextDecoration.none,
     ),
   );
 }
