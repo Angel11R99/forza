@@ -47,16 +47,12 @@ class AppPreferences {
 
 class NotificationSettings {
   const NotificationSettings({
-    this.workoutReminders = true,
-    this.weeklySummary = true,
-    this.personalRecordAlerts = false,
+    this.workoutReminders = false,
     this.reminderHour = 18,
     this.reminderMinute = 0,
   });
 
   final bool workoutReminders;
-  final bool weeklySummary;
-  final bool personalRecordAlerts;
   final int reminderHour;
   final int reminderMinute;
 }

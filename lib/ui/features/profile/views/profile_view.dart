@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/localization/device_time_format.dart';
+import '../../../../data/repositories/workout_reminder_repository.dart';
 import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
@@ -19,6 +20,7 @@ class ProfileView extends StatefulWidget {
     required this.trainingSettings,
     required this.onTrainingSettingsChanged,
     required this.profileSettingsRepository,
+    this.onNotificationsChanged,
     required this.themeMode,
     required this.onThemeModeChanged,
     required this.onManageBackups,
@@ -32,6 +34,11 @@ class ProfileView extends StatefulWidget {
   final VoidCallback onManageBackups;
   final LocaleController localeController;
   final ProfileSettingsRepository profileSettingsRepository;
+  final Future<bool> Function(
+    NotificationSettings previous,
+    NotificationSettings updated,
+  )?
+  onNotificationsChanged;
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
@@ -345,7 +352,26 @@ class _ProfileViewState extends State<ProfileView> {
     );
     if (updated == null || !mounted) return;
     try {
-      await widget.profileSettingsRepository.saveNotifications(updated);
+      final onNotificationsChanged = widget.onNotificationsChanged;
+      if (onNotificationsChanged == null) {
+        await widget.profileSettingsRepository.saveNotifications(updated);
+      } else if (!await onNotificationsChanged(_notifications, updated)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(context.l10n.profileReminderPermissionDenied),
+            ),
+          );
+        }
+        return;
+      }
+    } on WorkoutReminderSyncException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.profileReminderScheduleFailed)),
+        );
+      }
+      return;
     } on Object {
       if (mounted) _showSettingsSaveError();
       return;

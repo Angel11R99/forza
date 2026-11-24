@@ -45,6 +45,9 @@ dependencies:
   drift_flutter: ^0.3.1
   file_picker: ^13.4.1
   streak_flame: ^0.1.0
+  flutter_local_notifications: 22.3.3
+  flutter_timezone: 5.1.1
+  timezone: 0.11.2
 
 dev_dependencies:
   flutter_test:

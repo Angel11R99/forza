@@ -14,9 +14,7 @@ void main() {
       expect(defaultPreferences.weekStartsOn, 'Lunes');
       expect(defaultPreferences.hapticsEnabled, isTrue);
       final defaultNotifications = await firstRepository.loadNotifications();
-      expect(defaultNotifications.workoutReminders, isTrue);
-      expect(defaultNotifications.weeklySummary, isTrue);
-      expect(defaultNotifications.personalRecordAlerts, isFalse);
+      expect(defaultNotifications.workoutReminders, isFalse);
       expect(defaultNotifications.reminderHour, 18);
       expect(defaultNotifications.reminderMinute, 0);
       final defaultPrivacy = await firstRepository.loadPrivacy();
@@ -30,9 +28,7 @@ void main() {
         hapticsEnabled: false,
       );
       const notifications = NotificationSettings(
-        workoutReminders: false,
-        weeklySummary: false,
-        personalRecordAlerts: true,
+        workoutReminders: true,
         reminderHour: 7,
         reminderMinute: 35,
       );
@@ -54,13 +50,28 @@ void main() {
       expect(restoredAppPreferences.weightUnit, 'lb');
       expect(restoredAppPreferences.weekStartsOn, 'Domingo');
       expect(restoredAppPreferences.hapticsEnabled, isFalse);
-      expect(restoredNotifications.workoutReminders, isFalse);
-      expect(restoredNotifications.weeklySummary, isFalse);
-      expect(restoredNotifications.personalRecordAlerts, isTrue);
+      expect(restoredNotifications.workoutReminders, isTrue);
       expect(restoredNotifications.reminderHour, 7);
       expect(restoredNotifications.reminderMinute, 35);
       expect(restoredPrivacy.privateProfile, isFalse);
       expect(restoredPrivacy.shareWorkoutActivity, isTrue);
+    },
+  );
+
+  test(
+    'reads existing notification settings and ignores retired toggles',
+    () async {
+      final storage = _MemoryProfilePreferencesStorage()
+        ..values['profile_notifications_v1'] =
+            '{"workoutReminders":true,"weeklySummary":true,'
+            '"personalRecordAlerts":true,"reminderHour":6,"reminderMinute":15}';
+      final repository = ProfileSettingsRepository(storage: storage);
+
+      final notifications = await repository.loadNotifications();
+
+      expect(notifications.workoutReminders, isTrue);
+      expect(notifications.reminderHour, 6);
+      expect(notifications.reminderMinute, 15);
     },
   );
 

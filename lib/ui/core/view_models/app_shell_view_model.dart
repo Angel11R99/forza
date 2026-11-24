@@ -178,6 +178,15 @@ class AppShellViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshScheduledSessions() async {
+    await _trainingScheduleRepository.ensureUpcoming(
+      _trainingSettings,
+      from: _scheduleWindowStart(DateTime.now()),
+    );
+    _scheduledSessions = await _trainingScheduleRepository.load();
+    notifyListeners();
+  }
+
   Future<void> completeFirstRun(TrainingSettings? settings) async {
     if (settings != null) await saveTrainingSettings(settings);
     await _settingsRepository.completeSetup();

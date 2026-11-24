@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/workout_record.dart';
+import '../../../data/repositories/backup_repository.dart';
 import '../../../data/repositories/profile_settings_repository.dart';
+import '../../../data/repositories/workout_reminder_repository.dart';
 import '../../../app/theme/appearance_controller.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -35,15 +39,18 @@ class AppScaffold extends StatefulWidget {
 }
 
 class _AppScaffoldState extends State<AppScaffold>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late int _selectedIndex;
   final _viewModel = AppShellViewModel();
   final _profileSettingsRepository = ProfileSettingsRepository();
+  final _workoutReminderRepository = WorkoutReminderRepository();
   late final AnimationController _moduleController;
   late final CurvedAnimation _moduleTransition;
   late final Animation<Offset> _moduleOffset;
   int? _pendingDestination;
   bool _isOpeningFirstRun = false;
+  Locale? _notificationLocale;
+  Timer? _reminderRolloverTimer;
 
   static const _destinations = <_AppDestination>[
     _AppDestination(
@@ -71,6 +78,7 @@ class _AppScaffoldState extends State<AppScaffold>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _selectedIndex = widget.initialIndex
         .clamp(0, _destinations.length - 1)
         .toInt();
@@ -89,10 +97,13 @@ class _AppScaffoldState extends State<AppScaffold>
       end: Offset.zero,
     ).animate(_moduleTransition);
     _restoreSettings();
+    _scheduleReminderRollover();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _reminderRolloverTimer?.cancel();
     _moduleController
       ..removeStatusListener(_onModuleTransitionStatus)
       ..dispose();
@@ -101,14 +112,107 @@ class _AppScaffoldState extends State<AppScaffold>
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final locale = Localizations.localeOf(context);
+    if (_notificationLocale == locale) return;
+    _notificationLocale = locale;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_synchronizeWorkoutRemindersSafely());
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _scheduleReminderRollover();
+      unawaited(_refreshScheduleAndReminders());
+    }
+  }
+
+  void _scheduleReminderRollover() {
+    _reminderRolloverTimer?.cancel();
+    final now = DateTime.now();
+    final nextDay = DateTime(now.year, now.month, now.day + 1, 0, 0, 1);
+    _reminderRolloverTimer = Timer(nextDay.difference(now), () {
+      unawaited(_refreshScheduleAndReminders());
+      _scheduleReminderRollover();
+    });
+  }
+
   Future<void> _restoreSettings() async {
     await _viewModel.restore();
     if (!mounted) return;
+    await _synchronizeWorkoutRemindersSafely();
     if (_viewModel.needsFirstRunSetup) {
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _startFirstRunSetup(),
       );
     }
+  }
+
+  Future<void> _refreshScheduleAndReminders() async {
+    if (!_viewModel.isReady) return;
+    try {
+      await _viewModel.refreshScheduledSessions();
+      await _synchronizeWorkoutReminders();
+    } on Object {
+      if (mounted) _showReminderScheduleError();
+    }
+  }
+
+  Future<void> _synchronizeWorkoutReminders({
+    NotificationSettings? settings,
+  }) async {
+    if (!_viewModel.isReady) return;
+    final title = context.l10n.workoutReminderNotificationTitle;
+    final body = context.l10n.workoutReminderNotificationBody;
+    final currentSettings =
+        settings ?? await _profileSettingsRepository.loadNotifications();
+    await _workoutReminderRepository.synchronize(
+      settings: currentSettings,
+      sessions: _viewModel.scheduledSessions,
+      title: title,
+      body: body,
+    );
+  }
+
+  Future<void> _synchronizeWorkoutRemindersSafely() async {
+    try {
+      await _synchronizeWorkoutReminders();
+    } on Object {
+      if (mounted && _viewModel.isReady) _showReminderScheduleError();
+    }
+  }
+
+  Future<bool> _saveNotificationSettings(
+    NotificationSettings previous,
+    NotificationSettings updated,
+  ) async {
+    if (updated.workoutReminders &&
+        !await _workoutReminderRepository.requestPermission()) {
+      return false;
+    }
+    await _profileSettingsRepository.saveNotifications(updated);
+    try {
+      await _synchronizeWorkoutReminders(settings: updated);
+    } on Object {
+      await _profileSettingsRepository.saveNotifications(previous);
+      try {
+        await _synchronizeWorkoutReminders(settings: previous);
+      } on Object {
+        // Keep the original failure visible to the user.
+      }
+      throw const WorkoutReminderSyncException();
+    }
+    return true;
+  }
+
+  void _showReminderScheduleError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.profileReminderScheduleFailed)),
+    );
   }
 
   Future<void> _startFirstRunSetup() async {
@@ -125,6 +229,7 @@ class _AppScaffoldState extends State<AppScaffold>
     if (!mounted) return;
     try {
       await _viewModel.completeFirstRun(settings);
+      await _synchronizeWorkoutRemindersSafely();
     } on Object {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -177,7 +282,7 @@ class _AppScaffoldState extends State<AppScaffold>
         builder: (_) => BackupRestorePage(
           exportBackup: (mode) => _viewModel.exportBackup(appearanceMode: mode),
           validateBackup: _viewModel.validateBackup,
-          restoreBackup: _viewModel.restoreBackup,
+          restoreBackup: _restoreBackupAndReminders,
           appearanceMode: _appearanceName(widget.appearance.mode),
           onAppearanceModeChanged: (mode) =>
               widget.appearance.setMode(_themeMode(mode)),
@@ -201,6 +306,7 @@ class _AppScaffoldState extends State<AppScaffold>
         planned?.sessionIndex ??
         days.indexOf((activeDate ?? nextSessionDate).weekday);
     await _viewModel.markSessionStarted(sessionDate);
+    await _synchronizeWorkoutRemindersSafely();
     if (!mounted) return;
     final record = await Navigator.of(context).push<WorkoutRecord>(
       MaterialPageRoute<WorkoutRecord>(
@@ -223,6 +329,8 @@ class _AppScaffoldState extends State<AppScaffold>
     try {
       await _viewModel.recordWorkout(record);
       if (!mounted) return;
+      await _synchronizeWorkoutRemindersSafely();
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(context.l10n.shellWorkoutSaved)));
@@ -241,6 +349,39 @@ class _AppScaffoldState extends State<AppScaffold>
       if (days.contains(candidate.weekday)) return candidate;
     }
     return today;
+  }
+
+  Future<void> _restoreBackupAndReminders(ValidatedForzaBackup backup) async {
+    await _viewModel.restoreBackup(backup);
+    await _synchronizeWorkoutRemindersSafely();
+  }
+
+  Future<void> _refreshActiveWorkoutAndReminders() async {
+    await _viewModel.refreshActiveWorkout();
+    await _synchronizeWorkoutRemindersSafely();
+  }
+
+  Future<void> _markSessionStartedAndSync(DateTime date) async {
+    await _viewModel.markSessionStarted(date);
+    await _synchronizeWorkoutRemindersSafely();
+  }
+
+  Future<bool> _rescheduleSessionAndSync(DateTime from, DateTime to) async {
+    final moved = await _viewModel.rescheduleSession(from, to);
+    if (moved) await _synchronizeWorkoutRemindersSafely();
+    return moved;
+  }
+
+  Future<bool> _skipSessionAndSync(DateTime date) async {
+    final skipped = await _viewModel.skipSession(date);
+    if (skipped) await _synchronizeWorkoutRemindersSafely();
+    return skipped;
+  }
+
+  Future<bool> _undoSkipSessionAndSync(DateTime date) async {
+    final restored = await _viewModel.undoSkipSession(date);
+    if (restored) await _synchronizeWorkoutRemindersSafely();
+    return restored;
   }
 
   @override
@@ -282,13 +423,13 @@ class _AppScaffoldState extends State<AppScaffold>
                       settings: _viewModel.trainingSettings,
                       records: _viewModel.workoutRecords,
                       onWorkoutCompleted: _saveWorkoutRecord,
-                      onSessionClosed: _viewModel.refreshActiveWorkout,
+                      onSessionClosed: _refreshActiveWorkoutAndReminders,
                       workoutLogRepository: _viewModel.workoutLogRepository,
                       scheduledSessions: _viewModel.scheduledSessions,
-                      onRescheduleSession: _viewModel.rescheduleSession,
-                      onSessionStarted: _viewModel.markSessionStarted,
-                      onSkipSession: _viewModel.skipSession,
-                      onUndoSkipSession: _viewModel.undoSkipSession,
+                      onRescheduleSession: _rescheduleSessionAndSync,
+                      onSessionStarted: _markSessionStartedAndSync,
+                      onSkipSession: _skipSessionAndSync,
+                      onUndoSkipSession: _undoSkipSessionAndSync,
                     ),
                     const ExercisesView(),
                     ProgressView(
@@ -300,6 +441,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
                       profileSettingsRepository: _profileSettingsRepository,
+                      onNotificationsChanged: _saveNotificationSettings,
                       themeMode: widget.appearance.mode,
                       onThemeModeChanged: widget.appearance.setMode,
                       localeController: widget.localeController,
@@ -342,7 +484,9 @@ class _AppScaffoldState extends State<AppScaffold>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(context.l10n.shellPlanSaveError)));
+      return;
     }
+    await _synchronizeWorkoutRemindersSafely();
   }
 
   void _updateTrainingSettings(TrainingSettings settings) {

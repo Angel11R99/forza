@@ -1463,8 +1463,32 @@ abstract class AppLocalizations {
   /// No description provided for @profileReminderDescription.
   ///
   /// In en, this message translates to:
-  /// **'Choose a time that works for you.'**
+  /// **'We\'ll remind you around this time on days with a pending workout.'**
   String get profileReminderDescription;
+
+  /// No description provided for @profileReminderPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications on your device to receive workout reminders.'**
+  String get profileReminderPermissionDenied;
+
+  /// No description provided for @profileReminderScheduleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout reminders could not be updated. Please try again.'**
+  String get profileReminderScheduleFailed;
+
+  /// No description provided for @workoutReminderNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FORZA · today\'s workout'**
+  String get workoutReminderNotificationTitle;
+
+  /// No description provided for @workoutReminderNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a workout scheduled for today. You can do this!'**
+  String get workoutReminderNotificationBody;
 
   /// No description provided for @profileReminderTime.
   ///
@@ -2740,7 +2764,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileNotificationsDescription.
   ///
   /// In en, this message translates to:
-  /// **'Set your notification preferences.'**
+  /// **'Reminders use your schedule and need device permission.'**
   String get profileNotificationsDescription;
 
   /// No description provided for @profilePrivacyPageTitle.

@@ -823,7 +823,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileWorkoutReminders => 'Recordatorios de entrenamiento';
 
   @override
-  String get profileReminderDescription => 'Elige una hora que te funcione.';
+  String get profileReminderDescription =>
+      'Te avisaremos cerca de esta hora en los días con una sesión pendiente.';
+
+  @override
+  String get profileReminderPermissionDenied =>
+      'Permite las notificaciones del dispositivo para recibir recordatorios.';
+
+  @override
+  String get profileReminderScheduleFailed =>
+      'No se pudieron actualizar los recordatorios. Inténtalo otra vez.';
+
+  @override
+  String get workoutReminderNotificationTitle => 'FORZA · entrenamiento de hoy';
+
+  @override
+  String get workoutReminderNotificationBody =>
+      'Tienes una sesión programada para hoy. ¡Tú puedes!';
 
   @override
   String get profileReminderTime => 'Hora del recordatorio';
@@ -1543,7 +1559,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileNotificationsDescription =>
-      'Configura tus preferencias de notificaciones.';
+      'Los recordatorios usan la agenda y requieren permiso del dispositivo.';
 
   @override
   String get profilePrivacyPageTitle => 'Privacidad y cuenta';
