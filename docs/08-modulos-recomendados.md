@@ -32,4 +32,6 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 - **Cuenta:** autenticación opcional solo si se decide ofrecer cuentas o sincronización entre dispositivos ([#5](https://github.com/Angel11R99/forza/issues/5)).
 - **Gym Bro:** investigación futura dependiente de decisiones de cuenta, persistencia y privacidad; diseñar primero y solicitar aprobación antes de cualquier backend ([#22](https://github.com/Angel11R99/forza/issues/22)).
 
+La propuesta de Gym Bro está en [diseño y evaluación](12-diseno-gym-bro.md). No implica que haya backend o cuenta social implementados.
+
 No distribuir animaciones de terceros sin licencia verificada. Nutrición, feed social, retos competitivos y mensajería general no son requisitos para validar el ciclo personal de entrenamiento.
