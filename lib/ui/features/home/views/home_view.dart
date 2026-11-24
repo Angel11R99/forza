@@ -361,22 +361,40 @@ class _WeeklySummary extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      context.l10n.homeWeeklySessionCount(
-                        completedCount,
-                        weeklyTarget,
-                      ),
-                      style: Theme.of(context).textTheme.titleMedium,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final count = Text(
+                    context.l10n.homeWeeklySessionCount(
+                      completedCount,
+                      weeklyTarget,
                     ),
-                  ),
-                  Text(
+                    style: Theme.of(context).textTheme.titleMedium,
+                  );
+                  final period = Text(
                     context.l10n.homeThisWeek,
                     style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+                  );
+                  final stackLabels =
+                      constraints.maxWidth < 340 ||
+                      MediaQuery.textScalerOf(context).scale(1) > 1.3;
+                  return stackLabels
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            count,
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: period,
+                            ),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Expanded(child: count),
+                            period,
+                          ],
+                        );
+                },
               ),
               const SizedBox(height: AppSpacing.x1),
               Text(

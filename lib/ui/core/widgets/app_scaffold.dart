@@ -26,11 +26,17 @@ class AppScaffold extends StatefulWidget {
   const AppScaffold({
     super.key,
     this.initialIndex = 0,
+    this.viewModel,
+    this.profileSettingsRepository,
+    this.workoutReminderRepository,
     required this.appearance,
     required this.localeController,
   });
 
   final int initialIndex;
+  final AppShellViewModel? viewModel;
+  final ProfileSettingsRepository? profileSettingsRepository;
+  final WorkoutReminderRepository? workoutReminderRepository;
   final AppearanceController appearance;
   final LocaleController localeController;
 
@@ -41,9 +47,9 @@ class AppScaffold extends StatefulWidget {
 class _AppScaffoldState extends State<AppScaffold>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late int _selectedIndex;
-  final _viewModel = AppShellViewModel();
-  final _profileSettingsRepository = ProfileSettingsRepository();
-  final _workoutReminderRepository = WorkoutReminderRepository();
+  late final AppShellViewModel _viewModel;
+  late final ProfileSettingsRepository _profileSettingsRepository;
+  late final WorkoutReminderRepository _workoutReminderRepository;
   late final AnimationController _moduleController;
   late final CurvedAnimation _moduleTransition;
   late final Animation<Offset> _moduleOffset;
@@ -78,6 +84,11 @@ class _AppScaffoldState extends State<AppScaffold>
   @override
   void initState() {
     super.initState();
+    _viewModel = widget.viewModel ?? AppShellViewModel();
+    _profileSettingsRepository =
+        widget.profileSettingsRepository ?? ProfileSettingsRepository();
+    _workoutReminderRepository =
+        widget.workoutReminderRepository ?? WorkoutReminderRepository();
     WidgetsBinding.instance.addObserver(this);
     _selectedIndex = widget.initialIndex
         .clamp(0, _destinations.length - 1)
@@ -242,6 +253,11 @@ class _AppScaffoldState extends State<AppScaffold>
   }
 
   void _selectDestination(int index) {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pendingDestination = null;
+      if (index != _selectedIndex) setState(() => _selectedIndex = index);
+      return;
+    }
     if (index == _selectedIndex) {
       _pendingDestination = null;
       _moduleController.forward();
@@ -609,48 +625,63 @@ class _BottomNavigationDestinationState
       button: true,
       selected: widget.selected,
       label: widget.label,
-      child: InkWell(
-        onTap: widget.onTap,
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MouseRegion(
-                onEnter: (_) => setState(() => _hovered = true),
-                onExit: (_) => setState(() => _hovered = false),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 120),
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: _hovered ? colors.accentSoft : Colors.transparent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    widget.selected
-                        ? widget.destination.selectedIcon
-                        : widget.destination.icon,
-                    color: widget.selected
-                        ? colors.accent
-                        : colors.textSecondary,
-                    size: 22,
+      onTap: widget.onTap,
+      child: ExcludeSemantics(
+        child: InkWell(
+          onTap: widget.onTap,
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MouseRegion(
+                  onEnter: (_) => setState(() => _hovered = true),
+                  onExit: (_) => setState(() => _hovered = false),
+                  child: AnimatedContainer(
+                    duration: MediaQuery.disableAnimationsOf(context)
+                        ? Duration.zero
+                        : const Duration(milliseconds: 120),
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: _hovered ? colors.accentSoft : Colors.transparent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.selected
+                          ? widget.destination.selectedIcon
+                          : widget.destination.icon,
+                      color: widget.selected
+                          ? colors.accent
+                          : colors.textSecondary,
+                      size: 22,
+                    ),
                   ),
                 ),
-              ),
-              Text(
-                widget.label,
-                style: labelStyle?.copyWith(
-                  color: widget.selected ? colors.accent : colors.textSecondary,
-                  fontWeight: widget.selected
-                      ? FontWeight.w600
-                      : FontWeight.w500,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x1),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      widget.label,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: labelStyle?.copyWith(
+                        color: widget.selected
+                            ? colors.accent
+                            : colors.textSecondary,
+                        fontWeight: widget.selected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
