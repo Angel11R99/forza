@@ -3737,6 +3737,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pause timed set'**
   String get sessionTimedSetRunning;
+
+  /// No description provided for @trainingNameBandReverseFly.
+  ///
+  /// In en, this message translates to:
+  /// **'Band reverse fly'**
+  String get trainingNameBandReverseFly;
+
+  /// No description provided for @trainingNamePikeToCobra.
+  ///
+  /// In en, this message translates to:
+  /// **'Pike-to-cobra push-up'**
+  String get trainingNamePikeToCobra;
+
+  /// No description provided for @trainingNameJumpSquat.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump squat'**
+  String get trainingNameJumpSquat;
+
+  /// No description provided for @trainingNameSidePlank.
+  ///
+  /// In en, this message translates to:
+  /// **'Incline side plank'**
+  String get trainingNameSidePlank;
 }
 
 class _AppLocalizationsDelegate

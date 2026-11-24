@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../database/app_database.dart';
 import '../../ui/features/profile/models/profile_settings.dart';
+import '../../domain/use_cases/training_plan_builder.dart';
 
 class TrainingSettingsRepository {
   TrainingSettingsRepository({required this.database});
@@ -42,12 +43,52 @@ class TrainingSettingsRepository {
     );
   }
 
-  Future<void> save(TrainingSettings settings) async {
+  Future<int> get currentPlanVersion async {
+    final plan = await (database.select(
+      database.trainingPlans,
+    )..where((row) => row.id.equals(activePlanId))).getSingleOrNull();
+    return plan?.version ?? 1;
+  }
+
+  Future<int> save(TrainingSettings settings) async {
+    TrainingPlanBuilder.validateSettings(
+      trainingDays: settings.trainingDays,
+      sessionMinutes: settings.sessionMinutes,
+      goal: settings.goal,
+      experience: settings.experience,
+      equipment: settings.equipment,
+    );
     final now = DateTime.now().toIso8601String();
-    await database.transaction(() async {
+    return database.transaction(() async {
       final existing = await (database.select(
         database.trainingPlans,
       )..where((row) => row.id.equals(activePlanId))).getSingleOrNull();
+      final existingDays =
+          (await (database.select(
+                database.trainingPlanDays,
+              )..where((row) => row.planId.equals(activePlanId))).get())
+              .map((row) => row.weekday)
+              .toSet();
+      final existingEquipment =
+          (await (database.select(
+                database.trainingPlanEquipment,
+              )..where((row) => row.planId.equals(activePlanId))).get())
+              .map((row) => row.equipment)
+              .toSet();
+      final planChanged =
+          existing == null ||
+          existing.goal != settings.goal ||
+          existing.experience != settings.experience ||
+          existing.sessionMinutes != settings.sessionMinutes ||
+          !existingDays.containsAll(settings.trainingDays) ||
+          !settings.trainingDays.containsAll(existingDays) ||
+          !existingEquipment.containsAll(settings.equipment) ||
+          !settings.equipment.containsAll(existingEquipment);
+      final version = existing == null
+          ? 1
+          : planChanged
+          ? existing.version + 1
+          : existing.version;
 
       await database
           .into(database.trainingPlans)
@@ -57,6 +98,7 @@ class TrainingSettingsRepository {
               goal: settings.goal,
               experience: settings.experience,
               sessionMinutes: settings.sessionMinutes,
+              version: Value(version),
               createdAt: existing?.createdAt ?? now,
               updatedAt: now,
               isActive: const Value(true),
@@ -88,6 +130,7 @@ class TrainingSettingsRepository {
             ),
         ]);
       });
+      return version;
     });
   }
 

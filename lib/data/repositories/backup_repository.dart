@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import '../../domain/models/personal_goal.dart';
 import '../../domain/models/scheduled_training_session.dart';
 import '../../domain/models/workout_record.dart';
+import '../../domain/use_cases/training_plan_builder.dart';
 import '../../ui/features/profile/models/profile_settings.dart';
 import '../database/app_database.dart' as db;
 import 'personal_goal_repository.dart';
@@ -16,6 +17,7 @@ class ValidatedForzaBackup {
   const ValidatedForzaBackup({
     required this.exportedAt,
     required this.settings,
+    required this.planVersion,
     required this.records,
     required this.schedule,
     required this.goals,
@@ -25,6 +27,7 @@ class ValidatedForzaBackup {
 
   final DateTime exportedAt;
   final TrainingSettings settings;
+  final int planVersion;
   final List<WorkoutRecord> records;
   final List<ScheduledTrainingSession> schedule;
   final List<PersonalGoal> goals;
@@ -58,6 +61,7 @@ class BackupRepository {
       'version': version,
       'exportedAt': DateTime.now().toIso8601String(),
       'trainingSettings': _settingsToJson(await settingsRepository.load()),
+      'planVersion': await settingsRepository.currentPlanVersion,
       'workoutRecords': [
         for (final record in await workoutLogRepository.load()) record.toJson(),
       ],
@@ -123,9 +127,16 @@ class BackupRepository {
       final activeWorkout = root['activeWorkout'] == null
           ? null
           : _activeDraft(root['activeWorkout']);
+      final planVersion = root['planVersion'] == null
+          ? 1
+          : _integer(root['planVersion'], 'planVersion');
+      if (planVersion < 1) {
+        throw const FormatException('La versión del plan no es válida.');
+      }
       return ValidatedForzaBackup(
         exportedAt: DateTime.parse(_string(root['exportedAt'], 'exportedAt')),
         settings: _settings(root['trainingSettings']),
+        planVersion: planVersion,
         records: records,
         schedule: schedule,
         goals: goals,
@@ -157,6 +168,7 @@ class BackupRepository {
               goal: backup.settings.goal,
               experience: backup.settings.experience,
               sessionMinutes: backup.settings.sessionMinutes,
+              version: Value(backup.planVersion),
               createdAt: now,
               updatedAt: now,
               isActive: const Value(true),
@@ -193,6 +205,10 @@ class BackupRepository {
                 completedAt: record.completedAt.toIso8601String(),
                 title: record.title,
                 goal: record.goal,
+                planVersion: Value(record.planVersion),
+                planSnapshot: Value(
+                  record.planSnapshot.isEmpty ? null : record.planSnapshot,
+                ),
                 durationMinutes: record.durationMinutes,
                 exerciseCount: record.exerciseCount,
                 completedOutsideApp: record.completedOutsideApp,
@@ -206,6 +222,11 @@ class BackupRepository {
                   sessionId: id,
                   position: index,
                   name: record.exercises[index],
+                  catalogId: Value(
+                    index < record.exerciseIds.length
+                        ? record.exerciseIds[index]
+                        : null,
+                  ),
                 ),
             ]);
           });
@@ -243,6 +264,8 @@ class BackupRepository {
               focus: session.focus,
               durationMinutes: session.durationMinutes,
               exerciseCount: session.exerciseCount,
+              planVersion: Value(session.planVersion),
+              planSnapshot: Value(session.planSnapshot),
               status: Value(session.status),
             ),
         ]);
@@ -288,6 +311,9 @@ class BackupRepository {
         record.durationMinutes < 1 ||
         record.durationMinutes > 1440 ||
         record.exerciseCount < 0 ||
+        record.planVersion < 1 ||
+        (record.exerciseIds.isNotEmpty &&
+            record.exerciseIds.length != record.exercises.length) ||
         record.setResults.any(
           (set) =>
               set.exercisePosition < 0 ||
@@ -299,6 +325,10 @@ class BackupRepository {
               (set.durationSeconds != null && set.durationSeconds! < 0),
         )) {
       throw const FormatException('Una sesión contiene datos fuera de rango.');
+    }
+    if (record.planSnapshot.isNotEmpty) {
+      final snapshot = _map(jsonDecode(record.planSnapshot), 'planSnapshot');
+      PlannedTrainingSession.fromJson(snapshot);
     }
     return record;
   }
@@ -323,6 +353,16 @@ class BackupRepository {
     if (!const {'pending', 'in_progress', 'completed'}.contains(status)) {
       throw const FormatException('El estado de una sesión no es válido.');
     }
+    final planVersion = json['planVersion'] as int? ?? 1;
+    final planSnapshot = json['planSnapshot'] as String? ?? '';
+    if (planVersion < 1) {
+      throw const FormatException('La versión de rutina no es válida.');
+    }
+    if (planSnapshot.isNotEmpty) {
+      PlannedTrainingSession.fromJson(
+        _map(jsonDecode(planSnapshot), 'planSnapshot'),
+      );
+    }
     return ScheduledTrainingSession(
       id: _string(json['id'], 'id'),
       scheduledDate: date,
@@ -333,6 +373,8 @@ class BackupRepository {
       durationMinutes: duration,
       exerciseCount: count,
       status: status,
+      planVersion: planVersion,
+      planSnapshot: planSnapshot,
     );
   }
 
@@ -382,6 +424,13 @@ class BackupRepository {
         experience.isEmpty) {
       throw const FormatException('El plan contiene valores no válidos.');
     }
+    TrainingPlanBuilder.validateSettings(
+      trainingDays: days.toSet(),
+      sessionMinutes: minutes,
+      goal: goal,
+      experience: experience,
+      equipment: equipment,
+    );
     return TrainingSettings(
       trainingDays: days.toSet(),
       sessionMinutes: minutes,
@@ -450,6 +499,8 @@ class BackupRepository {
     'focus': session.focus,
     'durationMinutes': session.durationMinutes,
     'exerciseCount': session.exerciseCount,
+    'planVersion': session.planVersion,
+    'planSnapshot': session.planSnapshot,
     'status': session.status,
   };
 

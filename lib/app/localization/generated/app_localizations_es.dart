@@ -2113,4 +2113,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sessionTimedSetRunning => 'Pausar serie cronometrada';
+
+  @override
+  String get trainingNameBandReverseFly => 'Apertura inversa con banda';
+
+  @override
+  String get trainingNamePikeToCobra => 'Flexiones de pica a cobra';
+
+  @override
+  String get trainingNameJumpSquat => 'Sentadilla con salto';
+
+  @override
+  String get trainingNameSidePlank => 'Plancha lateral inclinada';
 }

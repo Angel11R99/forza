@@ -1,11 +1,13 @@
 class PlannedExercise {
   const PlannedExercise({
+    required this.catalogId,
     required this.name,
     required this.focus,
     required this.prescription,
     this.timed = false,
   });
 
+  final String catalogId;
   final String name;
   final String focus;
   final String prescription;
@@ -26,59 +28,186 @@ class PlannedTrainingSession {
   final String focus;
   final int durationMinutes;
   final List<PlannedExercise> exercises;
+
+  Map<String, Object?> toJson() => {
+    'weekday': weekday,
+    'title': title,
+    'focus': focus,
+    'durationMinutes': durationMinutes,
+    'exercises': [
+      for (final exercise in exercises)
+        {
+          'catalogId': exercise.catalogId,
+          'name': exercise.name,
+          'focus': exercise.focus,
+          'prescription': exercise.prescription,
+          'timed': exercise.timed,
+        },
+    ],
+  };
+
+  factory PlannedTrainingSession.fromJson(Map<String, Object?> json) {
+    final rawExercises = json['exercises'];
+    if (rawExercises is! List<Object?>) {
+      throw const FormatException('La rutina guardada no es válida.');
+    }
+    final exercises = <PlannedExercise>[];
+    for (final raw in rawExercises) {
+      if (raw is! Map) {
+        throw const FormatException('Un ejercicio guardado no es válido.');
+      }
+      final exercise = Map<String, Object?>.from(raw);
+      final id = exercise['catalogId'];
+      final name = exercise['name'];
+      final focus = exercise['focus'];
+      final prescription = exercise['prescription'];
+      final timed = exercise['timed'];
+      if ([
+            id,
+            name,
+            focus,
+            prescription,
+          ].any((value) => value is! String || value.trim().isEmpty) ||
+          timed is! bool) {
+        throw const FormatException('Un ejercicio guardado no es válido.');
+      }
+      exercises.add(
+        PlannedExercise(
+          catalogId: id as String,
+          name: name as String,
+          focus: focus as String,
+          prescription: prescription as String,
+          timed: timed,
+        ),
+      );
+    }
+    final weekday = json['weekday'];
+    final title = json['title'];
+    final focus = json['focus'];
+    final duration = json['durationMinutes'];
+    if (weekday is! int ||
+        weekday < 1 ||
+        weekday > 7 ||
+        title is! String ||
+        title.trim().isEmpty ||
+        focus is! String ||
+        focus.trim().isEmpty ||
+        duration is! int ||
+        duration < 20 ||
+        duration > 90) {
+      throw const FormatException('La rutina guardada no es válida.');
+    }
+    return PlannedTrainingSession(
+      weekday: weekday,
+      title: title,
+      focus: focus,
+      durationMinutes: duration,
+      exercises: List.unmodifiable(exercises),
+    );
+  }
 }
 
 class TrainingPlanBuilder {
   const TrainingPlanBuilder();
 
   static const _catalog = <_ExerciseTemplate>[
-    _ExerciseTemplate('Press con mancuernas', 'Pecho', equipment: 'Mancuernas'),
-    _ExerciseTemplate('Sentadilla goblet', 'Piernas', equipment: 'Mancuernas'),
-    _ExerciseTemplate('Remo con mancuerna', 'Espalda', equipment: 'Mancuernas'),
-    _ExerciseTemplate('Peso muerto rumano', 'Piernas', equipment: 'Mancuernas'),
-    _ExerciseTemplate('Press de hombros', 'Hombros', equipment: 'Mancuernas'),
-    _ExerciseTemplate('Sentadilla con barra', 'Piernas', equipment: 'Barra'),
-    _ExerciseTemplate('Press de banca con barra', 'Pecho', equipment: 'Barra'),
-    _ExerciseTemplate('Remo con barra', 'Espalda', equipment: 'Barra'),
-    _ExerciseTemplate('Peso muerto con barra', 'Piernas', equipment: 'Barra'),
     _ExerciseTemplate(
+      '1700',
+      'Press con mancuernas',
+      'Pecho',
+      equipment: 'Mancuernas',
+    ),
+    _ExerciseTemplate(
+      '1760',
+      'Sentadilla goblet',
+      'Piernas',
+      equipment: 'Mancuernas',
+    ),
+    _ExerciseTemplate(
+      '0293',
+      'Remo con mancuerna',
+      'Espalda',
+      equipment: 'Mancuernas',
+    ),
+    _ExerciseTemplate(
+      '1459',
+      'Peso muerto rumano',
+      'Piernas',
+      equipment: 'Mancuernas',
+    ),
+    _ExerciseTemplate(
+      '0405',
+      'Press de hombros',
+      'Hombros',
+      equipment: 'Mancuernas',
+    ),
+    _ExerciseTemplate(
+      '0043',
+      'Sentadilla con barra',
+      'Piernas',
+      equipment: 'Barra',
+    ),
+    _ExerciseTemplate(
+      '0025',
+      'Press de banca con barra',
+      'Pecho',
+      equipment: 'Barra',
+    ),
+    _ExerciseTemplate('0027', 'Remo con barra', 'Espalda', equipment: 'Barra'),
+    _ExerciseTemplate(
+      '0032',
+      'Peso muerto con barra',
+      'Piernas',
+      equipment: 'Barra',
+    ),
+    _ExerciseTemplate(
+      '1254',
       'Press de pecho con banda',
       'Pecho',
       equipment: 'Banda elástica',
     ),
-    _ExerciseTemplate('Remo con banda', 'Espalda', equipment: 'Banda elástica'),
     _ExerciseTemplate(
+      '0990',
+      'Remo con banda',
+      'Espalda',
+      equipment: 'Banda elástica',
+    ),
+    _ExerciseTemplate(
+      '1004',
       'Sentadilla con banda',
       'Piernas',
       equipment: 'Banda elástica',
     ),
     _ExerciseTemplate(
-      'Separación de banda',
+      '0993',
+      'Apertura inversa con banda',
       'Hombros',
       equipment: 'Banda elástica',
     ),
     _ExerciseTemplate(
+      '0577',
       'Press de pecho en máquina',
       'Pecho',
       equipment: 'Máquina de palanca',
     ),
     _ExerciseTemplate(
+      '2287',
       'Prensa de piernas',
       'Piernas',
       equipment: 'Máquina de palanca',
     ),
-    _ExerciseTemplate('Jalón al pecho', 'Espalda', equipment: 'Polea'),
-    _ExerciseTemplate('Remo sentado', 'Espalda', equipment: 'Polea'),
-    _ExerciseTemplate('Flexiones', 'Pecho'),
-    _ExerciseTemplate('Flexiones inclinadas', 'Pecho'),
-    _ExerciseTemplate('Pike push-up', 'Hombros'),
-    _ExerciseTemplate('Zancadas', 'Piernas'),
-    _ExerciseTemplate('Sentadilla con peso corporal', 'Piernas'),
-    _ExerciseTemplate('Elevación de pantorrillas', 'Piernas'),
-    _ExerciseTemplate('Puente de glúteos', 'Glúteos'),
-    _ExerciseTemplate('Bird-dog', 'Core', timed: true),
-    _ExerciseTemplate('Dead bug', 'Core', timed: true),
-    _ExerciseTemplate('Plancha', 'Core', timed: true),
+    _ExerciseTemplate('0818', 'Jalón al pecho', 'Espalda', equipment: 'Polea'),
+    _ExerciseTemplate('0861', 'Remo sentado', 'Espalda', equipment: 'Polea'),
+    _ExerciseTemplate('0662', 'Flexiones', 'Pecho'),
+    _ExerciseTemplate('0493', 'Flexiones inclinadas', 'Pecho'),
+    _ExerciseTemplate('3662', 'Flexiones de pica a cobra', 'Hombros'),
+    _ExerciseTemplate('3470', 'Zancadas', 'Piernas'),
+    _ExerciseTemplate('0514', 'Sentadilla con salto', 'Piernas'),
+    _ExerciseTemplate('1373', 'Elevación de pantorrillas', 'Piernas'),
+    _ExerciseTemplate('3013', 'Puente de glúteos', 'Glúteos'),
+    _ExerciseTemplate('3544', 'Plancha lateral inclinada', 'Core', timed: true),
+    _ExerciseTemplate('0276', 'Dead bug', 'Core', timed: true),
+    _ExerciseTemplate('0464', 'Plancha', 'Core', timed: true),
   ];
 
   List<PlannedTrainingSession> buildWeek({
@@ -88,6 +217,13 @@ class TrainingPlanBuilder {
     required String experience,
     required Set<String> equipment,
   }) {
+    validateSettings(
+      trainingDays: trainingDays,
+      sessionMinutes: sessionMinutes,
+      goal: goal,
+      experience: experience,
+      equipment: equipment,
+    );
     final days = trainingDays.toList()..sort();
     return [
       for (var index = 0; index < days.length; index++)
@@ -114,6 +250,16 @@ class TrainingPlanBuilder {
     required String experience,
     required Set<String> equipment,
   }) {
+    if (sessionIndex < 0) {
+      throw const FormatException('El índice de sesión no es válido.');
+    }
+    validateSettings(
+      trainingDays: const {DateTime.monday},
+      sessionMinutes: sessionMinutes,
+      goal: goal,
+      experience: experience,
+      equipment: equipment,
+    );
     final allAvailable = _catalog
         .where(
           (exercise) =>
@@ -139,6 +285,7 @@ class TrainingPlanBuilder {
     return [
       for (final exercise in rotated.take(count))
         PlannedExercise(
+          catalogId: exercise.catalogId,
           name: exercise.name,
           focus: exercise.focus,
           timed: exercise.timed,
@@ -176,10 +323,45 @@ class TrainingPlanBuilder {
     'Ganar músculo' => '8–12 repeticiones',
     _ => '8–12 repeticiones a ritmo cómodo',
   };
+
+  static void validateSettings({
+    required Set<int> trainingDays,
+    required int sessionMinutes,
+    required String goal,
+    required String experience,
+    required Set<String> equipment,
+  }) {
+    if (trainingDays.isEmpty ||
+        trainingDays.any((day) => day < 1 || day > 7) ||
+        sessionMinutes < 20 ||
+        sessionMinutes > 90 ||
+        !const {
+          'Ganar fuerza',
+          'Ganar músculo',
+          'Crear el hábito',
+        }.contains(goal) ||
+        !const {
+          'Estoy empezando',
+          'Tengo algo de experiencia',
+          'Entreno hace tiempo',
+        }.contains(experience) ||
+        equipment.isEmpty ||
+        !const {
+          'Peso corporal',
+          'Mancuernas',
+          'Barra',
+          'Banda elástica',
+          'Polea',
+          'Máquina de palanca',
+        }.containsAll(equipment)) {
+      throw const FormatException('Las preferencias del plan no son válidas.');
+    }
+  }
 }
 
 class _ExerciseTemplate {
   const _ExerciseTemplate(
+    this.catalogId,
     this.name,
     this.focus, {
     this.equipment,
@@ -187,6 +369,7 @@ class _ExerciseTemplate {
   });
 
   final String name;
+  final String catalogId;
   final String focus;
   final String? equipment;
   final bool timed;

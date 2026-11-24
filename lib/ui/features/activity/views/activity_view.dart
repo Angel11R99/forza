@@ -138,6 +138,8 @@ class _ActivityViewState extends State<ActivityView> {
           sessionIndex:
               planned?.sessionIndex ?? _sessionIndexForDate(_selectedDate),
           scheduledDate: _selectedDate,
+          plannedSession: planned?.plannedSession,
+          planVersion: planned?.planVersion ?? 1,
         ),
       ),
     );
@@ -150,6 +152,8 @@ class _ActivityViewState extends State<ActivityView> {
   Future<void> _markSessionCompleted() async {
     final session = _sessionForDate(_selectedDate);
     if (session == null) return;
+    final scheduled = _scheduledForDate(_selectedDate);
+    final planned = scheduled?.plannedSession;
     await widget.onWorkoutCompleted(
       WorkoutRecord(
         scheduledDate: _selectedDate,
@@ -158,6 +162,15 @@ class _ActivityViewState extends State<ActivityView> {
         goal: widget.settings.goal,
         durationMinutes: widget.settings.sessionMinutes,
         exerciseCount: session.exerciseCount,
+        exercises: [
+          for (final exercise in planned?.exercises ?? const []) exercise.name,
+        ],
+        exerciseIds: [
+          for (final exercise in planned?.exercises ?? const [])
+            exercise.catalogId,
+        ],
+        planVersion: scheduled?.planVersion ?? 1,
+        planSnapshot: scheduled?.planSnapshot ?? '',
         completedOutsideApp: true,
       ),
     );

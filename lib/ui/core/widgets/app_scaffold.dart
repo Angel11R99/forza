@@ -207,6 +207,8 @@ class _AppScaffoldState extends State<AppScaffold>
           workoutLogRepository: _viewModel.workoutLogRepository,
           sessionIndex: sessionIndex < 0 ? 0 : sessionIndex,
           scheduledDate: sessionDate,
+          plannedSession: planned?.plannedSession,
+          planVersion: planned?.planVersion ?? 1,
         ),
       ),
     );

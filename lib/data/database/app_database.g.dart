@@ -49,6 +49,18 @@ class $TrainingPlansTable extends TrainingPlans
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -92,6 +104,7 @@ class $TrainingPlansTable extends TrainingPlans
     goal,
     experience,
     sessionMinutes,
+    version,
     createdAt,
     updatedAt,
     isActive,
@@ -140,6 +153,12 @@ class $TrainingPlansTable extends TrainingPlans
     } else if (isInserting) {
       context.missing(_sessionMinutesMeta);
     }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -187,6 +206,10 @@ class $TrainingPlansTable extends TrainingPlans
         DriftSqlType.int,
         data['${effectivePrefix}session_minutes'],
       )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}created_at'],
@@ -213,6 +236,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
   final String goal;
   final String experience;
   final int sessionMinutes;
+  final int version;
   final String createdAt;
   final String updatedAt;
   final bool isActive;
@@ -221,6 +245,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
     required this.goal,
     required this.experience,
     required this.sessionMinutes,
+    required this.version,
     required this.createdAt,
     required this.updatedAt,
     required this.isActive,
@@ -232,6 +257,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
     map['goal'] = Variable<String>(goal);
     map['experience'] = Variable<String>(experience);
     map['session_minutes'] = Variable<int>(sessionMinutes);
+    map['version'] = Variable<int>(version);
     map['created_at'] = Variable<String>(createdAt);
     map['updated_at'] = Variable<String>(updatedAt);
     map['is_active'] = Variable<bool>(isActive);
@@ -244,6 +270,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
       goal: Value(goal),
       experience: Value(experience),
       sessionMinutes: Value(sessionMinutes),
+      version: Value(version),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       isActive: Value(isActive),
@@ -260,6 +287,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
       goal: serializer.fromJson<String>(json['goal']),
       experience: serializer.fromJson<String>(json['experience']),
       sessionMinutes: serializer.fromJson<int>(json['sessionMinutes']),
+      version: serializer.fromJson<int>(json['version']),
       createdAt: serializer.fromJson<String>(json['createdAt']),
       updatedAt: serializer.fromJson<String>(json['updatedAt']),
       isActive: serializer.fromJson<bool>(json['isActive']),
@@ -273,6 +301,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
       'goal': serializer.toJson<String>(goal),
       'experience': serializer.toJson<String>(experience),
       'sessionMinutes': serializer.toJson<int>(sessionMinutes),
+      'version': serializer.toJson<int>(version),
       'createdAt': serializer.toJson<String>(createdAt),
       'updatedAt': serializer.toJson<String>(updatedAt),
       'isActive': serializer.toJson<bool>(isActive),
@@ -284,6 +313,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
     String? goal,
     String? experience,
     int? sessionMinutes,
+    int? version,
     String? createdAt,
     String? updatedAt,
     bool? isActive,
@@ -292,6 +322,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
     goal: goal ?? this.goal,
     experience: experience ?? this.experience,
     sessionMinutes: sessionMinutes ?? this.sessionMinutes,
+    version: version ?? this.version,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     isActive: isActive ?? this.isActive,
@@ -306,6 +337,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
       sessionMinutes: data.sessionMinutes.present
           ? data.sessionMinutes.value
           : this.sessionMinutes,
+      version: data.version.present ? data.version.value : this.version,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
@@ -319,6 +351,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
           ..write('goal: $goal, ')
           ..write('experience: $experience, ')
           ..write('sessionMinutes: $sessionMinutes, ')
+          ..write('version: $version, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('isActive: $isActive')
@@ -332,6 +365,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
     goal,
     experience,
     sessionMinutes,
+    version,
     createdAt,
     updatedAt,
     isActive,
@@ -344,6 +378,7 @@ class TrainingPlan extends DataClass implements Insertable<TrainingPlan> {
           other.goal == this.goal &&
           other.experience == this.experience &&
           other.sessionMinutes == this.sessionMinutes &&
+          other.version == this.version &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.isActive == this.isActive);
@@ -354,6 +389,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
   final Value<String> goal;
   final Value<String> experience;
   final Value<int> sessionMinutes;
+  final Value<int> version;
   final Value<String> createdAt;
   final Value<String> updatedAt;
   final Value<bool> isActive;
@@ -363,6 +399,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
     this.goal = const Value.absent(),
     this.experience = const Value.absent(),
     this.sessionMinutes = const Value.absent(),
+    this.version = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.isActive = const Value.absent(),
@@ -373,6 +410,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
     required String goal,
     required String experience,
     required int sessionMinutes,
+    this.version = const Value.absent(),
     required String createdAt,
     required String updatedAt,
     this.isActive = const Value.absent(),
@@ -388,6 +426,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
     Expression<String>? goal,
     Expression<String>? experience,
     Expression<int>? sessionMinutes,
+    Expression<int>? version,
     Expression<String>? createdAt,
     Expression<String>? updatedAt,
     Expression<bool>? isActive,
@@ -398,6 +437,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
       if (goal != null) 'goal': goal,
       if (experience != null) 'experience': experience,
       if (sessionMinutes != null) 'session_minutes': sessionMinutes,
+      if (version != null) 'version': version,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (isActive != null) 'is_active': isActive,
@@ -410,6 +450,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
     Value<String>? goal,
     Value<String>? experience,
     Value<int>? sessionMinutes,
+    Value<int>? version,
     Value<String>? createdAt,
     Value<String>? updatedAt,
     Value<bool>? isActive,
@@ -420,6 +461,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
       goal: goal ?? this.goal,
       experience: experience ?? this.experience,
       sessionMinutes: sessionMinutes ?? this.sessionMinutes,
+      version: version ?? this.version,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isActive: isActive ?? this.isActive,
@@ -441,6 +483,9 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
     }
     if (sessionMinutes.present) {
       map['session_minutes'] = Variable<int>(sessionMinutes.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<String>(createdAt.value);
@@ -464,6 +509,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlan> {
           ..write('goal: $goal, ')
           ..write('experience: $experience, ')
           ..write('sessionMinutes: $sessionMinutes, ')
+          ..write('version: $version, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('isActive: $isActive, ')
@@ -1113,6 +1159,29 @@ class $WorkoutSessionsTable extends WorkoutSessions
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _planVersionMeta = const VerificationMeta(
+    'planVersion',
+  );
+  @override
+  late final GeneratedColumn<int> planVersion = GeneratedColumn<int>(
+    'plan_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _planSnapshotMeta = const VerificationMeta(
+    'planSnapshot',
+  );
+  @override
+  late final GeneratedColumn<String> planSnapshot = GeneratedColumn<String>(
+    'plan_snapshot',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _durationMinutesMeta = const VerificationMeta(
     'durationMinutes',
   );
@@ -1156,6 +1225,8 @@ class $WorkoutSessionsTable extends WorkoutSessions
     completedAt,
     title,
     goal,
+    planVersion,
+    planSnapshot,
     durationMinutes,
     exerciseCount,
     completedOutsideApp,
@@ -1220,6 +1291,24 @@ class $WorkoutSessionsTable extends WorkoutSessions
       );
     } else if (isInserting) {
       context.missing(_goalMeta);
+    }
+    if (data.containsKey('plan_version')) {
+      context.handle(
+        _planVersionMeta,
+        planVersion.isAcceptableOrUnknown(
+          data['plan_version']!,
+          _planVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('plan_snapshot')) {
+      context.handle(
+        _planSnapshotMeta,
+        planSnapshot.isAcceptableOrUnknown(
+          data['plan_snapshot']!,
+          _planSnapshotMeta,
+        ),
+      );
     }
     if (data.containsKey('duration_minutes')) {
       context.handle(
@@ -1287,6 +1376,14 @@ class $WorkoutSessionsTable extends WorkoutSessions
         DriftSqlType.string,
         data['${effectivePrefix}goal'],
       )!,
+      planVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_version'],
+      )!,
+      planSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plan_snapshot'],
+      ),
       durationMinutes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}duration_minutes'],
@@ -1315,6 +1412,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
   final String completedAt;
   final String title;
   final String goal;
+  final int planVersion;
+  final String? planSnapshot;
   final int durationMinutes;
   final int exerciseCount;
   final bool completedOutsideApp;
@@ -1325,6 +1424,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     required this.completedAt,
     required this.title,
     required this.goal,
+    required this.planVersion,
+    this.planSnapshot,
     required this.durationMinutes,
     required this.exerciseCount,
     required this.completedOutsideApp,
@@ -1340,6 +1441,10 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     map['completed_at'] = Variable<String>(completedAt);
     map['title'] = Variable<String>(title);
     map['goal'] = Variable<String>(goal);
+    map['plan_version'] = Variable<int>(planVersion);
+    if (!nullToAbsent || planSnapshot != null) {
+      map['plan_snapshot'] = Variable<String>(planSnapshot);
+    }
     map['duration_minutes'] = Variable<int>(durationMinutes);
     map['exercise_count'] = Variable<int>(exerciseCount);
     map['completed_outside_app'] = Variable<bool>(completedOutsideApp);
@@ -1356,6 +1461,10 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
       completedAt: Value(completedAt),
       title: Value(title),
       goal: Value(goal),
+      planVersion: Value(planVersion),
+      planSnapshot: planSnapshot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planSnapshot),
       durationMinutes: Value(durationMinutes),
       exerciseCount: Value(exerciseCount),
       completedOutsideApp: Value(completedOutsideApp),
@@ -1374,6 +1483,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
       completedAt: serializer.fromJson<String>(json['completedAt']),
       title: serializer.fromJson<String>(json['title']),
       goal: serializer.fromJson<String>(json['goal']),
+      planVersion: serializer.fromJson<int>(json['planVersion']),
+      planSnapshot: serializer.fromJson<String?>(json['planSnapshot']),
       durationMinutes: serializer.fromJson<int>(json['durationMinutes']),
       exerciseCount: serializer.fromJson<int>(json['exerciseCount']),
       completedOutsideApp: serializer.fromJson<bool>(
@@ -1391,6 +1502,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
       'completedAt': serializer.toJson<String>(completedAt),
       'title': serializer.toJson<String>(title),
       'goal': serializer.toJson<String>(goal),
+      'planVersion': serializer.toJson<int>(planVersion),
+      'planSnapshot': serializer.toJson<String?>(planSnapshot),
       'durationMinutes': serializer.toJson<int>(durationMinutes),
       'exerciseCount': serializer.toJson<int>(exerciseCount),
       'completedOutsideApp': serializer.toJson<bool>(completedOutsideApp),
@@ -1404,6 +1517,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     String? completedAt,
     String? title,
     String? goal,
+    int? planVersion,
+    Value<String?> planSnapshot = const Value.absent(),
     int? durationMinutes,
     int? exerciseCount,
     bool? completedOutsideApp,
@@ -1414,6 +1529,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     completedAt: completedAt ?? this.completedAt,
     title: title ?? this.title,
     goal: goal ?? this.goal,
+    planVersion: planVersion ?? this.planVersion,
+    planSnapshot: planSnapshot.present ? planSnapshot.value : this.planSnapshot,
     durationMinutes: durationMinutes ?? this.durationMinutes,
     exerciseCount: exerciseCount ?? this.exerciseCount,
     completedOutsideApp: completedOutsideApp ?? this.completedOutsideApp,
@@ -1430,6 +1547,12 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
           : this.completedAt,
       title: data.title.present ? data.title.value : this.title,
       goal: data.goal.present ? data.goal.value : this.goal,
+      planVersion: data.planVersion.present
+          ? data.planVersion.value
+          : this.planVersion,
+      planSnapshot: data.planSnapshot.present
+          ? data.planSnapshot.value
+          : this.planSnapshot,
       durationMinutes: data.durationMinutes.present
           ? data.durationMinutes.value
           : this.durationMinutes,
@@ -1451,6 +1574,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
           ..write('completedAt: $completedAt, ')
           ..write('title: $title, ')
           ..write('goal: $goal, ')
+          ..write('planVersion: $planVersion, ')
+          ..write('planSnapshot: $planSnapshot, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('exerciseCount: $exerciseCount, ')
           ..write('completedOutsideApp: $completedOutsideApp')
@@ -1466,6 +1591,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     completedAt,
     title,
     goal,
+    planVersion,
+    planSnapshot,
     durationMinutes,
     exerciseCount,
     completedOutsideApp,
@@ -1480,6 +1607,8 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
           other.completedAt == this.completedAt &&
           other.title == this.title &&
           other.goal == this.goal &&
+          other.planVersion == this.planVersion &&
+          other.planSnapshot == this.planSnapshot &&
           other.durationMinutes == this.durationMinutes &&
           other.exerciseCount == this.exerciseCount &&
           other.completedOutsideApp == this.completedOutsideApp);
@@ -1492,6 +1621,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
   final Value<String> completedAt;
   final Value<String> title;
   final Value<String> goal;
+  final Value<int> planVersion;
+  final Value<String?> planSnapshot;
   final Value<int> durationMinutes;
   final Value<int> exerciseCount;
   final Value<bool> completedOutsideApp;
@@ -1503,6 +1634,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
     this.completedAt = const Value.absent(),
     this.title = const Value.absent(),
     this.goal = const Value.absent(),
+    this.planVersion = const Value.absent(),
+    this.planSnapshot = const Value.absent(),
     this.durationMinutes = const Value.absent(),
     this.exerciseCount = const Value.absent(),
     this.completedOutsideApp = const Value.absent(),
@@ -1515,6 +1648,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
     required String completedAt,
     required String title,
     required String goal,
+    this.planVersion = const Value.absent(),
+    this.planSnapshot = const Value.absent(),
     required int durationMinutes,
     required int exerciseCount,
     required bool completedOutsideApp,
@@ -1534,6 +1669,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
     Expression<String>? completedAt,
     Expression<String>? title,
     Expression<String>? goal,
+    Expression<int>? planVersion,
+    Expression<String>? planSnapshot,
     Expression<int>? durationMinutes,
     Expression<int>? exerciseCount,
     Expression<bool>? completedOutsideApp,
@@ -1546,6 +1683,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
       if (completedAt != null) 'completed_at': completedAt,
       if (title != null) 'title': title,
       if (goal != null) 'goal': goal,
+      if (planVersion != null) 'plan_version': planVersion,
+      if (planSnapshot != null) 'plan_snapshot': planSnapshot,
       if (durationMinutes != null) 'duration_minutes': durationMinutes,
       if (exerciseCount != null) 'exercise_count': exerciseCount,
       if (completedOutsideApp != null)
@@ -1561,6 +1700,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
     Value<String>? completedAt,
     Value<String>? title,
     Value<String>? goal,
+    Value<int>? planVersion,
+    Value<String?>? planSnapshot,
     Value<int>? durationMinutes,
     Value<int>? exerciseCount,
     Value<bool>? completedOutsideApp,
@@ -1573,6 +1714,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
       completedAt: completedAt ?? this.completedAt,
       title: title ?? this.title,
       goal: goal ?? this.goal,
+      planVersion: planVersion ?? this.planVersion,
+      planSnapshot: planSnapshot ?? this.planSnapshot,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       exerciseCount: exerciseCount ?? this.exerciseCount,
       completedOutsideApp: completedOutsideApp ?? this.completedOutsideApp,
@@ -1601,6 +1744,12 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
     if (goal.present) {
       map['goal'] = Variable<String>(goal.value);
     }
+    if (planVersion.present) {
+      map['plan_version'] = Variable<int>(planVersion.value);
+    }
+    if (planSnapshot.present) {
+      map['plan_snapshot'] = Variable<String>(planSnapshot.value);
+    }
     if (durationMinutes.present) {
       map['duration_minutes'] = Variable<int>(durationMinutes.value);
     }
@@ -1625,6 +1774,8 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
           ..write('completedAt: $completedAt, ')
           ..write('title: $title, ')
           ..write('goal: $goal, ')
+          ..write('planVersion: $planVersion, ')
+          ..write('planSnapshot: $planSnapshot, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('exerciseCount: $exerciseCount, ')
           ..write('completedOutsideApp: $completedOutsideApp, ')
@@ -1687,8 +1838,25 @@ class $WorkoutSessionExercisesTable extends WorkoutSessionExercises
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _catalogIdMeta = const VerificationMeta(
+    'catalogId',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, sessionId, position, name];
+  late final GeneratedColumn<String> catalogId = GeneratedColumn<String>(
+    'catalog_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    position,
+    name,
+    catalogId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1728,6 +1896,12 @@ class $WorkoutSessionExercisesTable extends WorkoutSessionExercises
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('catalog_id')) {
+      context.handle(
+        _catalogIdMeta,
+        catalogId.isAcceptableOrUnknown(data['catalog_id']!, _catalogIdMeta),
+      );
+    }
     return context;
   }
 
@@ -1757,6 +1931,10 @@ class $WorkoutSessionExercisesTable extends WorkoutSessionExercises
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      catalogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}catalog_id'],
+      ),
     );
   }
 
@@ -1772,11 +1950,13 @@ class WorkoutSessionExercise extends DataClass
   final String sessionId;
   final int position;
   final String name;
+  final String? catalogId;
   const WorkoutSessionExercise({
     required this.id,
     required this.sessionId,
     required this.position,
     required this.name,
+    this.catalogId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1785,6 +1965,9 @@ class WorkoutSessionExercise extends DataClass
     map['session_id'] = Variable<String>(sessionId);
     map['position'] = Variable<int>(position);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || catalogId != null) {
+      map['catalog_id'] = Variable<String>(catalogId);
+    }
     return map;
   }
 
@@ -1794,6 +1977,9 @@ class WorkoutSessionExercise extends DataClass
       sessionId: Value(sessionId),
       position: Value(position),
       name: Value(name),
+      catalogId: catalogId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(catalogId),
     );
   }
 
@@ -1807,6 +1993,7 @@ class WorkoutSessionExercise extends DataClass
       sessionId: serializer.fromJson<String>(json['sessionId']),
       position: serializer.fromJson<int>(json['position']),
       name: serializer.fromJson<String>(json['name']),
+      catalogId: serializer.fromJson<String?>(json['catalogId']),
     );
   }
   @override
@@ -1817,6 +2004,7 @@ class WorkoutSessionExercise extends DataClass
       'sessionId': serializer.toJson<String>(sessionId),
       'position': serializer.toJson<int>(position),
       'name': serializer.toJson<String>(name),
+      'catalogId': serializer.toJson<String?>(catalogId),
     };
   }
 
@@ -1825,11 +2013,13 @@ class WorkoutSessionExercise extends DataClass
     String? sessionId,
     int? position,
     String? name,
+    Value<String?> catalogId = const Value.absent(),
   }) => WorkoutSessionExercise(
     id: id ?? this.id,
     sessionId: sessionId ?? this.sessionId,
     position: position ?? this.position,
     name: name ?? this.name,
+    catalogId: catalogId.present ? catalogId.value : this.catalogId,
   );
   WorkoutSessionExercise copyWithCompanion(
     WorkoutSessionExercisesCompanion data,
@@ -1839,6 +2029,7 @@ class WorkoutSessionExercise extends DataClass
       sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
       position: data.position.present ? data.position.value : this.position,
       name: data.name.present ? data.name.value : this.name,
+      catalogId: data.catalogId.present ? data.catalogId.value : this.catalogId,
     );
   }
 
@@ -1848,13 +2039,14 @@ class WorkoutSessionExercise extends DataClass
           ..write('id: $id, ')
           ..write('sessionId: $sessionId, ')
           ..write('position: $position, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('catalogId: $catalogId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, sessionId, position, name);
+  int get hashCode => Object.hash(id, sessionId, position, name, catalogId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1862,7 +2054,8 @@ class WorkoutSessionExercise extends DataClass
           other.id == this.id &&
           other.sessionId == this.sessionId &&
           other.position == this.position &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.catalogId == this.catalogId);
 }
 
 class WorkoutSessionExercisesCompanion
@@ -1871,17 +2064,20 @@ class WorkoutSessionExercisesCompanion
   final Value<String> sessionId;
   final Value<int> position;
   final Value<String> name;
+  final Value<String?> catalogId;
   const WorkoutSessionExercisesCompanion({
     this.id = const Value.absent(),
     this.sessionId = const Value.absent(),
     this.position = const Value.absent(),
     this.name = const Value.absent(),
+    this.catalogId = const Value.absent(),
   });
   WorkoutSessionExercisesCompanion.insert({
     this.id = const Value.absent(),
     required String sessionId,
     required int position,
     required String name,
+    this.catalogId = const Value.absent(),
   }) : sessionId = Value(sessionId),
        position = Value(position),
        name = Value(name);
@@ -1890,12 +2086,14 @@ class WorkoutSessionExercisesCompanion
     Expression<String>? sessionId,
     Expression<int>? position,
     Expression<String>? name,
+    Expression<String>? catalogId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (sessionId != null) 'session_id': sessionId,
       if (position != null) 'position': position,
       if (name != null) 'name': name,
+      if (catalogId != null) 'catalog_id': catalogId,
     });
   }
 
@@ -1904,12 +2102,14 @@ class WorkoutSessionExercisesCompanion
     Value<String>? sessionId,
     Value<int>? position,
     Value<String>? name,
+    Value<String?>? catalogId,
   }) {
     return WorkoutSessionExercisesCompanion(
       id: id ?? this.id,
       sessionId: sessionId ?? this.sessionId,
       position: position ?? this.position,
       name: name ?? this.name,
+      catalogId: catalogId ?? this.catalogId,
     );
   }
 
@@ -1928,6 +2128,9 @@ class WorkoutSessionExercisesCompanion
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (catalogId.present) {
+      map['catalog_id'] = Variable<String>(catalogId.value);
+    }
     return map;
   }
 
@@ -1937,7 +2140,8 @@ class WorkoutSessionExercisesCompanion
           ..write('id: $id, ')
           ..write('sessionId: $sessionId, ')
           ..write('position: $position, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('catalogId: $catalogId')
           ..write(')'))
         .toString();
   }
@@ -2510,6 +2714,30 @@ class $ScheduledTrainingSessionsTable extends ScheduledTrainingSessions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _planVersionMeta = const VerificationMeta(
+    'planVersion',
+  );
+  @override
+  late final GeneratedColumn<int> planVersion = GeneratedColumn<int>(
+    'plan_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _planSnapshotMeta = const VerificationMeta(
+    'planSnapshot',
+  );
+  @override
+  late final GeneratedColumn<String> planSnapshot = GeneratedColumn<String>(
+    'plan_snapshot',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
@@ -2530,6 +2758,8 @@ class $ScheduledTrainingSessionsTable extends ScheduledTrainingSessions
     focus,
     durationMinutes,
     exerciseCount,
+    planVersion,
+    planSnapshot,
     status,
   ];
   @override
@@ -2618,6 +2848,24 @@ class $ScheduledTrainingSessionsTable extends ScheduledTrainingSessions
     } else if (isInserting) {
       context.missing(_exerciseCountMeta);
     }
+    if (data.containsKey('plan_version')) {
+      context.handle(
+        _planVersionMeta,
+        planVersion.isAcceptableOrUnknown(
+          data['plan_version']!,
+          _planVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('plan_snapshot')) {
+      context.handle(
+        _planSnapshotMeta,
+        planSnapshot.isAcceptableOrUnknown(
+          data['plan_snapshot']!,
+          _planSnapshotMeta,
+        ),
+      );
+    }
     if (data.containsKey('status')) {
       context.handle(
         _statusMeta,
@@ -2668,6 +2916,14 @@ class $ScheduledTrainingSessionsTable extends ScheduledTrainingSessions
         DriftSqlType.int,
         data['${effectivePrefix}exercise_count'],
       )!,
+      planVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_version'],
+      )!,
+      planSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plan_snapshot'],
+      )!,
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}status'],
@@ -2691,6 +2947,8 @@ class ScheduledTrainingSession extends DataClass
   final String focus;
   final int durationMinutes;
   final int exerciseCount;
+  final int planVersion;
+  final String planSnapshot;
   final String status;
   const ScheduledTrainingSession({
     required this.id,
@@ -2701,6 +2959,8 @@ class ScheduledTrainingSession extends DataClass
     required this.focus,
     required this.durationMinutes,
     required this.exerciseCount,
+    required this.planVersion,
+    required this.planSnapshot,
     required this.status,
   });
   @override
@@ -2716,6 +2976,8 @@ class ScheduledTrainingSession extends DataClass
     map['focus'] = Variable<String>(focus);
     map['duration_minutes'] = Variable<int>(durationMinutes);
     map['exercise_count'] = Variable<int>(exerciseCount);
+    map['plan_version'] = Variable<int>(planVersion);
+    map['plan_snapshot'] = Variable<String>(planSnapshot);
     map['status'] = Variable<String>(status);
     return map;
   }
@@ -2732,6 +2994,8 @@ class ScheduledTrainingSession extends DataClass
       focus: Value(focus),
       durationMinutes: Value(durationMinutes),
       exerciseCount: Value(exerciseCount),
+      planVersion: Value(planVersion),
+      planSnapshot: Value(planSnapshot),
       status: Value(status),
     );
   }
@@ -2750,6 +3014,8 @@ class ScheduledTrainingSession extends DataClass
       focus: serializer.fromJson<String>(json['focus']),
       durationMinutes: serializer.fromJson<int>(json['durationMinutes']),
       exerciseCount: serializer.fromJson<int>(json['exerciseCount']),
+      planVersion: serializer.fromJson<int>(json['planVersion']),
+      planSnapshot: serializer.fromJson<String>(json['planSnapshot']),
       status: serializer.fromJson<String>(json['status']),
     );
   }
@@ -2765,6 +3031,8 @@ class ScheduledTrainingSession extends DataClass
       'focus': serializer.toJson<String>(focus),
       'durationMinutes': serializer.toJson<int>(durationMinutes),
       'exerciseCount': serializer.toJson<int>(exerciseCount),
+      'planVersion': serializer.toJson<int>(planVersion),
+      'planSnapshot': serializer.toJson<String>(planSnapshot),
       'status': serializer.toJson<String>(status),
     };
   }
@@ -2778,6 +3046,8 @@ class ScheduledTrainingSession extends DataClass
     String? focus,
     int? durationMinutes,
     int? exerciseCount,
+    int? planVersion,
+    String? planSnapshot,
     String? status,
   }) => ScheduledTrainingSession(
     id: id ?? this.id,
@@ -2788,6 +3058,8 @@ class ScheduledTrainingSession extends DataClass
     focus: focus ?? this.focus,
     durationMinutes: durationMinutes ?? this.durationMinutes,
     exerciseCount: exerciseCount ?? this.exerciseCount,
+    planVersion: planVersion ?? this.planVersion,
+    planSnapshot: planSnapshot ?? this.planSnapshot,
     status: status ?? this.status,
   );
   ScheduledTrainingSession copyWithCompanion(
@@ -2812,6 +3084,12 @@ class ScheduledTrainingSession extends DataClass
       exerciseCount: data.exerciseCount.present
           ? data.exerciseCount.value
           : this.exerciseCount,
+      planVersion: data.planVersion.present
+          ? data.planVersion.value
+          : this.planVersion,
+      planSnapshot: data.planSnapshot.present
+          ? data.planSnapshot.value
+          : this.planSnapshot,
       status: data.status.present ? data.status.value : this.status,
     );
   }
@@ -2827,6 +3105,8 @@ class ScheduledTrainingSession extends DataClass
           ..write('focus: $focus, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('exerciseCount: $exerciseCount, ')
+          ..write('planVersion: $planVersion, ')
+          ..write('planSnapshot: $planSnapshot, ')
           ..write('status: $status')
           ..write(')'))
         .toString();
@@ -2842,6 +3122,8 @@ class ScheduledTrainingSession extends DataClass
     focus,
     durationMinutes,
     exerciseCount,
+    planVersion,
+    planSnapshot,
     status,
   );
   @override
@@ -2856,6 +3138,8 @@ class ScheduledTrainingSession extends DataClass
           other.focus == this.focus &&
           other.durationMinutes == this.durationMinutes &&
           other.exerciseCount == this.exerciseCount &&
+          other.planVersion == this.planVersion &&
+          other.planSnapshot == this.planSnapshot &&
           other.status == this.status);
 }
 
@@ -2869,6 +3153,8 @@ class ScheduledTrainingSessionsCompanion
   final Value<String> focus;
   final Value<int> durationMinutes;
   final Value<int> exerciseCount;
+  final Value<int> planVersion;
+  final Value<String> planSnapshot;
   final Value<String> status;
   final Value<int> rowid;
   const ScheduledTrainingSessionsCompanion({
@@ -2880,6 +3166,8 @@ class ScheduledTrainingSessionsCompanion
     this.focus = const Value.absent(),
     this.durationMinutes = const Value.absent(),
     this.exerciseCount = const Value.absent(),
+    this.planVersion = const Value.absent(),
+    this.planSnapshot = const Value.absent(),
     this.status = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -2892,6 +3180,8 @@ class ScheduledTrainingSessionsCompanion
     required String focus,
     required int durationMinutes,
     required int exerciseCount,
+    this.planVersion = const Value.absent(),
+    this.planSnapshot = const Value.absent(),
     this.status = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -2910,6 +3200,8 @@ class ScheduledTrainingSessionsCompanion
     Expression<String>? focus,
     Expression<int>? durationMinutes,
     Expression<int>? exerciseCount,
+    Expression<int>? planVersion,
+    Expression<String>? planSnapshot,
     Expression<String>? status,
     Expression<int>? rowid,
   }) {
@@ -2922,6 +3214,8 @@ class ScheduledTrainingSessionsCompanion
       if (focus != null) 'focus': focus,
       if (durationMinutes != null) 'duration_minutes': durationMinutes,
       if (exerciseCount != null) 'exercise_count': exerciseCount,
+      if (planVersion != null) 'plan_version': planVersion,
+      if (planSnapshot != null) 'plan_snapshot': planSnapshot,
       if (status != null) 'status': status,
       if (rowid != null) 'rowid': rowid,
     });
@@ -2936,6 +3230,8 @@ class ScheduledTrainingSessionsCompanion
     Value<String>? focus,
     Value<int>? durationMinutes,
     Value<int>? exerciseCount,
+    Value<int>? planVersion,
+    Value<String>? planSnapshot,
     Value<String>? status,
     Value<int>? rowid,
   }) {
@@ -2948,6 +3244,8 @@ class ScheduledTrainingSessionsCompanion
       focus: focus ?? this.focus,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       exerciseCount: exerciseCount ?? this.exerciseCount,
+      planVersion: planVersion ?? this.planVersion,
+      planSnapshot: planSnapshot ?? this.planSnapshot,
       status: status ?? this.status,
       rowid: rowid ?? this.rowid,
     );
@@ -2980,6 +3278,12 @@ class ScheduledTrainingSessionsCompanion
     if (exerciseCount.present) {
       map['exercise_count'] = Variable<int>(exerciseCount.value);
     }
+    if (planVersion.present) {
+      map['plan_version'] = Variable<int>(planVersion.value);
+    }
+    if (planSnapshot.present) {
+      map['plan_snapshot'] = Variable<String>(planSnapshot.value);
+    }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
@@ -3000,6 +3304,8 @@ class ScheduledTrainingSessionsCompanion
           ..write('focus: $focus, ')
           ..write('durationMinutes: $durationMinutes, ')
           ..write('exerciseCount: $exerciseCount, ')
+          ..write('planVersion: $planVersion, ')
+          ..write('planSnapshot: $planSnapshot, ')
           ..write('status: $status, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3685,6 +3991,7 @@ typedef $$TrainingPlansTableCreateCompanionBuilder =
       required String goal,
       required String experience,
       required int sessionMinutes,
+      Value<int> version,
       required String createdAt,
       required String updatedAt,
       Value<bool> isActive,
@@ -3696,6 +4003,7 @@ typedef $$TrainingPlansTableUpdateCompanionBuilder =
       Value<String> goal,
       Value<String> experience,
       Value<int> sessionMinutes,
+      Value<int> version,
       Value<String> createdAt,
       Value<String> updatedAt,
       Value<bool> isActive,
@@ -3802,6 +4110,11 @@ class $$TrainingPlansTableFilterComposer
 
   ColumnFilters<int> get sessionMinutes => $composableBuilder(
     column: $table.sessionMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3926,6 +4239,11 @@ class $$TrainingPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -3966,6 +4284,9 @@ class $$TrainingPlansTableAnnotationComposer
     column: $table.sessionMinutes,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
 
   GeneratedColumn<String> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -4089,6 +4410,7 @@ class $$TrainingPlansTableTableManager
                 Value<String> goal = const Value.absent(),
                 Value<String> experience = const Value.absent(),
                 Value<int> sessionMinutes = const Value.absent(),
+                Value<int> version = const Value.absent(),
                 Value<String> createdAt = const Value.absent(),
                 Value<String> updatedAt = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
@@ -4098,6 +4420,7 @@ class $$TrainingPlansTableTableManager
                 goal: goal,
                 experience: experience,
                 sessionMinutes: sessionMinutes,
+                version: version,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 isActive: isActive,
@@ -4109,6 +4432,7 @@ class $$TrainingPlansTableTableManager
                 required String goal,
                 required String experience,
                 required int sessionMinutes,
+                Value<int> version = const Value.absent(),
                 required String createdAt,
                 required String updatedAt,
                 Value<bool> isActive = const Value.absent(),
@@ -4118,6 +4442,7 @@ class $$TrainingPlansTableTableManager
                 goal: goal,
                 experience: experience,
                 sessionMinutes: sessionMinutes,
+                version: version,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 isActive: isActive,
@@ -4834,6 +5159,8 @@ typedef $$WorkoutSessionsTableCreateCompanionBuilder =
       required String completedAt,
       required String title,
       required String goal,
+      Value<int> planVersion,
+      Value<String?> planSnapshot,
       required int durationMinutes,
       required int exerciseCount,
       required bool completedOutsideApp,
@@ -4847,6 +5174,8 @@ typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
       Value<String> completedAt,
       Value<String> title,
       Value<String> goal,
+      Value<int> planVersion,
+      Value<String?> planSnapshot,
       Value<int> durationMinutes,
       Value<int> exerciseCount,
       Value<bool> completedOutsideApp,
@@ -4958,6 +5287,16 @@ class $$WorkoutSessionsTableFilterComposer
 
   ColumnFilters<String> get goal => $composableBuilder(
     column: $table.goal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planVersion => $composableBuilder(
+    column: $table.planVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get planSnapshot => $composableBuilder(
+    column: $table.planSnapshot,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5085,6 +5424,16 @@ class $$WorkoutSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get planVersion => $composableBuilder(
+    column: $table.planVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get planSnapshot => $composableBuilder(
+    column: $table.planSnapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get durationMinutes => $composableBuilder(
     column: $table.durationMinutes,
     builder: (column) => ColumnOrderings(column),
@@ -5151,6 +5500,16 @@ class $$WorkoutSessionsTableAnnotationComposer
 
   GeneratedColumn<String> get goal =>
       $composableBuilder(column: $table.goal, builder: (column) => column);
+
+  GeneratedColumn<int> get planVersion => $composableBuilder(
+    column: $table.planVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get planSnapshot => $composableBuilder(
+    column: $table.planSnapshot,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get durationMinutes => $composableBuilder(
     column: $table.durationMinutes,
@@ -5284,6 +5643,8 @@ class $$WorkoutSessionsTableTableManager
                 Value<String> completedAt = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String> goal = const Value.absent(),
+                Value<int> planVersion = const Value.absent(),
+                Value<String?> planSnapshot = const Value.absent(),
                 Value<int> durationMinutes = const Value.absent(),
                 Value<int> exerciseCount = const Value.absent(),
                 Value<bool> completedOutsideApp = const Value.absent(),
@@ -5295,6 +5656,8 @@ class $$WorkoutSessionsTableTableManager
                 completedAt: completedAt,
                 title: title,
                 goal: goal,
+                planVersion: planVersion,
+                planSnapshot: planSnapshot,
                 durationMinutes: durationMinutes,
                 exerciseCount: exerciseCount,
                 completedOutsideApp: completedOutsideApp,
@@ -5308,6 +5671,8 @@ class $$WorkoutSessionsTableTableManager
                 required String completedAt,
                 required String title,
                 required String goal,
+                Value<int> planVersion = const Value.absent(),
+                Value<String?> planSnapshot = const Value.absent(),
                 required int durationMinutes,
                 required int exerciseCount,
                 required bool completedOutsideApp,
@@ -5319,6 +5684,8 @@ class $$WorkoutSessionsTableTableManager
                 completedAt: completedAt,
                 title: title,
                 goal: goal,
+                planVersion: planVersion,
+                planSnapshot: planSnapshot,
                 durationMinutes: durationMinutes,
                 exerciseCount: exerciseCount,
                 completedOutsideApp: completedOutsideApp,
@@ -5448,6 +5815,7 @@ typedef $$WorkoutSessionExercisesTableCreateCompanionBuilder =
       required String sessionId,
       required int position,
       required String name,
+      Value<String?> catalogId,
     });
 typedef $$WorkoutSessionExercisesTableUpdateCompanionBuilder =
     WorkoutSessionExercisesCompanion Function({
@@ -5455,6 +5823,7 @@ typedef $$WorkoutSessionExercisesTableUpdateCompanionBuilder =
       Value<String> sessionId,
       Value<int> position,
       Value<String> name,
+      Value<String?> catalogId,
     });
 
 final class $$WorkoutSessionExercisesTableReferences
@@ -5514,6 +5883,11 @@ class $$WorkoutSessionExercisesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get catalogId => $composableBuilder(
+    column: $table.catalogId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$WorkoutSessionsTableFilterComposer get sessionId {
     final $$WorkoutSessionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -5562,6 +5936,11 @@ class $$WorkoutSessionExercisesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get catalogId => $composableBuilder(
+    column: $table.catalogId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$WorkoutSessionsTableOrderingComposer get sessionId {
     final $$WorkoutSessionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5603,6 +5982,9 @@ class $$WorkoutSessionExercisesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get catalogId =>
+      $composableBuilder(column: $table.catalogId, builder: (column) => column);
 
   $$WorkoutSessionsTableAnnotationComposer get sessionId {
     final $$WorkoutSessionsTableAnnotationComposer composer = $composerBuilder(
@@ -5671,11 +6053,13 @@ class $$WorkoutSessionExercisesTableTableManager
                 Value<String> sessionId = const Value.absent(),
                 Value<int> position = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> catalogId = const Value.absent(),
               }) => WorkoutSessionExercisesCompanion(
                 id: id,
                 sessionId: sessionId,
                 position: position,
                 name: name,
+                catalogId: catalogId,
               ),
           createCompanionCallback:
               ({
@@ -5683,11 +6067,13 @@ class $$WorkoutSessionExercisesTableTableManager
                 required String sessionId,
                 required int position,
                 required String name,
+                Value<String?> catalogId = const Value.absent(),
               }) => WorkoutSessionExercisesCompanion.insert(
                 id: id,
                 sessionId: sessionId,
                 position: position,
                 name: name,
+                catalogId: catalogId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -6137,6 +6523,8 @@ typedef $$ScheduledTrainingSessionsTableCreateCompanionBuilder =
       required String focus,
       required int durationMinutes,
       required int exerciseCount,
+      Value<int> planVersion,
+      Value<String> planSnapshot,
       Value<String> status,
       Value<int> rowid,
     });
@@ -6150,6 +6538,8 @@ typedef $$ScheduledTrainingSessionsTableUpdateCompanionBuilder =
       Value<String> focus,
       Value<int> durationMinutes,
       Value<int> exerciseCount,
+      Value<int> planVersion,
+      Value<String> planSnapshot,
       Value<String> status,
       Value<int> rowid,
     });
@@ -6200,6 +6590,16 @@ class $$ScheduledTrainingSessionsTableFilterComposer
 
   ColumnFilters<int> get exerciseCount => $composableBuilder(
     column: $table.exerciseCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planVersion => $composableBuilder(
+    column: $table.planVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get planSnapshot => $composableBuilder(
+    column: $table.planSnapshot,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6258,6 +6658,16 @@ class $$ScheduledTrainingSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get planVersion => $composableBuilder(
+    column: $table.planVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get planSnapshot => $composableBuilder(
+    column: $table.planSnapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
@@ -6304,6 +6714,16 @@ class $$ScheduledTrainingSessionsTableAnnotationComposer
 
   GeneratedColumn<int> get exerciseCount => $composableBuilder(
     column: $table.exerciseCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get planVersion => $composableBuilder(
+    column: $table.planVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get planSnapshot => $composableBuilder(
+    column: $table.planSnapshot,
     builder: (column) => column,
   );
 
@@ -6365,6 +6785,8 @@ class $$ScheduledTrainingSessionsTableTableManager
                 Value<String> focus = const Value.absent(),
                 Value<int> durationMinutes = const Value.absent(),
                 Value<int> exerciseCount = const Value.absent(),
+                Value<int> planVersion = const Value.absent(),
+                Value<String> planSnapshot = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ScheduledTrainingSessionsCompanion(
@@ -6376,6 +6798,8 @@ class $$ScheduledTrainingSessionsTableTableManager
                 focus: focus,
                 durationMinutes: durationMinutes,
                 exerciseCount: exerciseCount,
+                planVersion: planVersion,
+                planSnapshot: planSnapshot,
                 status: status,
                 rowid: rowid,
               ),
@@ -6389,6 +6813,8 @@ class $$ScheduledTrainingSessionsTableTableManager
                 required String focus,
                 required int durationMinutes,
                 required int exerciseCount,
+                Value<int> planVersion = const Value.absent(),
+                Value<String> planSnapshot = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ScheduledTrainingSessionsCompanion.insert(
@@ -6400,6 +6826,8 @@ class $$ScheduledTrainingSessionsTableTableManager
                 focus: focus,
                 durationMinutes: durationMinutes,
                 exerciseCount: exerciseCount,
+                planVersion: planVersion,
+                planSnapshot: planSnapshot,
                 status: status,
                 rowid: rowid,
               ),
