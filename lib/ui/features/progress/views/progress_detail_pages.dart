@@ -6,6 +6,7 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/section_heading.dart';
 import '../../../../domain/models/workout_record.dart';
+import '../../../../domain/models/body_measurement.dart';
 import '../data/progress_demo_data.dart';
 import '../models/progress_models.dart';
 import '../widgets/progress_line_chart.dart';
@@ -288,19 +289,22 @@ class BodyEvolutionPage extends StatefulWidget {
     super.key,
     required this.measurements,
     required this.onSaveMeasurement,
+    required this.onDeleteMeasurement,
   });
 
   final List<MeasurementEntry> measurements;
-  final ValueChanged<MeasurementEntry> onSaveMeasurement;
+  final Future<void> Function(BodyMeasurement, {BodyMeasurement? previous})
+  onSaveMeasurement;
+  final Future<void> Function(DateTime) onDeleteMeasurement;
 
   @override
   State<BodyEvolutionPage> createState() => _BodyEvolutionPageState();
 }
 
 class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
-  late final List<MeasurementEntry> _measurements = [...widget.measurements];
+  late final List<BodyMeasurement> _measurements = [...widget.measurements];
 
-  List<MeasurementEntry> get _orderedMeasurements {
+  List<BodyMeasurement> get _orderedMeasurements {
     final entries = [..._measurements];
     entries.sort((a, b) => a.date.compareTo(b.date));
     return entries;
@@ -309,9 +313,11 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
   @override
   Widget build(BuildContext context) {
     final ordered = _orderedMeasurements;
-    final first = ordered.first;
-    final latest = ordered.last;
-    final change = latest.weightKg - first.weightKg;
+    final first = ordered.isEmpty ? null : ordered.first;
+    final latest = ordered.isEmpty ? null : ordered.last;
+    final change = first == null || latest == null
+        ? null
+        : latest.weightKg - first.weightKg;
     final values = ordered.map((entry) => entry.weightKg).toList();
     final labels = ordered
         .map((entry) => '${entry.date.day}/${entry.date.month}')
@@ -343,62 +349,80 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                AppSurfaceCard(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.x4,
-                    AppSpacing.x4,
-                    AppSpacing.x4,
-                    AppSpacing.x2,
+                if (ordered.isEmpty)
+                  AppSurfaceCard(
+                    child: Text(
+                      context.l10n.progressMeasurementsEmpty,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  )
+                else ...[
+                  AppSurfaceCard(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.x4,
+                      AppSpacing.x4,
+                      AppSpacing.x4,
+                      AppSpacing.x2,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.progressBodyWeight,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: AppSpacing.x1),
+                        Text(
+                          'kg',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.x2),
+                        ProgressLineChart(
+                          values: values,
+                          labels: labels,
+                          summary: context.l10n.progressWeightChartSummary(
+                            first!.weightKg.toStringAsFixed(1),
+                            latest!.weightKg.toStringAsFixed(1),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: AppSpacing.x3),
+                  Row(
                     children: [
-                      Text(
-                        context.l10n.progressBodyWeight,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      Expanded(
+                        child: _ValueCard(
+                          label: context.l10n.progressLastEntry,
+                          value: '${latest.weightKg.toStringAsFixed(1)} kg',
+                          icon: Icons.monitor_weight_outlined,
+                        ),
                       ),
-                      const SizedBox(height: AppSpacing.x1),
-                      Text('kg', style: Theme.of(context).textTheme.bodyMedium),
-                      const SizedBox(height: AppSpacing.x2),
-                      ProgressLineChart(
-                        values: values,
-                        labels: labels,
-                        summary: context.l10n.progressWeightChartSummary(
-                          first.weightKg.toStringAsFixed(1),
-                          latest.weightKg.toStringAsFixed(1),
+                      const SizedBox(width: AppSpacing.x3),
+                      Expanded(
+                        child: _ValueCard(
+                          label: context.l10n.progressPeriodChange,
+                          value:
+                              '${change! > 0 ? '+' : ''}${change.toStringAsFixed(1)} kg',
+                          icon: Icons.trending_up_rounded,
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: AppSpacing.x3),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _ValueCard(
-                        label: context.l10n.progressLastEntry,
-                        value: '${latest.weightKg.toStringAsFixed(1)} kg',
-                        icon: Icons.monitor_weight_outlined,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.x3),
-                    Expanded(
-                      child: _ValueCard(
-                        label: context.l10n.progressPeriodChange,
-                        value:
-                            '${change > 0 ? '+' : ''}${change.toStringAsFixed(1)} kg',
-                        icon: Icons.trending_up_rounded,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.x8),
-                SectionHeading(title: context.l10n.progressRecentMeasurements),
-                for (final entry in ordered.reversed.take(3))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                    child: _MeasurementSummaryCard(entry: entry),
+                  const SizedBox(height: AppSpacing.x8),
+                  SectionHeading(
+                    title: context.l10n.progressRecentMeasurements,
                   ),
+                  for (final entry in ordered.reversed)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                      child: _MeasurementSummaryCard(
+                        entry: entry,
+                        onEdit: () => _openMeasurementForm(entry),
+                        onDelete: () => _deleteMeasurement(entry),
+                      ),
+                    ),
+                ],
               ],
             ),
           ),
@@ -423,20 +447,70 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
     );
   }
 
-  Future<void> _openMeasurementForm() async {
-    final entry = await Navigator.of(context).push<MeasurementEntry>(
-      MaterialPageRoute<MeasurementEntry>(
-        builder: (_) => const MeasurementFormPage(),
+  Future<void> _openMeasurementForm([BodyMeasurement? previous]) async {
+    final entry = await Navigator.of(context).push<BodyMeasurement>(
+      MaterialPageRoute<BodyMeasurement>(
+        builder: (_) => MeasurementFormPage(
+          measurement: previous,
+          onSaveMeasurement: (measurement) =>
+              widget.onSaveMeasurement(measurement, previous: previous),
+        ),
       ),
     );
     if (!mounted || entry == null) return;
-    setState(() => _measurements.add(entry));
-    widget.onSaveMeasurement(entry);
+    setState(() {
+      _measurements.removeWhere((item) => item.id == previous?.id);
+      _measurements.removeWhere((item) => item.id == entry.id);
+      _measurements.add(entry);
+    });
+  }
+
+  Future<void> _deleteMeasurement(BodyMeasurement measurement) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.progressDeleteMeasurementTitle),
+        content: Text(context.l10n.progressDeleteMeasurementBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.commonRemove),
+          ),
+        ],
+      ),
+    );
+    if (shouldDelete != true) return;
+    try {
+      await widget.onDeleteMeasurement(measurement.date);
+      if (mounted) {
+        setState(
+          () => _measurements.removeWhere((item) => item.id == measurement.id),
+        );
+      }
+    } on Object {
+      if (mounted) _showSaveError();
+    }
+  }
+
+  void _showSaveError() {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(context.l10n.progressSaveFailed)));
   }
 }
 
 class MeasurementFormPage extends StatefulWidget {
-  const MeasurementFormPage({super.key});
+  const MeasurementFormPage({
+    super.key,
+    this.measurement,
+    required this.onSaveMeasurement,
+  });
+
+  final BodyMeasurement? measurement;
+  final Future<void> Function(BodyMeasurement) onSaveMeasurement;
 
   @override
   State<MeasurementFormPage> createState() => _MeasurementFormPageState();
@@ -449,7 +523,20 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
   final _waistController = TextEditingController();
   final _hipsController = TextEditingController();
   final _armController = TextEditingController();
-  DateTime _date = DateTime.now();
+  bool _isSaving = false;
+  late DateTime _date = widget.measurement?.date ?? DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    final measurement = widget.measurement;
+    if (measurement == null) return;
+    _weightController.text = _formatValue(measurement.weightKg);
+    _chestController.text = _optionalText(measurement.chestCm);
+    _waistController.text = _optionalText(measurement.waistCm);
+    _hipsController.text = _optionalText(measurement.hipsCm);
+    _armController.text = _optionalText(measurement.armCm);
+  }
 
   @override
   void dispose() {
@@ -464,7 +551,13 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.progressRegisterMeasurements)),
+      appBar: AppBar(
+        title: Text(
+          widget.measurement == null
+              ? context.l10n.progressRegisterMeasurements
+              : context.l10n.progressEditMeasurement,
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -511,34 +604,44 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                     label: context.l10n.progressBodyWeight,
                     unit: 'kg',
                     required: true,
+                    minimum: 1,
+                    maximum: 500,
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _waistController,
                     label: context.l10n.progressWaist,
                     unit: 'cm',
+                    minimum: 1,
+                    maximum: 300,
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _chestController,
                     label: context.l10n.progressChest,
                     unit: 'cm',
+                    minimum: 1,
+                    maximum: 300,
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _hipsController,
                     label: context.l10n.progressHips,
                     unit: 'cm',
+                    minimum: 1,
+                    maximum: 300,
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   _MeasurementField(
                     controller: _armController,
                     label: context.l10n.progressArm,
                     unit: 'cm',
+                    minimum: 1,
+                    maximum: 150,
                   ),
                   const SizedBox(height: AppSpacing.x6),
                   FilledButton.icon(
-                    onPressed: _save,
+                    onPressed: _isSaving ? null : _save,
                     icon: const Icon(Icons.check_rounded),
                     label: Text(context.l10n.progressSaveEntry),
                   ),
@@ -562,24 +665,35 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _date,
-      firstDate: DateTime(now.year - 5),
+      firstDate: DateTime(now.year - 100),
       lastDate: now,
     );
     if (picked != null) setState(() => _date = picked);
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.of(context).pop(
-      MeasurementEntry(
-        date: _date,
-        weightKg: double.parse(_weightController.text.replaceAll(',', '.')),
-        chestCm: _optionalValue(_chestController),
-        waistCm: _optionalValue(_waistController),
-        hipsCm: _optionalValue(_hipsController),
-        armCm: _optionalValue(_armController),
-      ),
+    final entry = BodyMeasurement(
+      date: _date,
+      weightKg: double.parse(_weightController.text.replaceAll(',', '.')),
+      chestCm: _optionalValue(_chestController),
+      waistCm: _optionalValue(_waistController),
+      hipsCm: _optionalValue(_hipsController),
+      armCm: _optionalValue(_armController),
     );
+    setState(() => _isSaving = true);
+    try {
+      await widget.onSaveMeasurement(entry);
+      if (mounted) Navigator.of(context).pop(entry);
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.progressSaveFailed)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   double? _optionalValue(TextEditingController controller) {
@@ -593,12 +707,16 @@ class _MeasurementField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.unit,
+    required this.minimum,
+    required this.maximum,
     this.required = false,
   });
 
   final TextEditingController controller;
   final String label;
   final String unit;
+  final double minimum;
+  final double maximum;
   final bool required;
 
   @override
@@ -610,6 +728,11 @@ class _MeasurementField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: required ? context.l10n.requiredField(label) : label,
         suffixText: unit,
+        helperText: context.l10n.progressValueRange(
+          _formatValue(minimum),
+          _formatValue(maximum),
+          unit,
+        ),
       ),
       validator: (text) {
         final value = text?.trim().replaceAll(',', '.') ?? '';
@@ -617,7 +740,10 @@ class _MeasurementField extends StatelessWidget {
           return required ? context.l10n.progressWeightRequired : null;
         }
         final parsed = double.tryParse(value);
-        if (parsed == null || parsed <= 0) {
+        if (parsed == null ||
+            !parsed.isFinite ||
+            parsed < minimum ||
+            parsed > maximum) {
           return context.l10n.progressInvalidValue;
         }
         return null;
@@ -721,9 +847,15 @@ class _RecordCard extends StatelessWidget {
 }
 
 class _MeasurementSummaryCard extends StatelessWidget {
-  const _MeasurementSummaryCard({required this.entry});
+  const _MeasurementSummaryCard({
+    required this.entry,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   final MeasurementEntry entry;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -776,9 +908,29 @@ class _MeasurementSummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            '${entry.weightKg.toStringAsFixed(1)} kg',
-            style: Theme.of(context).textTheme.titleMedium,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${entry.weightKg.toStringAsFixed(1)} kg',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: context.l10n.progressEditMeasurement,
+                    onPressed: onEdit,
+                    icon: const Icon(Icons.edit_outlined),
+                  ),
+                  IconButton(
+                    tooltip: context.l10n.progressDeleteMeasurement,
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete_outline_rounded),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
@@ -824,6 +976,8 @@ String _formatShortDate(DateTime date, String localeName) =>
 String _formatValue(double value) => value == value.roundToDouble()
     ? value.toStringAsFixed(0)
     : value.toStringAsFixed(1);
+
+String _optionalText(double? value) => value == null ? '' : _formatValue(value);
 
 String _setSummary(BuildContext context, WorkoutSetResult set) {
   final values = <String>[

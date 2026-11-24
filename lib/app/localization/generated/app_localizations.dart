@@ -422,6 +422,12 @@ abstract class AppLocalizations {
   /// **'Source link: {url}'**
   String exerciseSourceLink(String url);
 
+  /// No description provided for @exerciseSourceOpenFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the source.'**
+  String get exerciseSourceOpenFailure;
+
   /// No description provided for @exerciseViewAlternatives.
   ///
   /// In en, this message translates to:
@@ -1745,10 +1751,11 @@ abstract class AppLocalizations {
   /// No description provided for @backupConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'Local data will be replaced with the backup from {date}. It includes {records} workout history entries, {schedule} scheduled workouts, and {goals} goals. This cannot be undone.'**
+  /// **'Local data will be replaced with the backup from {date}. It includes {records} workout history entries, {schedule} scheduled workouts, {goals} goals, and {measurements} measurement entries. This cannot be undone.'**
   String backupConfirmMessage(
     Object date,
     Object goals,
+    Object measurements,
     Object records,
     Object schedule,
   );
@@ -3045,8 +3052,50 @@ abstract class AppLocalizations {
   /// No description provided for @progressMeasurementsSavedNote.
   ///
   /// In en, this message translates to:
-  /// **'This entry is kept while the app is open.'**
+  /// **'Your measurements are saved on this device.'**
   String get progressMeasurementsSavedNote;
+
+  /// No description provided for @progressMeasurementsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No measurements yet. Log your weight and measurements to track changes over time.'**
+  String get progressMeasurementsEmpty;
+
+  /// No description provided for @progressEditMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit measurement'**
+  String get progressEditMeasurement;
+
+  /// No description provided for @progressDeleteMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete measurement'**
+  String get progressDeleteMeasurement;
+
+  /// No description provided for @progressDeleteMeasurementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry'**
+  String get progressDeleteMeasurementTitle;
+
+  /// No description provided for @progressDeleteMeasurementBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to remove the measurements from this day? This cannot be undone.'**
+  String get progressDeleteMeasurementBody;
+
+  /// No description provided for @progressSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The entry could not be saved. Try again.'**
+  String get progressSaveFailed;
+
+  /// No description provided for @progressValueRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed range: {minimum}–{maximum} {unit}'**
+  String progressValueRange(Object maximum, Object minimum, Object unit);
 
   /// No description provided for @progressInvalidValue.
   ///

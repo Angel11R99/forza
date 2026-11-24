@@ -4,17 +4,19 @@ import 'dart:convert';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../data/database/app_database.dart'
-    hide PersonalGoal, ScheduledTrainingSession;
+    hide BodyMeasurement, PersonalGoal, ScheduledTrainingSession;
 import '../../../data/migrations/legacy_shared_preferences_migration.dart';
 import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/workout_log_repository.dart';
 import '../../../data/repositories/training_schedule_repository.dart';
 import '../../../data/repositories/personal_goal_repository.dart';
+import '../../../data/repositories/body_measurement_repository.dart';
 import '../../../data/repositories/backup_repository.dart';
 import '../../../domain/models/workout_record.dart';
 import '../../../domain/use_cases/workout_streak_calculator.dart';
 import '../../../domain/models/scheduled_training_session.dart';
 import '../../../domain/models/personal_goal.dart';
+import '../../../domain/models/body_measurement.dart';
 import '../../features/profile/models/profile_settings.dart';
 
 class AppShellViewModel extends ChangeNotifier {
@@ -24,6 +26,7 @@ class AppShellViewModel extends ChangeNotifier {
     WorkoutLogRepository? workoutLogRepository,
     TrainingScheduleRepository? trainingScheduleRepository,
     PersonalGoalRepository? personalGoalRepository,
+    BodyMeasurementRepository? bodyMeasurementRepository,
     BackupRepository? backupRepository,
   }) : _database = database ?? AppDatabase.instance,
        _settingsRepository =
@@ -42,6 +45,9 @@ class AppShellViewModel extends ChangeNotifier {
        _personalGoalRepository =
            personalGoalRepository ??
            PersonalGoalRepository(database: database ?? AppDatabase.instance) {
+    _bodyMeasurementRepository =
+        bodyMeasurementRepository ??
+        BodyMeasurementRepository(database: _database);
     _backupRepository =
         backupRepository ??
         BackupRepository(
@@ -50,6 +56,7 @@ class AppShellViewModel extends ChangeNotifier {
           workoutLogRepository: _workoutLogRepository,
           scheduleRepository: _trainingScheduleRepository,
           goalRepository: _personalGoalRepository,
+          bodyMeasurementRepository: _bodyMeasurementRepository,
         );
   }
 
@@ -58,12 +65,14 @@ class AppShellViewModel extends ChangeNotifier {
   final WorkoutLogRepository _workoutLogRepository;
   final TrainingScheduleRepository _trainingScheduleRepository;
   final PersonalGoalRepository _personalGoalRepository;
+  late final BodyMeasurementRepository _bodyMeasurementRepository;
   late final BackupRepository _backupRepository;
 
   TrainingSettings _trainingSettings = const TrainingSettings();
   List<WorkoutRecord> _workoutRecords = const [];
   List<ScheduledTrainingSession> _scheduledSessions = const [];
   List<PersonalGoal> _personalGoals = const [];
+  List<BodyMeasurement> _bodyMeasurements = const [];
   bool _isReady = false;
   bool _needsFirstRunSetup = false;
   bool _hasActiveWorkout = false;
@@ -76,6 +85,7 @@ class AppShellViewModel extends ChangeNotifier {
   List<WorkoutRecord> get workoutRecords => _workoutRecords;
   List<ScheduledTrainingSession> get scheduledSessions => _scheduledSessions;
   List<PersonalGoal> get personalGoals => _personalGoals;
+  List<BodyMeasurement> get bodyMeasurements => _bodyMeasurements;
   bool get isReady => _isReady;
   bool get needsFirstRunSetup => _needsFirstRunSetup;
   bool get hasActiveWorkout => _hasActiveWorkout;
@@ -157,6 +167,11 @@ class AppShellViewModel extends ChangeNotifier {
       _personalGoals = await _personalGoalRepository.load();
     } on Object {
       _personalGoals = const [];
+    }
+    try {
+      _bodyMeasurements = await _bodyMeasurementRepository.load();
+    } on Object {
+      _bodyMeasurements = const [];
     }
 
     _trainingSettings = settings;
@@ -256,6 +271,24 @@ class AppShellViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> saveBodyMeasurement(
+    BodyMeasurement measurement, {
+    BodyMeasurement? previous,
+  }) async {
+    if (previous != null && previous.id != measurement.id) {
+      await _bodyMeasurementRepository.delete(previous.date);
+    }
+    await _bodyMeasurementRepository.save(measurement);
+    _bodyMeasurements = await _bodyMeasurementRepository.load();
+    notifyListeners();
+  }
+
+  Future<void> deleteBodyMeasurement(DateTime date) async {
+    await _bodyMeasurementRepository.delete(date);
+    _bodyMeasurements = await _bodyMeasurementRepository.load();
+    notifyListeners();
+  }
+
   Future<bool> rescheduleSession(DateTime from, DateTime to) async {
     final moved = await _trainingScheduleRepository.move(from, to);
     if (moved) {
@@ -301,6 +334,7 @@ class AppShellViewModel extends ChangeNotifier {
     );
     _scheduledSessions = backup.schedule;
     _personalGoals = backup.goals;
+    _bodyMeasurements = backup.bodyMeasurements;
     _needsFirstRunSetup = false;
     _hasActiveWorkout = backup.activeWorkout != null;
     _activeWorkoutDate = backup.activeWorkout == null

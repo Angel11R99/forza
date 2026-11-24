@@ -1,4 +1,5 @@
 import '../../../../domain/models/workout_record.dart';
+import '../../../../domain/models/body_measurement.dart';
 
 class WorkoutHistoryEntry {
   const WorkoutHistoryEntry({
@@ -57,23 +58,7 @@ class WorkoutHistoryEntry {
   }
 }
 
-class MeasurementEntry {
-  const MeasurementEntry({
-    required this.date,
-    required this.weightKg,
-    this.chestCm,
-    this.waistCm,
-    this.hipsCm,
-    this.armCm,
-  });
-
-  final DateTime date;
-  final double weightKg;
-  final double? chestCm;
-  final double? waistCm;
-  final double? hipsCm;
-  final double? armCm;
-}
+typedef MeasurementEntry = BodyMeasurement;
 
 class PersonalRecord {
   const PersonalRecord({

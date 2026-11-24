@@ -131,6 +131,23 @@ class PersonalGoals extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+@TableIndex(
+  name: 'body_measurements_date_idx',
+  columns: {#measurementDate},
+  unique: true,
+)
+class BodyMeasurements extends Table {
+  TextColumn get measurementDate => text()();
+  RealColumn get weightKg => real()();
+  RealColumn get chestCm => real().nullable()();
+  RealColumn get waistCm => real().nullable()();
+  RealColumn get hipsCm => real().nullable()();
+  RealColumn get armCm => real().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {measurementDate};
+}
+
 class AppMetadata extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
@@ -149,6 +166,7 @@ class AppMetadata extends Table {
     WorkoutSetEntries,
     ScheduledTrainingSessions,
     PersonalGoals,
+    BodyMeasurements,
     AppMetadata,
   ],
 )
@@ -161,7 +179,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -189,6 +207,7 @@ class AppDatabase extends _$AppDatabase {
           );
         }
       }
+      if (from < 6) await migrator.createTable(bodyMeasurements);
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

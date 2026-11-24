@@ -9,6 +9,51 @@ import 'package:forza/ui/core/widgets/app_surface_card.dart';
 import 'package:forza/ui/features/exercises/views/exercise_detail_page.dart';
 
 void main() {
+  testWidgets('source citation opens its HTTPS URL', (tester) async {
+    Uri? openedUri;
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    const guidedExercise = Exercise(
+      id: 'guided-deadlift',
+      name: 'Peso muerto',
+      englishName: 'Deadlift',
+      muscleGroup: 'Espalda',
+      equipment: 'Barra',
+      instructions: ['Levanta la barra con control.'],
+      englishInstructions: ['Lift the bar with control.'],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('es'),
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ExerciseDetailPage(
+          exercise: guidedExercise,
+          repository: _EmptyExerciseRepository(),
+          sourceLinkLauncher: (uri) async {
+            openedUri = uri;
+            return true;
+          },
+        ),
+      ),
+    );
+
+    final sourceLink = find.textContaining('Enlace de la fuente:');
+    expect(sourceLink, findsOneWidget);
+    await tester.tap(sourceLink);
+    await tester.pump();
+
+    expect(openedUri?.scheme, 'https');
+    expect(openedUri?.host, 'www.acefitness.org');
+  });
+
   const exercise = Exercise(
     id: 'guide-test',
     name: 'Movimiento de prueba',

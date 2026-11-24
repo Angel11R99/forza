@@ -30,24 +30,33 @@ class FlutterLocalNotificationService implements LocalNotificationService {
 
   final FlutterLocalNotificationsPlugin _plugin;
 
+  bool get _supportsWorkoutReminders =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
   @override
-  Future<void> initialize() => _plugin.initialize(
-    settings: const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      iOS: DarwinInitializationSettings(
-        requestAlertPermission: false,
-        requestBadgePermission: false,
-        requestSoundPermission: false,
-        defaultPresentAlert: true,
-        defaultPresentBanner: true,
-        defaultPresentList: true,
-        defaultPresentSound: true,
+  Future<void> initialize() async {
+    if (!_supportsWorkoutReminders) return;
+    await _plugin.initialize(
+      settings: const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+          defaultPresentAlert: true,
+          defaultPresentBanner: true,
+          defaultPresentList: true,
+          defaultPresentSound: true,
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   @override
   Future<bool> requestPermissions() async {
+    if (!_supportsWorkoutReminders) return false;
     if (defaultTargetPlatform == TargetPlatform.android) {
       return await _plugin
               .resolvePlatformSpecificImplementation<
@@ -69,6 +78,7 @@ class FlutterLocalNotificationService implements LocalNotificationService {
 
   @override
   Future<bool> notificationsEnabled() async {
+    if (!_supportsWorkoutReminders) return false;
     if (defaultTargetPlatform == TargetPlatform.android) {
       return await _plugin
               .resolvePlatformSpecificImplementation<
@@ -89,15 +99,17 @@ class FlutterLocalNotificationService implements LocalNotificationService {
   }
 
   @override
-  Future<List<PendingWorkoutNotification>> pendingNotifications() async =>
-      (await _plugin.pendingNotificationRequests())
-          .map(
-            (request) => PendingWorkoutNotification(
-              id: request.id,
-              payload: request.payload,
-            ),
-          )
-          .toList(growable: false);
+  Future<List<PendingWorkoutNotification>> pendingNotifications() async {
+    if (!_supportsWorkoutReminders) return const [];
+    return (await _plugin.pendingNotificationRequests())
+        .map(
+          (request) => PendingWorkoutNotification(
+            id: request.id,
+            payload: request.payload,
+          ),
+        )
+        .toList(growable: false);
+  }
 
   @override
   Future<void> schedule({
@@ -106,31 +118,37 @@ class FlutterLocalNotificationService implements LocalNotificationService {
     required String title,
     required String body,
     required String payload,
-  }) => _plugin.zonedSchedule(
-    id: id,
-    scheduledDate: scheduledDate,
-    title: title,
-    body: body,
-    payload: payload,
-    androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-    notificationDetails: const NotificationDetails(
-      android: AndroidNotificationDetails(
-        'forza_workout_reminders',
-        'Entrenamientos / Workouts',
-        channelDescription:
-            'Recordatorios locales de FORZA / FORZA workout reminders',
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
+  }) async {
+    if (!_supportsWorkoutReminders) return;
+    await _plugin.zonedSchedule(
+      id: id,
+      scheduledDate: scheduledDate,
+      title: title,
+      body: body,
+      payload: payload,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'forza_workout_reminders',
+          'Entrenamientos / Workouts',
+          channelDescription:
+              'Recordatorios locales de FORZA / FORZA workout reminders',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBanner: true,
+          presentList: true,
+          presentSound: true,
+        ),
       ),
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentBanner: true,
-        presentList: true,
-        presentSound: true,
-      ),
-    ),
-  );
+    );
+  }
 
   @override
-  Future<void> cancel(int id) => _plugin.cancel(id: id);
+  Future<void> cancel(int id) async {
+    if (!_supportsWorkoutReminders) return;
+    await _plugin.cancel(id: id);
+  }
 }

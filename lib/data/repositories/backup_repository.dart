@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import '../../domain/models/personal_goal.dart';
+import '../../domain/models/body_measurement.dart';
 import '../../domain/models/scheduled_training_session.dart';
 import '../../domain/models/workout_record.dart';
 import '../../domain/use_cases/training_plan_builder.dart';
 import '../../ui/features/profile/models/profile_settings.dart';
 import '../database/app_database.dart' as db;
 import 'personal_goal_repository.dart';
+import 'body_measurement_repository.dart';
 import 'training_schedule_repository.dart';
 import 'training_settings_repository.dart';
 import 'workout_log_repository.dart';
@@ -21,6 +23,7 @@ class ValidatedForzaBackup {
     required this.records,
     required this.schedule,
     required this.goals,
+    this.bodyMeasurements = const [],
     required this.appearanceMode,
     required this.activeWorkout,
   });
@@ -31,6 +34,7 @@ class ValidatedForzaBackup {
   final List<WorkoutRecord> records;
   final List<ScheduledTrainingSession> schedule;
   final List<PersonalGoal> goals;
+  final List<BodyMeasurement> bodyMeasurements;
   final String appearanceMode;
   final Map<String, Object?>? activeWorkout;
 }
@@ -42,7 +46,10 @@ class BackupRepository {
     required this.workoutLogRepository,
     required this.scheduleRepository,
     required this.goalRepository,
-  });
+    BodyMeasurementRepository? bodyMeasurementRepository,
+  }) : bodyMeasurementRepository =
+           bodyMeasurementRepository ??
+           BodyMeasurementRepository(database: database);
 
   static const formatName = 'FORZA_BACKUP';
   static const version = 1;
@@ -53,6 +60,7 @@ class BackupRepository {
   final WorkoutLogRepository workoutLogRepository;
   final TrainingScheduleRepository scheduleRepository;
   final PersonalGoalRepository goalRepository;
+  final BodyMeasurementRepository bodyMeasurementRepository;
 
   Future<String> exportJson({required String appearanceMode}) async {
     final activeDraft = await workoutLogRepository.loadActiveWorkout();
@@ -71,6 +79,10 @@ class BackupRepository {
       ],
       'personalGoals': [
         for (final goal in await goalRepository.load()) _goalToJson(goal),
+      ],
+      'bodyMeasurements': [
+        for (final measurement in await bodyMeasurementRepository.load())
+          measurement.toJson(),
       ],
       'appearanceMode': appearanceMode,
       'activeWorkout': activeDraft == null ? null : jsonDecode(activeDraft),
@@ -124,6 +136,21 @@ class BackupRepository {
           'El respaldo contiene objetivos duplicados.',
         );
       }
+      final measurements =
+          (root['bodyMeasurements'] == null
+                  ? const <Object?>[]
+                  : _list(root['bodyMeasurements'], 'bodyMeasurements'))
+              .map(
+                (value) =>
+                    BodyMeasurement.fromJson(_map(value, 'body measurement')),
+              )
+              .toList(growable: false);
+      if (measurements.map((item) => item.id).toSet().length !=
+          measurements.length) {
+        throw const FormatException(
+          'El respaldo contiene medidas corporales duplicadas.',
+        );
+      }
       final activeWorkout = root['activeWorkout'] == null
           ? null
           : _activeDraft(root['activeWorkout']);
@@ -140,6 +167,7 @@ class BackupRepository {
         records: records,
         schedule: schedule,
         goals: goals,
+        bodyMeasurements: measurements,
         appearanceMode: appearance,
         activeWorkout: activeWorkout,
       );
@@ -280,6 +308,8 @@ class BackupRepository {
             ),
         ]);
       });
+
+      await bodyMeasurementRepository.replaceAll(backup.bodyMeasurements);
 
       await database
           .into(database.appMetadata)

@@ -130,7 +130,7 @@ Este árbol es una guía de salida, no exige crear pantallas vacías de todos lo
 
 Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca y detalle → Progreso → Perfil/ajustes. Implementar los frames A–G por grupos, manteniendo cada vista en su feature.
 
-**Estado:** Acceso A1–A4 son formularios demostrativos. Plan B1–B5 guarda preferencias localmente. La sesión C1/C3–C8 registra series, conserva una sesión activa y guarda los resultados en SQLite. Actividad comparte una agenda persistente de 120 días y permite reprogramar sesiones. Ejercicios usa el catálogo local. Progreso ofrece historial y métricas de series; medidas, evolución corporal/fuerza y récords siguen siendo de demostración. Tema e idioma se guardan localmente; perfil, unidades y notificaciones no. No hay API, cuentas reales ni sincronización remota. Ver [módulos y estado](02-modulos-y-pantallas.md) y [auditoría/prioridades](07-auditoria-modulos-indispensables.md).
+**Estado:** Acceso A1–A4 son formularios demostrativos. Plan B1–B5 guarda preferencias localmente. La sesión C1/C3–C8 registra series, conserva una sesión activa y guarda los resultados en SQLite. Actividad comparte una agenda persistente de 120 días y permite reprogramar sesiones. Ejercicios usa el catálogo local. Progreso ofrece historial, medidas corporales persistentes y métricas de series; evolución de fuerza y récords siguen siendo de demostración. Tema, idioma y preferencias del perfil se guardan localmente. No hay API, cuentas reales ni sincronización remota. Ver [módulos y estado](02-modulos-y-pantallas.md) y [auditoría/prioridades](07-auditoria-modulos-indispensables.md).
 
 ### Fase 3 · Datos
 
