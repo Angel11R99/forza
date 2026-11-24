@@ -29,8 +29,8 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 ## Mejoras posteriores
 
 - **Cobertura de medios autorizados:** hay 1.260 ejercicios con fotogramas y 64 con fallback. Se añadieron tres coincidencias de la fuente CC0 y se inventariaron los casos restantes; mantener fallback si la fuente no representa con precisión el ejercicio ([#17](https://github.com/Angel11R99/forza/issues/17); [inventario](10-inventario-medios-ejercicios.md)).
-- **Cuenta:** autenticación opcional solo si se decide ofrecer cuentas o sincronización entre dispositivos ([#5](https://github.com/Angel11R99/forza/issues/5)).
-- **Gym Bro:** investigación futura dependiente de decisiones de cuenta, persistencia y privacidad; diseñar primero y solicitar aprobación antes de cualquier backend ([#22](https://github.com/Angel11R99/forza/issues/22)).
+- **Cuenta:** Google Sign-In opcional solo para mostrar identidad del proveedor; no crea cuenta de servidor ni sincroniza datos. Antes de probar o distribuir login real faltan los IDs OAuth y las firmas específicas del proyecto ([#5](https://github.com/Angel11R99/forza/issues/5); [configuración](google-sign-in-setup.md)).
+- **Gym Bro:** propuesta de investigación documentada en [diseño y evaluación](12-diseno-gym-bro.md); el backend y servicios quedan pendientes de aprobación del propietario ([#22](https://github.com/Angel11R99/forza/issues/22)).
 
 La propuesta de Gym Bro está en [diseño y evaluación](12-diseno-gym-bro.md). No implica que haya backend o cuenta social implementados.
 

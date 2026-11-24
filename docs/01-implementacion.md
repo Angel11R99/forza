@@ -74,7 +74,7 @@ El diseño usa superficies claras, texto oscuro, secundarios grises, bloques fot
 - **Dependencias actuales:** consultar `pubspec.yaml` y `pubspec.lock`. `material_ui` está declarado y se usa; `native_glass_navbar` no está en el proyecto.
 - **Navegación actual:** `MaterialApp`/`Navigator` y `AppScaffold`, con barra inferior Flutter y rail lateral según el ancho. No se usa `go_router`.
 - **Router seleccionado:** `Navigator`/`MaterialApp` de Flutter gestiona rutas; `IndexedStack` preserva el estado de las cinco áreas. No se declara `go_router`.
-- **Alcance inicial:** demo navegable de UI. La app ahora conserva localmente la configuración del plan y el historial de entrenamientos en SQLite; API, autenticación real y medios animados siguen fuera del alcance implementado.
+- **Alcance inicial:** demo navegable de UI. La app ahora conserva localmente la configuración del plan y el historial de entrenamientos en SQLite; APIs de Forza, cuenta de servidor y sincronización siguen fuera del alcance. Google Sign-In solo muestra identidad del proveedor y requiere OAuth configurado.
 - **Referencia visual:** las superficies y textos base están registrados en `03-sistema-visual.md`. El HEX de acento, tipografía y medidas exactas de forma/espaciado no están confirmados en la inspección existente; deben permanecer como tokens provisionales pendientes de validar contra el archivo Figma antes de cerrar el tema visual.
 
 ### Fase 1 · Cimientos visuales (primer hito)
@@ -130,7 +130,7 @@ Este árbol es una guía de salida, no exige crear pantallas vacías de todos lo
 
 Orden sugerido: Inicio/entrada → Actividad/calendario → Explorar/biblioteca y detalle → Progreso → Perfil/ajustes. Implementar los frames A–G por grupos, manteniendo cada vista en su feature.
 
-**Estado:** Acceso A1–A4 son formularios demostrativos. Plan B1–B5 guarda preferencias localmente. La sesión C1/C3–C8 registra series, conserva una sesión activa y guarda los resultados en SQLite. Actividad comparte una agenda persistente de 120 días y permite reprogramar sesiones. Ejercicios usa el catálogo local. Progreso ofrece historial, medidas corporales persistentes, métricas de series, evolución de fuerza y récords calculados desde cargas y resultados reales; los récords muestran fecha y unidad. Tema, idioma y preferencias del perfil se guardan localmente. No hay API, cuentas reales ni sincronización remota. Ver [módulos y estado](02-modulos-y-pantallas.md) y [auditoría/prioridades](07-auditoria-modulos-indispensables.md).
+**Estado:** Acceso permite modo invitado y Google Sign-In opcional para mostrar identidad del proveedor. Los entrenamientos y preferencias siguen locales; no hay cuenta de servidor ni sincronización. Plan B1–B5 guarda preferencias localmente. La sesión C1/C3–C8 registra series, conserva una sesión activa y guarda los resultados en SQLite. Actividad comparte una agenda persistente de 120 días y permite reprogramar sesiones. Ejercicios usa el catálogo local. Progreso ofrece historial, medidas corporales persistentes, métricas de series, evolución de fuerza y récords calculados desde cargas y resultados reales; los récords muestran fecha y unidad. Tema, idioma y preferencias del perfil se guardan localmente. Ver [módulos y estado](02-modulos-y-pantallas.md), [configuración OAuth](google-sign-in-setup.md) y [auditoría/prioridades](07-auditoria-modulos-indispensables.md).
 
 ### Fase 3 · Datos
 

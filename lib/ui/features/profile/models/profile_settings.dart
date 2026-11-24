@@ -1,12 +1,7 @@
 class ForzaProfile {
-  const ForzaProfile({
-    required this.fullName,
-    required this.email,
-    required this.goal,
-  });
+  const ForzaProfile({required this.fullName, required this.goal});
 
   final String fullName;
-  final String email;
   final String goal;
 }
 

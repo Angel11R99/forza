@@ -86,15 +86,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   late final _nameController = TextEditingController(
     text: widget.profile.fullName,
   );
-  late final _emailController = TextEditingController(
-    text: widget.profile.email,
-  );
   late final _goalController = TextEditingController(text: widget.profile.goal);
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
     _goalController.dispose();
     super.dispose();
   }
@@ -141,23 +137,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   ),
                   const SizedBox(height: AppSpacing.x3),
                   TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.profileEmailField,
-                    ),
-                    validator: (value) {
-                      final email = value?.trim() ?? '';
-                      if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                          .hasMatch(email)) {
-                        return context.l10n.profileEmailInvalid;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.x3),
-                  TextFormField(
                     controller: _goalController,
                     textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.done,
@@ -187,12 +166,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     if (!_formKey.currentState!.validate()) return;
     final draft = ForzaProfile(
       fullName: _nameController.text.trim(),
-      email: _emailController.text.trim(),
       goal: _goalController.text.trim(),
     );
     final confirmed = await Navigator.of(context).push<ForzaProfile>(
       MaterialPageRoute<ForzaProfile>(
-        builder: (_) => AccountConfirmationPage(profile: draft),
+        builder: (_) => ProfileReviewPage(profile: draft),
       ),
     );
     if (!mounted || confirmed == null) return;
@@ -486,14 +464,9 @@ class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
 }
 
 class PrivacyAccountPage extends StatefulWidget {
-  const PrivacyAccountPage({
-    super.key,
-    required this.settings,
-    required this.profile,
-  });
+  const PrivacyAccountPage({super.key, required this.settings});
 
   final PrivacySettings settings;
-  final ForzaProfile profile;
 
   @override
   State<PrivacyAccountPage> createState() => _PrivacyAccountPageState();
@@ -552,34 +525,6 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.x6),
-            AppSurfaceCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.l10n.profileAccountData,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: AppSpacing.x2),
-                  Text(
-                    widget.profile.fullName,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: AppSpacing.x1),
-                  Text(
-                    widget.profile.email,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.x3),
-                  OutlinedButton.icon(
-                    onPressed: _reviewAccount,
-                    icon: const Icon(Icons.verified_user_outlined),
-                    label: Text(context.l10n.profileConfirmAccount),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -594,29 +539,17 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
       ),
     );
   }
-
-  Future<void> _reviewAccount() async {
-    final confirmed = await Navigator.of(context).push<ForzaProfile>(
-      MaterialPageRoute<ForzaProfile>(
-        builder: (_) => AccountConfirmationPage(profile: widget.profile),
-      ),
-    );
-    if (!mounted || confirmed == null) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(context.l10n.profileReviewComplete)));
-  }
 }
 
-class AccountConfirmationPage extends StatelessWidget {
-  const AccountConfirmationPage({super.key, required this.profile});
+class ProfileReviewPage extends StatelessWidget {
+  const ProfileReviewPage({super.key, required this.profile});
 
   final ForzaProfile profile;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.profileAccountConfirmation)),
+      appBar: AppBar(title: Text(context.l10n.profileReviewTitle)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -660,11 +593,6 @@ class AccountConfirmationPage extends StatelessWidget {
                       ),
                       const Divider(height: AppSpacing.x6),
                       _AccountValue(
-                        label: context.l10n.profileEmail,
-                        value: profile.email,
-                      ),
-                      const Divider(height: AppSpacing.x6),
-                      _AccountValue(
                         label: context.l10n.profileGoal,
                         value: profile.goal,
                       ),
@@ -675,7 +603,7 @@ class AccountConfirmationPage extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => Navigator.of(context).pop(profile),
                   icon: const Icon(Icons.check_rounded),
-                  label: Text(context.l10n.profileConfirmDetails),
+                  label: Text(context.l10n.profileSaveDetails),
                 ),
               ],
             ),
