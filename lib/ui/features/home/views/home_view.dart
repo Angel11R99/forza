@@ -32,7 +32,7 @@ class HomeView extends StatelessWidget {
   final VoidCallback onShowActivity;
   final VoidCallback onShowProfile;
   final TrainingSettings settings;
-  final VoidCallback onStartWorkout;
+  final ValueChanged<DateTime> onStartWorkout;
   final VoidCallback onEditPlan;
   final Set<DateTime> completedDates;
   final int streakDays;
@@ -168,7 +168,7 @@ class HomeView extends StatelessWidget {
                 ),
                 _TodayWorkoutCard(
                   settings: settings,
-                  onPressed: onStartWorkout,
+                  onPressed: () => onStartWorkout(nextTrainingDate),
                   sessionDate: nextTrainingDate,
                   hasActiveWorkout: hasActiveWorkout,
                   scheduledSession: plannedSession,
@@ -216,6 +216,12 @@ class _TodayWorkoutCard extends StatelessWidget {
     final localeName = Localizations.localeOf(context).toLanguageTag();
     final days = settings.trainingDays.toList()..sort();
     final todayIndex = days.indexOf(sessionDate.weekday);
+    final today = DateTime.now();
+    final isFutureSession = DateTime(
+      sessionDate.year,
+      sessionDate.month,
+      sessionDate.day,
+    ).isAfter(DateTime(today.year, today.month, today.day));
     final exerciseCount =
         scheduledSession?.exerciseCount ??
         _planBuilder
@@ -283,14 +289,18 @@ class _TodayWorkoutCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton.tonalIcon(
-              onPressed: onPressed,
+              onPressed: isFutureSession ? null : onPressed,
               style: FilledButton.styleFrom(
                 backgroundColor: context.appColors.inverseText,
                 foregroundColor: context.appColors.accent,
               ),
               icon: const Icon(Icons.play_arrow_rounded),
               label: Text(
-                hasActiveWorkout
+                isFutureSession
+                    ? context.l10n.homeSessionAvailableOn(
+                        DateFormat.EEEE(localeName).format(sessionDate),
+                      )
+                    : hasActiveWorkout
                     ? context.l10n.homeContinueWorkout
                     : context.l10n.homeViewTodaySession,
               ),

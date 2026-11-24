@@ -596,6 +596,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeViewTodaySession => 'Ver sesión de hoy';
 
   @override
+  String homeSessionAvailableOn(String weekday) {
+    return 'Disponible el $weekday';
+  }
+
+  @override
   String homeWeeklySessionCount(Object done, Object target) {
     return '$done de $target sesiones';
   }

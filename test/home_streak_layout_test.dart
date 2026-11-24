@@ -32,7 +32,7 @@ void main() {
                   onShowActivity: () {},
                   onShowProfile: () {},
                   settings: const TrainingSettings(),
-                  onStartWorkout: () {},
+                  onStartWorkout: (_) {},
                   onEditPlan: () {},
                   completedDates: const {},
                   streakDays: 30,

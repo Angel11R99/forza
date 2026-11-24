@@ -1064,6 +1064,12 @@ abstract class AppLocalizations {
   /// **'View today\'s session'**
   String get homeViewTodaySession;
 
+  /// No description provided for @homeSessionAvailableOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Available on {weekday}'**
+  String homeSessionAvailableOn(String weekday);
+
   /// No description provided for @homeWeeklySessionCount.
   ///
   /// In en, this message translates to:

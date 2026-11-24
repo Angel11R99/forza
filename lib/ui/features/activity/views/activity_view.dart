@@ -41,7 +41,7 @@ class ActivityView extends StatefulWidget {
   final WorkoutLogRepository workoutLogRepository;
   final List<ScheduledTrainingSession> scheduledSessions;
   final Future<bool> Function(DateTime, DateTime) onRescheduleSession;
-  final Future<void> Function(DateTime) onSessionStarted;
+  final Future<bool> Function(DateTime) onSessionStarted;
   final Future<bool> Function(DateTime) onSkipSession;
   final Future<bool> Function(DateTime) onUndoSkipSession;
 
@@ -132,8 +132,8 @@ class _ActivityViewState extends State<ActivityView> {
 
   Future<void> _startSession() async {
     final planned = _scheduledForDate(_selectedDate);
-    await widget.onSessionStarted(_selectedDate);
-    if (!mounted) return;
+    final started = await widget.onSessionStarted(_selectedDate);
+    if (!mounted || !started) return;
     final record = await Navigator.of(context).push<WorkoutRecord>(
       MaterialPageRoute<WorkoutRecord>(
         builder: (_) => TrainingSessionFlow(
