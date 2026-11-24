@@ -2998,7 +2998,7 @@ abstract class AppLocalizations {
   /// No description provided for @progressStrengthDescription.
   ///
   /// In en, this message translates to:
-  /// **'Compare your working weight across your last six workouts.'**
+  /// **'Compare the heaviest logged load per workout for each exercise.'**
   String get progressStrengthDescription;
 
   /// No description provided for @progressWorkingWeight.
@@ -3010,8 +3010,66 @@ abstract class AppLocalizations {
   /// No description provided for @progressStrengthChartSummary.
   ///
   /// In en, this message translates to:
-  /// **'Working weight increased by {increase} kilograms over six workouts.'**
-  String progressStrengthChartSummary(Object increase);
+  /// **'The load changed from {start} to {current} kilograms across {sessions} logged workouts.'**
+  String progressStrengthChartSummary(
+    String start,
+    String current,
+    int sessions,
+  );
+
+  /// No description provided for @progressStrengthMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Heaviest weight logged per workout (kg). Sets without a load are excluded.'**
+  String get progressStrengthMetric;
+
+  /// No description provided for @progressStrengthSinglePoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one workout has a logged load for this exercise.'**
+  String get progressStrengthSinglePoint;
+
+  /// No description provided for @progressStrengthEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no weighted sets for this period. Log the weight used for your sets during a workout.'**
+  String get progressStrengthEmpty;
+
+  /// No description provided for @progressStrengthChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change between the first and last workout: {sign}{change} kg.'**
+  String progressStrengthChange(String sign, String change);
+
+  /// No description provided for @progressPeriodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get progressPeriodLabel;
+
+  /// No description provided for @progressPeriod30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get progressPeriod30Days;
+
+  /// No description provided for @progressPeriod90Days.
+  ///
+  /// In en, this message translates to:
+  /// **'90 days'**
+  String get progressPeriod90Days;
+
+  /// No description provided for @progressPeriodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get progressPeriodYear;
+
+  /// No description provided for @progressPeriodAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get progressPeriodAll;
 
   /// No description provided for @progressBodyEvolution.
   ///

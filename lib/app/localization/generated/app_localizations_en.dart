@@ -1698,15 +1698,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressStrengthDescription =>
-      'Compare your working weight across your last six workouts.';
+      'Compare the heaviest logged load per workout for each exercise.';
 
   @override
   String get progressWorkingWeight => 'Working weight (kg)';
 
   @override
-  String progressStrengthChartSummary(Object increase) {
-    return 'Working weight increased by $increase kilograms over six workouts.';
+  String progressStrengthChartSummary(
+    String start,
+    String current,
+    int sessions,
+  ) {
+    return 'The load changed from $start to $current kilograms across $sessions logged workouts.';
   }
+
+  @override
+  String get progressStrengthMetric =>
+      'Heaviest weight logged per workout (kg). Sets without a load are excluded.';
+
+  @override
+  String get progressStrengthSinglePoint =>
+      'Only one workout has a logged load for this exercise.';
+
+  @override
+  String get progressStrengthEmpty =>
+      'There are no weighted sets for this period. Log the weight used for your sets during a workout.';
+
+  @override
+  String progressStrengthChange(String sign, String change) {
+    return 'Change between the first and last workout: $sign$change kg.';
+  }
+
+  @override
+  String get progressPeriodLabel => 'Period';
+
+  @override
+  String get progressPeriod30Days => '30 days';
+
+  @override
+  String get progressPeriod90Days => '90 days';
+
+  @override
+  String get progressPeriodYear => '1 year';
+
+  @override
+  String get progressPeriodAll => 'All time';
 
   @override
   String get progressBodyEvolution => 'Body measurements';

@@ -1706,15 +1706,51 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get progressStrengthDescription =>
-      'Compara el peso de trabajo entre tus últimas seis sesiones.';
+      'Compara la mayor carga registrada por sesión para cada ejercicio.';
 
   @override
   String get progressWorkingWeight => 'Peso de trabajo (kg)';
 
   @override
-  String progressStrengthChartSummary(Object increase) {
-    return 'El peso de trabajo aumentó $increase kilogramos en seis sesiones.';
+  String progressStrengthChartSummary(
+    String start,
+    String current,
+    int sessions,
+  ) {
+    return 'La carga pasó de $start a $current kilogramos en $sessions sesiones registradas.';
   }
+
+  @override
+  String get progressStrengthMetric =>
+      'Mayor carga con peso registrada por sesión (kg). Las series sin carga no se incluyen.';
+
+  @override
+  String get progressStrengthSinglePoint =>
+      'Solo hay una sesión con carga registrada para este ejercicio.';
+
+  @override
+  String get progressStrengthEmpty =>
+      'No hay series con carga para este periodo. Registra el peso usado en tus series durante un entrenamiento.';
+
+  @override
+  String progressStrengthChange(String sign, String change) {
+    return 'Cambio entre la primera y la última sesión: $sign$change kg.';
+  }
+
+  @override
+  String get progressPeriodLabel => 'Periodo';
+
+  @override
+  String get progressPeriod30Days => '30 días';
+
+  @override
+  String get progressPeriod90Days => '90 días';
+
+  @override
+  String get progressPeriodYear => '1 año';
+
+  @override
+  String get progressPeriodAll => 'Todo';
 
   @override
   String get progressBodyEvolution => 'Evolución corporal';

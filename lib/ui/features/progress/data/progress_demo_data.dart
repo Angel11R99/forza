@@ -84,9 +84,6 @@ abstract final class ProgressDemoData {
     ),
   ];
 
-  static const strengthValuesKg = <double>[40, 42.5, 45, 47.5, 50, 52.5];
-  static const strengthLabels = <String>['S1', 'S2', 'S3', 'S4', 'S5', 'S6'];
-
   static List<PersonalRecord> records(DateTime today) => [
     PersonalRecord(
       exercise: 'Press de banca',

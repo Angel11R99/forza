@@ -9,6 +9,7 @@ import '../../../../domain/models/workout_record.dart';
 import '../../../../domain/models/body_measurement.dart';
 import '../data/progress_demo_data.dart';
 import '../models/progress_models.dart';
+import '../models/strength_evolution.dart';
 import '../widgets/progress_line_chart.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
@@ -156,31 +157,43 @@ class SessionDetailPage extends StatelessWidget {
 }
 
 class StrengthEvolutionPage extends StatefulWidget {
-  const StrengthEvolutionPage({super.key});
+  const StrengthEvolutionPage({super.key, required this.records});
+
+  final List<WorkoutRecord> records;
 
   @override
   State<StrengthEvolutionPage> createState() => _StrengthEvolutionPageState();
 }
 
 class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
-  static const _exercises = <String>[
-    'Press de banca',
-    'Sentadilla con barra',
-    'Peso muerto rumano',
-  ];
+  static const _periods = <int?>[30, 90, 365, null];
 
-  String _selectedExercise = _exercises.first;
-
-  List<double> get _values => switch (_selectedExercise) {
-    'Sentadilla con barra' => [60, 62.5, 67.5, 72.5, 80, 85],
-    'Peso muerto rumano' => [70, 75, 80, 85, 90, 95],
-    _ => ProgressDemoData.strengthValuesKg,
-  };
+  int? _selectedPeriod = 90;
+  String? _selectedExerciseKey;
 
   @override
   Widget build(BuildContext context) {
-    final values = _values;
-    final increase = values.last - values.first;
+    final localeName = Localizations.localeOf(context).toLanguageTag();
+    final series = buildStrengthEvolutionSeries(
+      widget.records,
+      now: DateTime.now(),
+      periodDays: _selectedPeriod,
+    );
+    final matching = series
+        .where((item) => item.exerciseKey == _selectedExerciseKey)
+        .toList(growable: false);
+    final selected = matching.isNotEmpty
+        ? matching.first
+        : (series.isEmpty ? null : series.first);
+    final values =
+        selected?.points.map((point) => point.loadKg).toList() ??
+        const <double>[];
+    final labels =
+        selected?.points
+            .map((point) => DateFormat.MMMd(localeName).format(point.date))
+            .toList() ??
+        const <String>[];
+    final change = values.length < 2 ? 0.0 : values.last - values.first;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.progressStrengthEvolution)),
@@ -208,73 +221,144 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
+                Text(
+                  context.l10n.progressPeriodLabel,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: AppSpacing.x2),
                 Wrap(
                   spacing: AppSpacing.x2,
                   runSpacing: AppSpacing.x2,
                   children: [
-                    for (final exercise in _exercises)
+                    for (final period in _periods)
                       ChoiceChip(
-                        label: Text(
-                          localizedTrainingExerciseName(context, exercise),
-                        ),
-                        selected: exercise == _selectedExercise,
+                        label: Text(_periodLabel(context, period)),
+                        selected: period == _selectedPeriod,
                         onSelected: (_) =>
-                            setState(() => _selectedExercise = exercise),
-                        selectedColor: context.appColors.surfaceMuted,
+                            setState(() => _selectedPeriod = period),
                       ),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.x6),
-                AppSurfaceCard(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.x4,
-                    AppSpacing.x4,
-                    AppSpacing.x4,
-                    AppSpacing.x2,
+                if (series.isEmpty) ...[
+                  const SizedBox(height: AppSpacing.x6),
+                  AppSurfaceCard(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.show_chart_rounded,
+                          color: context.appColors.textSecondary,
+                        ),
+                        const SizedBox(width: AppSpacing.x3),
+                        Expanded(
+                          child: Text(
+                            context.l10n.progressStrengthEmpty,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                ] else ...[
+                  const SizedBox(height: AppSpacing.x6),
+                  Text(
+                    context.l10n.progressExercises,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: AppSpacing.x2),
+                  Wrap(
+                    spacing: AppSpacing.x2,
+                    runSpacing: AppSpacing.x2,
                     children: [
-                      Text(
-                        _selectedExercise,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      for (final exercise in series)
+                        ChoiceChip(
+                          label: Text(
+                            localizedTrainingExerciseName(
+                              context,
+                              exercise.exerciseName,
+                            ),
+                          ),
+                          selected:
+                              exercise.exerciseKey ==
+                              (selected?.exerciseKey ?? _selectedExerciseKey),
+                          onSelected: (_) => setState(
+                            () => _selectedExerciseKey = exercise.exerciseKey,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.x6),
+                  AppSurfaceCard(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.x4,
+                      AppSpacing.x4,
+                      AppSpacing.x4,
+                      AppSpacing.x2,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          localizedTrainingExerciseName(
+                            context,
+                            selected!.exerciseName,
+                          ),
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: AppSpacing.x1),
+                        Text(
+                          context.l10n.progressStrengthMetric,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.x2),
+                        if (values.length == 1)
+                          Text(
+                            context.l10n.progressStrengthSinglePoint,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ProgressLineChart(
+                          values: values,
+                          labels: labels,
+                          summary: context.l10n.progressStrengthChartSummary(
+                            values.first.toStringAsFixed(1),
+                            values.last.toStringAsFixed(1),
+                            selected.points.length,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.x4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ValueCard(
+                          label: context.l10n.progressStart,
+                          value: '${values.first.toStringAsFixed(1)} kg',
+                          icon: Icons.flag_outlined,
+                        ),
                       ),
-                      const SizedBox(height: AppSpacing.x1),
-                      Text(
-                        context.l10n.progressWorkingWeight,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.x2),
-                      ProgressLineChart(
-                        values: values,
-                        labels: ProgressDemoData.strengthLabels,
-                        summary: context.l10n.progressStrengthChartSummary(
-                          increase.toStringAsFixed(1),
+                      const SizedBox(width: AppSpacing.x3),
+                      Expanded(
+                        child: _ValueCard(
+                          label: context.l10n.progressCurrent,
+                          value: '${values.last.toStringAsFixed(1)} kg',
+                          icon: Icons.trending_up_rounded,
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: AppSpacing.x4),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _ValueCard(
-                        label: context.l10n.progressStart,
-                        value: '${values.first} kg',
-                        icon: Icons.flag_outlined,
+                  const SizedBox(height: AppSpacing.x2),
+                  AppSurfaceCard(
+                    child: Text(
+                      context.l10n.progressStrengthChange(
+                        change > 0 ? '+' : '',
+                        change.toStringAsFixed(1),
                       ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    const SizedBox(width: AppSpacing.x3),
-                    Expanded(
-                      child: _ValueCard(
-                        label: context.l10n.progressCurrent,
-                        value: '${values.last} kg',
-                        icon: Icons.trending_up_rounded,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -282,6 +366,13 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
       ),
     );
   }
+
+  String _periodLabel(BuildContext context, int? days) => switch (days) {
+    30 => context.l10n.progressPeriod30Days,
+    90 => context.l10n.progressPeriod90Days,
+    365 => context.l10n.progressPeriodYear,
+    _ => context.l10n.progressPeriodAll,
+  };
 }
 
 class BodyEvolutionPage extends StatefulWidget {

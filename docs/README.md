@@ -23,7 +23,7 @@ FORZA es una app Flutter con UI, flujos de entrenamiento y persistencia local im
 
 ## Estado del proyecto consultado
 
-El árbol `lib/` contiene las cinco áreas de navegación, configuración de plan, sesión guiada, calendario y reprogramación persistentes, catálogo local de ejercicios, historial y progreso. Las medidas corporales se guardan localmente; evolución de fuerza y récords aún usan datos de demostración. `material_ui ^1.11.1` está declarado; `native_glass_navbar` no forma parte de `pubspec.yaml` ni `pubspec.lock`. No hay backend ni sincronización.
+El árbol `lib/` contiene las cinco áreas de navegación, configuración de plan, sesión guiada, calendario y reprogramación persistentes, catálogo local de ejercicios, historial y progreso. Las medidas corporales se guardan localmente y la evolución de fuerza se calcula desde las cargas guardadas; los récords personales aún usan datos de demostración. `material_ui ^1.11.1` está declarado; `native_glass_navbar` no forma parte de `pubspec.yaml` ni `pubspec.lock`. No hay backend ni sincronización.
 
 ## Decisiones de la primera entrega
 
