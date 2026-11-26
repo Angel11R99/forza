@@ -4431,6 +4431,546 @@ class AppMetadataCompanion extends UpdateCompanion<AppMetadataData> {
   }
 }
 
+class $LocalAccountBackupsTable extends LocalAccountBackups
+    with TableInfo<$LocalAccountBackupsTable, LocalAccountBackup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalAccountBackupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<String> uid = GeneratedColumn<String>(
+    'uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _backupJsonMeta = const VerificationMeta(
+    'backupJson',
+  );
+  @override
+  late final GeneratedColumn<String> backupJson = GeneratedColumn<String>(
+    'backup_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [uid, backupJson, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_account_backups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalAccountBackup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_uidMeta);
+    }
+    if (data.containsKey('backup_json')) {
+      context.handle(
+        _backupJsonMeta,
+        backupJson.isAcceptableOrUnknown(data['backup_json']!, _backupJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_backupJsonMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  LocalAccountBackup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalAccountBackup(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uid'],
+      )!,
+      backupJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}backup_json'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalAccountBackupsTable createAlias(String alias) {
+    return $LocalAccountBackupsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalAccountBackup extends DataClass
+    implements Insertable<LocalAccountBackup> {
+  final String uid;
+  final String backupJson;
+  final String updatedAt;
+  const LocalAccountBackup({
+    required this.uid,
+    required this.backupJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<String>(uid);
+    map['backup_json'] = Variable<String>(backupJson);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  LocalAccountBackupsCompanion toCompanion(bool nullToAbsent) {
+    return LocalAccountBackupsCompanion(
+      uid: Value(uid),
+      backupJson: Value(backupJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LocalAccountBackup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalAccountBackup(
+      uid: serializer.fromJson<String>(json['uid']),
+      backupJson: serializer.fromJson<String>(json['backupJson']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<String>(uid),
+      'backupJson': serializer.toJson<String>(backupJson),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  LocalAccountBackup copyWith({
+    String? uid,
+    String? backupJson,
+    String? updatedAt,
+  }) => LocalAccountBackup(
+    uid: uid ?? this.uid,
+    backupJson: backupJson ?? this.backupJson,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  LocalAccountBackup copyWithCompanion(LocalAccountBackupsCompanion data) {
+    return LocalAccountBackup(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      backupJson: data.backupJson.present
+          ? data.backupJson.value
+          : this.backupJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAccountBackup(')
+          ..write('uid: $uid, ')
+          ..write('backupJson: $backupJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, backupJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalAccountBackup &&
+          other.uid == this.uid &&
+          other.backupJson == this.backupJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LocalAccountBackupsCompanion extends UpdateCompanion<LocalAccountBackup> {
+  final Value<String> uid;
+  final Value<String> backupJson;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const LocalAccountBackupsCompanion({
+    this.uid = const Value.absent(),
+    this.backupJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalAccountBackupsCompanion.insert({
+    required String uid,
+    required String backupJson,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : uid = Value(uid),
+       backupJson = Value(backupJson),
+       updatedAt = Value(updatedAt);
+  static Insertable<LocalAccountBackup> custom({
+    Expression<String>? uid,
+    Expression<String>? backupJson,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (backupJson != null) 'backup_json': backupJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalAccountBackupsCompanion copyWith({
+    Value<String>? uid,
+    Value<String>? backupJson,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return LocalAccountBackupsCompanion(
+      uid: uid ?? this.uid,
+      backupJson: backupJson ?? this.backupJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
+    }
+    if (backupJson.present) {
+      map['backup_json'] = Variable<String>(backupJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalAccountBackupsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('backupJson: $backupJson, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CloudSyncBaselinesTable extends CloudSyncBaselines
+    with TableInfo<$CloudSyncBaselinesTable, CloudSyncBaseline> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CloudSyncBaselinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<String> uid = GeneratedColumn<String>(
+    'uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _backupJsonMeta = const VerificationMeta(
+    'backupJson',
+  );
+  @override
+  late final GeneratedColumn<String> backupJson = GeneratedColumn<String>(
+    'backup_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [uid, backupJson, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cloud_sync_baselines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CloudSyncBaseline> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_uidMeta);
+    }
+    if (data.containsKey('backup_json')) {
+      context.handle(
+        _backupJsonMeta,
+        backupJson.isAcceptableOrUnknown(data['backup_json']!, _backupJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_backupJsonMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  CloudSyncBaseline map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CloudSyncBaseline(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uid'],
+      )!,
+      backupJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}backup_json'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CloudSyncBaselinesTable createAlias(String alias) {
+    return $CloudSyncBaselinesTable(attachedDatabase, alias);
+  }
+}
+
+class CloudSyncBaseline extends DataClass
+    implements Insertable<CloudSyncBaseline> {
+  final String uid;
+  final String backupJson;
+  final String updatedAt;
+  const CloudSyncBaseline({
+    required this.uid,
+    required this.backupJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<String>(uid);
+    map['backup_json'] = Variable<String>(backupJson);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  CloudSyncBaselinesCompanion toCompanion(bool nullToAbsent) {
+    return CloudSyncBaselinesCompanion(
+      uid: Value(uid),
+      backupJson: Value(backupJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CloudSyncBaseline.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CloudSyncBaseline(
+      uid: serializer.fromJson<String>(json['uid']),
+      backupJson: serializer.fromJson<String>(json['backupJson']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<String>(uid),
+      'backupJson': serializer.toJson<String>(backupJson),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  CloudSyncBaseline copyWith({
+    String? uid,
+    String? backupJson,
+    String? updatedAt,
+  }) => CloudSyncBaseline(
+    uid: uid ?? this.uid,
+    backupJson: backupJson ?? this.backupJson,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CloudSyncBaseline copyWithCompanion(CloudSyncBaselinesCompanion data) {
+    return CloudSyncBaseline(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      backupJson: data.backupJson.present
+          ? data.backupJson.value
+          : this.backupJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudSyncBaseline(')
+          ..write('uid: $uid, ')
+          ..write('backupJson: $backupJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, backupJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CloudSyncBaseline &&
+          other.uid == this.uid &&
+          other.backupJson == this.backupJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CloudSyncBaselinesCompanion extends UpdateCompanion<CloudSyncBaseline> {
+  final Value<String> uid;
+  final Value<String> backupJson;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const CloudSyncBaselinesCompanion({
+    this.uid = const Value.absent(),
+    this.backupJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CloudSyncBaselinesCompanion.insert({
+    required String uid,
+    required String backupJson,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : uid = Value(uid),
+       backupJson = Value(backupJson),
+       updatedAt = Value(updatedAt);
+  static Insertable<CloudSyncBaseline> custom({
+    Expression<String>? uid,
+    Expression<String>? backupJson,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (backupJson != null) 'backup_json': backupJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CloudSyncBaselinesCompanion copyWith({
+    Value<String>? uid,
+    Value<String>? backupJson,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CloudSyncBaselinesCompanion(
+      uid: uid ?? this.uid,
+      backupJson: backupJson ?? this.backupJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<String>(uid.value);
+    }
+    if (backupJson.present) {
+      map['backup_json'] = Variable<String>(backupJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudSyncBaselinesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('backupJson: $backupJson, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4454,6 +4994,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $AppMetadataTable appMetadata = $AppMetadataTable(this);
+  late final $LocalAccountBackupsTable localAccountBackups =
+      $LocalAccountBackupsTable(this);
+  late final $CloudSyncBaselinesTable cloudSyncBaselines =
+      $CloudSyncBaselinesTable(this);
   late final Index workoutSessionsScheduledDateIdx = Index(
     'workout_sessions_scheduled_date_idx',
     'CREATE INDEX workout_sessions_scheduled_date_idx ON workout_sessions (scheduled_date)',
@@ -4485,6 +5029,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     personalGoals,
     bodyMeasurements,
     appMetadata,
+    localAccountBackups,
+    cloudSyncBaselines,
     workoutSessionsScheduledDateIdx,
     workoutSessionsCompletedAtIdx,
     scheduledTrainingSessionsDateIdx,
@@ -8057,6 +8603,385 @@ typedef $$AppMetadataTableProcessedTableManager =
       AppMetadataData,
       PrefetchHooks Function()
     >;
+typedef $$LocalAccountBackupsTableCreateCompanionBuilder =
+    LocalAccountBackupsCompanion Function({
+      required String uid,
+      required String backupJson,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$LocalAccountBackupsTableUpdateCompanionBuilder =
+    LocalAccountBackupsCompanion Function({
+      Value<String> uid,
+      Value<String> backupJson,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$LocalAccountBackupsTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalAccountBackupsTable> {
+  $$LocalAccountBackupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get backupJson => $composableBuilder(
+    column: $table.backupJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalAccountBackupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalAccountBackupsTable> {
+  $$LocalAccountBackupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get backupJson => $composableBuilder(
+    column: $table.backupJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalAccountBackupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalAccountBackupsTable> {
+  $$LocalAccountBackupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get backupJson => $composableBuilder(
+    column: $table.backupJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$LocalAccountBackupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalAccountBackupsTable,
+          LocalAccountBackup,
+          $$LocalAccountBackupsTableFilterComposer,
+          $$LocalAccountBackupsTableOrderingComposer,
+          $$LocalAccountBackupsTableAnnotationComposer,
+          $$LocalAccountBackupsTableCreateCompanionBuilder,
+          $$LocalAccountBackupsTableUpdateCompanionBuilder,
+          (
+            LocalAccountBackup,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalAccountBackupsTable,
+              LocalAccountBackup
+            >,
+          ),
+          LocalAccountBackup,
+          PrefetchHooks Function()
+        > {
+  $$LocalAccountBackupsTableTableManager(
+    _$AppDatabase db,
+    $LocalAccountBackupsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalAccountBackupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalAccountBackupsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LocalAccountBackupsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> uid = const Value.absent(),
+                Value<String> backupJson = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAccountBackupsCompanion(
+                uid: uid,
+                backupJson: backupJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String uid,
+                required String backupJson,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalAccountBackupsCompanion.insert(
+                uid: uid,
+                backupJson: backupJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalAccountBackupsTable, LocalAccountBackup>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalAccountBackupsTable,
+                    LocalAccountBackup
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalAccountBackupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalAccountBackupsTable,
+      LocalAccountBackup,
+      $$LocalAccountBackupsTableFilterComposer,
+      $$LocalAccountBackupsTableOrderingComposer,
+      $$LocalAccountBackupsTableAnnotationComposer,
+      $$LocalAccountBackupsTableCreateCompanionBuilder,
+      $$LocalAccountBackupsTableUpdateCompanionBuilder,
+      (
+        LocalAccountBackup,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalAccountBackupsTable,
+          LocalAccountBackup
+        >,
+      ),
+      LocalAccountBackup,
+      PrefetchHooks Function()
+    >;
+typedef $$CloudSyncBaselinesTableCreateCompanionBuilder =
+    CloudSyncBaselinesCompanion Function({
+      required String uid,
+      required String backupJson,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CloudSyncBaselinesTableUpdateCompanionBuilder =
+    CloudSyncBaselinesCompanion Function({
+      Value<String> uid,
+      Value<String> backupJson,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$CloudSyncBaselinesTableFilterComposer
+    extends Composer<_$AppDatabase, $CloudSyncBaselinesTable> {
+  $$CloudSyncBaselinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get backupJson => $composableBuilder(
+    column: $table.backupJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CloudSyncBaselinesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CloudSyncBaselinesTable> {
+  $$CloudSyncBaselinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get backupJson => $composableBuilder(
+    column: $table.backupJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CloudSyncBaselinesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CloudSyncBaselinesTable> {
+  $$CloudSyncBaselinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get backupJson => $composableBuilder(
+    column: $table.backupJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$CloudSyncBaselinesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CloudSyncBaselinesTable,
+          CloudSyncBaseline,
+          $$CloudSyncBaselinesTableFilterComposer,
+          $$CloudSyncBaselinesTableOrderingComposer,
+          $$CloudSyncBaselinesTableAnnotationComposer,
+          $$CloudSyncBaselinesTableCreateCompanionBuilder,
+          $$CloudSyncBaselinesTableUpdateCompanionBuilder,
+          (
+            CloudSyncBaseline,
+            BaseReferences<
+              _$AppDatabase,
+              $CloudSyncBaselinesTable,
+              CloudSyncBaseline
+            >,
+          ),
+          CloudSyncBaseline,
+          PrefetchHooks Function()
+        > {
+  $$CloudSyncBaselinesTableTableManager(
+    _$AppDatabase db,
+    $CloudSyncBaselinesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CloudSyncBaselinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CloudSyncBaselinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CloudSyncBaselinesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> uid = const Value.absent(),
+                Value<String> backupJson = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CloudSyncBaselinesCompanion(
+                uid: uid,
+                backupJson: backupJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String uid,
+                required String backupJson,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CloudSyncBaselinesCompanion.insert(
+                uid: uid,
+                backupJson: backupJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CloudSyncBaselinesTable, CloudSyncBaseline>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CloudSyncBaselinesTable,
+                    CloudSyncBaseline
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CloudSyncBaselinesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CloudSyncBaselinesTable,
+      CloudSyncBaseline,
+      $$CloudSyncBaselinesTableFilterComposer,
+      $$CloudSyncBaselinesTableOrderingComposer,
+      $$CloudSyncBaselinesTableAnnotationComposer,
+      $$CloudSyncBaselinesTableCreateCompanionBuilder,
+      $$CloudSyncBaselinesTableUpdateCompanionBuilder,
+      (
+        CloudSyncBaseline,
+        BaseReferences<
+          _$AppDatabase,
+          $CloudSyncBaselinesTable,
+          CloudSyncBaseline
+        >,
+      ),
+      CloudSyncBaseline,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -8087,4 +9012,8 @@ class $AppDatabaseManager {
       $$BodyMeasurementsTableTableManager(_db, _db.bodyMeasurements);
   $$AppMetadataTableTableManager get appMetadata =>
       $$AppMetadataTableTableManager(_db, _db.appMetadata);
+  $$LocalAccountBackupsTableTableManager get localAccountBackups =>
+      $$LocalAccountBackupsTableTableManager(_db, _db.localAccountBackups);
+  $$CloudSyncBaselinesTableTableManager get cloudSyncBaselines =>
+      $$CloudSyncBaselinesTableTableManager(_db, _db.cloudSyncBaselines);
 }

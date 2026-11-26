@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/localization/device_time_format.dart';
 import '../../../../data/repositories/workout_reminder_repository.dart';
 import '../../../../data/repositories/profile_settings_repository.dart';
+import '../../../../data/services/firestore_backup_sync_service.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_surface_card.dart';
@@ -13,6 +14,7 @@ import '../../onboarding/views/account_access_pages.dart';
 import '../../onboarding/views/onboarding_view.dart';
 import '../../onboarding/view_models/account_auth_view_model.dart';
 import '../models/profile_settings.dart';
+import 'cloud_sync_settings_page.dart';
 import 'profile_settings_pages.dart';
 import '../../../../app/localization/locale_controller.dart';
 import '../../../../app/localization/localization_extensions.dart';
@@ -26,6 +28,7 @@ class ProfileView extends StatefulWidget {
     this.preferences = const AppPreferences(),
     this.onPreferencesChanged,
     required this.accountAuthViewModel,
+    this.cloudSyncService,
     this.onNotificationsChanged,
     required this.themeMode,
     required this.onThemeModeChanged,
@@ -43,6 +46,7 @@ class ProfileView extends StatefulWidget {
   final AppPreferences preferences;
   final ValueChanged<AppPreferences>? onPreferencesChanged;
   final AccountAuthViewModel accountAuthViewModel;
+  final FirestoreBackupSyncService? cloudSyncService;
   final Future<bool> Function(
     NotificationSettings previous,
     NotificationSettings updated,
@@ -155,7 +159,11 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 ListenableBuilder(
-                  listenable: widget.accountAuthViewModel,
+                  listenable: Listenable.merge([
+                    widget.accountAuthViewModel,
+                    if (widget.cloudSyncService != null)
+                      widget.cloudSyncService!,
+                  ]),
                   builder: (context, _) {
                     final hasAccount =
                         widget.accountAuthViewModel.account != null;
@@ -176,6 +184,16 @@ class _ProfileViewState extends State<ProfileView> {
                           onTap: _editLanguage,
                         ),
                         if (hasAccount) ...[
+                          if (widget.cloudSyncService != null)
+                            _ProfileOption(
+                              icon: Icons.cloud_sync_outlined,
+                              title: context.l10n.cloudSyncTitle,
+                              subtitle: _cloudSyncSubtitle(
+                                context,
+                                widget.cloudSyncService!.status.phase,
+                              ),
+                              onTap: _openCloudSyncSettings,
+                            ),
                           _ProfileOption(
                             icon: Icons.person_outline_rounded,
                             title: context.l10n.profileEdit,
@@ -400,6 +418,21 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() => _privacy = updated);
   }
 
+  Future<void> _openCloudSyncSettings() async {
+    final service = widget.cloudSyncService;
+    final account = widget.accountAuthViewModel.account;
+    if (service == null || account == null) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => CloudSyncSettingsPage(
+          service: service,
+          settingsRepository: widget.profileSettingsRepository,
+          uid: account.providerUserId,
+        ),
+      ),
+    );
+  }
+
   ForzaProfile _localizedProfile(BuildContext context) => ForzaProfile(
     fullName: _profile.fullName == 'Atleta FORZA'
         ? context.l10n.profileDefaultName
@@ -407,6 +440,16 @@ class _ProfileViewState extends State<ProfileView> {
     goal: _localizedGoal(context, _profile.goal),
   );
 }
+
+String _cloudSyncSubtitle(BuildContext context, CloudSyncPhase phase) =>
+    switch (phase) {
+      CloudSyncPhase.signedOut => context.l10n.cloudSyncStatusSignedOut,
+      CloudSyncPhase.consentRequired => context.l10n.cloudSyncStatusDisabled,
+      CloudSyncPhase.syncing => context.l10n.cloudSyncStatusSyncing,
+      CloudSyncPhase.synced => context.l10n.cloudSyncStatusSynced,
+      CloudSyncPhase.pending => context.l10n.cloudSyncStatusPending,
+      CloudSyncPhase.failed => context.l10n.cloudSyncStatusFailed,
+    };
 
 class _AccountIdentityCard extends StatelessWidget {
   const _AccountIdentityCard({required this.model, required this.onSignIn});

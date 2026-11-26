@@ -843,7 +843,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAccountAccessSubtitle =>
-      'Optional · your data stays on this device';
+      'Optional · sync is enabled separately';
 
   @override
   String get profileGoogleConnected => 'Connected with Google';
@@ -1206,7 +1206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountWelcomeDescription =>
-      'You can use Forza without signing in. Connect Google to sync your workouts, schedule, goals, measurements, and preferences with your private account.';
+      'You can train without an account. Signing in with Google does not upload your data; you can turn on sync separately in Profile.';
 
   @override
   String get accountSignInWithGoogle => 'Continue with Google';
@@ -1229,7 +1229,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountLocalDataNote =>
-      'Signing in or out with Google does not delete workouts, preferences, or backups. Forza does not upload or sync this data.';
+      'Your data stays on this device until you choose to enable sync in Profile.';
 
   @override
   String get accountConfigurationRequired =>
@@ -1949,6 +1949,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAccountData => 'Account details';
+
+  @override
+  String get cloudSyncTitle => 'Cloud sync';
+
+  @override
+  String get cloudSyncDescription =>
+      'Sync is optional. Your data stays available offline and is sent to your private Firestore account only after you turn sync on.';
+
+  @override
+  String get cloudSyncToggleTitle => 'Sync my data';
+
+  @override
+  String get cloudSyncToggleDescription =>
+      'Includes your plan, schedule, workouts, sets, goals, measurements, and app settings.';
+
+  @override
+  String get cloudSyncStatusHeading => 'Status';
+
+  @override
+  String get cloudSyncStatusSignedOut => 'Sign in to sync.';
+
+  @override
+  String get cloudSyncStatusDisabled =>
+      'Off · changes are saved on this device only.';
+
+  @override
+  String get cloudSyncStatusSyncing => 'Syncing your data…';
+
+  @override
+  String get cloudSyncStatusSynced => 'Everything is up to date.';
+
+  @override
+  String get cloudSyncStatusPending => 'Changes are waiting to sync.';
+
+  @override
+  String get cloudSyncStatusFailed => 'Sync failed. You can try again.';
+
+  @override
+  String get cloudSyncLastSync => 'Last sync';
+
+  @override
+  String get cloudSyncRetry => 'Retry now';
+
+  @override
+  String get cloudSyncConsentTitle => 'Turn on sync';
+
+  @override
+  String get cloudSyncConsentDescription =>
+      'A copy of your plan and schedule, workouts and sets, goals, measurements, active workout, appearance and preferences, notifications, and privacy settings will be uploaded to your private Firestore account. Existing cloud and local data will be combined, keeping your local version when records conflict. You can turn sync off later.';
+
+  @override
+  String get cloudSyncConsentAccept => 'Turn on and sync';
+
+  @override
+  String get cloudSyncEnableFailed => 'Sync could not be enabled. Try again.';
+
+  @override
+  String get cloudSyncDisableTitle => 'Turn off sync';
+
+  @override
+  String get cloudSyncDisableDescription =>
+      'New changes will stay on this device. The existing cloud copy will not be deleted.';
+
+  @override
+  String get cloudSyncDisableButton => 'Turn off';
+
+  @override
+  String get cloudSyncDeleteSection => 'Cloud copy';
+
+  @override
+  String get cloudSyncDeleteDescription =>
+      'Deletes your Firestore profile and synced copy. Your local data and Google account stay in place.';
+
+  @override
+  String get cloudSyncDeleteButton => 'Delete cloud copy';
+
+  @override
+  String get cloudSyncDeleteTitle => 'Delete your cloud copy?';
+
+  @override
+  String get cloudSyncDeleteConfirm =>
+      'This removes your Firestore profile and all synced data. Data on this device and your Google account will be kept.';
+
+  @override
+  String get cloudSyncDeleteCompleted =>
+      'The Firestore copy was deleted. Local data was kept.';
+
+  @override
+  String get cloudSyncDeleteFailed =>
+      'The cloud copy could not be deleted. Check your connection and try again.';
 
   @override
   String get profileConfirmHeading => 'Confirm your details';

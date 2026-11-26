@@ -30,6 +30,7 @@ class ValidatedForzaBackup {
     this.appPreferences = const AppPreferences(),
     this.notificationSettings = const NotificationSettings(),
     this.privacySettings = const PrivacySettings(),
+    this.languageCode,
   });
 
   final DateTime exportedAt;
@@ -44,6 +45,7 @@ class ValidatedForzaBackup {
   final AppPreferences appPreferences;
   final NotificationSettings notificationSettings;
   final PrivacySettings privacySettings;
+  final String? languageCode;
 }
 
 class BackupRepository {
@@ -55,6 +57,8 @@ class BackupRepository {
     required this.goalRepository,
     BodyMeasurementRepository? bodyMeasurementRepository,
     ProfileSettingsRepository? profileSettingsRepository,
+    this.readLanguageCode,
+    this.writeLanguageCode,
   }) : bodyMeasurementRepository =
            bodyMeasurementRepository ??
            BodyMeasurementRepository(database: database),
@@ -72,6 +76,8 @@ class BackupRepository {
   final PersonalGoalRepository goalRepository;
   final BodyMeasurementRepository bodyMeasurementRepository;
   final ProfileSettingsRepository profileSettingsRepository;
+  final String? Function()? readLanguageCode;
+  final Future<void> Function(String?)? writeLanguageCode;
 
   Future<String> exportJson({required String appearanceMode}) async {
     final activeDraft = await workoutLogRepository.loadActiveWorkout();
@@ -79,6 +85,7 @@ class BackupRepository {
       'format': formatName,
       'version': version,
       'exportedAt': DateTime.now().toIso8601String(),
+      'languageCode': readLanguageCode?.call(),
       'trainingSettings': _settingsToJson(await settingsRepository.load()),
       'planVersion': await settingsRepository.currentPlanVersion,
       'workoutRecords': [
@@ -109,62 +116,193 @@ class BackupRepository {
     });
   }
 
-  /// Combines a local backup with a cloud backup, keeping local values when
-  /// both backups contain the same logical record.
-  String mergeJson(String localSource, String cloudSource) {
+  Future<void> clearLocalData() async {
+    final defaults = const TrainingSettings();
+    await restore(
+      validate(
+        jsonEncode({
+          'format': formatName,
+          'version': version,
+          'exportedAt': DateTime.now().toIso8601String(),
+          'languageCode': null,
+          'trainingSettings': _settingsToJson(defaults),
+          'planVersion': 1,
+          'workoutRecords': const <Object?>[],
+          'scheduledSessions': const <Object?>[],
+          'personalGoals': const <Object?>[],
+          'bodyMeasurements': const <Object?>[],
+          'appearanceMode': 'system',
+          'activeWorkout': null,
+          'appPreferences': _appPreferencesToJson(const AppPreferences()),
+          'notificationSettings': _notificationSettingsToJson(
+            const NotificationSettings(),
+          ),
+          'privacySettings': _privacySettingsToJson(const PrivacySettings()),
+        }),
+      ),
+    );
+  }
+
+  /// Combines snapshots against the last shared baseline. Local edits win
+  /// conflicts; a deletion on either side is propagated when the other side
+  /// has not edited that record since the baseline.
+  String mergeJson(
+    String localSource,
+    String cloudSource, {
+    String? baselineSource,
+  }) {
     final local = validate(localSource);
     final cloud = validate(cloudSource);
+    final baseline = baselineSource == null ? null : validate(baselineSource);
+    final records = _mergeKeyedLists(
+      local.records.map((record) => record.toJson()),
+      cloud.records.map((record) => record.toJson()),
+      baseline?.records.map((record) => record.toJson()),
+      (record) => _key(DateTime.parse(record['scheduledDate'] as String)),
+    );
+    final schedule = _mergeKeyedLists(
+      local.schedule.map(_scheduleToJson),
+      cloud.schedule.map(_scheduleToJson),
+      baseline?.schedule.map(_scheduleToJson),
+      (session) => _key(DateTime.parse(session['scheduledDate'] as String)),
+    );
+    final goals = _mergeKeyedLists(
+      local.goals.map(_goalToJson),
+      cloud.goals.map(_goalToJson),
+      baseline?.goals.map(_goalToJson),
+      (goal) => goal['id'] as String,
+    );
+    final measurements = _mergeKeyedLists(
+      local.bodyMeasurements.map((item) => item.toJson()),
+      cloud.bodyMeasurements.map((item) => item.toJson()),
+      baseline?.bodyMeasurements.map((item) => item.toJson()),
+      (item) => item['date'] as String,
+    );
 
-    final records = <String, Map<String, Object?>>{};
-    for (final record in cloud.records) {
-      records[_key(record.date)] = record.toJson();
-    }
-    for (final record in local.records) {
-      records[_key(record.date)] = record.toJson();
-    }
-
-    final schedule = <String, Map<String, Object?>>{};
-    for (final session in cloud.schedule) {
-      schedule[_key(session.scheduledDate)] = _scheduleToJson(session);
-    }
-    for (final session in local.schedule) {
-      schedule[_key(session.scheduledDate)] = _scheduleToJson(session);
-    }
-
-    final goals = <String, Map<String, Object?>>{};
-    for (final goal in cloud.goals) {
-      goals[goal.id] = _goalToJson(goal);
-    }
-    for (final goal in local.goals) {
-      goals[goal.id] = _goalToJson(goal);
-    }
-
-    final measurements = <String, Map<String, Object?>>{};
-    for (final measurement in cloud.bodyMeasurements) {
-      measurements[measurement.id] = measurement.toJson();
-    }
-    for (final measurement in local.bodyMeasurements) {
-      measurements[measurement.id] = measurement.toJson();
-    }
+    final localSettings = _settingsToJson(local.settings);
+    final remoteSettings = _settingsToJson(cloud.settings);
+    final baseSettings = baseline == null
+        ? null
+        : _settingsToJson(baseline.settings);
 
     return jsonEncode({
       'format': formatName,
       'version': version,
       'exportedAt': DateTime.now().toIso8601String(),
-      'trainingSettings': _settingsToJson(local.settings),
-      'planVersion': local.planVersion,
-      'workoutRecords': records.values.toList(),
-      'scheduledSessions': schedule.values.toList(),
-      'personalGoals': goals.values.toList(),
-      'bodyMeasurements': measurements.values.toList(),
-      'appearanceMode': local.appearanceMode,
-      'activeWorkout': local.activeWorkout ?? cloud.activeWorkout,
-      'appPreferences': _appPreferencesToJson(local.appPreferences),
-      'notificationSettings': _notificationSettingsToJson(
-        local.notificationSettings,
+      'languageCode': baseline == null
+          ? local.languageCode ?? cloud.languageCode
+          : _chooseThreeWay(
+              local.languageCode,
+              cloud.languageCode,
+              baseline.languageCode,
+              hasBaseline: true,
+            ),
+      'trainingSettings': _chooseThreeWay(
+        localSettings,
+        remoteSettings,
+        baseSettings,
+        hasBaseline: baseline != null,
       ),
-      'privacySettings': _privacySettingsToJson(local.privacySettings),
+      'planVersion': _chooseThreeWay(
+        local.planVersion,
+        cloud.planVersion,
+        baseline?.planVersion,
+        hasBaseline: baseline != null,
+      ),
+      'workoutRecords': records,
+      'scheduledSessions': schedule,
+      'personalGoals': goals,
+      'bodyMeasurements': measurements,
+      'appearanceMode': _chooseThreeWay(
+        local.appearanceMode,
+        cloud.appearanceMode,
+        baseline?.appearanceMode,
+        hasBaseline: baseline != null,
+      ),
+      'activeWorkout': baseline == null
+          ? local.activeWorkout ?? cloud.activeWorkout
+          : _chooseThreeWay(
+              local.activeWorkout,
+              cloud.activeWorkout,
+              baseline.activeWorkout,
+              hasBaseline: true,
+            ),
+      'appPreferences': _chooseThreeWay(
+        _appPreferencesToJson(local.appPreferences),
+        _appPreferencesToJson(cloud.appPreferences),
+        baseline == null
+            ? null
+            : _appPreferencesToJson(baseline.appPreferences),
+        hasBaseline: baseline != null,
+      ),
+      'notificationSettings': _chooseThreeWay(
+        _notificationSettingsToJson(local.notificationSettings),
+        _notificationSettingsToJson(cloud.notificationSettings),
+        baseline == null
+            ? null
+            : _notificationSettingsToJson(baseline.notificationSettings),
+        hasBaseline: baseline != null,
+      ),
+      'privacySettings': _chooseThreeWay(
+        _privacySettingsToJson(local.privacySettings),
+        _privacySettingsToJson(cloud.privacySettings),
+        baseline == null
+            ? null
+            : _privacySettingsToJson(baseline.privacySettings),
+        hasBaseline: baseline != null,
+      ),
     });
+  }
+
+  List<Map<String, Object?>> _mergeKeyedLists(
+    Iterable<Map<String, Object?>> local,
+    Iterable<Map<String, Object?>> cloud,
+    Iterable<Map<String, Object?>>? baseline,
+    String Function(Map<String, Object?>) keyOf,
+  ) {
+    Map<String, Map<String, Object?>> index(
+      Iterable<Map<String, Object?>> values,
+    ) => {for (final value in values) keyOf(value): value};
+
+    final localByKey = index(local);
+    final cloudByKey = index(cloud);
+    if (baseline == null) {
+      return {...cloudByKey, ...localByKey}.values.toList(growable: false);
+    }
+
+    final baseByKey = index(baseline);
+    final allKeys = {...localByKey.keys, ...cloudByKey.keys, ...baseByKey.keys};
+    final result = <Map<String, Object?>>[];
+    for (final key in allKeys) {
+      final localValue = localByKey[key];
+      final remoteValue = cloudByKey[key];
+      final baseValue = baseByKey[key];
+      final localChanged = !_sameValue(localValue, baseValue);
+      final chosen = localChanged ? localValue : remoteValue;
+      if (chosen != null) result.add(chosen);
+    }
+    return result;
+  }
+
+  Object? _chooseThreeWay(
+    Object? local,
+    Object? cloud,
+    Object? baseline, {
+    required bool hasBaseline,
+  }) => hasBaseline && _sameValue(local, baseline) ? cloud : local;
+
+  bool _sameValue(Object? first, Object? second) =>
+      jsonEncode(_canonicalValue(first)) == jsonEncode(_canonicalValue(second));
+
+  Object? _canonicalValue(Object? value) {
+    if (value is Map) {
+      final keys = value.keys.cast<String>().toList()..sort();
+      return <String, Object?>{
+        for (final key in keys) key: _canonicalValue(value[key]),
+      };
+    }
+    if (value is List) return value.map(_canonicalValue).toList();
+    return value;
   }
 
   ValidatedForzaBackup validate(String source) {
@@ -240,6 +378,7 @@ class BackupRepository {
       }
       return ValidatedForzaBackup(
         exportedAt: DateTime.parse(_string(root['exportedAt'], 'exportedAt')),
+        languageCode: _languageCode(root['languageCode']),
         settings: _settings(root['trainingSettings']),
         planVersion: planVersion,
         records: records,
@@ -404,6 +543,7 @@ class BackupRepository {
         backup.notificationSettings,
       );
       await profileSettingsRepository.savePrivacy(backup.privacySettings);
+      await writeLanguageCode?.call(backup.languageCode);
 
       await database
           .into(database.appMetadata)
@@ -630,6 +770,12 @@ class BackupRepository {
       }
     }
     return json;
+  }
+
+  static String? _languageCode(Object? value) {
+    if (value == null) return null;
+    if (value is String && const {'en', 'es'}.contains(value)) return value;
+    throw const FormatException('El idioma del respaldo no es válido.');
   }
 
   static AppPreferences _appPreferences(Object? value) {

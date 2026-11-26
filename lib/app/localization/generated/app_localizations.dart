@@ -1481,7 +1481,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileAccountAccessSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Optional · your data stays on this device'**
+  /// **'Optional · sync is enabled separately'**
   String get profileAccountAccessSubtitle;
 
   /// No description provided for @profileGoogleConnected.
@@ -2135,7 +2135,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountWelcomeDescription.
   ///
   /// In en, this message translates to:
-  /// **'You can use Forza without signing in. Connect Google to sync your workouts, schedule, goals, measurements, and preferences with your private account.'**
+  /// **'You can train without an account. Signing in with Google does not upload your data; you can turn on sync separately in Profile.'**
   String get accountWelcomeDescription;
 
   /// No description provided for @accountSignInWithGoogle.
@@ -2177,7 +2177,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountLocalDataNote.
   ///
   /// In en, this message translates to:
-  /// **'Signing in or out with Google does not delete workouts, preferences, or backups. Forza does not upload or sync this data.'**
+  /// **'Your data stays on this device until you choose to enable sync in Profile.'**
   String get accountLocalDataNote;
 
   /// No description provided for @accountConfigurationRequired.
@@ -3385,6 +3385,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account details'**
   String get profileAccountData;
+
+  /// No description provided for @cloudSyncTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud sync'**
+  String get cloudSyncTitle;
+
+  /// No description provided for @cloudSyncDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync is optional. Your data stays available offline and is sent to your private Firestore account only after you turn sync on.'**
+  String get cloudSyncDescription;
+
+  /// No description provided for @cloudSyncToggleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync my data'**
+  String get cloudSyncToggleTitle;
+
+  /// No description provided for @cloudSyncToggleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes your plan, schedule, workouts, sets, goals, measurements, and app settings.'**
+  String get cloudSyncToggleDescription;
+
+  /// No description provided for @cloudSyncStatusHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get cloudSyncStatusHeading;
+
+  /// No description provided for @cloudSyncStatusSignedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to sync.'**
+  String get cloudSyncStatusSignedOut;
+
+  /// No description provided for @cloudSyncStatusDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Off · changes are saved on this device only.'**
+  String get cloudSyncStatusDisabled;
+
+  /// No description provided for @cloudSyncStatusSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing your data…'**
+  String get cloudSyncStatusSyncing;
+
+  /// No description provided for @cloudSyncStatusSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything is up to date.'**
+  String get cloudSyncStatusSynced;
+
+  /// No description provided for @cloudSyncStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes are waiting to sync.'**
+  String get cloudSyncStatusPending;
+
+  /// No description provided for @cloudSyncStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed. You can try again.'**
+  String get cloudSyncStatusFailed;
+
+  /// No description provided for @cloudSyncLastSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Last sync'**
+  String get cloudSyncLastSync;
+
+  /// No description provided for @cloudSyncRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry now'**
+  String get cloudSyncRetry;
+
+  /// No description provided for @cloudSyncConsentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on sync'**
+  String get cloudSyncConsentTitle;
+
+  /// No description provided for @cloudSyncConsentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A copy of your plan and schedule, workouts and sets, goals, measurements, active workout, appearance and preferences, notifications, and privacy settings will be uploaded to your private Firestore account. Existing cloud and local data will be combined, keeping your local version when records conflict. You can turn sync off later.'**
+  String get cloudSyncConsentDescription;
+
+  /// No description provided for @cloudSyncConsentAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on and sync'**
+  String get cloudSyncConsentAccept;
+
+  /// No description provided for @cloudSyncEnableFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync could not be enabled. Try again.'**
+  String get cloudSyncEnableFailed;
+
+  /// No description provided for @cloudSyncDisableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off sync'**
+  String get cloudSyncDisableTitle;
+
+  /// No description provided for @cloudSyncDisableDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'New changes will stay on this device. The existing cloud copy will not be deleted.'**
+  String get cloudSyncDisableDescription;
+
+  /// No description provided for @cloudSyncDisableButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off'**
+  String get cloudSyncDisableButton;
+
+  /// No description provided for @cloudSyncDeleteSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud copy'**
+  String get cloudSyncDeleteSection;
+
+  /// No description provided for @cloudSyncDeleteDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes your Firestore profile and synced copy. Your local data and Google account stay in place.'**
+  String get cloudSyncDeleteDescription;
+
+  /// No description provided for @cloudSyncDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cloud copy'**
+  String get cloudSyncDeleteButton;
+
+  /// No description provided for @cloudSyncDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your cloud copy?'**
+  String get cloudSyncDeleteTitle;
+
+  /// No description provided for @cloudSyncDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes your Firestore profile and all synced data. Data on this device and your Google account will be kept.'**
+  String get cloudSyncDeleteConfirm;
+
+  /// No description provided for @cloudSyncDeleteCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'The Firestore copy was deleted. Local data was kept.'**
+  String get cloudSyncDeleteCompleted;
+
+  /// No description provided for @cloudSyncDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The cloud copy could not be deleted. Check your connection and try again.'**
+  String get cloudSyncDeleteFailed;
 
   /// No description provided for @profileConfirmHeading.
   ///
