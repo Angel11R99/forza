@@ -739,6 +739,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get activityStatusInProgress => 'En curso';
 
   @override
+  String get activityCalendarLegendAction => 'Ver estados';
+
+  @override
+  String get activityCalendarLegendTitle => 'Estados del calendario';
+
+  @override
+  String get activityCalendarLegendClose => 'Cerrar';
+
+  @override
   String get activityPlannedRoutine => 'Rutina prevista';
 
   @override

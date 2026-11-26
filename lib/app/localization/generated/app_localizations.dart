@@ -1298,6 +1298,24 @@ abstract class AppLocalizations {
   /// **'In progress'**
   String get activityStatusInProgress;
 
+  /// No description provided for @activityCalendarLegendAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View statuses'**
+  String get activityCalendarLegendAction;
+
+  /// No description provided for @activityCalendarLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar statuses'**
+  String get activityCalendarLegendTitle;
+
+  /// No description provided for @activityCalendarLegendClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get activityCalendarLegendClose;
+
   /// No description provided for @activityPlannedRoutine.
   ///
   /// In en, this message translates to:
