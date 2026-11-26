@@ -3719,6 +3719,48 @@ abstract class AppLocalizations {
   /// **'Exercise {current} of {total}'**
   String sessionExerciseCountProgress(Object current, Object total);
 
+  /// No description provided for @sessionViewRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'View routine'**
+  String get sessionViewRoutine;
+
+  /// No description provided for @sessionRoutineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This session\'s routine'**
+  String get sessionRoutineTitle;
+
+  /// No description provided for @sessionRoutineDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review every exercise. You can open the current or a previous exercise; upcoming ones unlock as you progress.'**
+  String get sessionRoutineDescription;
+
+  /// No description provided for @sessionRoutineCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get sessionRoutineCompleted;
+
+  /// No description provided for @sessionRoutineCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get sessionRoutineCurrent;
+
+  /// No description provided for @sessionRoutinePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get sessionRoutinePending;
+
+  /// No description provided for @sessionCloseRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Close routine'**
+  String get sessionCloseRoutine;
+
   /// No description provided for @sessionSetLog.
   ///
   /// In en, this message translates to:
