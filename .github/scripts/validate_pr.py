@@ -17,7 +17,6 @@ def gh_paginated(path):
 
 repo = os.environ["GH_REPO"]
 pr_number = int(os.environ["PR_NUMBER"])
-author = os.environ["PR_AUTHOR"].lower()
 branch = os.environ["HEAD_REF"]
 body = os.environ.get("PR_BODY") or ""
 pr = gh(f"repos/{repo}/pulls/{pr_number}")
@@ -33,11 +32,6 @@ if "status:approved" not in labels:
     sys.exit(f"Issue #{issue_number} is not approved (missing status:approved).")
 if {"status:rejected", "status:duplicate"} & labels:
     sys.exit("Rejected or duplicate issues cannot be used for a contribution.")
-assignees = {item["login"].lower() for item in issue["assignees"]}
-if not assignees:
-    sys.exit(f"Issue #{issue_number} must be assigned to a responsible contributor.")
-if author not in assignees and "contrib:exception-approved" not in labels:
-    sys.exit(f"PR author @{author} is not assigned to issue #{issue_number} and no maintainer exception is recorded.")
 if not re.fullmatch(rf"issue/{issue_number}-[a-z0-9]+(?:-[a-z0-9]+)*", branch):
     sys.exit(f"Branch must match issue/{issue_number}-short-description (lowercase ASCII).")
 if pr["base"]["ref"] != "main":

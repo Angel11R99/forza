@@ -1,7 +1,7 @@
 name: Issue triage
 on:
   issues:
-    types: [opened, labeled, assigned, closed]
+    types: [opened, labeled, closed]
   pull_request:
     types: [closed]
 permissions:
@@ -23,7 +23,7 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: python .github/scripts/find_issue_duplicates.py
       - name: Keep issue status labels consistent
-        if: github.event.action == 'labeled' || github.event.action == 'assigned'
+        if: github.event.action == 'labeled'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
