@@ -6,7 +6,7 @@
 
 <p align="center"><strong>Entrena con intención. Sigue tu progreso.</strong></p>
 
-FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y consultar la actividad y el progreso. Guarda localmente el plan, la agenda y el historial; no requiere una API para esas funciones.
+FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y consultar la actividad y el progreso. Mantiene SQLite como almacenamiento local y, al iniciar sesión con Google, sincroniza los datos personales con Firebase Authentication y Cloud Firestore.
 
 ## La app
 
@@ -19,7 +19,7 @@ FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y co
 
 ## Estado actual
 
-La app guarda localmente en SQLite (Drift) las preferencias del plan —incluidos movimientos que prefieres evitar—, agenda de 120 días, sesiones terminadas con resultados por serie, objetivos personales, medidas corporales y borrador de la sesión activa. También permite exportar y restaurar un respaldo JSON local. La apariencia, el idioma y los ajustes de perfil se conservan localmente. Google Sign-In es opcional y solo muestra la identidad del proveedor; no hay cuenta de servidor ni sincronización remota.
+La app guarda localmente en SQLite (Drift) las preferencias del plan —incluidos movimientos que prefieres evitar—, agenda de 120 días, sesiones terminadas con resultados por serie, objetivos personales, medidas corporales y borrador de la sesión activa. También permite exportar y restaurar un respaldo JSON local. Al iniciar sesión, Firestore sincroniza ese respaldo y los ajustes de perfil; los datos locales se combinan con los remotos dando prioridad al contenido local cuando coincide el mismo registro. Google Sign-In es opcional.
 
 El registro de series, recuperación de sesión, agenda sincronizada entre Inicio/Actividad/entrenamiento, medidas corporales persistentes, evolución de fuerza y récords desde los datos guardados, métricas de series y respaldo ya están implementados. Consulta [auditoría y prioridades](docs/07-auditoria-modulos-indispensables.md) y [módulos recomendados](docs/08-modulos-recomendados.md) para el estado vigente.
 
@@ -42,7 +42,7 @@ flowchart LR
 
 La interfaz se organiza por funcionalidades. Las reglas y modelos viven en `domain`; los repositorios de `data` conectan esas reglas con SQLite y los assets locales. Las migraciones SQL y snapshots del esquema están en `database/migrations/sqlite/` y `drift_schemas/`.
 
-**Estado de backend:** no hay API ni sincronización remota implementadas. Los endpoints descritos en la [documentación de persistencia y API](docs/06-datos-locales-y-api.md) son una propuesta futura.
+**Backend:** Firebase project `forza-6cd98`, Authentication con Google y Firestore Standard en `us-east1`. La configuración del cliente está en `lib/firebase_options.dart` y `android/app/google-services.json`; reglas e índices están versionados en `firestore.rules` y `firestore.indexes.json`. Consulta [configuración de Firebase y sincronización](docs/firebase-sync.md).
 
 ### Mapa del código
 
