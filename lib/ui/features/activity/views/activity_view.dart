@@ -637,48 +637,83 @@ class _CalendarLegend extends StatelessWidget {
   const _CalendarLegend();
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - AppSpacing.x3) / 2;
-        return Wrap(
-          alignment: WrapAlignment.center,
-          spacing: AppSpacing.x3,
-          runSpacing: AppSpacing.x2,
-          children: [
-            for (final status in _CalendarDayStatus.values)
-              SizedBox(
-                width: itemWidth,
-                child: Semantics(
-                  label: _calendarStatusLabel(context, status),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        child: Center(
-                          child: Icon(
-                            status.icon,
-                            size: 14,
-                            color: context.appColors.accent,
-                          ),
-                        ),
+  Widget build(BuildContext context) => Center(
+    child: TextButton.icon(
+      key: const ValueKey('calendar-legend-button'),
+      onPressed: () => _showLegend(context),
+      icon: const Icon(Icons.info_outline_rounded, size: 18),
+      label: Text(context.l10n.activityCalendarLegendAction),
+    ),
+  );
+
+  Future<void> _showLegend(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.x6,
+          AppSpacing.x2,
+          AppSpacing.x6,
+          AppSpacing.x6,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        context.l10n.activityCalendarLegendTitle,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(width: AppSpacing.x1),
-                      Flexible(
-                        child: Text(
-                          _calendarLegendLabel(context, status),
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    IconButton(
+                      tooltip: context.l10n.activityCalendarLegendClose,
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
                 ),
-              ),
-          ],
-        );
-      },
+                const SizedBox(height: AppSpacing.x2),
+                for (final status in _CalendarDayStatus.values)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.x2,
+                    ),
+                    child: Semantics(
+                      label: _calendarStatusLabel(context, status),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 28,
+                            child: Icon(
+                              status.icon,
+                              size: 18,
+                              color: context.appColors.accent,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.x2),
+                          Expanded(
+                            child: Text(
+                              _calendarLegendLabel(context, status),
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

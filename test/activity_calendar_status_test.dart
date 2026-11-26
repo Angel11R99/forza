@@ -97,9 +97,18 @@ void main() {
       (calendar.calendarStyle.todayDecoration as BoxDecoration).border,
       isNull,
     );
-    expect(find.text('completada'), findsOneWidget);
+    expect(find.text('Ver estados'), findsOneWidget);
+    expect(find.text('pendiente'), findsNothing);
+    await tester.tap(find.text('Ver estados'));
+    await tester.pumpAndSettle();
+    expect(find.text('Estados del calendario'), findsOneWidget);
     expect(find.text('pendiente'), findsOneWidget);
+    expect(find.text('completada'), findsOneWidget);
     expect(find.text('omitida'), findsOneWidget);
+    expect(find.text('En curso'), findsOneWidget);
+    expect(find.text('reprogramada'), findsOneWidget);
+    await tester.tap(find.byTooltip('Cerrar'));
+    await tester.pumpAndSettle();
     expect(find.text('Registro real'), findsOneWidget);
     expect(find.text('Rutina prevista'), findsOneWidget);
     expect(find.text('Push-ups · 3 × 8'), findsOneWidget);

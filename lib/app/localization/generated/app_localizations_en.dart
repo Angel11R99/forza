@@ -735,6 +735,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activityStatusInProgress => 'In progress';
 
   @override
+  String get activityCalendarLegendAction => 'View statuses';
+
+  @override
+  String get activityCalendarLegendTitle => 'Calendar statuses';
+
+  @override
+  String get activityCalendarLegendClose => 'Close';
+
+  @override
   String get activityPlannedRoutine => 'Planned routine';
 
   @override
