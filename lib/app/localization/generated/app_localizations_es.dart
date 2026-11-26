@@ -2156,6 +2156,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String sessionSetsProgress(int current, int total) {
+    return '$current de $total series completadas';
+  }
+
+  @override
   String get sessionViewRoutine => 'Ver rutina';
 
   @override
@@ -2179,6 +2184,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sessionSetLog => 'Registro de series';
+
+  @override
+  String get sessionNextSet => 'Siguiente serie';
+
+  @override
+  String get sessionCompleteSetAction => 'Completar serie';
+
+  @override
+  String get sessionUndoSet => 'Desmarcar serie';
+
+  @override
+  String get sessionPreviousSetSuggestion => 'Sugerencia de la serie anterior';
 
   @override
   String get sessionRestHeadline => 'Tómate un respiro';

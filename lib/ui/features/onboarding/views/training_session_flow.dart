@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../app/theme/app_colors.dart';
@@ -228,8 +229,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                           horizontal: horizontalPadding,
                         ),
                         child: _SessionProgress(
-                          current: _currentExercise,
-                          total: _exercises.length,
+                          current: _completedSetCount,
+                          total: _totalSetCount,
                         ),
                       ),
                     Expanded(
@@ -548,9 +549,24 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             setIndex++
           ) ...[
             _WorkoutSetEditor(
+              key: ValueKey('workout-set-$_currentExercise-$setIndex'),
+              setIndex: setIndex,
               label: context.l10n.sessionSet(setIndex + 1),
               isTimed: _exercises[_currentExercise].isTimed,
               result: _resultFor(_currentExercise, setIndex),
+              target: _localizedPrescriptionTarget(
+                context,
+                _plannedSession.exercises[_currentExercise].prescription,
+              ),
+              suggestion: setIndex > 0
+                  ? _resultFor(_currentExercise, setIndex - 1)
+                  : null,
+              isNext:
+                  !_completedSets.contains('$_currentExercise:$setIndex') &&
+                  List.generate(setIndex, (index) => index).every(
+                    (index) =>
+                        _completedSets.contains('$_currentExercise:$index'),
+                  ),
               canComplete: _exercises[_currentExercise].isTimed
                   ? (_resultFor(_currentExercise, setIndex)?.durationSeconds ??
                             0) >
@@ -594,6 +610,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                     sets.add(value);
                   } else {
                     sets[position] = value;
+                  }
+                  final hasRequiredValue = _exercises[_currentExercise].isTimed
+                      ? (value.durationSeconds ?? 0) > 0
+                      : (value.repetitions ?? 0) > 0;
+                  if (!hasRequiredValue) {
+                    _completedSets.remove('$_currentExercise:$setIndex');
                   }
                 });
                 _saveDraft();
@@ -700,15 +722,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                                 children: [
                                   Text(
                                     name,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium,
                                   ),
                                   Text(
                                     '${_localizedExerciseDetail(context, exercise.detail)} · $stateLabel',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall,
                                   ),
                                 ],
                               ),
@@ -1596,6 +1618,22 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           .whereType<int>()
           .length;
 
+  int get _completedSetCount => _completedSets.where((key) {
+    final parts = key.split(':');
+    if (parts.length != 2) return false;
+    final exercise = int.tryParse(parts[0]);
+    final set = int.tryParse(parts[1]);
+    return exercise != null &&
+        set != null &&
+        exercise >= 0 &&
+        exercise < _exercises.length &&
+        set >= 0 &&
+        set < _exercises[exercise].setCount;
+  }).length;
+
+  int get _totalSetCount =>
+      _exercises.fold(0, (total, exercise) => total + exercise.setCount);
+
   WorkoutSetResult? _resultFor(int exercise, int set) {
     for (final result in _setResults[exercise] ?? const <WorkoutSetResult>[]) {
       if (result.setIndex == set) return result;
@@ -1668,9 +1706,14 @@ class _WarmupMovement {
 
 class _WorkoutSetEditor extends StatelessWidget {
   const _WorkoutSetEditor({
+    super.key,
+    required this.setIndex,
     required this.label,
     required this.isTimed,
     required this.result,
+    required this.target,
+    required this.suggestion,
+    required this.isNext,
     required this.canComplete,
     required this.completed,
     required this.onCompletedChanged,
@@ -1678,8 +1721,12 @@ class _WorkoutSetEditor extends StatelessWidget {
   });
 
   final String label;
+  final int setIndex;
   final bool isTimed;
   final WorkoutSetResult? result;
+  final String target;
+  final WorkoutSetResult? suggestion;
+  final bool isNext;
   final bool canComplete;
   final bool completed;
   final ValueChanged<bool> onCompletedChanged;
@@ -1696,31 +1743,54 @@ class _WorkoutSetEditor extends StatelessWidget {
         children: [
           Row(
             children: [
+              Icon(
+                completed
+                    ? Icons.check_circle_rounded
+                    : isNext
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.radio_button_unchecked_rounded,
+                size: 20,
+                color: completed || isNext
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSpacing.x2),
               Expanded(
                 child: Text(
                   label,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
-              Checkbox(
-                value: completed,
-                onChanged: completed || canComplete
-                    ? (value) => onCompletedChanged(value ?? false)
-                    : null,
-              ),
+              if (completed)
+                Text(
+                  context.l10n.sessionSetComplete,
+                  style: Theme.of(context).textTheme.labelMedium,
+                )
+              else if (isNext)
+                Text(
+                  context.l10n.sessionNextSet,
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
             ],
           ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(target, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: AppSpacing.x2),
           Row(
             children: [
               Expanded(
                 child: _numberField(
+                  context: context,
+                  key: ValueKey('set-$setIndex-repetitions'),
                   label: isTimed
                       ? context.l10n.sessionSeconds
                       : context.l10n.sessionRepetitions,
                   initialValue: isTimed
                       ? value.durationSeconds
                       : value.repetitions,
+                  suggestion: isTimed
+                      ? suggestion?.durationSeconds
+                      : suggestion?.repetitions,
                   onChanged: (number) => onChanged(
                     WorkoutSetResult(
                       exercisePosition: value.exercisePosition,
@@ -1740,8 +1810,11 @@ class _WorkoutSetEditor extends StatelessWidget {
                 const SizedBox(width: AppSpacing.x2),
                 Expanded(
                   child: _numberField(
+                    context: context,
+                    key: ValueKey('set-$setIndex-load'),
                     label: context.l10n.sessionLoad,
                     initialValue: value.loadKg,
+                    suggestion: suggestion?.loadKg,
                     decimal: true,
                     onChanged: (number) => onChanged(
                       WorkoutSetResult(
@@ -1757,20 +1830,64 @@ class _WorkoutSetEditor extends StatelessWidget {
               ],
             ],
           ),
+          const SizedBox(height: AppSpacing.x2),
+          SizedBox(
+            width: double.infinity,
+            child: completed
+                ? OutlinedButton.icon(
+                    onPressed: () => onCompletedChanged(false),
+                    icon: const Icon(Icons.undo_rounded),
+                    label: Text(context.l10n.sessionUndoSet),
+                  )
+                : isNext
+                ? FilledButton.icon(
+                    key: ValueKey('complete-set-$setIndex'),
+                    onPressed: canComplete
+                        ? () => onCompletedChanged(true)
+                        : null,
+                    icon: const Icon(Icons.check_rounded),
+                    label: Text(context.l10n.sessionCompleteSetAction),
+                  )
+                : TextButton.icon(
+                    onPressed: canComplete
+                        ? () => onCompletedChanged(true)
+                        : null,
+                    icon: const Icon(Icons.check_rounded),
+                    label: Text(context.l10n.sessionCompleteSetAction),
+                  ),
+          ),
         ],
       ),
     );
   }
 
   Widget _numberField({
+    required BuildContext context,
+    required Key key,
     required String label,
     required num? initialValue,
+    required num? suggestion,
     required ValueChanged<num?> onChanged,
     bool decimal = false,
   }) => TextFormField(
+    key: key,
     initialValue: initialValue?.toString() ?? '',
     keyboardType: TextInputType.numberWithOptions(decimal: decimal),
-    decoration: InputDecoration(labelText: label),
+    inputFormatters: [
+      TextInputFormatter.withFunction((oldValue, newValue) {
+        final pattern = decimal ? r'^\d*\.?\d{0,2}$' : r'^\d*$';
+        return newValue.text.isEmpty || RegExp(pattern).hasMatch(newValue.text)
+            ? newValue
+            : oldValue;
+      }),
+    ],
+    decoration: InputDecoration(
+      labelText: label,
+      hintText: suggestion?.toString(),
+      helperText: suggestion == null
+          ? null
+          : context.l10n.sessionPreviousSetSuggestion,
+    ),
     onChanged: (text) =>
         onChanged(decimal ? double.tryParse(text) : int.tryParse(text)),
   );
@@ -1805,15 +1922,25 @@ class _SessionProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: context.l10n.sessionExerciseCountProgress(current + 1, total),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        child: LinearProgressIndicator(
-          value: (current + 1) / total,
-          minHeight: 6,
-          backgroundColor: context.appColors.surfaceMuted,
-          color: context.appColors.textPrimary,
-        ),
+      label: context.l10n.sessionSetsProgress(current, total),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            child: LinearProgressIndicator(
+              value: total == 0 ? 0 : current / total,
+              minHeight: 6,
+              backgroundColor: context.appColors.surfaceMuted,
+              color: context.appColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(
+            context.l10n.sessionSetsProgress(current, total),
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ],
       ),
     );
   }
@@ -1902,6 +2029,16 @@ String _localizedExerciseDetail(BuildContext context, String detail) {
     _ => context.l10n.sessionRepTargetComfortable,
   };
   return '${localizedExerciseMuscleGroup(context, parts.first)} · ${context.l10n.sessionSetsTarget(setCount, target)}';
+}
+
+String _localizedPrescriptionTarget(BuildContext context, String prescription) {
+  final target = prescription.split('·').last.trim();
+  return switch (target) {
+    '20–40 segundos' => context.l10n.sessionTimeTarget,
+    '6–8 repeticiones' => context.l10n.sessionRepTargetLow,
+    '8–12 repeticiones' => context.l10n.sessionRepTargetMid,
+    _ => context.l10n.sessionRepTargetComfortable,
+  };
 }
 
 String _localizedWarmupTitle(BuildContext context, String title) =>
