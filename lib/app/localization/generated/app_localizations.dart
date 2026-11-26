@@ -2186,6 +2186,48 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 session per week} other{{count} sessions per week}}'**
   String onboardingSessionsPerWeek(num count);
 
+  /// No description provided for @onboardingRecoveryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Training frequency and recovery'**
+  String get onboardingRecoveryTitle;
+
+  /// No description provided for @onboardingRecoveryOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'One session is a good start. To improve strength, ACSM recommends training the major muscle groups at least twice a week for healthy adults. You can increase frequency when it feels sustainable.'**
+  String get onboardingRecoveryOnce;
+
+  /// No description provided for @onboardingRecoveryTwoToThree.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan schedules full-body sessions. When possible, leave a day between them to spread the effort and recover.'**
+  String get onboardingRecoveryTwoToThree;
+
+  /// No description provided for @onboardingRecoveryFour.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan alternates upper and lower body. Space sessions to give each muscle group time to recover.'**
+  String get onboardingRecoveryFour;
+
+  /// No description provided for @onboardingRecoveryFiveToSix.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan alternates upper and lower body. This is a high frequency: schedule breaks based on your recovery and move days if needed.'**
+  String get onboardingRecoveryFiveToSix;
+
+  /// No description provided for @onboardingRecoverySeven.
+  ///
+  /// In en, this message translates to:
+  /// **'You can select all seven days, but that leaves no full day without strength training. We recommend reserving at least one day for rest or light activity; you can change your schedule anytime.'**
+  String get onboardingRecoverySeven;
+
+  /// No description provided for @onboardingRecoverySource.
+  ///
+  /// In en, this message translates to:
+  /// **'ACSM resistance training guidance'**
+  String get onboardingRecoverySource;
+
   /// No description provided for @onboardingSessionTime.
   ///
   /// In en, this message translates to:

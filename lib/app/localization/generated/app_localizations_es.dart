@@ -1247,6 +1247,33 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get onboardingRecoveryTitle => 'Frecuencia y recuperación';
+
+  @override
+  String get onboardingRecoveryOnce =>
+      'Una sesión es un buen inicio. Para mejorar la fuerza, ACSM recomienda trabajar los grupos principales al menos dos veces por semana en adultos sanos. Puedes aumentar la frecuencia cuando te resulte sostenible.';
+
+  @override
+  String get onboardingRecoveryTwoToThree =>
+      'El plan distribuye sesiones de cuerpo completo. Si puedes, deja un día entre ellas para repartir el esfuerzo y recuperarte.';
+
+  @override
+  String get onboardingRecoveryFour =>
+      'El plan alterna tren superior e inferior. Distribuye las sesiones para dar tiempo de recuperación a cada grupo muscular.';
+
+  @override
+  String get onboardingRecoveryFiveToSix =>
+      'El plan alterna tren superior e inferior. Es una frecuencia alta: organiza pausas según tu recuperación y mueve los días si las necesitas.';
+
+  @override
+  String get onboardingRecoverySeven =>
+      'Puedes elegir los siete días, pero así no queda un día completo sin entrenamiento de fuerza. Recomendamos reservar al menos uno para descanso o actividad ligera; puedes cambiar los días cuando quieras.';
+
+  @override
+  String get onboardingRecoverySource =>
+      'Guía ACSM sobre entrenamiento de fuerza';
+
+  @override
   String get onboardingSessionTime => 'Tiempo por sesión';
 
   @override
