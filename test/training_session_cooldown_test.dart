@@ -42,6 +42,8 @@ void main() {
     ];
     await repository.saveActiveWorkout({
       'scheduledDate': DateTime(2026, 11, 24).toIso8601String(),
+      'planVersion': 1,
+      'planSnapshot': plannedSession.toJson(),
       'currentExercise': currentExercise,
       'elapsedSeconds': 125,
       'remainingRestSeconds': 0,

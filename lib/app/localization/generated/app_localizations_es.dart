@@ -2139,6 +2139,39 @@ class AppLocalizationsEs extends AppLocalizations {
       'Tómate un momento para preparar tu espacio y revisar la sesión de hoy.';
 
   @override
+  String get sessionDraftReviewTitle => 'Revisar entrenamiento guardado';
+
+  @override
+  String sessionDraftReviewDateMismatch(String date) {
+    return 'Hay un entrenamiento guardado del $date. Puedes retomarlo con la rutina original o descartarlo para iniciar la sesión seleccionada.';
+  }
+
+  @override
+  String get sessionDraftReviewLegacy =>
+      'Este borrador es de una versión anterior y no guardó la rutina exacta. Puedes continuar usando la rutina actual; tus registros parciales se conservarán. También puedes descartarlo.';
+
+  @override
+  String get sessionDraftReviewCorrupt =>
+      'No se puede leer el borrador guardado. Se conservará hasta que elijas descartarlo para iniciar una sesión nueva.';
+
+  @override
+  String get sessionContinueSavedWorkout => 'Continuar entrenamiento guardado';
+
+  @override
+  String get sessionContinueWithCurrentPlan => 'Continuar con la rutina actual';
+
+  @override
+  String get sessionDiscardWorkoutDraft =>
+      'Descartar borrador e iniciar esta sesión';
+
+  @override
+  String get sessionRestoredOriginalPlan =>
+      'Se restauró la rutina original guardada para mantener cada serie asociada al mismo ejercicio.';
+
+  @override
+  String get sessionUnknownDate => 'otra fecha';
+
+  @override
   String get sessionWaterBottle => 'Botella de agua';
 
   @override

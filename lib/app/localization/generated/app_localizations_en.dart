@@ -2129,6 +2129,39 @@ class AppLocalizationsEn extends AppLocalizations {
       'Take a moment to prepare your space and review today\'s workout.';
 
   @override
+  String get sessionDraftReviewTitle => 'Review saved workout';
+
+  @override
+  String sessionDraftReviewDateMismatch(String date) {
+    return 'There is a saved workout from $date. You can resume it with its original routine or discard it to start the selected session.';
+  }
+
+  @override
+  String get sessionDraftReviewLegacy =>
+      'This draft is from an older version and did not save the exact routine. You can continue using the current routine; your partial logs will be kept. You can also discard it.';
+
+  @override
+  String get sessionDraftReviewCorrupt =>
+      'The saved draft cannot be read. It will be kept until you choose to discard it and start a new session.';
+
+  @override
+  String get sessionContinueSavedWorkout => 'Continue saved workout';
+
+  @override
+  String get sessionContinueWithCurrentPlan => 'Continue with current routine';
+
+  @override
+  String get sessionDiscardWorkoutDraft =>
+      'Discard draft and start this session';
+
+  @override
+  String get sessionRestoredOriginalPlan =>
+      'The original saved routine was restored so each set stays linked to the same exercise.';
+
+  @override
+  String get sessionUnknownDate => 'another date';
+
+  @override
   String get sessionWaterBottle => 'Water bottle';
 
   @override

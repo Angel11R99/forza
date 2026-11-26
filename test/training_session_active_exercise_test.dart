@@ -43,6 +43,8 @@ void main() {
         await database.customSelect('SELECT 1').get();
         await repository.saveActiveWorkout({
           'scheduledDate': scheduledDate.toIso8601String(),
+          'planVersion': 1,
+          'planSnapshot': plannedSession.toJson(),
           'currentExercise': 1,
           'elapsedSeconds': 75,
           'remainingRestSeconds': 0,
@@ -90,8 +92,7 @@ void main() {
       await tester.pump();
       for (
         var attempt = 0;
-        attempt < 30 &&
-            find.text('Continuar entrenamiento').evaluate().isEmpty;
+        attempt < 30 && find.text('Continuar entrenamiento').evaluate().isEmpty;
         attempt++
       ) {
         await tester.pump(const Duration(milliseconds: 100));
