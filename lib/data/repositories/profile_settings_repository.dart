@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +33,9 @@ class ProfileSettingsRepository {
   static const _privacySettingsKey = 'profile_privacy_v1';
 
   final ProfilePreferencesStorage _storage;
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+
+  Stream<void> get changes => _changes.stream;
 
   Future<AppPreferences> loadAppPreferences() async {
     final json = await _read(_appPreferencesKey);
@@ -139,6 +143,8 @@ class ProfileSettingsRepository {
     }
   }
 
-  Future<void> _write(String key, Map<String, Object?> value) =>
-      _storage.write(key, jsonEncode(value));
+  Future<void> _write(String key, Map<String, Object?> value) async {
+    await _storage.write(key, jsonEncode(value));
+    if (!_changes.isClosed) _changes.add(null);
+  }
 }

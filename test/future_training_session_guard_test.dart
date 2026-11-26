@@ -3,8 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/database/app_database.dart';
 import 'package:forza/ui/core/view_models/app_shell_view_model.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
+import 'support/shared_preferences_async_test_setup.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setupSharedPreferencesAsyncForTest();
   test(
     'application state refuses to start a future scheduled session',
     () async {

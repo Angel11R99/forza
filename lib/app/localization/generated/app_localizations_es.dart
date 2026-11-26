@@ -1212,7 +1212,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get accountWelcomeDescription =>
-      'Puedes usar Forza sin iniciar sesión. Si conectas Google, mostramos tu nombre, correo y foto; tus entrenamientos siguen en este dispositivo y no se sincronizan.';
+      'Puedes usar Forza sin iniciar sesión. Conecta Google para sincronizar tus entrenamientos, agenda, objetivos, medidas y preferencias con tu cuenta privada.';
 
   @override
   String get accountSignInWithGoogle => 'Continuar con Google';

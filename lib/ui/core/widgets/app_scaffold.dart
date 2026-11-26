@@ -1,12 +1,20 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import '../../../domain/models/workout_record.dart';
+import '../../../data/database/app_database.dart';
 import '../../../data/repositories/backup_repository.dart';
+import '../../../data/repositories/body_measurement_repository.dart';
 import '../../../data/repositories/google_account_auth_repository.dart';
+import '../../../data/repositories/personal_goal_repository.dart';
 import '../../../data/repositories/profile_settings_repository.dart';
+import '../../../data/repositories/training_schedule_repository.dart';
+import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/workout_reminder_repository.dart';
+import '../../../data/repositories/workout_log_repository.dart';
+import '../../../data/services/firestore_backup_sync_service.dart';
 import '../../../app/theme/appearance_controller.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
@@ -55,6 +63,8 @@ class _AppScaffoldState extends State<AppScaffold>
   late final ProfileSettingsRepository _profileSettingsRepository;
   late final AccountAuthViewModel _accountAuthViewModel;
   late final WorkoutReminderRepository _workoutReminderRepository;
+  late final StreamSubscription<void> _profileSettingsChanges;
+  FirestoreBackupSyncService? _cloudSyncService;
   late final AnimationController _moduleController;
   late final CurvedAnimation _moduleTransition;
   late final Animation<Offset> _moduleOffset;
@@ -93,11 +103,41 @@ class _AppScaffoldState extends State<AppScaffold>
     _viewModel = widget.viewModel ?? AppShellViewModel();
     _profileSettingsRepository =
         widget.profileSettingsRepository ?? ProfileSettingsRepository();
+    _profileSettingsChanges = _profileSettingsRepository.changes.listen((_) {
+      if (mounted) unawaited(_restoreSettings());
+    });
     _accountAuthViewModel =
         widget.accountAuthViewModel ??
         AccountAuthViewModel(repository: GoogleAccountAuthRepository());
     _workoutReminderRepository =
         widget.workoutReminderRepository ?? WorkoutReminderRepository();
+    if (Firebase.apps.isNotEmpty) {
+      final database = AppDatabase.instance;
+      final workoutLogRepository = WorkoutLogRepository(database: database);
+      _cloudSyncService = FirestoreBackupSyncService(
+        database: database,
+        backupRepository: BackupRepository(
+          database: database,
+          settingsRepository: TrainingSettingsRepository(database: database),
+          workoutLogRepository: workoutLogRepository,
+          scheduleRepository: TrainingScheduleRepository(database: database),
+          goalRepository: PersonalGoalRepository(database: database),
+          bodyMeasurementRepository: BodyMeasurementRepository(
+            database: database,
+          ),
+          profileSettingsRepository: _profileSettingsRepository,
+        ),
+        appearanceMode: () => widget.appearance.mode.name,
+        applyAppearance: (mode) => widget.appearance.setMode(
+          ThemeMode.values.firstWhere(
+            (candidate) => candidate.name == mode,
+            orElse: () => ThemeMode.system,
+          ),
+        ),
+        profileSettingsRepository: _profileSettingsRepository,
+        appearanceChanges: widget.appearance,
+      )..start();
+    }
     WidgetsBinding.instance.addObserver(this);
     _selectedIndex = widget.initialIndex
         .clamp(0, _destinations.length - 1)
@@ -124,6 +164,8 @@ class _AppScaffoldState extends State<AppScaffold>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _reminderRolloverTimer?.cancel();
+    unawaited(_profileSettingsChanges.cancel());
+    unawaited(_cloudSyncService?.dispose());
     _moduleController
       ..removeStatusListener(_onModuleTransitionStatus)
       ..dispose();

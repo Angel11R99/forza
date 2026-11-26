@@ -16,9 +16,11 @@ import 'package:forza/domain/models/personal_goal.dart';
 import 'package:forza/domain/models/body_measurement.dart';
 import 'package:forza/domain/models/workout_record.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
+import 'support/shared_preferences_async_test_setup.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setupSharedPreferencesAsyncForTest();
 
   test('SQLite data survives close/reopen and backup restore', () async {
     final directory = await Directory.systemTemp.createTemp('forza-audit-');
