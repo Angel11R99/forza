@@ -2156,6 +2156,28 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get sessionViewRoutine => 'Ver rutina';
+
+  @override
+  String get sessionRoutineTitle => 'Rutina de esta sesión';
+
+  @override
+  String get sessionRoutineDescription =>
+      'Consulta todos los ejercicios. Puedes abrir el actual o revisar los anteriores; los siguientes se habilitan al avanzar.';
+
+  @override
+  String get sessionRoutineCompleted => 'Completado';
+
+  @override
+  String get sessionRoutineCurrent => 'Actual';
+
+  @override
+  String get sessionRoutinePending => 'Pendiente';
+
+  @override
+  String get sessionCloseRoutine => 'Cerrar rutina';
+
+  @override
   String get sessionSetLog => 'Registro de series';
 
   @override

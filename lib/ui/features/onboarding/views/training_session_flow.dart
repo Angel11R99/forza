@@ -512,42 +512,31 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x2),
-        Text(
-          context.l10n.sessionExerciseCountProgress(
-            _currentExercise + 1,
-            _exercises.length,
-          ),
-          style: Theme.of(context).textTheme.bodyLarge,
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                context.l10n.sessionExerciseCountProgress(
+                  _currentExercise + 1,
+                  _exercises.length,
+                ),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            TextButton.icon(
+              key: const Key('view-session-routine'),
+              onPressed: _openRoutine,
+              icon: const Icon(Icons.format_list_bulleted_rounded),
+              label: Text(context.l10n.sessionViewRoutine),
+            ),
+          ],
         ),
         const SizedBox(height: AppSpacing.x3),
+        _buildGuidedExercise(context),
+        const SizedBox(height: AppSpacing.x3),
         _buildProgressionGuidance(context),
-        const SizedBox(height: AppSpacing.x6),
-        for (var index = 0; index < _exercises.length; index++) ...[
-          _ExerciseSessionCard(
-            exercise: _exercises[index],
-            exerciseName: _localizedSessionExerciseName(
-              context,
-              _exercises[index],
-            ),
-            index: index,
-            current: index == _currentExercise,
-            completed: _isExerciseComplete(index),
-            onTap: index <= _currentExercise
-                ? () {
-                    _restTimer?.cancel();
-                    setState(() {
-                      _currentExercise = index;
-                      _screen = _SessionScreen.exerciseList;
-                    });
-                    _saveDraft();
-                  }
-                : () {},
-          ),
-          const SizedBox(height: AppSpacing.x3),
-        ],
+        const SizedBox(height: AppSpacing.x4),
         if (_currentExercise < _exercises.length) ...[
-          _buildGuidedExercise(context),
-          const SizedBox(height: AppSpacing.x4),
           Text(
             context.l10n.sessionSetLog,
             style: Theme.of(context).textTheme.titleLarge,
@@ -617,6 +606,146 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         const _SessionSaveNote(),
       ],
     );
+  }
+
+  Future<void> _openRoutine() async {
+    final selectedExercise = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        minChildSize: 0.45,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.x4,
+            AppSpacing.x3,
+            AppSpacing.x4,
+            AppSpacing.x4,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.sessionRoutineTitle,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: AppSpacing.x1),
+                        Text(
+                          context.l10n.sessionRoutineDescription,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: context.l10n.sessionCloseRoutine,
+                    onPressed: () => Navigator.of(sheetContext).pop(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.x2),
+              Expanded(
+                child: ListView.separated(
+                  controller: scrollController,
+                  itemCount: _exercises.length,
+                  separatorBuilder: (_, _) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final exercise = _exercises[index];
+                    final isCurrent = index == _currentExercise;
+                    final isComplete = _isExerciseComplete(index);
+                    final canOpen = index <= _currentExercise;
+                    final name = _localizedSessionExerciseName(
+                      context,
+                      exercise,
+                    );
+                    final stateLabel = isComplete
+                        ? context.l10n.sessionRoutineCompleted
+                        : isCurrent
+                        ? context.l10n.sessionRoutineCurrent
+                        : context.l10n.sessionRoutinePending;
+                    final statusIcon = isComplete
+                        ? Icons.check_circle_outline_rounded
+                        : isCurrent
+                        ? Icons.play_circle_outline_rounded
+                        : Icons.radio_button_unchecked_rounded;
+
+                    if (!canOpen) {
+                      return Padding(
+                        key: ValueKey('routine-exercise-$index'),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.x3,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              statusIcon,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                            const SizedBox(width: AppSpacing.x3),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    '${_localizedExerciseDetail(context, exercise.detail)} · $stateLabel',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return ListTile(
+                      key: ValueKey('routine-exercise-$index'),
+                      contentPadding: EdgeInsets.zero,
+                      isThreeLine: true,
+                      leading: Icon(statusIcon),
+                      title: Text(name),
+                      subtitle: Text(
+                        '${_localizedExerciseDetail(context, exercise.detail)} · $stateLabel',
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => Navigator.of(sheetContext).pop(index),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (selectedExercise == null || !mounted) return;
+    _restTimer?.cancel();
+    setState(() {
+      _currentExercise = selectedExercise;
+      _screen = _SessionScreen.exerciseList;
+    });
+    await _saveDraft();
   }
 
   Widget _buildProgressionGuidance(BuildContext context) {
@@ -712,6 +841,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             const SizedBox(height: AppSpacing.x3),
           ],
           Text(
+            key: const Key('active-exercise-name'),
             matched == null
                 ? localizedTrainingExerciseName(context, current.name)
                 : localizedExerciseName(context, matched),
@@ -1697,92 +1827,6 @@ class _SessionEyebrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ForzaEyebrow(label: label);
-  }
-}
-
-class _ExerciseSessionCard extends StatelessWidget {
-  const _ExerciseSessionCard({
-    required this.exercise,
-    required this.exerciseName,
-    required this.index,
-    required this.current,
-    required this.completed,
-    required this.onTap,
-  });
-
-  final _SessionExercise exercise;
-  final String exerciseName;
-  final int index;
-  final bool current;
-  final bool completed;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppSurfaceCard(
-      padding: EdgeInsets.zero,
-      borderColor: current
-          ? context.appColors.accent
-          : context.appColors.divider,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.medium),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.x4),
-          child: Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: current
-                      ? context.appColors.accent
-                      : context.appColors.surfaceMuted,
-                  shape: BoxShape.circle,
-                ),
-                child: completed
-                    ? Icon(
-                        Icons.check_rounded,
-                        color: context.appColors.inverseText,
-                      )
-                    : Icon(
-                        exercise.icon,
-                        color: current
-                            ? context.appColors.inverseText
-                            : context.appColors.textPrimary,
-                        size: 19,
-                      ),
-              ),
-              const SizedBox(width: AppSpacing.x3),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exerciseName,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.x1),
-                    Text(
-                      _localizedExerciseDetail(context, exercise.detail),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-              if (current)
-                const Icon(Icons.play_circle_outline_rounded, size: 22)
-              else if (!completed)
-                Text(
-                  '${index + 1}',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
