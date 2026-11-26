@@ -12,6 +12,58 @@ import 'package:forza/ui/features/onboarding/views/training_session_flow.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
 
 void main() {
+  testWidgets('lb input is displayed in pounds and stored as canonical kg', (
+    tester,
+  ) async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(() async => database.close());
+    final repository = WorkoutLogRepository(database: database);
+    const settings = TrainingSettings();
+    const builder = TrainingPlanBuilder();
+    final plannedSession = builder
+        .buildWeek(
+          trainingDays: settings.trainingDays,
+          sessionMinutes: settings.sessionMinutes,
+          goal: settings.goal,
+          experience: settings.experience,
+          equipment: settings.equipment,
+          avoidedExerciseIds: settings.avoidedExerciseIds,
+        )
+        .first;
+    await tester.runAsync(() async {
+      await database.customSelect('SELECT 1').get();
+    });
+    await _showSession(
+      tester,
+      settings,
+      repository,
+      DateTime(2026, 11, 24),
+      plannedSession,
+      weightUnit: 'lb',
+    );
+    await _startSession(tester);
+    expect(find.text('Carga (lb)'), findsNWidgets(2));
+    await _enter(tester, 'set-0-load', '100');
+    final savedDraft = jsonDecode(
+      (await repository.loadActiveWorkout())!,
+    ) as Map<String, Object?>;
+    final savedSet = (savedDraft['sets'] as List<Object?>)
+        .whereType<Map<String, Object?>>()
+        .single;
+    expect(savedSet['loadKg'], closeTo(45.359237, 0.000001));
+
+    await _showSession(
+      tester,
+      settings,
+      repository,
+      DateTime(2026, 11, 24),
+      plannedSession,
+      weightUnit: 'lb',
+    );
+    await _resumeSession(tester);
+    expect(_fieldText(tester, 'set-0-load'), '100');
+  });
+
   testWidgets('logs, edits, unmarks, and restores independent rep sets', (
     tester,
   ) async {
@@ -167,8 +219,9 @@ Future<void> _showSession(
   TrainingSettings settings,
   WorkoutLogRepository repository,
   DateTime scheduledDate,
-  PlannedTrainingSession plannedSession,
-) async {
+  PlannedTrainingSession plannedSession, {
+  String weightUnit = 'kg',
+}) async {
   await tester.pumpWidget(
     MaterialApp(
       locale: const Locale('es'),
@@ -185,6 +238,7 @@ Future<void> _showSession(
         workoutLogRepository: repository,
         scheduledDate: scheduledDate,
         plannedSession: plannedSession,
+        weightUnit: weightUnit,
       ),
     ),
   );

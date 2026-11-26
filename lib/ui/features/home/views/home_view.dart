@@ -12,6 +12,7 @@ import '../../profile/models/profile_settings.dart';
 import '../widgets/home_streak_indicator.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/scheduled_training_session.dart';
+import '../../../../domain/use_cases/weight_units.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({
@@ -28,6 +29,7 @@ class HomeView extends StatelessWidget {
     this.hasActiveWorkout = false,
     this.activeWorkoutDate,
     this.scheduledSessions = const [],
+    this.weekStartsOn = 'Lunes',
   });
 
   final VoidCallback onShowActivity;
@@ -42,6 +44,7 @@ class HomeView extends StatelessWidget {
   final bool hasActiveWorkout;
   final DateTime? activeWorkoutDate;
   final List<ScheduledTrainingSession> scheduledSessions;
+  final String weekStartsOn;
 
   @override
   Widget build(BuildContext context) {
@@ -206,6 +209,7 @@ class HomeView extends StatelessWidget {
                 ),
                 _WeeklySummary(
                   settings: settings,
+                  weekStartsOn: weekStartsOn,
                   completedDates: completedDates,
                   scheduledSessions: scheduledSessions,
                   onTap: onShowActivity,
@@ -427,12 +431,14 @@ class _TodayWorkoutCard extends StatelessWidget {
 class _WeeklySummary extends StatelessWidget {
   const _WeeklySummary({
     required this.settings,
+    required this.weekStartsOn,
     required this.completedDates,
     required this.scheduledSessions,
     required this.onTap,
   });
 
   final TrainingSettings settings;
+  final String weekStartsOn;
   final Set<DateTime> completedDates;
   final List<ScheduledTrainingSession> scheduledSessions;
   final VoidCallback onTap;
@@ -443,7 +449,7 @@ class _WeeklySummary extends StatelessWidget {
     final days = settings.trainingDays.toList()..sort();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final weekStart = today.subtract(Duration(days: today.weekday - 1));
+    final weekStart = startOfWeek(today, weekStartsOn);
     final weekEnd = weekStart.add(const Duration(days: 7));
     final persistedWeek =
         scheduledSessions

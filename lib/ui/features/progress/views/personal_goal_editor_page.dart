@@ -7,6 +7,7 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../../domain/models/personal_goal.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../app/localization/localization_extensions.dart';
+import '../../../../domain/use_cases/weight_units.dart';
 
 class PersonalGoalEditorPage extends StatefulWidget {
   const PersonalGoalEditorPage({
@@ -14,11 +15,13 @@ class PersonalGoalEditorPage extends StatefulWidget {
     this.goal,
     this.exerciseRepository,
     this.records = const [],
+    this.weightUnit = 'kg',
   });
 
   final PersonalGoal? goal;
   final ExerciseRepository? exerciseRepository;
   final List<WorkoutRecord> records;
+  final String weightUnit;
 
   @override
   State<PersonalGoalEditorPage> createState() => _PersonalGoalEditorPageState();
@@ -42,7 +45,14 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
     _targetController = TextEditingController(
       text: widget.goal == null
           ? (_type == PersonalGoalType.sessionsPerWeek ? '3' : '')
-          : _targetText(widget.goal!.targetValue),
+          : _targetText(
+              _type == PersonalGoalType.exerciseLoad
+                  ? weightFromKilograms(
+                      widget.goal!.targetValue,
+                      widget.weightUnit,
+                    )
+                  : widget.goal!.targetValue,
+            ),
     );
     _selectedExerciseId = widget.goal?.exerciseCatalogId;
     _loadCatalog();
@@ -170,7 +180,7 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
                           : context.l10n.progressTargetLoad,
                       suffixText: _type == PersonalGoalType.sessionsPerWeek
                           ? context.l10n.progressSessionsUnit
-                          : 'kg',
+                          : widget.weightUnit,
                     ),
                     validator: _validateTarget,
                   ),
@@ -209,9 +219,14 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
       PersonalGoal(
         id: existing?.id ?? DateTime.now().microsecondsSinceEpoch.toString(),
         type: _type,
-        targetValue: double.parse(
-          _targetController.text.trim().replaceAll(',', '.'),
-        ),
+        targetValue: _type == PersonalGoalType.exerciseLoad
+            ? weightToKilograms(
+                double.parse(
+                  _targetController.text.trim().replaceAll(',', '.'),
+                ),
+                widget.weightUnit,
+              )
+            : double.parse(_targetController.text.trim().replaceAll(',', '.')),
         exerciseName: _type == PersonalGoalType.exerciseLoad
             ? _selectedExerciseName
             : null,

@@ -33,6 +33,7 @@ class ActivityView extends StatefulWidget {
     required this.onSessionStarted,
     required this.onSkipSession,
     required this.onUndoSkipSession,
+    this.preferences = const AppPreferences(),
   });
 
   final TrainingSettings settings;
@@ -45,6 +46,7 @@ class ActivityView extends StatefulWidget {
   final Future<bool> Function(DateTime) onSessionStarted;
   final Future<bool> Function(DateTime) onSkipSession;
   final Future<bool> Function(DateTime) onUndoSkipSession;
+  final AppPreferences preferences;
 
   @override
   State<ActivityView> createState() => _ActivityViewState();
@@ -150,6 +152,7 @@ class _ActivityViewState extends State<ActivityView> {
           scheduledDate: _selectedDate,
           plannedSession: planned?.plannedSession,
           planVersion: planned?.planVersion ?? 1,
+          weightUnit: widget.preferences.weightUnit,
         ),
       ),
     );
@@ -310,7 +313,10 @@ class _ActivityViewState extends State<ActivityView> {
                             lastDay: DateTime(2100, 12, 31),
                             focusedDay: _visibleMonth,
                             locale: localeName,
-                            startingDayOfWeek: StartingDayOfWeek.monday,
+                            startingDayOfWeek:
+                                widget.preferences.weekStartsOn == 'Domingo'
+                                ? StartingDayOfWeek.sunday
+                                : StartingDayOfWeek.monday,
                             calendarFormat: CalendarFormat.month,
                             headerVisible: false,
                             daysOfWeekHeight: 24 * textScale,
