@@ -464,6 +464,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       streakAnimationRevision:
                           _viewModel.streakAnimationRevision,
                       hasActiveWorkout: _viewModel.hasActiveWorkout,
+                      activeWorkoutDate: _viewModel.activeWorkoutDate,
                       scheduledSessions: _viewModel.scheduledSessions,
                     ),
                     ActivityView(

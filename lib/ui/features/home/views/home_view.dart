@@ -26,6 +26,7 @@ class HomeView extends StatelessWidget {
     this.streakAnimationFrom = 0,
     this.streakAnimationRevision = 0,
     this.hasActiveWorkout = false,
+    this.activeWorkoutDate,
     this.scheduledSessions = const [],
   });
 
@@ -39,6 +40,7 @@ class HomeView extends StatelessWidget {
   final int streakAnimationFrom;
   final int streakAnimationRevision;
   final bool hasActiveWorkout;
+  final DateTime? activeWorkoutDate;
   final List<ScheduledTrainingSession> scheduledSessions;
 
   @override
@@ -50,22 +52,36 @@ class HomeView extends StatelessWidget {
     final activeSession = scheduledSessions
         .where((session) => session.isInProgress)
         .firstOrNull;
+    final today = DateTime(now.year, now.month, now.day);
+    final todaySession = scheduledSessions
+        .where((session) => _sameDate(session.scheduledDate, today))
+        .firstOrNull;
     final upcomingSession = scheduledSessions
         .where(
           (session) =>
               session.status == 'pending' &&
-              !DateTime(
+              DateTime(
                 session.scheduledDate.year,
                 session.scheduledDate.month,
                 session.scheduledDate.day,
-              ).isBefore(DateTime(now.year, now.month, now.day)),
+              ).isAfter(today),
         )
         .firstOrNull;
-    final plannedSession = activeSession ?? upcomingSession;
+    final activeDate = activeWorkoutDate ?? activeSession?.scheduledDate;
+    final active = hasActiveWorkout;
+    final isCompletedToday =
+        todaySession?.isCompleted == true ||
+        completedDates.any((date) => _sameDate(date, today));
+    final isSkippedToday = todaySession?.isSkipped == true;
+    final plannedSession = active
+        ? activeSession ?? todaySession ?? upcomingSession
+        : todaySession?.status == 'pending'
+        ? todaySession
+        : upcomingSession;
     final localeName = Localizations.localeOf(context).toLanguageTag();
-    final nextTrainingDate =
-        plannedSession?.scheduledDate ??
-        _nextTrainingDate(settings.trainingDays, now);
+    final nextTrainingDate = active
+        ? activeDate ?? plannedSession?.scheduledDate ?? today
+        : plannedSession?.scheduledDate;
     final greeting = switch (now.hour) {
       < 12 => context.l10n.homeGreetingMorning,
       < 19 => context.l10n.homeGreetingAfternoon,
@@ -158,20 +174,29 @@ class HomeView extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x4),
                 SectionHeading(
-                  title: _sameDate(nextTrainingDate, now)
+                  title:
+                      active ||
+                          (nextTrainingDate != null &&
+                              _sameDate(nextTrainingDate, today))
                       ? context.l10n.homeTodayWorkout
-                      : context.l10n.homeNextSession(
+                      : nextTrainingDate != null
+                      ? context.l10n.homeNextSession(
                           DateFormat.E(localeName).format(nextTrainingDate),
-                        ),
+                        )
+                      : context.l10n.homeTodayWorkout,
                   actionLabel: context.l10n.homeAdjustPlan,
                   onAction: onEditPlan,
                 ),
                 _TodayWorkoutCard(
                   settings: settings,
-                  onPressed: () => onStartWorkout(nextTrainingDate),
+                  onPressed: () => onStartWorkout(nextTrainingDate ?? today),
                   sessionDate: nextTrainingDate,
-                  hasActiveWorkout: hasActiveWorkout,
+                  hasActiveWorkout: active,
                   scheduledSession: plannedSession,
+                  isCompletedToday: isCompletedToday,
+                  isSkippedToday: isSkippedToday,
+                  onShowActivity: onShowActivity,
+                  onEditPlan: onEditPlan,
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
@@ -201,13 +226,21 @@ class _TodayWorkoutCard extends StatelessWidget {
     required this.sessionDate,
     required this.hasActiveWorkout,
     required this.scheduledSession,
+    required this.isCompletedToday,
+    required this.isSkippedToday,
+    required this.onShowActivity,
+    required this.onEditPlan,
   });
 
   final TrainingSettings settings;
   final VoidCallback onPressed;
-  final DateTime sessionDate;
+  final DateTime? sessionDate;
   final bool hasActiveWorkout;
   final ScheduledTrainingSession? scheduledSession;
+  final bool isCompletedToday;
+  final bool isSkippedToday;
+  final VoidCallback onShowActivity;
+  final VoidCallback onEditPlan;
 
   static const _planBuilder = TrainingPlanBuilder();
 
@@ -215,6 +248,84 @@ class _TodayWorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final localeName = Localizations.localeOf(context).toLanguageTag();
     final today = DateTime.now();
+    final sessionDate = this.sessionDate;
+    if (isCompletedToday || isSkippedToday || sessionDate == null) {
+      final title = isCompletedToday
+          ? context.l10n.homeSessionCompleted
+          : isSkippedToday
+          ? context.l10n.homeSessionSkipped
+          : context.l10n.homeRecoveryDay;
+      final subtitle = isCompletedToday
+          ? context.l10n.homeSessionCompletedDescription
+          : isSkippedToday
+          ? context.l10n.homeSessionSkippedDescription
+          : context.l10n.homeRecoveryDescription;
+      final icon = isCompletedToday
+          ? Icons.check_circle_outline_rounded
+          : isSkippedToday
+          ? Icons.event_busy_rounded
+          : Icons.self_improvement_rounded;
+      return Container(
+        padding: const EdgeInsets.all(AppSpacing.x6),
+        decoration: BoxDecoration(
+          color: context.appColors.accent,
+          borderRadius: BorderRadius.circular(AppRadius.large),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: context.appColors.inverseText, size: 24),
+            const SizedBox(height: AppSpacing.x3),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge
+                  ?.copyWith(color: context.appColors.inverseText),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: context.appColors.inverseText.withValues(alpha: 0.82),
+              ),
+            ),
+            if (!isCompletedToday &&
+                !isSkippedToday &&
+                scheduledSession != null) ...[
+              const SizedBox(height: AppSpacing.x3),
+              Text(
+                context.l10n.homeNextSession(
+                  DateFormat.E(localeName)
+                      .format(scheduledSession!.scheduledDate),
+                ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: context.appColors.inverseText),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.x6),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonalIcon(
+                onPressed: isCompletedToday ? onShowActivity : onEditPlan,
+                style: FilledButton.styleFrom(
+                  backgroundColor: context.appColors.inverseText,
+                  foregroundColor: context.appColors.accent,
+                ),
+                icon: Icon(
+                  isCompletedToday
+                      ? Icons.history_rounded
+                      : Icons.calendar_month_rounded,
+                ),
+                label: Text(
+                  isCompletedToday
+                      ? context.l10n.homeViewActivity
+                      : context.l10n.homeAdjustPlan,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     final isFutureSession = DateTime(
       sessionDate.year,
       sessionDate.month,
@@ -532,12 +643,3 @@ bool _sameDate(DateTime first, DateTime second) =>
 
 String _capitalize(String text) =>
     text.isEmpty ? text : '${text[0].toUpperCase()}${text.substring(1)}';
-
-DateTime _nextTrainingDate(Set<int> trainingDays, DateTime from) {
-  final today = DateTime(from.year, from.month, from.day);
-  for (var offset = 0; offset < 7; offset++) {
-    final candidate = today.add(Duration(days: offset));
-    if (trainingDays.contains(candidate.weekday)) return candidate;
-  }
-  return today;
-}

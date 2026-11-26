@@ -601,6 +601,27 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get homeSessionCompleted => 'Sesión completada';
+
+  @override
+  String get homeSessionCompletedDescription =>
+      'Buen trabajo. Ya completaste el entrenamiento de hoy.';
+
+  @override
+  String get homeSessionSkipped => 'Sesión omitida';
+
+  @override
+  String get homeSessionSkippedDescription =>
+      'La sesión de hoy quedó omitida. Puedes revisar tu plan.';
+
+  @override
+  String get homeRecoveryDay => 'Día de recuperación';
+
+  @override
+  String get homeRecoveryDescription =>
+      'Hoy no tienes una sesión programada. Descansa y recupérate.';
+
+  @override
   String homeWeeklySessionCount(Object done, Object target) {
     return '$done de $target sesiones';
   }

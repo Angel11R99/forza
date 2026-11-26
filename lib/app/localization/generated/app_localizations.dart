@@ -1070,6 +1070,42 @@ abstract class AppLocalizations {
   /// **'Available on {weekday}'**
   String homeSessionAvailableOn(String weekday);
 
+  /// No description provided for @homeSessionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout completed'**
+  String get homeSessionCompleted;
+
+  /// No description provided for @homeSessionCompletedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Great work. You completed today\'s workout.'**
+  String get homeSessionCompletedDescription;
+
+  /// No description provided for @homeSessionSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout skipped'**
+  String get homeSessionSkipped;
+
+  /// No description provided for @homeSessionSkippedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s workout was skipped. You can review your plan.'**
+  String get homeSessionSkippedDescription;
+
+  /// No description provided for @homeRecoveryDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery day'**
+  String get homeRecoveryDay;
+
+  /// No description provided for @homeRecoveryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no workout scheduled today. Rest and recover.'**
+  String get homeRecoveryDescription;
+
   /// No description provided for @homeWeeklySessionCount.
   ///
   /// In en, this message translates to:
