@@ -100,7 +100,8 @@ service cloud.firestore {
 
       match /sync/current {
         allow get: if isOwner(uid);
-        allow list, delete: if false;
+        allow list: if false;
+        allow delete: if isOwner(uid);
         allow create, update: if isOwner(uid) && isValidSyncManifest();
 
         match /snapshots/{snapshotId}/chunks/{chunkId} {

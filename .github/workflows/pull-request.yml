@@ -47,3 +47,15 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze --fatal-infos
       - run: flutter test
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: firebase-tests/package-lock.json
+      - run: npm ci --prefix firebase-tests
+      - name: Test Firestore rules in the Emulator Suite
+        run: npx -y firebase-tools@latest emulators:exec --only firestore --project demo-forza-firestore-rules "npm test --prefix firebase-tests"
