@@ -561,6 +561,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                 onChanged: (value) =>
                     setState(() => _sessionMinutes = value.round()),
               ),
+              Text(
+                context.l10n.onboardingSessionBudgetNote,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ],
           ),
         ),

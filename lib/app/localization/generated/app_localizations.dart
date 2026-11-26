@@ -1049,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeDurationExercises.
   ///
   /// In en, this message translates to:
-  /// **'{minutes} min per session · {count} exercises'**
+  /// **'Approx. {minutes}-min budget per session · {count} exercises'**
   String homeDurationExercises(Object count, Object minutes);
 
   /// No description provided for @homeContinueWorkout.
@@ -1373,7 +1373,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePlanSummary.
   ///
   /// In en, this message translates to:
-  /// **'{goal} · {days} days · {minutes} min'**
+  /// **'{goal} · {days} days · ~{minutes}-min budget'**
   String profilePlanSummary(Object days, Object goal, Object minutes);
 
   /// No description provided for @profilePreferences.
@@ -2231,8 +2231,14 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSessionTime.
   ///
   /// In en, this message translates to:
-  /// **'Time per session'**
+  /// **'Time budget per session'**
   String get onboardingSessionTime;
+
+  /// No description provided for @onboardingSessionBudgetNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The plan adjusts the number of exercises to this budget. Actual time varies with your pace and how long you spend warming up and cooling down. The timer between exercises is a 45-second guide.'**
+  String get onboardingSessionBudgetNote;
 
   /// No description provided for @onboardingMinutes.
   ///
