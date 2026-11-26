@@ -1274,6 +1274,54 @@ class AppLocalizationsEs extends AppLocalizations {
       'Guía ACSM sobre entrenamiento de fuerza';
 
   @override
+  String get onboardingProgressionTemplateNote =>
+      'Este plan es una plantilla inicial. Las sugerencias usan tus series registradas y no cambian el plan automáticamente; tú decides si aplicarlas.';
+
+  @override
+  String get sessionProgressionTitle => 'Sugerencia de progresión';
+
+  @override
+  String get sessionProgressionNoHistory =>
+      'Aún no hay suficientes registros de este ejercicio. Completa las series y registra repeticiones y carga si usaste peso.';
+
+  @override
+  String sessionProgressionKeepBuilding(int sessions, int repetitions) {
+    return 'Mantén el peso y la técnica; todavía no aumentes. Para sugerir más carga, esperamos $sessions entrenamientos seguidos con al menos $repetitions repeticiones en todas las series.';
+  }
+
+  @override
+  String sessionProgressionReadyToIncrease(int repetitions, int sessions) {
+    return 'Alcanzaste $repetitions repeticiones en todas las series durante $sessions entrenamientos seguidos. Si fue cómodo, sin dolor y con técnica estable, prueba el incremento de carga más pequeño disponible y vuelve al extremo bajo del rango.';
+  }
+
+  @override
+  String sessionProgressionBodyweightReady(int repetitions, int sessions) {
+    return 'Completaste $repetitions repeticiones en todas las series durante $sessions entrenamientos seguidos. Si mantuviste una técnica estable, puedes probar una variante de peso corporal un poco más difícil.';
+  }
+
+  @override
+  String get sessionProgressionHabitFocus =>
+      'Para crear el hábito, prioriza la constancia y la técnica. No hace falta aumentar la carga automáticamente.';
+
+  @override
+  String get sessionProgressionReturningAfterBreak =>
+      'Ha pasado más de un mes desde que registraste este ejercicio. Retoma con una carga cómoda y completa nuevas sesiones antes de considerar un aumento.';
+
+  @override
+  String sessionProgressionTimedKeepBuilding(int sessions, int seconds) {
+    return 'Registra los segundos y conserva la técnica. Para sugerir una variante más difícil, esperamos $sessions entrenamientos seguidos con $seconds segundos en todas las series.';
+  }
+
+  @override
+  String sessionProgressionTimedReadyToVary(int sessions, int seconds) {
+    return 'Completaste $seconds segundos en todas las series durante $sessions entrenamientos seguidos. Si mantuviste el control, puedes probar una variante un poco más difícil; no añadas peso.';
+  }
+
+  @override
+  String get sessionProgressionTemplateNote =>
+      'Las sugerencias se basan en tus registros. El plan es una plantilla y no cambia automáticamente; tú decides si aplicarlas.';
+
+  @override
   String get onboardingSessionTime => 'Presupuesto de tiempo por sesión';
 
   @override

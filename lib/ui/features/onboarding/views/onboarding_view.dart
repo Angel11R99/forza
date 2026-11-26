@@ -218,6 +218,11 @@ class _OnboardingViewState extends State<OnboardingView> {
                 ),
                 const SizedBox(height: AppSpacing.x1),
                 Text(
+                  context.l10n.onboardingProgressionTemplateNote,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: AppSpacing.x1),
+                Text(
                   context.l10n.onboardingPlanExperience(
                     _experienceLabel(context, _experience),
                   ),
