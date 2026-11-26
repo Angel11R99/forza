@@ -3224,6 +3224,41 @@ abstract class AppLocalizations {
   /// **'Last 30 days'**
   String get progressLast30Days;
 
+  /// No description provided for @progressLastWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Last workout · {date}'**
+  String progressLastWorkout(Object date);
+
+  /// No description provided for @progressGoToActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Activity'**
+  String get progressGoToActivity;
+
+  /// No description provided for @progressNoSetData.
+  ///
+  /// In en, this message translates to:
+  /// **'No sets logged'**
+  String get progressNoSetData;
+
+  /// No description provided for @progressWeightChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change since previous measurement: {change} kg'**
+  String progressWeightChange(String change);
+
+  /// No description provided for @progressRecentRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent record · {exercise}: {value} {unit} · {date}'**
+  String progressRecentRecord(
+    String exercise,
+    String value,
+    String unit,
+    String date,
+  );
+
   /// No description provided for @progressSessions.
   ///
   /// In en, this message translates to:

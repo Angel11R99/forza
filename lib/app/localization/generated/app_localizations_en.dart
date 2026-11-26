@@ -1850,6 +1850,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get progressLast30Days => 'Last 30 days';
 
   @override
+  String progressLastWorkout(Object date) {
+    return 'Last workout · $date';
+  }
+
+  @override
+  String get progressGoToActivity => 'Go to Activity';
+
+  @override
+  String get progressNoSetData => 'No sets logged';
+
+  @override
+  String progressWeightChange(String change) {
+    return 'Change since previous measurement: $change kg';
+  }
+
+  @override
+  String progressRecentRecord(
+    String exercise,
+    String value,
+    String unit,
+    String date,
+  ) {
+    return 'Recent record · $exercise: $value $unit · $date';
+  }
+
+  @override
   String get progressSessions => 'workouts';
 
   @override
