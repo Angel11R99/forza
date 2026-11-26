@@ -247,17 +247,50 @@ class _AppScaffoldState extends State<AppScaffold>
   Future<void> _startFirstRunSetup() async {
     if (!mounted || _isOpeningFirstRun) return;
     _isOpeningFirstRun = true;
-    final settings = await Navigator.of(context).push<TrainingSettings>(
-      MaterialPageRoute<TrainingSettings>(
+    if (!widget.appearance.isRestored) await widget.appearance.restore();
+    if (!mounted) return;
+    final result = await Navigator.of(context).push<Object?>(
+      MaterialPageRoute<Object?>(
         builder: (_) => OnboardingView(
           initialSettings: _viewModel.trainingSettings,
           isFirstRun: true,
+          initialPreferences: _preferences,
+          appearanceController: widget.appearance,
         ),
       ),
     );
     if (!mounted) return;
     try {
-      await _viewModel.completeFirstRun(settings);
+      if (result is FirstRunOnboardingResult) {
+        final previousSettings = _viewModel.trainingSettings;
+        final previousPreferences = _preferences;
+        final previousAppearance = widget.appearance.mode;
+        try {
+          await _viewModel.saveTrainingSettings(result.trainingSettings);
+          await _profileSettingsRepository.saveAppPreferences(
+            result.preferences,
+          );
+          await widget.appearance.commitMode(result.appearanceMode);
+          await _viewModel.completeFirstRun(null);
+          _preferences = result.preferences;
+          if (mounted) setState(() {});
+        } on Object {
+          try {
+            await _profileSettingsRepository.saveAppPreferences(
+              previousPreferences,
+            );
+            await widget.appearance.commitMode(previousAppearance);
+            await _viewModel.saveTrainingSettings(previousSettings);
+          } on Object {
+            // Keep first-run setup incomplete so the user can retry on restart.
+          }
+          rethrow;
+        }
+      } else {
+        await _viewModel.completeFirstRun(
+          result is TrainingSettings ? result : null,
+        );
+      }
       await _synchronizeWorkoutRemindersSafely();
     } on Object {
       if (mounted) {
@@ -503,6 +536,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     ),
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
+                      preferences: _preferences,
                       accountAuthViewModel: _accountAuthViewModel,
                       profileSettingsRepository: _profileSettingsRepository,
                       onPreferencesChanged: (preferences) =>

@@ -5,10 +5,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../../app/theme/appearance_controller.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
+import '../../../core/widgets/section_heading.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../profile/models/profile_settings.dart';
+import '../../profile/views/profile_settings_pages.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
 
 class OnboardingView extends StatefulWidget {
@@ -16,10 +19,14 @@ class OnboardingView extends StatefulWidget {
     super.key,
     this.initialSettings = const TrainingSettings(),
     this.isFirstRun = false,
+    this.initialPreferences = const AppPreferences(),
+    this.appearanceController,
   });
 
   final TrainingSettings initialSettings;
   final bool isFirstRun;
+  final AppPreferences initialPreferences;
+  final AppearanceController? appearanceController;
 
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
@@ -37,6 +44,18 @@ class _OnboardingViewState extends State<OnboardingView> {
     ...widget.initialSettings.avoidedExerciseIds,
   };
   bool _editingFromReview = false;
+  late AppPreferences _preferences;
+  late ThemeMode _appearanceMode;
+  late ThemeMode _originalAppearanceMode;
+  bool _finished = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _preferences = widget.initialPreferences;
+    _appearanceMode = widget.appearanceController?.mode ?? ThemeMode.system;
+    _originalAppearanceMode = _appearanceMode;
+  }
 
   static const _goals = ['Ganar fuerza', 'Ganar músculo', 'Crear el hábito'];
   static const _equipmentOptions = [
@@ -64,97 +83,110 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _step < 4
-              ? context.l10n.onboardingCreatePlan
-              : context.l10n.onboardingPreview,
+    return PopScope<Object?>(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop && widget.isFirstRun && !_finished) {
+          widget.appearanceController?.previewMode(_originalAppearanceMode);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            _step == 5
+                ? context.l10n.profileTailoredTitle
+                : _step < 4
+                ? context.l10n.onboardingCreatePlan
+                : context.l10n.onboardingPreview,
+          ),
+          leading: IconButton(
+            tooltip: _editingFromReview
+                ? context.l10n.onboardingReturnToPreview
+                : _step == 0
+                ? context.l10n.onboardingBack
+                : context.l10n.onboardingPreviousStep,
+            onPressed: _editingFromReview
+                ? _backFromCurrentStep
+                : _step == 0
+                ? () => Navigator.of(context).maybePop()
+                : _backFromCurrentStep,
+            icon: const Icon(Icons.arrow_back_rounded),
+          ),
         ),
-        leading: IconButton(
-          tooltip: _editingFromReview
-              ? context.l10n.onboardingReturnToPreview
-              : _step == 0
-              ? context.l10n.onboardingBack
-              : context.l10n.onboardingPreviousStep,
-          onPressed: _editingFromReview
-              ? _backFromCurrentStep
-              : _step == 0
-              ? () => Navigator.of(context).maybePop()
-              : _backFromCurrentStep,
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-      ),
-      body: SafeArea(
-        top: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final padding = AppSpacing.pageGutter(constraints.maxWidth);
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 640),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: padding),
-                      child: _StepProgress(step: _step, totalSteps: 5),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
+        body: SafeArea(
+          top: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final padding = AppSpacing.pageGutter(constraints.maxWidth);
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: padding),
+                        child: _StepProgress(
+                          step: _step,
+                          totalSteps: widget.isFirstRun ? 6 : 5,
+                        ),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.fromLTRB(
+                            padding,
+                            AppSpacing.x6,
+                            padding,
+                            AppSpacing.x6,
+                          ),
+                          child: _buildStep(context),
+                        ),
+                      ),
+                      Padding(
                         padding: EdgeInsets.fromLTRB(
                           padding,
-                          AppSpacing.x6,
+                          AppSpacing.x2,
                           padding,
-                          AppSpacing.x6,
+                          AppSpacing.x4,
                         ),
-                        child: _buildStep(context),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        padding,
-                        AppSpacing.x2,
-                        padding,
-                        AppSpacing.x4,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton(
-                              onPressed: _step == 4
-                                  ? (_canCreatePlan ? _finish : null)
-                                  : _step == 3 && _equipment.isEmpty
-                                  ? null
-                                  : _next,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 13,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: _step == (widget.isFirstRun ? 5 : 4)
+                                    ? (_canCreatePlan ? _finish : null)
+                                    : _step == 3 && _equipment.isEmpty
+                                    ? null
+                                    : _next,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 13,
+                                  ),
+                                  child: Text(_actionLabel(context)),
                                 ),
-                                child: Text(_actionLabel(context)),
                               ),
                             ),
-                          ),
-                          if (widget.isFirstRun)
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: Text(context.l10n.onboardingSkip),
-                            ),
-                        ],
+                            if (widget.isFirstRun)
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text(context.l10n.onboardingSkip),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  String _actionLabel(BuildContext context) => _step == 4
+  String _actionLabel(BuildContext context) =>
+      _step == (widget.isFirstRun ? 5 : 4)
       ? context.l10n.onboardingCreateMyPlan
       : context.l10n.onboardingContinue;
 
@@ -195,9 +227,57 @@ class _OnboardingViewState extends State<OnboardingView> {
       1 => _buildExperienceStep(context),
       2 => _buildScheduleStep(context),
       3 => _buildEquipmentStep(context),
-      _ => _buildPersonalizedPlan(context),
+      4 => _buildPersonalizedPlan(context),
+      _ => _buildPreferencesStep(context),
     };
   }
+
+  Widget _buildPreferencesStep(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        context.l10n.profileTailoredTitle,
+        style: Theme.of(context).textTheme.displaySmall,
+      ),
+      const SizedBox(height: AppSpacing.x2),
+      Text(
+        context.l10n.profileTailoredDescription,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      const SizedBox(height: AppSpacing.x6),
+      SectionHeading(title: context.l10n.profileThemeAppearance),
+      const SizedBox(height: AppSpacing.x2),
+      Wrap(
+        spacing: AppSpacing.x2,
+        runSpacing: AppSpacing.x2,
+        children: [
+          for (final entry in <(ThemeMode, String)>[
+            (ThemeMode.system, context.l10n.profileThemeDevice),
+            (ThemeMode.light, context.l10n.profileThemeLight),
+            (ThemeMode.dark, context.l10n.profileThemeDark),
+          ])
+            ChoiceChip(
+              label: Text(entry.$2),
+              selected: _appearanceMode == entry.$1,
+              onSelected: (_) => setState(() {
+                _appearanceMode = entry.$1;
+                widget.appearanceController?.previewMode(entry.$1);
+              }),
+            ),
+        ],
+      ),
+      const SizedBox(height: AppSpacing.x6),
+      AppPreferencesOptions(
+        preferences: _preferences,
+        onChanged: (preferences) => setState(() => _preferences = preferences),
+      ),
+      const SizedBox(height: AppSpacing.x3),
+      Text(
+        context.l10n.onboardingPreferencesLater,
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+    ],
+  );
 
   Widget _buildPersonalizedPlan(BuildContext context) {
     final sessions = _planBuilder.buildWeek(
@@ -705,17 +785,37 @@ class _OnboardingViewState extends State<OnboardingView> {
   });
 
   void _finish() {
+    final settings = TrainingSettings(
+      trainingDays: Set.unmodifiable(_trainingDays),
+      sessionMinutes: _sessionMinutes,
+      goal: _goal,
+      experience: _experience,
+      equipment: Set.unmodifiable(_equipment),
+      avoidedExerciseIds: Set.unmodifiable(_avoidedExerciseIds),
+    );
+    _finished = true;
     Navigator.of(context).pop(
-      TrainingSettings(
-        trainingDays: Set.unmodifiable(_trainingDays),
-        sessionMinutes: _sessionMinutes,
-        goal: _goal,
-        experience: _experience,
-        equipment: Set.unmodifiable(_equipment),
-        avoidedExerciseIds: Set.unmodifiable(_avoidedExerciseIds),
-      ),
+      widget.isFirstRun
+          ? FirstRunOnboardingResult(
+              trainingSettings: settings,
+              preferences: _preferences,
+              appearanceMode: _appearanceMode,
+            )
+          : settings,
     );
   }
+}
+
+class FirstRunOnboardingResult {
+  const FirstRunOnboardingResult({
+    required this.trainingSettings,
+    required this.preferences,
+    required this.appearanceMode,
+  });
+
+  final TrainingSettings trainingSettings;
+  final AppPreferences preferences;
+  final ThemeMode appearanceMode;
 }
 
 class _StepProgress extends StatelessWidget {

@@ -23,6 +23,7 @@ class ProfileView extends StatefulWidget {
     required this.trainingSettings,
     required this.onTrainingSettingsChanged,
     required this.profileSettingsRepository,
+    this.preferences = const AppPreferences(),
     this.onPreferencesChanged,
     required this.accountAuthViewModel,
     this.onNotificationsChanged,
@@ -39,6 +40,7 @@ class ProfileView extends StatefulWidget {
   final VoidCallback onManageBackups;
   final LocaleController localeController;
   final ProfileSettingsRepository profileSettingsRepository;
+  final AppPreferences preferences;
   final ValueChanged<AppPreferences>? onPreferencesChanged;
   final AccountAuthViewModel accountAuthViewModel;
   final Future<bool> Function(
@@ -56,10 +58,11 @@ class _ProfileViewState extends State<ProfileView> {
     fullName: 'Atleta FORZA',
     goal: 'Ganar fuerza',
   );
-  AppPreferences _preferences = const AppPreferences();
+  late AppPreferences _preferences = widget.preferences;
   NotificationSettings _notifications = const NotificationSettings();
   PrivacySettings _privacy = const PrivacySettings();
   bool _profileSettingsLoaded = false;
+  int _preferencesRevision = 0;
 
   @override
   void initState() {
@@ -68,7 +71,16 @@ class _ProfileViewState extends State<ProfileView> {
     unawaited(widget.accountAuthViewModel.restore());
   }
 
+  @override
+  void didUpdateWidget(covariant ProfileView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.preferences == widget.preferences) return;
+    _preferencesRevision++;
+    _preferences = widget.preferences;
+  }
+
   Future<void> _loadProfileSettings() async {
+    final preferencesRevision = _preferencesRevision;
     try {
       final preferences = await widget.profileSettingsRepository
           .loadAppPreferences();
@@ -77,7 +89,9 @@ class _ProfileViewState extends State<ProfileView> {
       final privacy = await widget.profileSettingsRepository.loadPrivacy();
       if (!mounted) return;
       setState(() {
-        _preferences = preferences;
+        if (preferencesRevision == _preferencesRevision) {
+          _preferences = preferences;
+        }
         _notifications = notifications;
         _privacy = privacy;
         _profileSettingsLoaded = true;

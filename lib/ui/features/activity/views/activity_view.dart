@@ -309,6 +309,7 @@ class _ActivityViewState extends State<ActivityView> {
                               .toDouble();
 
                           return TableCalendar<_CalendarDayStatus>(
+                            key: const ValueKey('activity-calendar'),
                             firstDay: DateTime(2000, 1, 1),
                             lastDay: DateTime(2100, 12, 31),
                             focusedDay: _visibleMonth,
@@ -400,9 +401,7 @@ class _ActivityViewState extends State<ActivityView> {
                                     fontWeight: FontWeight.w700,
                                   ),
                               todayDecoration: BoxDecoration(
-                                border: Border.all(
-                                  color: context.appColors.accent,
-                                ),
+                                color: Colors.transparent,
                                 shape: BoxShape.circle,
                               ),
                               selectedTextStyle: TextStyle(
@@ -652,17 +651,26 @@ class _CalendarLegend extends StatelessWidget {
                 width: itemWidth,
                 child: Semantics(
                   label: _calendarStatusLabel(context, status),
-                  child: Column(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        status.icon,
-                        size: 14,
-                        color: context.appColors.accent,
+                      SizedBox(
+                        width: 20,
+                        child: Center(
+                          child: Icon(
+                            status.icon,
+                            size: 14,
+                            color: context.appColors.accent,
+                          ),
+                        ),
                       ),
-                      Text(
-                        _calendarLegendLabel(context, status),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall,
+                      const SizedBox(width: AppSpacing.x1),
+                      Flexible(
+                        child: Text(
+                          _calendarLegendLabel(context, status),
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ),
                     ],
                   ),
