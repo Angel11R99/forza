@@ -1292,6 +1292,66 @@ abstract class AppLocalizations {
   /// **'In progress'**
   String get activityStatusInProgress;
 
+  /// No description provided for @activityPlannedRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned routine'**
+  String get activityPlannedRoutine;
+
+  /// No description provided for @activityActualRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout record'**
+  String get activityActualRecord;
+
+  /// No description provided for @activityOutsideAppDataNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The workout is recorded, but no sets or repetitions were saved.'**
+  String get activityOutsideAppDataNote;
+
+  /// No description provided for @activitySetCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 set recorded} other{{count} sets recorded}}'**
+  String activitySetCount(int count);
+
+  /// No description provided for @activityMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get activityMoreActions;
+
+  /// No description provided for @activityConfirmExternalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record an outside workout'**
+  String get activityConfirmExternalTitle;
+
+  /// No description provided for @activityConfirmExternalMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'It will be saved as completed without set or repetition data. Continue?'**
+  String get activityConfirmExternalMessage;
+
+  /// No description provided for @activityConfirmSkipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip workout'**
+  String get activityConfirmSkipTitle;
+
+  /// No description provided for @activityConfirmSkipMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout will be marked as skipped. You can undo this later.'**
+  String get activityConfirmSkipMessage;
+
+  /// No description provided for @activityConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get activityConfirmAction;
+
   /// No description provided for @activityUndoSkip.
   ///
   /// In en, this message translates to:

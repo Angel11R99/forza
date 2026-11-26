@@ -736,6 +736,47 @@ class AppLocalizationsEs extends AppLocalizations {
   String get activityStatusInProgress => 'En curso';
 
   @override
+  String get activityPlannedRoutine => 'Rutina prevista';
+
+  @override
+  String get activityActualRecord => 'Registro real';
+
+  @override
+  String get activityOutsideAppDataNote =>
+      'Se registró el entrenamiento, pero no hay series ni repeticiones guardadas.';
+
+  @override
+  String activitySetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count series registradas',
+      one: '1 serie registrada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get activityMoreActions => 'Más acciones';
+
+  @override
+  String get activityConfirmExternalTitle => 'Registrar entrenamiento externo';
+
+  @override
+  String get activityConfirmExternalMessage =>
+      'Se guardará como completado sin datos de series ni repeticiones. ¿Quieres continuar?';
+
+  @override
+  String get activityConfirmSkipTitle => 'Omitir sesión';
+
+  @override
+  String get activityConfirmSkipMessage =>
+      'La sesión quedará marcada como omitida. Puedes deshacerlo después.';
+
+  @override
+  String get activityConfirmAction => 'Confirmar';
+
+  @override
   String get activityUndoSkip => 'Deshacer omisión';
 
   @override

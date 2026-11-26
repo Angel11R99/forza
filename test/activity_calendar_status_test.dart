@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +32,23 @@ void main() {
       goal: 'Ganar fuerza',
       durationMinutes: 30,
       exerciseCount: 3,
+      exercises: const ['Push-ups'],
+      completedOutsideApp: true,
+      planSnapshot: jsonEncode({
+        'weekday': today.weekday,
+        'title': 'Workout',
+        'focus': 'Chest',
+        'durationMinutes': 30,
+        'exercises': [
+          {
+            'catalogId': 'push_up',
+            'name': 'Push-ups',
+            'focus': 'Chest',
+            'prescription': '3 × 8',
+            'timed': false,
+          },
+        ],
+      }),
     );
 
     await tester.pumpWidget(
@@ -73,6 +92,12 @@ void main() {
     expect(find.text('completada'), findsOneWidget);
     expect(find.text('pendiente'), findsOneWidget);
     expect(find.text('omitida'), findsOneWidget);
+    expect(find.text('Registro real'), findsOneWidget);
+    expect(find.text('Rutina prevista'), findsOneWidget);
+    expect(find.text('Push-ups · 3 × 8'), findsOneWidget);
+    expect(find.text('Push-ups'), findsOneWidget);
+    expect(find.text('Repetir entrenamiento'), findsNothing);
+    expect(find.textContaining('no hay series'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.tap(find.byTooltip('Mes siguiente'));
@@ -84,5 +109,78 @@ void main() {
     await tester.pump();
     expect(find.text(DateFormat.yMMMM('es').format(today)), findsOneWidget);
     expect(find.text('Detalle del día'), findsOneWidget);
+  });
+
+  testWidgets('external workout registration asks before saving', (
+    tester,
+  ) async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final today = DateTime.now();
+    var saveCount = 0;
+    tester.view.physicalSize = const Size(400, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('es'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        home: Scaffold(
+          body: ActivityView(
+            settings: const TrainingSettings(),
+            records: const [],
+            onWorkoutCompleted: (_) async {
+              saveCount++;
+            },
+            onSessionClosed: () async {},
+            workoutLogRepository: WorkoutLogRepository(database: database),
+            scheduledSessions: [
+              ScheduledTrainingSession(
+                id: today.toIso8601String(),
+                scheduledDate: today,
+                sessionIndex: 0,
+                title: 'Cuerpo completo',
+                focus: 'Fuerza',
+                durationMinutes: 30,
+                exerciseCount: 3,
+                status: 'pending',
+              ),
+            ],
+            onRescheduleSession: (_, _) async => false,
+            onSessionStarted: (_) async => false,
+            onSkipSession: (_) async => false,
+            onUndoSkipSession: (_) async => false,
+          ),
+        ),
+      ),
+    );
+
+    final moreActions = find.byWidgetPredicate(
+      (widget) => widget is PopupMenuButton,
+    );
+    await tester.tap(moreActions);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ya entrené fuera de la app'));
+    await tester.pumpAndSettle();
+    expect(find.text('Registrar entrenamiento externo'), findsOneWidget);
+    expect(saveCount, 0);
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(saveCount, 0);
+
+    await tester.tap(moreActions);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ya entrené fuera de la app'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    expect(saveCount, 1);
   });
 }

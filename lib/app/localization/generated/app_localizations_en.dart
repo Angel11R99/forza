@@ -732,6 +732,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activityStatusInProgress => 'In progress';
 
   @override
+  String get activityPlannedRoutine => 'Planned routine';
+
+  @override
+  String get activityActualRecord => 'Workout record';
+
+  @override
+  String get activityOutsideAppDataNote =>
+      'The workout is recorded, but no sets or repetitions were saved.';
+
+  @override
+  String activitySetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sets recorded',
+      one: '1 set recorded',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get activityMoreActions => 'More actions';
+
+  @override
+  String get activityConfirmExternalTitle => 'Record an outside workout';
+
+  @override
+  String get activityConfirmExternalMessage =>
+      'It will be saved as completed without set or repetition data. Continue?';
+
+  @override
+  String get activityConfirmSkipTitle => 'Skip workout';
+
+  @override
+  String get activityConfirmSkipMessage =>
+      'This workout will be marked as skipped. You can undo this later.';
+
+  @override
+  String get activityConfirmAction => 'Confirm';
+
+  @override
   String get activityUndoSkip => 'Undo skip';
 
   @override
