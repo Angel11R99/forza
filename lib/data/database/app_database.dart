@@ -176,7 +176,16 @@ class AppDatabase extends _$AppDatabase {
   static const activePlanId = 'active';
 
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'forza'));
+    : super(
+        executor ??
+            driftDatabase(
+              name: 'forza',
+              web: DriftWebOptions(
+                sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+                driftWorker: Uri.parse('drift_worker.js'),
+              ),
+            ),
+      );
 
   static final instance = AppDatabase();
 
