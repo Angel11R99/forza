@@ -586,7 +586,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String homeDurationExercises(Object count, Object minutes) {
-    return '$minutes min por sesión · $count ejercicios';
+    return 'Presupuesto aprox. $minutes min por sesión · $count ejercicios';
   }
 
   @override
@@ -780,7 +780,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String profilePlanSummary(Object days, Object goal, Object minutes) {
-    return '$goal · $days días · $minutes min';
+    return '$goal · $days días · presupuesto ~$minutes min';
   }
 
   @override
@@ -1274,7 +1274,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Guía ACSM sobre entrenamiento de fuerza';
 
   @override
-  String get onboardingSessionTime => 'Tiempo por sesión';
+  String get onboardingSessionTime => 'Presupuesto de tiempo por sesión';
+
+  @override
+  String get onboardingSessionBudgetNote =>
+      'El plan ajusta el número de ejercicios a este presupuesto. El tiempo real varía según tu ritmo y el tiempo que dediques al calentamiento y la vuelta a la calma. El temporizador orientativo entre ejercicios es de 45 s.';
 
   @override
   String onboardingMinutes(Object minutes) {

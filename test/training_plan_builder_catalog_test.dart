@@ -196,7 +196,7 @@ void main() {
       '2 series · 8–12 repeticiones a ritmo cómodo',
     );
 
-    final exerciseCounts = [20, 45, 90].map(
+    final exerciseCounts = [20, 45, 60, 90].map(
       (minutes) => builder
           .buildWeek(
             trainingDays: const {DateTime.monday},
@@ -209,7 +209,7 @@ void main() {
           .exercises
           .length,
     );
-    expect(exerciseCounts, orderedEquals([4, 6, 8]));
+    expect(exerciseCounts, orderedEquals([4, 6, 8, 10]));
   });
 
   test('session snapshots survive JSON serialization', () {

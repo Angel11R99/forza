@@ -335,7 +335,7 @@ class TrainingPlanBuilder {
   }
 
   int exerciseCount(int sessionMinutes, {required int availableCount}) =>
-      (sessionMinutes / 8).round().clamp(4, 8).clamp(1, availableCount);
+      (sessionMinutes / 8).round().clamp(4, 10).clamp(1, availableCount);
 
   static String _sessionTitle(int index, int sessionsPerWeek) =>
       sessionsPerWeek <= 3
