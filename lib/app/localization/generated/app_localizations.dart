@@ -2510,6 +2510,78 @@ abstract class AppLocalizations {
   /// **'This is a starting point. You can adjust your plan from Profile.'**
   String get onboardingPreviewDescription;
 
+  /// No description provided for @onboardingEditGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get onboardingEditGoal;
+
+  /// No description provided for @onboardingEditExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get onboardingEditExperience;
+
+  /// No description provided for @onboardingEditSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Days and duration'**
+  String get onboardingEditSchedule;
+
+  /// No description provided for @onboardingEditEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment and exclusions'**
+  String get onboardingEditEquipment;
+
+  /// No description provided for @onboardingReturnToPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to plan summary'**
+  String get onboardingReturnToPreview;
+
+  /// No description provided for @onboardingEmptySessionConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one session has no compatible exercises. Adjust training days, equipment, or excluded movements before creating the plan.'**
+  String get onboardingEmptySessionConflict;
+
+  /// No description provided for @onboardingSessionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}} · ~{minutes} min estimated'**
+  String onboardingSessionSummary(int count, int minutes);
+
+  /// No description provided for @onboardingTimedPrescription.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} sets · 20–40 seconds'**
+  String onboardingTimedPrescription(int sets);
+
+  /// No description provided for @onboardingRepPrescription.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} sets · {target}'**
+  String onboardingRepPrescription(int sets, String target);
+
+  /// No description provided for @onboardingStrengthRepRange.
+  ///
+  /// In en, this message translates to:
+  /// **'6–8 reps'**
+  String get onboardingStrengthRepRange;
+
+  /// No description provided for @onboardingMuscleRepRange.
+  ///
+  /// In en, this message translates to:
+  /// **'8–12 reps'**
+  String get onboardingMuscleRepRange;
+
+  /// No description provided for @onboardingHabitRepRange.
+  ///
+  /// In en, this message translates to:
+  /// **'8–12 reps at a comfortable pace'**
+  String get onboardingHabitRepRange;
+
   /// No description provided for @onboardingPlanExperience.
   ///
   /// In en, this message translates to:

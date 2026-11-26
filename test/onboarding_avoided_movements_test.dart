@@ -88,6 +88,12 @@ void main() {
     }
 
     expect(find.textContaining('No hay ejercicios compatibles'), findsWidgets);
+    expect(
+      find.textContaining(
+        'Al menos una sesión quedó sin ejercicios compatibles',
+      ),
+      findsOneWidget,
+    );
     final createButton = tester.widget<FilledButton>(
       find.ancestor(
         of: find.text('Crear mi plan'),
@@ -95,6 +101,94 @@ void main() {
       ),
     );
     expect(createButton.onPressed, isNull);
+  });
+
+  testWidgets('review edits return to summary and expand real prescriptions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('es'),
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const OnboardingView(isFirstRun: true),
+      ),
+    );
+
+    for (var step = 0; step < 4; step++) {
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Objetivo'), findsOneWidget);
+    expect(find.textContaining('presupuesto ~45 min'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Objetivo'));
+    await tester.tap(find.text('Objetivo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Crear el hábito'));
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Crear el hábito'), findsOneWidget);
+
+    final firstSession = find.byType(ExpansionTile).first;
+    await tester.ensureVisible(firstSession);
+    await tester.tap(firstSession);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('repeticiones a ritmo cómodo'), findsWidgets);
+
+    await tester.ensureVisible(find.text('Días y duración'));
+    await tester.tap(find.text('Días y duración'));
+    await tester.pumpAndSettle();
+    final tuesday = find.byKey(const ValueKey('training-day-2'));
+    await tester.ensureVisible(tuesday);
+    await tester.tap(tuesday);
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilterChip>(tuesday).selected, isTrue);
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('5 días'), findsOneWidget);
+    expect(find.byType(ExpansionTile), findsNWidgets(5));
+  });
+
+  testWidgets('English review localizes the exercise prescriptions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('en'),
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const OnboardingView(),
+      ),
+    );
+
+    for (var step = 0; step < 4; step++) {
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Goal'), findsOneWidget);
+    final firstSession = find.byType(ExpansionTile).first;
+    await tester.ensureVisible(firstSession);
+    await tester.tap(firstSession);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('6–8 reps'), findsWidgets);
   });
 }
 

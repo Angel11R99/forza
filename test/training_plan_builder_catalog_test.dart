@@ -120,6 +120,35 @@ void main() {
     ]);
   });
 
+  test(
+    'every supported frequency from one to seven yields complete sessions',
+    () {
+      for (var count = 1; count <= 7; count++) {
+        final days = {for (var day = 1; day <= count; day++) day};
+        final sessions = builder.buildWeek(
+          trainingDays: days,
+          sessionMinutes: 45,
+          goal: 'Ganar músculo',
+          experience: 'Tengo algo de experiencia',
+          equipment: const {
+            'Peso corporal',
+            'Mancuernas',
+            'Barra',
+            'Banda elástica',
+            'Polea',
+            'Máquina de palanca',
+          },
+        );
+
+        expect(sessions, hasLength(count));
+        expect(
+          sessions.every((session) => session.exercises.isNotEmpty),
+          isTrue,
+        );
+      }
+    },
+  );
+
   test('rejects invalid plan preferences', () {
     void build({
       Set<int> days = const {DateTime.monday},

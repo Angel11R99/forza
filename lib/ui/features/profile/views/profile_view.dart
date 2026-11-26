@@ -234,8 +234,8 @@ class _ProfileViewState extends State<ProfileView> {
                       icon: Icons.flag_outlined,
                       title: context.l10n.profileMyPlan,
                       subtitle: context.l10n.profilePlanSummary(
-                        _localizedGoal(context, widget.trainingSettings.goal),
                         widget.trainingSettings.daysPerWeek,
+                        _localizedGoal(context, widget.trainingSettings.goal),
                         widget.trainingSettings.sessionMinutes,
                       ),
                       onTap: _configurePlan,
