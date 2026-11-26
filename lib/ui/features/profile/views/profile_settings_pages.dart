@@ -278,6 +278,95 @@ class AppPreferencesPage extends StatefulWidget {
   State<AppPreferencesPage> createState() => _AppPreferencesPageState();
 }
 
+class AppPreferencesOptions extends StatefulWidget {
+  const AppPreferencesOptions({
+    super.key,
+    required this.preferences,
+    required this.onChanged,
+  });
+
+  final AppPreferences preferences;
+  final ValueChanged<AppPreferences> onChanged;
+
+  @override
+  State<AppPreferencesOptions> createState() => _AppPreferencesOptionsState();
+}
+
+class _AppPreferencesOptionsState extends State<AppPreferencesOptions> {
+  late String _weightUnit = widget.preferences.weightUnit;
+  late String _weekStartsOn = widget.preferences.weekStartsOn;
+  late bool _hapticsEnabled = widget.preferences.hapticsEnabled;
+
+  void _notify() => widget.onChanged(
+    AppPreferences(
+      weightUnit: _weightUnit,
+      weekStartsOn: _weekStartsOn,
+      hapticsEnabled: _hapticsEnabled,
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SectionHeading(title: context.l10n.profileWeightUnitTitle),
+      Wrap(
+        spacing: AppSpacing.x2,
+        children: [
+          for (final unit in ['kg', 'lb'])
+            ChoiceChip(
+              label: Text(
+                unit == 'kg'
+                    ? context.l10n.profileKilograms
+                    : context.l10n.profilePounds,
+              ),
+              selected: unit == _weightUnit,
+              selectedColor: context.appColors.surfaceMuted,
+              onSelected: (_) => setState(() {
+                _weightUnit = unit;
+                _notify();
+              }),
+            ),
+        ],
+      ),
+      const SizedBox(height: AppSpacing.x6),
+      SectionHeading(title: context.l10n.profileWeekStartTitle),
+      Wrap(
+        spacing: AppSpacing.x2,
+        children: [
+          for (final day in ['Lunes', 'Domingo'])
+            ChoiceChip(
+              label: Text(
+                day == 'Lunes'
+                    ? context.l10n.profileWeekMonday
+                    : context.l10n.profileWeekSunday,
+              ),
+              selected: day == _weekStartsOn,
+              selectedColor: context.appColors.surfaceMuted,
+              onSelected: (_) => setState(() {
+                _weekStartsOn = day;
+                _notify();
+              }),
+            ),
+        ],
+      ),
+      const SizedBox(height: AppSpacing.x6),
+      AppSurfaceCard(
+        padding: EdgeInsets.zero,
+        child: SwitchListTile(
+          title: Text(context.l10n.profileHapticTitle),
+          subtitle: Text(context.l10n.profileHapticDescription),
+          value: _hapticsEnabled,
+          onChanged: (value) => setState(() {
+            _hapticsEnabled = value;
+            _notify();
+          }),
+        ),
+      ),
+    ],
+  );
+}
+
 class _AppPreferencesPageState extends State<AppPreferencesPage> {
   late String _weightUnit = widget.preferences.weightUnit;
   late String _weekStartsOn = widget.preferences.weekStartsOn;
@@ -308,50 +397,13 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.x8),
-            SectionHeading(title: context.l10n.profileWeightUnitTitle),
-            Wrap(
-              spacing: AppSpacing.x2,
-              children: [
-                for (final unit in ['kg', 'lb'])
-                  ChoiceChip(
-                    label: Text(
-                      unit == 'kg'
-                          ? context.l10n.profileKilograms
-                          : context.l10n.profilePounds,
-                    ),
-                    selected: unit == _weightUnit,
-                    selectedColor: context.appColors.surfaceMuted,
-                    onSelected: (_) => setState(() => _weightUnit = unit),
-                  ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.x6),
-            SectionHeading(title: context.l10n.profileWeekStartTitle),
-            Wrap(
-              spacing: AppSpacing.x2,
-              children: [
-                for (final day in ['Lunes', 'Domingo'])
-                  ChoiceChip(
-                    label: Text(
-                      day == 'Lunes'
-                          ? context.l10n.profileWeekMonday
-                          : context.l10n.profileWeekSunday,
-                    ),
-                    selected: day == _weekStartsOn,
-                    selectedColor: context.appColors.surfaceMuted,
-                    onSelected: (_) => setState(() => _weekStartsOn = day),
-                  ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.x6),
-            AppSurfaceCard(
-              padding: EdgeInsets.zero,
-              child: SwitchListTile(
-                title: Text(context.l10n.profileHapticTitle),
-                subtitle: Text(context.l10n.profileHapticDescription),
-                value: _hapticsEnabled,
-                onChanged: (value) => setState(() => _hapticsEnabled = value),
-              ),
+            AppPreferencesOptions(
+              preferences: widget.preferences,
+              onChanged: (preferences) => setState(() {
+                _weightUnit = preferences.weightUnit;
+                _weekStartsOn = preferences.weekStartsOn;
+                _hapticsEnabled = preferences.hapticsEnabled;
+              }),
             ),
           ],
         ),

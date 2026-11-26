@@ -1876,6 +1876,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ajusta las unidades y la forma en que FORZA organiza tu semana.';
 
   @override
+  String get onboardingPreferencesLater =>
+      'Podrás cambiar estas preferencias más tarde desde Perfil.';
+
+  @override
   String get profileKilograms => 'Kilogramos (kg)';
 
   @override

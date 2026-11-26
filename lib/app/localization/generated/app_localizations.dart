@@ -3236,6 +3236,12 @@ abstract class AppLocalizations {
   /// **'Adjust units and how FORZA organizes your week.'**
   String get profileTailoredDescription;
 
+  /// No description provided for @onboardingPreferencesLater.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change these preferences later in Profile.'**
+  String get onboardingPreferencesLater;
+
   /// No description provided for @profileKilograms.
   ///
   /// In en, this message translates to:

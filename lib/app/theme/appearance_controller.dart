@@ -31,6 +31,16 @@ class AppearanceController extends ChangeNotifier {
 
   Future<void> setMode(ThemeMode mode) async {
     if (_mode == mode) return;
+    await commitMode(mode);
+  }
+
+  void previewMode(ThemeMode mode) {
+    if (_mode == mode) return;
+    _mode = mode;
+    notifyListeners();
+  }
+
+  Future<void> commitMode(ThemeMode mode) async {
     final value = switch (mode) {
       ThemeMode.light => 'light',
       ThemeMode.dark => 'dark',

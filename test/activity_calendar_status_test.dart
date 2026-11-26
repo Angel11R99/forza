@@ -4,6 +4,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:forza/app/localization/generated/app_localizations.dart';
 import 'package:forza/app/theme/app_theme.dart';
 import 'package:forza/data/database/app_database.dart' show AppDatabase;
@@ -89,6 +90,13 @@ void main() {
     );
 
     expect(find.byTooltip('Hoy'), findsOneWidget);
+    final calendar = tester.widget<TableCalendar<dynamic>>(
+      find.byKey(const ValueKey('activity-calendar')),
+    );
+    expect(
+      (calendar.calendarStyle.todayDecoration as BoxDecoration).border,
+      isNull,
+    );
     expect(find.text('completada'), findsOneWidget);
     expect(find.text('pendiente'), findsOneWidget);
     expect(find.text('omitida'), findsOneWidget);
