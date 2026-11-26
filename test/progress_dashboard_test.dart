@@ -108,6 +108,11 @@ void main() {
 
     expect(find.text('Sesión antigua 0'), findsWidgets);
     expect(find.text('Sesión antigua 119'), findsNothing);
+
+    final last30DaysChip = find.widgetWithText(ChoiceChip, '30 días');
+    await tester.tap(last30DaysChip);
+    await tester.pumpAndSettle();
+    expect(find.text('No hay entrenamientos en este período.'), findsOneWidget);
   });
 
   testWidgets(
