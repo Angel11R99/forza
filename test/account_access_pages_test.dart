@@ -27,6 +27,61 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('Google access errors show actionable copy and allow retry', (
+    tester,
+  ) async {
+    final repository = _FakeAccountAuthRepository()
+      ..signInFailure = const AccountAuthException(
+        AccountAuthFailure.configuration,
+      );
+    final viewModel = AccountAuthViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(_app(viewModel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue with Google'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        'Google sign-in could not start. Check the Android or iOS OAuth setup and try again.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      isNotNull,
+    );
+
+    repository.signInFailure = null;
+    await tester.tap(find.text('Continue with Google'));
+    await tester.pumpAndSettle();
+    expect(find.text('Athlete One'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('cancelled Google access leaves guest option available', (
+    tester,
+  ) async {
+    final repository = _FakeAccountAuthRepository()..cancelSignIn = true;
+    final viewModel = AccountAuthViewModel(repository: repository);
+    addTearDown(viewModel.dispose);
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(_app(viewModel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue with Google'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Continue without an account'), findsOneWidget);
+    expect(
+      find.text('We couldn\'t complete sign-in. Try again.'),
+      findsNothing,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'Google identity appears after sign in and disappears on sign out',
     (tester) async {
@@ -70,6 +125,8 @@ Widget _app(AccountAuthViewModel viewModel) => MaterialApp(
 class _FakeAccountAuthRepository implements AccountAuthRepository {
   final _changes = StreamController<AccountIdentity?>.broadcast();
   AccountIdentity? _account;
+  AccountAuthException? signInFailure;
+  bool cancelSignIn = false;
 
   @override
   AccountIdentity? get currentAccount => _account;
@@ -85,6 +142,9 @@ class _FakeAccountAuthRepository implements AccountAuthRepository {
 
   @override
   Future<AccountIdentity?> signInWithGoogle() async {
+    final failure = signInFailure;
+    if (failure != null) throw failure;
+    if (cancelSignIn) return null;
     _account = const AccountIdentity(
       providerUserId: 'google-user',
       displayName: 'Athlete One',
