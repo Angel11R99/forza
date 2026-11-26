@@ -2191,6 +2191,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionRestHeadline => 'Take a breather';
 
   @override
+  String get sessionRestBetweenSets => 'Rest between sets';
+
+  @override
+  String get sessionRestBetweenExercises => 'Exercise changeover';
+
+  @override
+  String get sessionRestDuration => 'Rest duration';
+
+  @override
+  String sessionNextSetAfterRest(int number) {
+    return 'Next: set $number';
+  }
+
+  @override
+  String get sessionStartWhenReady => 'Start when you’re ready';
+
+  @override
   String sessionBeforeExercise(Object exercise) {
     return 'Before $exercise';
   }

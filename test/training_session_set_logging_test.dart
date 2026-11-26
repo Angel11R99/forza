@@ -62,11 +62,14 @@ void main() {
     // Load is optional for bodyweight exercise.
     await _tap(tester, find.byKey(const ValueKey('complete-set-0')));
     expect(find.text('1 de $totalSets series completadas'), findsOneWidget);
+    expect(find.text('Descanso entre series'), findsOneWidget);
+    await _skipRest(tester);
 
     await _enter(tester, 'set-1-repetitions', '9');
     await _enter(tester, 'set-1-load', '12');
     await _tap(tester, find.text('Completar serie').last);
     expect(find.text('2 de $totalSets series completadas'), findsOneWidget);
+    await _skipRest(tester);
 
     await _enter(tester, 'set-0-repetitions', '');
     expect(find.text('1 de $totalSets series completadas'), findsOneWidget);
@@ -79,6 +82,7 @@ void main() {
     await _enter(tester, 'set-0-repetitions', '10');
     await _tap(tester, find.byKey(const ValueKey('complete-set-0')));
     expect(find.text('2 de $totalSets series completadas'), findsOneWidget);
+    await _skipRest(tester);
     expect(_fieldText(tester, 'set-1-repetitions'), '9');
     await _tap(tester, find.text('Desmarcar serie').first);
     expect(find.text('1 de $totalSets series completadas'), findsOneWidget);
@@ -141,6 +145,8 @@ void main() {
     await _tap(tester, find.byKey(const ValueKey('complete-set-0')));
 
     expect(find.text('1 de 2 series completadas'), findsOneWidget);
+    expect(find.text('Descanso entre series'), findsOneWidget);
+    await _skipRest(tester);
     final savedDraft = jsonDecode(
       (await repository.loadActiveWorkout())!,
     ) as Map<String, Object?>;
@@ -215,6 +221,12 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
   await tester.tap(finder);
   await tester.pump();
+}
+
+Future<void> _skipRest(WidgetTester tester) async {
+  if (find.text('Saltar descanso').evaluate().isNotEmpty) {
+    await _tap(tester, find.text('Saltar descanso'));
+  }
 }
 
 Future<void> _startSession(WidgetTester tester) async {

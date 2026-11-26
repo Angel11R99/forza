@@ -87,6 +87,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   _SessionScreen _exitReturnScreen = _SessionScreen.preparation;
   int _currentExercise = 0;
   int _remainingRestSeconds = 45;
+  int _restDurationSeconds = 45;
+  _RestContext _restContext = _RestContext.betweenExercises;
   int _elapsedSeconds = 0;
   int _timedRemainingSeconds = 30;
   bool _timedSetRunning = false;
@@ -122,6 +124,14 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           );
           _elapsedSeconds = draft['elapsedSeconds'] as int? ?? 0;
           _remainingRestSeconds = draft['remainingRestSeconds'] as int? ?? 45;
+          final savedRestDuration = draft['restDurationSeconds'] as int? ?? 45;
+          _restDurationSeconds = [30, 45, 60, 90].contains(savedRestDuration)
+              ? savedRestDuration
+              : 45;
+          _restContext = _RestContext.values.firstWhere(
+            (context) => context.name == draft['restContext'],
+            orElse: () => _RestContext.betweenExercises,
+          );
           _timedRemainingSeconds = draft['timedRemainingSeconds'] as int? ?? 30;
           _cooldownIndex = (draft['cooldownIndex'] as int? ?? 0).clamp(0, 2);
           _resumeTimedSet = draft['resumeTimedSet'] as bool? ?? false;
@@ -158,6 +168,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       'currentExercise': _currentExercise,
       'elapsedSeconds': _elapsedSeconds,
       'remainingRestSeconds': _remainingRestSeconds,
+      'restDurationSeconds': _restDurationSeconds,
+      'restContext': _restContext.name,
       'timedRemainingSeconds': _timedRemainingSeconds,
       'cooldownIndex': _cooldownIndex,
       'resumeTimedSet': _timedSetRunning || _resumeTimedSet,
@@ -580,6 +592,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                     ? (result?.durationSeconds ?? 0) > 0
                     : (result?.repetitions ?? 0) > 0;
                 if (completed && !hasValue) return;
+                final shouldStartRest =
+                    completed &&
+                    setIndex == _nextIncompleteSetIndex(_currentExercise);
                 setState(() {
                   final key = '$_currentExercise:$setIndex';
                   if (completed) {
@@ -589,6 +604,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                   }
                 });
                 _saveDraft();
+                if (shouldStartRest) _startRestAfterSet();
               },
               onChanged: (result) {
                 final sets = _setResults.putIfAbsent(
@@ -921,7 +937,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         _SessionEyebrow(label: context.l10n.sessionRest),
         const SizedBox(height: AppSpacing.x3),
         Text(
-          context.l10n.sessionRestHeadline,
+          _restContext == _RestContext.betweenSets
+              ? context.l10n.sessionRestBetweenSets
+              : context.l10n.sessionRestBetweenExercises,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: AppSpacing.x6),
@@ -936,7 +954,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                   fit: StackFit.expand,
                   children: [
                     CircularProgressIndicator(
-                      value: _remainingRestSeconds / 45,
+                      value: _restDurationSeconds == 0
+                          ? 0
+                          : (_remainingRestSeconds / _restDurationSeconds)
+                                .clamp(0.0, 1.0),
                       strokeWidth: 8,
                       backgroundColor: context.appColors.surfaceMuted,
                       color: context.appColors.accent,
@@ -952,12 +973,16 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               ),
               const SizedBox(height: AppSpacing.x4),
               Text(
-                context.l10n.sessionBeforeExercise(
-                  localizedTrainingExerciseName(
-                    context,
-                    _exercises[_currentExercise].name,
-                  ),
-                ),
+                _restContext == _RestContext.betweenSets
+                    ? context.l10n.sessionNextSetAfterRest(
+                        _nextIncompleteSetIndex(_currentExercise) + 1,
+                      )
+                    : context.l10n.sessionBeforeExercise(
+                        _localizedSessionExerciseName(
+                          context,
+                          _exercises[_currentExercise],
+                        ),
+                      ),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -965,6 +990,24 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ),
         ),
         const SizedBox(height: AppSpacing.x4),
+        Text(
+          context.l10n.sessionRestDuration,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: AppSpacing.x2),
+        Wrap(
+          spacing: AppSpacing.x2,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final duration in const [30, 45, 60, 90])
+              ChoiceChip(
+                label: Text('$duration s'),
+                selected: _restDurationSeconds == duration,
+                onSelected: (_) => _adjustRestDuration(duration),
+              ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.x3),
         Text(
           context.l10n.sessionTimerNote,
           style: Theme.of(context).textTheme.bodySmall,
@@ -1252,7 +1295,11 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           onPressed: _skipRest,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 13),
-            child: Text(context.l10n.sessionSkipRestButton),
+            child: Text(
+              _restContext == _RestContext.betweenSets
+                  ? context.l10n.sessionSkipRestButton
+                  : context.l10n.sessionStartWhenReady,
+            ),
           ),
         ),
         _SessionScreen.paused => Column(
@@ -1400,9 +1447,31 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     }
     setState(() {
       _currentExercise++;
-      _remainingRestSeconds = 45;
+      _restContext = _RestContext.betweenExercises;
+      _remainingRestSeconds = _restDurationSeconds;
       _timedRemainingSeconds = 30;
       _screen = _SessionScreen.rest;
+    });
+    _saveDraft();
+    _startRestTimer();
+  }
+
+  void _startRestAfterSet() {
+    if (_isExerciseComplete(_currentExercise)) return;
+    setState(() {
+      _restContext = _RestContext.betweenSets;
+      _remainingRestSeconds = _restDurationSeconds;
+      _screen = _SessionScreen.rest;
+    });
+    _saveDraft();
+    _startRestTimer();
+  }
+
+  void _adjustRestDuration(int duration) {
+    if (_restDurationSeconds == duration) return;
+    setState(() {
+      _restDurationSeconds = duration;
+      _remainingRestSeconds = duration;
     });
     _saveDraft();
     _startRestTimer();
@@ -1527,6 +1596,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           }
         });
         _saveDraft();
+        _startRestAfterSet();
       } else {
         setState(() => _timedRemainingSeconds--);
       }
@@ -1634,6 +1704,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   int get _totalSetCount =>
       _exercises.fold(0, (total, exercise) => total + exercise.setCount);
 
+  int _nextIncompleteSetIndex(int exercise) =>
+      List.generate(_exercises[exercise].setCount, (index) => index).firstWhere(
+        (index) => !_completedSets.contains('$exercise:$index'),
+        orElse: () => _exercises[exercise].setCount,
+      );
+
   WorkoutSetResult? _resultFor(int exercise, int set) {
     for (final result in _setResults[exercise] ?? const <WorkoutSetResult>[]) {
       if (result.setIndex == set) return result;
@@ -1676,6 +1752,8 @@ enum _SessionScreen {
   cooldown,
   summary,
 }
+
+enum _RestContext { betweenSets, betweenExercises }
 
 enum _CooldownFocus { legs, back, chest, shoulders, core, arms }
 
