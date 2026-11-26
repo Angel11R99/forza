@@ -2,7 +2,7 @@
 
 ## Mantenedores y estados
 
-Las Issue Forms agregan `status:pending-review`. El workflow sugiere Issues parecidos sin cerrarlos automáticamente. El propietario o un colaborador con permiso `admin` o `maintain` puede aprobar, rechazar o marcar un duplicado aplicando la etiqueta correspondiente; el workflow descarta estados aplicados por otros usuarios y mantiene un único estado. Asignar una propuesta aprobada la marca en progreso. El responsable de la Issue debe ser el autor del PR, excepto cuando un mantenedor registra `contrib:exception-approved`.
+Las Issue Forms agregan `status:pending-review`. El workflow sugiere Issues parecidos sin cerrarlos automáticamente. El propietario o un colaborador con permiso `admin` o `maintain` puede aprobar, rechazar o marcar un duplicado aplicando la etiqueta correspondiente; el workflow descarta estados aplicados por otros usuarios y mantiene un único estado. Una vez aprobado, cualquier contribuidor puede tomar el Issue; la asignación es opcional. El número del Issue determina la rama `issue/NN-descripcion-corta`. La política bloquea un segundo PR mientras haya otro PR abierto para el mismo Issue. La línea `Closes #NN` cierra el Issue automáticamente cuando se integra el PR en `main`.
 
 Las etiquetas definidas en `.github/labels.json` se crean o actualizan sin borrar etiquetas ajenas mediante `pwsh tool/sync_github_labels.ps1 -Repository Angel11R99/forza` (requiere `gh` autenticado con permisos de etiquetas).
 
@@ -34,4 +34,4 @@ No se genera una clave nueva. Sin cualquiera de estos secretos, la publicación 
 
 ## Límites de GitHub
 
-GitHub no impide que terceros desarrollen en ramas privadas o en forks. La asignación, rama con nombre convenido y política de PR controlan qué contribuciones acepta el proyecto. GitHub no puede evitar todos los bypass si se cambia la configuración de protección. La publicación requiere secrets configurados en GitHub; los archivos de este repositorio no crean esas credenciales.
+GitHub no impide que terceros desarrollen en ramas privadas o en forks. El estado aprobado, el nombre de rama convenido y la política de PR controlan qué contribuciones acepta el proyecto. GitHub no puede evitar todos los bypass si se cambia la configuración de protección. La publicación requiere secrets configurados en GitHub; los archivos de este repositorio no crean esas credenciales.

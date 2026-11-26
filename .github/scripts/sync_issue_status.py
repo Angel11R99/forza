@@ -15,7 +15,7 @@ action = event.get("action")
 association = event.get("issue", {}).get("author_association", "")
 if action == "labeled":
     selected = event["label"]["name"]
-    protected = selected.startswith("status:") or selected == "contrib:exception-approved"
+    protected = selected.startswith("status:")
     if not protected:
         sys.exit(0)
     actor = event.get("sender", {}).get("login", "")
@@ -30,14 +30,6 @@ if action == "labeled":
         for status in statuses:
             if status != selected:
                 subprocess.run(["gh", "issue", "edit", number, "--repo", repo, "--remove-label", status], check=False)
-elif action == "assigned":
-    issue = event["issue"]
-    labels = {label["name"] for label in issue["labels"]}
-    if "status:approved" in labels:
-        for status in ["status:pending-review", "status:in-progress", "status:in-review", "status:completed"]:
-            if status != "status:in-progress":
-                subprocess.run(["gh", "issue", "edit", number, "--repo", repo, "--remove-label", status], check=False)
-        gh("issue", "edit", number, "--repo", repo, "--add-label", "status:in-progress")
 elif action == "closed":
     issue = event["issue"]
     labels = {label["name"] for label in issue["labels"]}

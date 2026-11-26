@@ -17,6 +17,5 @@
   {"name":"module:profile","color":"c5def5","description":"Perfil, preferencias y copias de seguridad"},
   {"name":"module:onboarding","color":"c5def5","description":"Incorporación y configuración inicial"},
   {"name":"module:localization","color":"c5def5","description":"Idiomas y traducciones"},
-  {"name":"module:data","color":"c5def5","description":"Persistencia local y migraciones"},
-  {"name":"contrib:exception-approved","color":"e4e669","description":"Excepción de autor de PR autorizada por el mantenedor"}
+  {"name":"module:data","color":"c5def5","description":"Persistencia local y migraciones"}
 ]
