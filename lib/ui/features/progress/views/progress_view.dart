@@ -469,7 +469,8 @@ class _ProgressViewState extends State<ProgressView> {
   Future<void> _openGoalEditor([PersonalGoal? goal]) async {
     final updated = await Navigator.of(context).push<PersonalGoal>(
       MaterialPageRoute<PersonalGoal>(
-        builder: (_) => PersonalGoalEditorPage(goal: goal),
+        builder: (_) =>
+            PersonalGoalEditorPage(goal: goal, records: widget.records),
       ),
     );
     if (!mounted || updated == null) return;
@@ -534,6 +535,7 @@ class _PersonalGoalCard extends StatelessWidget {
     final current = goal.currentValue(records);
     final progress = (current / goal.targetValue).clamp(0.0, 1.0);
     final isWeekly = goal.type == PersonalGoalType.sessionsPerWeek;
+    final ambiguousExercise = goal.hasAmbiguousExerciseIdentity(records);
     final currentLabel = isWeekly
         ? current.toStringAsFixed(0)
         : _formatVolume(current);
@@ -566,16 +568,25 @@ class _PersonalGoalCard extends StatelessWidget {
               ),
             ],
           ),
-          Text(
-            context.l10n.progressGoalCurrentTarget(
-              currentLabel,
-              targetLabel,
-              goal.unit,
+          if (ambiguousExercise)
+            Text(
+              context.l10n.progressGoalExerciseNeedsResolution(
+                goal.exerciseName ?? '',
+              ),
+              style: Theme.of(context).textTheme.bodyMedium,
+            )
+          else ...[
+            Text(
+              context.l10n.progressGoalCurrentTarget(
+                currentLabel,
+                targetLabel,
+                goal.unit,
+              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: AppSpacing.x3),
-          LinearProgressIndicator(value: progress),
+            const SizedBox(height: AppSpacing.x3),
+            LinearProgressIndicator(value: progress),
+          ],
           const SizedBox(height: AppSpacing.x2),
           Text(
             isWeekly

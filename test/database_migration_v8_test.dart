@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/database/app_database.dart';
 
 void main() {
-  test('migration v7 adds optional movement exclusions to existing plans', () async {
+  test('migration v8 adds exercise identities without losing existing goals', () async {
     final database = AppDatabase(
       NativeDatabase.memory(
         setup: (database) {
@@ -29,6 +29,22 @@ void main() {
                 'created', 'updated', 1
               )
             ''');
+          database.execute('''
+              CREATE TABLE personal_goals (
+                id TEXT NOT NULL PRIMARY KEY,
+                type TEXT NOT NULL,
+                target_value REAL NOT NULL,
+                exercise_name TEXT,
+                created_at TEXT NOT NULL
+              )
+            ''');
+          database.execute('''
+              INSERT INTO personal_goals (
+                id, type, target_value, exercise_name, created_at
+              ) VALUES (
+                'legacy-goal', 'exerciseLoad', 60, 'Press de banca', 'created'
+              )
+            ''');
         },
       ),
     );
@@ -50,7 +66,7 @@ void main() {
     final version = await database
         .customSelect('PRAGMA user_version')
         .getSingle();
-    expect(version.read<int>('user_version'), 7);
+    expect(version.read<int>('user_version'), 8);
     final planColumns = await database
         .customSelect('PRAGMA table_info(training_plans)')
         .get();
@@ -72,6 +88,22 @@ void main() {
         .customSelect("SELECT goal FROM training_plans WHERE id = 'active'")
         .getSingle();
     expect(existingGoal.read<String>('goal'), 'Ganar fuerza');
+    final goalColumns = await database
+        .customSelect('PRAGMA table_info(personal_goals)')
+        .get();
+    expect(
+      goalColumns.map((row) => row.read<String>('name')),
+      contains('exercise_catalog_id'),
+    );
+    final existingLegacyGoal = await database
+        .customSelect(
+          "SELECT exercise_catalog_id FROM personal_goals WHERE id = 'legacy-goal'",
+        )
+        .getSingle();
+    expect(
+      existingLegacyGoal.readNullable<String>('exercise_catalog_id'),
+      isNull,
+    );
     await database.close();
   });
 }

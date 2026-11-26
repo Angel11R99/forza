@@ -55,6 +55,9 @@ class WorkoutLogRepository {
                   (row) => OrderingTerm.asc(row.setIndex),
                 ]))
               .get();
+      final exercisesByPosition = {
+        for (final exercise in exercises) exercise.position: exercise,
+      };
       records.add(
         WorkoutRecord(
           scheduledDate: DateTime.parse(session.scheduledDate),
@@ -65,6 +68,9 @@ class WorkoutLogRepository {
           exerciseCount: session.exerciseCount,
           exercises: exercises.map((row) => row.name).toList(growable: false),
           exerciseIds: [for (final exercise in exercises) exercise.catalogId],
+          exercisePositions: [
+            for (final exercise in exercises) exercise.position,
+          ],
           planVersion: session.planVersion,
           planSnapshot: session.planSnapshot ?? '',
           completedOutsideApp: session.completedOutsideApp,
@@ -76,6 +82,9 @@ class WorkoutLogRepository {
                   repetitions: set.repetitions,
                   loadKg: set.loadKg,
                   durationSeconds: set.durationSeconds,
+                  exerciseCatalogId:
+                      exercisesByPosition[set.exercisePosition]?.catalogId,
+                  exerciseName: exercisesByPosition[set.exercisePosition]?.name,
                 ),
               )
               .toList(growable: false),
@@ -128,7 +137,9 @@ class WorkoutLogRepository {
             for (var index = 0; index < exerciseNames.length; index++)
               WorkoutSessionExercisesCompanion.insert(
                 sessionId: id,
-                position: index,
+                position: index < record.exercisePositions.length
+                    ? record.exercisePositions[index]
+                    : index,
                 name: exerciseNames[index],
                 catalogId: Value(
                   index < record.exerciseIds.length

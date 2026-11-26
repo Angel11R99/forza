@@ -13,6 +13,7 @@ void main() {
             'workout_sessions',
             'workout_session_exercises',
             'scheduled_training_sessions',
+            'personal_goals',
           ]) {
             database.execute('CREATE TABLE $table (legacy_id TEXT)');
           }

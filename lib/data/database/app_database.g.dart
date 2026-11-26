@@ -3413,6 +3413,18 @@ class $PersonalGoalsTable extends PersonalGoals
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _exerciseCatalogIdMeta = const VerificationMeta(
+    'exerciseCatalogId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseCatalogId =
+      GeneratedColumn<String>(
+        'exercise_catalog_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -3430,6 +3442,7 @@ class $PersonalGoalsTable extends PersonalGoals
     type,
     targetValue,
     exerciseName,
+    exerciseCatalogId,
     createdAt,
   ];
   @override
@@ -3477,6 +3490,15 @@ class $PersonalGoalsTable extends PersonalGoals
         ),
       );
     }
+    if (data.containsKey('exercise_catalog_id')) {
+      context.handle(
+        _exerciseCatalogIdMeta,
+        exerciseCatalogId.isAcceptableOrUnknown(
+          data['exercise_catalog_id']!,
+          _exerciseCatalogIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -3510,6 +3532,10 @@ class $PersonalGoalsTable extends PersonalGoals
         DriftSqlType.string,
         data['${effectivePrefix}exercise_name'],
       ),
+      exerciseCatalogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_catalog_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}created_at'],
@@ -3528,12 +3554,14 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
   final String type;
   final double targetValue;
   final String? exerciseName;
+  final String? exerciseCatalogId;
   final String createdAt;
   const PersonalGoal({
     required this.id,
     required this.type,
     required this.targetValue,
     this.exerciseName,
+    this.exerciseCatalogId,
     required this.createdAt,
   });
   @override
@@ -3544,6 +3572,9 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
     map['target_value'] = Variable<double>(targetValue);
     if (!nullToAbsent || exerciseName != null) {
       map['exercise_name'] = Variable<String>(exerciseName);
+    }
+    if (!nullToAbsent || exerciseCatalogId != null) {
+      map['exercise_catalog_id'] = Variable<String>(exerciseCatalogId);
     }
     map['created_at'] = Variable<String>(createdAt);
     return map;
@@ -3557,6 +3588,9 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
       exerciseName: exerciseName == null && nullToAbsent
           ? const Value.absent()
           : Value(exerciseName),
+      exerciseCatalogId: exerciseCatalogId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exerciseCatalogId),
       createdAt: Value(createdAt),
     );
   }
@@ -3571,6 +3605,9 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
       type: serializer.fromJson<String>(json['type']),
       targetValue: serializer.fromJson<double>(json['targetValue']),
       exerciseName: serializer.fromJson<String?>(json['exerciseName']),
+      exerciseCatalogId: serializer.fromJson<String?>(
+        json['exerciseCatalogId'],
+      ),
       createdAt: serializer.fromJson<String>(json['createdAt']),
     );
   }
@@ -3582,6 +3619,7 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
       'type': serializer.toJson<String>(type),
       'targetValue': serializer.toJson<double>(targetValue),
       'exerciseName': serializer.toJson<String?>(exerciseName),
+      'exerciseCatalogId': serializer.toJson<String?>(exerciseCatalogId),
       'createdAt': serializer.toJson<String>(createdAt),
     };
   }
@@ -3591,12 +3629,16 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
     String? type,
     double? targetValue,
     Value<String?> exerciseName = const Value.absent(),
+    Value<String?> exerciseCatalogId = const Value.absent(),
     String? createdAt,
   }) => PersonalGoal(
     id: id ?? this.id,
     type: type ?? this.type,
     targetValue: targetValue ?? this.targetValue,
     exerciseName: exerciseName.present ? exerciseName.value : this.exerciseName,
+    exerciseCatalogId: exerciseCatalogId.present
+        ? exerciseCatalogId.value
+        : this.exerciseCatalogId,
     createdAt: createdAt ?? this.createdAt,
   );
   PersonalGoal copyWithCompanion(PersonalGoalsCompanion data) {
@@ -3609,6 +3651,9 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
       exerciseName: data.exerciseName.present
           ? data.exerciseName.value
           : this.exerciseName,
+      exerciseCatalogId: data.exerciseCatalogId.present
+          ? data.exerciseCatalogId.value
+          : this.exerciseCatalogId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -3620,14 +3665,21 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
           ..write('type: $type, ')
           ..write('targetValue: $targetValue, ')
           ..write('exerciseName: $exerciseName, ')
+          ..write('exerciseCatalogId: $exerciseCatalogId, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, type, targetValue, exerciseName, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    type,
+    targetValue,
+    exerciseName,
+    exerciseCatalogId,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3636,6 +3688,7 @@ class PersonalGoal extends DataClass implements Insertable<PersonalGoal> {
           other.type == this.type &&
           other.targetValue == this.targetValue &&
           other.exerciseName == this.exerciseName &&
+          other.exerciseCatalogId == this.exerciseCatalogId &&
           other.createdAt == this.createdAt);
 }
 
@@ -3644,6 +3697,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
   final Value<String> type;
   final Value<double> targetValue;
   final Value<String?> exerciseName;
+  final Value<String?> exerciseCatalogId;
   final Value<String> createdAt;
   final Value<int> rowid;
   const PersonalGoalsCompanion({
@@ -3651,6 +3705,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
     this.type = const Value.absent(),
     this.targetValue = const Value.absent(),
     this.exerciseName = const Value.absent(),
+    this.exerciseCatalogId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -3659,6 +3714,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
     required String type,
     required double targetValue,
     this.exerciseName = const Value.absent(),
+    this.exerciseCatalogId = const Value.absent(),
     required String createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -3670,6 +3726,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
     Expression<String>? type,
     Expression<double>? targetValue,
     Expression<String>? exerciseName,
+    Expression<String>? exerciseCatalogId,
     Expression<String>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -3678,6 +3735,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
       if (type != null) 'type': type,
       if (targetValue != null) 'target_value': targetValue,
       if (exerciseName != null) 'exercise_name': exerciseName,
+      if (exerciseCatalogId != null) 'exercise_catalog_id': exerciseCatalogId,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -3688,6 +3746,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
     Value<String>? type,
     Value<double>? targetValue,
     Value<String?>? exerciseName,
+    Value<String?>? exerciseCatalogId,
     Value<String>? createdAt,
     Value<int>? rowid,
   }) {
@@ -3696,6 +3755,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
       type: type ?? this.type,
       targetValue: targetValue ?? this.targetValue,
       exerciseName: exerciseName ?? this.exerciseName,
+      exerciseCatalogId: exerciseCatalogId ?? this.exerciseCatalogId,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -3716,6 +3776,9 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
     if (exerciseName.present) {
       map['exercise_name'] = Variable<String>(exerciseName.value);
     }
+    if (exerciseCatalogId.present) {
+      map['exercise_catalog_id'] = Variable<String>(exerciseCatalogId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<String>(createdAt.value);
     }
@@ -3732,6 +3795,7 @@ class PersonalGoalsCompanion extends UpdateCompanion<PersonalGoal> {
           ..write('type: $type, ')
           ..write('targetValue: $targetValue, ')
           ..write('exerciseName: $exerciseName, ')
+          ..write('exerciseCatalogId: $exerciseCatalogId, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -7382,6 +7446,7 @@ typedef $$PersonalGoalsTableCreateCompanionBuilder =
       required String type,
       required double targetValue,
       Value<String?> exerciseName,
+      Value<String?> exerciseCatalogId,
       required String createdAt,
       Value<int> rowid,
     });
@@ -7391,6 +7456,7 @@ typedef $$PersonalGoalsTableUpdateCompanionBuilder =
       Value<String> type,
       Value<double> targetValue,
       Value<String?> exerciseName,
+      Value<String?> exerciseCatalogId,
       Value<String> createdAt,
       Value<int> rowid,
     });
@@ -7421,6 +7487,11 @@ class $$PersonalGoalsTableFilterComposer
 
   ColumnFilters<String> get exerciseName => $composableBuilder(
     column: $table.exerciseName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exerciseCatalogId => $composableBuilder(
+    column: $table.exerciseCatalogId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7459,6 +7530,11 @@ class $$PersonalGoalsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get exerciseCatalogId => $composableBuilder(
+    column: $table.exerciseCatalogId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -7487,6 +7563,11 @@ class $$PersonalGoalsTableAnnotationComposer
 
   GeneratedColumn<String> get exerciseName => $composableBuilder(
     column: $table.exerciseName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get exerciseCatalogId => $composableBuilder(
+    column: $table.exerciseCatalogId,
     builder: (column) => column,
   );
 
@@ -7529,6 +7610,7 @@ class $$PersonalGoalsTableTableManager
                 Value<String> type = const Value.absent(),
                 Value<double> targetValue = const Value.absent(),
                 Value<String?> exerciseName = const Value.absent(),
+                Value<String?> exerciseCatalogId = const Value.absent(),
                 Value<String> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PersonalGoalsCompanion(
@@ -7536,6 +7618,7 @@ class $$PersonalGoalsTableTableManager
                 type: type,
                 targetValue: targetValue,
                 exerciseName: exerciseName,
+                exerciseCatalogId: exerciseCatalogId,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -7545,6 +7628,7 @@ class $$PersonalGoalsTableTableManager
                 required String type,
                 required double targetValue,
                 Value<String?> exerciseName = const Value.absent(),
+                Value<String?> exerciseCatalogId = const Value.absent(),
                 required String createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => PersonalGoalsCompanion.insert(
@@ -7552,6 +7636,7 @@ class $$PersonalGoalsTableTableManager
                 type: type,
                 targetValue: targetValue,
                 exerciseName: exerciseName,
+                exerciseCatalogId: exerciseCatalogId,
                 createdAt: createdAt,
                 rowid: rowid,
               ),

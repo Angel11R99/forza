@@ -82,12 +82,13 @@ void main() {
         title: 'Sesión de prueba',
         goal: updatedSettings.goal,
         durationMinutes: 55,
-        exerciseCount: 1,
-        exercises: const ['Press de banca con barra'],
-        exerciseIds: const ['0025'],
+        exerciseCount: 2,
+        exercises: const ['Remo', 'Press de banca con barra'],
+        exerciseIds: const ['row-1', '0025'],
+        exercisePositions: const [1, 4],
         setResults: const [
           WorkoutSetResult(
-            exercisePosition: 0,
+            exercisePosition: 4,
             setIndex: 0,
             repetitions: 8,
             loadKg: 50,
@@ -102,9 +103,10 @@ void main() {
           title: 'Sesión actualizada',
           goal: updatedSettings.goal,
           durationMinutes: 58,
-          exerciseCount: 1,
+          exerciseCount: 2,
           exercises: workout.exercises,
           exerciseIds: workout.exerciseIds,
+          exercisePositions: workout.exercisePositions,
           setResults: workout.setResults,
         ),
       );
@@ -141,6 +143,22 @@ void main() {
         ),
       );
       await goalRepository.delete('temporary');
+      await goalRepository.save(
+        PersonalGoal(
+          id: 'exercise-goal',
+          type: PersonalGoalType.exerciseLoad,
+          targetValue: 60,
+          exerciseName: 'Press de banca con barra',
+          exerciseCatalogId: '0025',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      );
+      expect(
+        (await goalRepository.load())
+            .singleWhere((item) => item.id == 'exercise-goal')
+            .currentValue(await workoutRepository.load()),
+        50,
+      );
 
       final draft = <String, Object?>{
         'scheduledDate': tuesday.toIso8601String(),
@@ -155,6 +173,12 @@ void main() {
         await backupRepository.exportJson(appearanceMode: 'dark'),
       );
       expect(backup.planVersion, 2);
+      expect(
+        backup.goals
+            .singleWhere((item) => item.id == 'exercise-goal')
+            .exerciseCatalogId,
+        '0025',
+      );
       expect(backup.bodyMeasurements.single.weightKg, 72.4);
       final legacyBackupJson = jsonDecode(
         await backupRepository.exportJson(appearanceMode: 'dark'),
@@ -210,13 +234,30 @@ void main() {
         (await workoutRepository.load()).single.title,
         'Sesión actualizada',
       );
-      expect((await workoutRepository.load()).single.exerciseIds, ['0025']);
+      expect((await workoutRepository.load()).single.exerciseIds, [
+        'row-1',
+        '0025',
+      ]);
+      expect((await workoutRepository.load()).single.exercisePositions, [1, 4]);
       expect(
         (await workoutRepository.load()).single.setResults.single.loadKg,
         50,
       );
+      expect(
+        (await workoutRepository.load())
+            .single
+            .setResults
+            .single
+            .exerciseCatalogId,
+        '0025',
+      );
       expect(jsonDecode((await workoutRepository.loadActiveWorkout())!), draft);
-      expect((await goalRepository.load()).single.targetValue, 4);
+      expect(
+        (await goalRepository.load())
+            .singleWhere((item) => item.id == 'exercise-goal')
+            .exerciseCatalogId,
+        '0025',
+      );
       expect((await measurementRepository.load()).single.waistCm, 84);
 
       await settingsRepository.save(
@@ -260,7 +301,12 @@ void main() {
         'Sesión actualizada',
       ]);
       expect((await scheduleRepository.load()).any((s) => s.isSkipped), isTrue);
-      expect((await goalRepository.load()).single.targetValue, 4);
+      expect(
+        (await goalRepository.load())
+            .singleWhere((item) => item.id == 'exercise-goal')
+            .exerciseCatalogId,
+        '0025',
+      );
       final restoredMeasurement = (await measurementRepository.load()).single;
       expect(restoredMeasurement.id, bodyMeasurement.id);
       expect(restoredMeasurement.weightKg, bodyMeasurement.weightKg);

@@ -246,8 +246,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             (result.repetitions == null || result.repetitions! >= 0) &&
             (result.durationSeconds == null || result.durationSeconds! >= 0) &&
             (result.loadKg == null ||
-                result.loadKg!.isFinite &&
-                    result.loadKg! >= 0)) {
+                result.loadKg!.isFinite && result.loadKg! >= 0)) {
           final sets = _setResults.putIfAbsent(
             result.exercisePosition,
             () => [],
@@ -1936,6 +1935,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     final completedPositions = results
         .map((result) => result.exercisePosition)
         .toSet();
+    final recordPositions = completedPositions.toList()..sort();
     Navigator.of(context).pop(
       WorkoutRecord(
         scheduledDate: _sessionDate,
@@ -1945,13 +1945,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         durationMinutes: durationMinutes,
         exerciseCount: completedPositions.length,
         exercises: [
-          for (final index in completedPositions.toList()..sort())
-            _recordExerciseName(index),
+          for (final index in recordPositions) _recordExerciseName(index),
         ],
         exerciseIds: [
-          for (final index in completedPositions.toList()..sort())
-            _exercises[index].catalogId,
+          for (final index in recordPositions) _exercises[index].catalogId,
         ],
+        exercisePositions: recordPositions,
         planVersion: _sessionPlanVersion,
         planSnapshot: jsonEncode(_plannedSession.toJson()),
         setResults: results,

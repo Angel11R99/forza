@@ -251,7 +251,9 @@ class BackupRepository {
               for (var index = 0; index < record.exercises.length; index++)
                 db.WorkoutSessionExercisesCompanion.insert(
                   sessionId: id,
-                  position: index,
+                  position: index < record.exercisePositions.length
+                      ? record.exercisePositions[index]
+                      : index,
                   name: record.exercises[index],
                   catalogId: Value(
                     index < record.exerciseIds.length
@@ -307,6 +309,7 @@ class BackupRepository {
               type: goal.type.name,
               targetValue: goal.targetValue,
               exerciseName: Value(goal.exerciseName),
+              exerciseCatalogId: Value(goal.exerciseCatalogId),
               createdAt: goal.createdAt.toIso8601String(),
             ),
         ]);
@@ -347,10 +350,17 @@ class BackupRepository {
         record.planVersion < 1 ||
         (record.exerciseIds.isNotEmpty &&
             record.exerciseIds.length != record.exercises.length) ||
+        (record.exercisePositions.isNotEmpty &&
+            (record.exercisePositions.length != record.exercises.length ||
+                record.exercisePositions.any((position) => position < 0) ||
+                record.exercisePositions.toSet().length !=
+                    record.exercisePositions.length)) ||
         record.setResults.any(
           (set) =>
               set.exercisePosition < 0 ||
-              set.exercisePosition >= record.exercises.length ||
+              (record.exercisePositions.isEmpty
+                  ? set.exercisePosition >= record.exercises.length
+                  : !record.exercisePositions.contains(set.exercisePosition)) ||
               set.setIndex < 0 ||
               (set.repetitions != null && set.repetitions! < 0) ||
               (set.loadKg != null &&
@@ -425,7 +435,11 @@ class BackupRepository {
     }
     final target = _number(json['targetValue'], 'targetValue');
     final exercise = json['exerciseName'];
+    final exerciseCatalogId = json['exerciseCatalogId'];
     if (target <= 0 ||
+        (exerciseCatalogId != null &&
+            (exerciseCatalogId is! String ||
+                exerciseCatalogId.trim().isEmpty)) ||
         (type.first == PersonalGoalType.sessionsPerWeek &&
             (target > 7 || target != target.roundToDouble())) ||
         (type.first == PersonalGoalType.exerciseLoad &&
@@ -437,6 +451,7 @@ class BackupRepository {
       type: type.first,
       targetValue: target,
       exerciseName: exercise as String?,
+      exerciseCatalogId: exerciseCatalogId as String?,
       createdAt: _date(json['createdAt'], 'createdAt'),
     );
   }
@@ -559,6 +574,7 @@ class BackupRepository {
     'type': goal.type.name,
     'targetValue': goal.targetValue,
     'exerciseName': goal.exerciseName,
+    'exerciseCatalogId': goal.exerciseCatalogId,
     'createdAt': goal.createdAt.toIso8601String(),
   };
 

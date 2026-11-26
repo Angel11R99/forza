@@ -184,6 +184,10 @@ class _ActivityViewState extends State<ActivityView> {
           for (final exercise in planned?.exercises ?? const [])
             exercise.catalogId,
         ],
+        exercisePositions: [
+          for (var index = 0; index < (planned?.exercises.length ?? 0); index++)
+            index,
+        ],
         planVersion: scheduled?.planVersion ?? 1,
         planSnapshot: scheduled?.planSnapshot ?? '',
         completedOutsideApp: true,
