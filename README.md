@@ -6,7 +6,7 @@
 
 <p align="center"><strong>Entrena con intención. Sigue tu progreso.</strong></p>
 
-FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y consultar la actividad y el progreso. Mantiene SQLite como almacenamiento local y, al iniciar sesión con Google, sincroniza los datos personales con Firebase Authentication y Cloud Firestore.
+FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y consultar la actividad y el progreso. Mantiene SQLite como almacenamiento local y permite activar, con consentimiento, una copia sincronizada por cuenta en Firebase Authentication y Cloud Firestore.
 
 ## La app
 
@@ -19,7 +19,7 @@ FORZA es una app Flutter para organizar entrenamientos, explorar ejercicios y co
 
 ## Estado actual
 
-La app guarda localmente en SQLite (Drift) las preferencias del plan —incluidos movimientos que prefieres evitar—, agenda de 120 días, sesiones terminadas con resultados por serie, objetivos personales, medidas corporales y borrador de la sesión activa. También permite exportar y restaurar un respaldo JSON local. Al iniciar sesión, Firestore sincroniza ese respaldo y los ajustes de perfil; los datos locales se combinan con los remotos dando prioridad al contenido local cuando coincide el mismo registro. Google Sign-In es opcional.
+La app guarda localmente en SQLite (Drift) las preferencias del plan —incluidos movimientos que prefieres evitar—, agenda de 120 días, sesiones terminadas con resultados por serie, objetivos personales, medidas corporales y borrador de la sesión activa. También permite exportar y restaurar un respaldo JSON local. Google Sign-In es opcional y no activa la sincronización automáticamente: la persona la habilita en Perfil y acepta qué datos se guardan en Firestore. Los cambios se combinan con la última base común, priorizando ediciones locales simultáneas; consulta [configuración y límites](docs/firebase-sync.md).
 
 El registro de series, recuperación de sesión, agenda sincronizada entre Inicio/Actividad/entrenamiento, medidas corporales persistentes, evolución de fuerza y récords desde los datos guardados, métricas de series y respaldo ya están implementados. Consulta [auditoría y prioridades](docs/07-auditoria-modulos-indispensables.md) y [módulos recomendados](docs/08-modulos-recomendados.md) para el estado vigente.
 
