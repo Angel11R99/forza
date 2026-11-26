@@ -127,6 +127,7 @@ class PersonalGoals extends Table {
   TextColumn get type => text()();
   RealColumn get targetValue => real()();
   TextColumn get exerciseName => text().nullable()();
+  TextColumn get exerciseCatalogId => text().nullable()();
   TextColumn get createdAt => text()();
 
   @override
@@ -190,7 +191,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -223,6 +224,12 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(
           trainingPlans,
           trainingPlans.avoidedExerciseIds,
+        );
+      }
+      if (from >= 4 && from < 8) {
+        await migrator.addColumn(
+          personalGoals,
+          personalGoals.exerciseCatalogId,
         );
       }
     },

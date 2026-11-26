@@ -10,6 +10,7 @@ class WorkoutRecord {
     this.completedOutsideApp = false,
     this.setResults = const [],
     this.exerciseIds = const [],
+    this.exercisePositions = const [],
     this.planVersion = 1,
     this.planSnapshot = '',
   });
@@ -24,6 +25,7 @@ class WorkoutRecord {
   final bool completedOutsideApp;
   final List<WorkoutSetResult> setResults;
   final List<String?> exerciseIds;
+  final List<int> exercisePositions;
   final int planVersion;
   final String planSnapshot;
 
@@ -41,6 +43,7 @@ class WorkoutRecord {
     'completedOutsideApp': completedOutsideApp,
     'setResults': setResults.map((set) => set.toJson()).toList(),
     'exerciseIds': exerciseIds,
+    'exercisePositions': exercisePositions,
     'planVersion': planVersion,
     'planSnapshot': planSnapshot,
   };
@@ -63,6 +66,9 @@ class WorkoutRecord {
     exerciseIds: (json['exerciseIds'] as List<Object?>? ?? const [])
         .map((id) => id as String?)
         .toList(growable: false),
+    exercisePositions: (json['exercisePositions'] as List<Object?>? ?? const [])
+        .whereType<int>()
+        .toList(growable: false),
     planVersion: json['planVersion'] as int? ?? 1,
     planSnapshot: json['planSnapshot'] as String? ?? '',
   );
@@ -75,6 +81,8 @@ class WorkoutSetResult {
     this.repetitions,
     this.loadKg,
     this.durationSeconds,
+    this.exerciseCatalogId,
+    this.exerciseName,
   });
 
   final int exercisePosition;
@@ -82,6 +90,8 @@ class WorkoutSetResult {
   final int? repetitions;
   final double? loadKg;
   final int? durationSeconds;
+  final String? exerciseCatalogId;
+  final String? exerciseName;
 
   Map<String, Object?> toJson() => {
     'exercisePosition': exercisePosition,
@@ -89,6 +99,8 @@ class WorkoutSetResult {
     'repetitions': repetitions,
     'loadKg': loadKg,
     'durationSeconds': durationSeconds,
+    'exerciseCatalogId': exerciseCatalogId,
+    'exerciseName': exerciseName,
   };
 
   factory WorkoutSetResult.fromJson(Map<String, Object?> json) =>
@@ -98,5 +110,7 @@ class WorkoutSetResult {
         repetitions: json['repetitions'] as int?,
         loadKg: (json['loadKg'] as num?)?.toDouble(),
         durationSeconds: json['durationSeconds'] as int?,
+        exerciseCatalogId: json['exerciseCatalogId'] as String?,
+        exerciseName: json['exerciseName'] as String?,
       );
 }

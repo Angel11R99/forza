@@ -1671,6 +1671,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get progressExerciseName => 'Exercise name';
 
   @override
+  String get progressSelectExercise => 'Select exercise';
+
+  @override
+  String get progressSearchExercises => 'Search exercises';
+
+  @override
+  String get progressNoExercisesFound => 'No exercises found.';
+
+  @override
+  String get progressExerciseCatalogRetry => 'Retry loading catalog';
+
+  @override
+  String get progressExerciseCatalogLoading => 'Loading exercises…';
+
+  @override
+  String progressGoalExerciseNeedsResolution(String name) {
+    return 'The older goal “$name” needs you to choose the correct exercise so records are not combined.';
+  }
+
+  @override
   String get progressExerciseHint => 'e.g. Goblet squat';
 
   @override

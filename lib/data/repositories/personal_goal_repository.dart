@@ -22,6 +22,7 @@ class PersonalGoalRepository {
           ),
           targetValue: row.targetValue,
           exerciseName: row.exerciseName,
+          exerciseCatalogId: row.exerciseCatalogId,
           createdAt: DateTime.parse(row.createdAt),
         ),
       ),
@@ -37,6 +38,7 @@ class PersonalGoalRepository {
             type: goal.type.name,
             targetValue: goal.targetValue,
             exerciseName: Value(goal.exerciseName),
+            exerciseCatalogId: Value(goal.exerciseCatalogId),
             createdAt: goal.createdAt.toIso8601String(),
           ),
         );

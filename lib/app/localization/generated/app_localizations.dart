@@ -2918,6 +2918,42 @@ abstract class AppLocalizations {
   /// **'Exercise name'**
   String get progressExerciseName;
 
+  /// No description provided for @progressSelectExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Select exercise'**
+  String get progressSelectExercise;
+
+  /// No description provided for @progressSearchExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Search exercises'**
+  String get progressSearchExercises;
+
+  /// No description provided for @progressNoExercisesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises found.'**
+  String get progressNoExercisesFound;
+
+  /// No description provided for @progressExerciseCatalogRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry loading catalog'**
+  String get progressExerciseCatalogRetry;
+
+  /// No description provided for @progressExerciseCatalogLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading exercises…'**
+  String get progressExerciseCatalogLoading;
+
+  /// No description provided for @progressGoalExerciseNeedsResolution.
+  ///
+  /// In en, this message translates to:
+  /// **'The older goal “{name}” needs you to choose the correct exercise so records are not combined.'**
+  String progressGoalExerciseNeedsResolution(String name);
+
   /// No description provided for @progressExerciseHint.
   ///
   /// In en, this message translates to:
