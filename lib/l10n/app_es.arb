@@ -70,6 +70,7 @@
   "exerciseClearSearchAndFilters": "Limpiar búsqueda y filtros",
   "exerciseFiltersTitle": "Filtros",
   "exerciseClearFilters": "Limpiar",
+  "exerciseRemoveActiveFilters": "Limpiar filtros",
   "exerciseAdjustSearchTitle": "Ajusta tu búsqueda",
   "exerciseFiltersDescription": "Combina grupo muscular y equipo para encontrar movimientos adecuados.",
   "exerciseMuscleGroupFilter": "Grupo muscular",

@@ -168,6 +168,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exerciseClearFilters => 'Clear';
 
   @override
+  String get exerciseRemoveActiveFilters => 'Clear filters';
+
+  @override
   String get exerciseAdjustSearchTitle => 'Adjust your search';
 
   @override
