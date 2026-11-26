@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "351157789875",
+    "project_id": "forza-6cd98",
+    "storage_bucket": "forza-6cd98.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351157789875:android:83c9bb93818501ef0f7cc6",
+        "android_client_info": {
+          "package_name": "com.example.forza"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "351157789875-cih5vmng6dnb25ji9pm0dklj0nmsle4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.forza",
+            "certificate_hash": "50717c7b41f45f8ea2cb624fde1b51c65e4ebc67"
+          }
+        },
+        {
+          "client_id": "351157789875-tm217g66o27l7151gqes56g4fd45fuka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBf5BNawVWgwUY0o-eyAPp0gmUIAcLT6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "351157789875-tm217g66o27l7151gqes56g4fd45fuka.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "351157789875-l2dl2dc03oij0sc32t5tgna7hi50jnjt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.forza"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

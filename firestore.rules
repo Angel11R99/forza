@@ -1,0 +1,119 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Data model: users/{uid} is a private profile. Its sync/current document
+    // points to one versioned snapshot under snapshots/{snapshotId}/chunks.
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    function uidUnchanged(uid) {
+      return request.resource.data.uid == uid;
+    }
+
+    function uidNotModified() {
+      return request.resource.data.uid == resource.data.uid;
+    }
+
+    function isValidProfile(uid) {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+            'uid', 'email', 'displayName', 'photoURL', 'provider',
+            'createdAt', 'updatedAt'
+          ])
+          && data.keys().hasOnly([
+            'uid', 'email', 'displayName', 'photoURL', 'provider',
+            'createdAt', 'updatedAt'
+          ])
+          && data.uid == uid
+          && data.email is string
+          && data.email.size() <= 320
+          && (data.displayName == null ||
+              (data.displayName is string && data.displayName.size() <= 200))
+          && (data.photoURL == null ||
+              (data.photoURL is string && data.photoURL.size() <= 2048))
+          && data.provider == 'google.com'
+          && data.createdAt is timestamp
+          && data.updatedAt == request.time;
+    }
+
+    function isValidSyncManifest() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+            'format', 'version', 'chunkCount', 'snapshotId', 'writer',
+            'updatedAt'
+          ])
+          && data.keys().hasAll([
+            'format', 'version', 'chunkCount', 'snapshotId', 'writer',
+            'updatedAt'
+          ])
+          && data.format == 'FORZA_BACKUP'
+          && data.version == 1
+          && data.chunkCount is int
+          && data.chunkCount >= 1
+          && data.chunkCount <= 32
+          && data.snapshotId is string
+          && data.snapshotId.size() <= 64
+          && data.writer is string
+          && data.writer.size() <= 32
+          && data.updatedAt == request.time;
+    }
+
+    function isValidSyncChunk(snapshotId, chunkId) {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['snapshotId', 'index', 'content'])
+          && data.keys().hasAll(['snapshotId', 'index', 'content'])
+          && data.snapshotId == snapshotId
+          && snapshotId.size() <= 64
+          && chunkId.matches('^chunk_[0-9]{3}$')
+          && data.index is int
+          && data.index >= 0
+          && data.index < 32
+          && data.content is string
+          && data.content.size() <= 650000;
+    }
+
+    match /users/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+      allow create: if isOwner(uid)
+                    && uidUnchanged(uid)
+                    && isValidProfile(uid)
+                    && request.resource.data.createdAt == request.time;
+      allow update: if isOwner(uid)
+                    && isDocOwner()
+                    && uidNotModified()
+                    && isValidProfile(uid)
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                        .hasOnly(['email', 'displayName', 'photoURL', 'provider', 'updatedAt']);
+      allow delete: if isOwner(uid) && isDocOwner();
+
+      match /sync/current {
+        allow get: if isOwner(uid);
+        allow list, delete: if false;
+        allow create, update: if isOwner(uid) && isValidSyncManifest();
+
+        match /snapshots/{snapshotId}/chunks/{chunkId} {
+          allow get, list: if isOwner(uid);
+          allow create, update: if isOwner(uid) &&
+                                isValidSyncChunk(snapshotId, chunkId);
+          allow delete: if isOwner(uid);
+        }
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
