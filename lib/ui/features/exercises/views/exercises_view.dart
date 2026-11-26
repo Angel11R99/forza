@@ -142,10 +142,9 @@ class _ExercisesViewState extends State<ExercisesView> {
     );
     final contentWidth =
         MediaQuery.sizeOf(context).width - (horizontalPadding * 2);
-    final columns = (contentWidth / 112).floor().clamp(3, 5).toInt();
-    final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.3);
-    final cardHeight =
-        (contentWidth / columns * 1.58).clamp(176.0, 210.0) * textScale;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final useGrid = contentWidth >= 560 && textScale < 1.3;
+    final columns = (contentWidth / 280).floor().clamp(2, 4).toInt();
 
     return CustomScrollView(
       key: const PageStorageKey<String>('exercises-scroll'),
@@ -265,7 +264,7 @@ class _ExercisesViewState extends State<ExercisesView> {
               child: _EmptyResults(onClear: _clearSearchAndFilters),
             ),
           )
-        else
+        else if (useGrid)
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
               horizontalPadding,
@@ -276,7 +275,7 @@ class _ExercisesViewState extends State<ExercisesView> {
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columns,
-                mainAxisExtent: cardHeight,
+                mainAxisExtent: 136 * textScale.clamp(1, 1.25),
                 crossAxisSpacing: AppSpacing.x2,
                 mainAxisSpacing: AppSpacing.x2,
               ),
@@ -284,7 +283,28 @@ class _ExercisesViewState extends State<ExercisesView> {
                 (context, index) => ExerciseListCard(
                   exercise: results[index],
                   onTap: () => _openExercise(results[index]),
-                  compact: true,
+                  compact: false,
+                ),
+                childCount: results.length,
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              0,
+              horizontalPadding,
+              AppSpacing.x8,
+            ),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                  child: ExerciseListCard(
+                    exercise: results[index],
+                    onTap: () => _openExercise(results[index]),
+                  ),
                 ),
                 childCount: results.length,
               ),
