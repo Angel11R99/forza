@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/database/app_database.dart'
@@ -18,6 +20,38 @@ import 'support/shared_preferences_async_test_setup.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setupSharedPreferencesAsyncForTest();
+
+  test(
+    'a stale startup restore cannot reopen completed first-run setup',
+    () async {
+      final database = AppDatabase(NativeDatabase.memory());
+      final setupRead = Completer<bool>();
+      final setupReadStarted = Completer<void>();
+      final settings = _DelayedSetupTrainingSettingsRepository(
+        database: database,
+        setupRead: setupRead,
+        setupReadStarted: setupReadStarted,
+      );
+      final viewModel = AppShellViewModel(
+        database: database,
+        settingsRepository: settings,
+      );
+
+      try {
+        final restore = viewModel.restore();
+        await setupReadStarted.future;
+        await viewModel.completeFirstRun(null);
+        setupRead.complete(false);
+        await restore;
+
+        expect(await settings.setupComplete, isTrue);
+        expect(viewModel.needsFirstRunSetup, isFalse);
+      } finally {
+        viewModel.dispose();
+        await database.close();
+      }
+    },
+  );
 
   test(
     'reset clears user data and prevents legacy records from returning',
@@ -109,4 +143,23 @@ void main() {
       }
     },
   );
+}
+
+class _DelayedSetupTrainingSettingsRepository
+    extends TrainingSettingsRepository {
+  _DelayedSetupTrainingSettingsRepository({
+    required super.database,
+    required this.setupRead,
+    required this.setupReadStarted,
+  });
+
+  final Completer<bool> setupRead;
+  final Completer<void> setupReadStarted;
+
+  @override
+  Future<bool> get setupComplete {
+    if (setupRead.isCompleted) return super.setupComplete;
+    if (!setupReadStarted.isCompleted) setupReadStarted.complete();
+    return setupRead.future;
+  }
 }
