@@ -28,7 +28,9 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byKey(const Key('launch-reveal-circle')), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(find.byKey(const Key('launch-reveal-overlay')), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.byKey(const Key('launch-reveal-overlay')), findsNothing);
     expect(find.byKey(const Key('app-content')), findsOneWidget);
