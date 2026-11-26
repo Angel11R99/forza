@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:intl/intl.dart';
@@ -161,6 +162,11 @@ class _ActivityViewState extends State<ActivityView> {
   Future<void> _markSessionCompleted() async {
     final session = _sessionForDate(_selectedDate);
     if (session == null) return;
+    final confirmed = await _confirmAction(
+      context.l10n.activityConfirmExternalTitle,
+      context.l10n.activityConfirmExternalMessage,
+    );
+    if (!mounted || !confirmed) return;
     final scheduled = _scheduledForDate(_selectedDate);
     final planned = scheduled?.plannedSession;
     await widget.onWorkoutCompleted(
@@ -186,12 +192,37 @@ class _ActivityViewState extends State<ActivityView> {
   }
 
   Future<void> _skipSession() async {
+    final confirmed = await _confirmAction(
+      context.l10n.activityConfirmSkipTitle,
+      context.l10n.activityConfirmSkipMessage,
+    );
+    if (!mounted || !confirmed) return;
     final skipped = await widget.onSkipSession(_dateOnly(_selectedDate));
     if (!mounted || !skipped) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.activitySessionSkipped)),
     );
   }
+
+  Future<bool> _confirmAction(String title, String message) async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(context.l10n.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(context.l10n.activityConfirmAction),
+            ),
+          ],
+        ),
+      ) ??
+      false;
 
   Future<void> _undoSkipSession() async {
     final restored = await widget.onUndoSkipSession(_dateOnly(_selectedDate));
@@ -204,6 +235,9 @@ class _ActivityViewState extends State<ActivityView> {
   Widget build(BuildContext context) {
     final localeName = Localizations.localeOf(context).toLanguageTag();
     final session = _sessionForDate(_selectedDate);
+    final completedRecord = widget.records
+        .where((record) => _isSameDay(record.date, _selectedDate))
+        .firstOrNull;
     final horizontalPadding = AppSpacing.pageGutter(
       MediaQuery.sizeOf(context).width,
     );
@@ -383,6 +417,8 @@ class _ActivityViewState extends State<ActivityView> {
                   date: _selectedDate,
                   localeName: localeName,
                   session: session,
+                  completedRecord: completedRecord,
+                  plannedExercises: _plannedExercisesForDate(_selectedDate),
                   isCompleted: widget.records.any(
                     (record) => _isSameDay(record.date, _selectedDate),
                   ),
@@ -422,6 +458,18 @@ class _ActivityViewState extends State<ActivityView> {
         },
       );
     }
+    final record = widget.records
+        .where((item) => _isSameDay(item.date, normalizedDate))
+        .firstOrNull;
+    if (record != null) {
+      return _TrainingSession(
+        title: record.title,
+        detail: record.goal,
+        duration: '${record.durationMinutes} min',
+        exerciseCount: record.exerciseCount,
+        icon: Icons.check_circle_outline_rounded,
+      );
+    }
     if (widget.scheduledSessions.any(
       (item) =>
           item.originalDate != null &&
@@ -457,6 +505,39 @@ class _ActivityViewState extends State<ActivityView> {
         _ => Icons.bolt_rounded,
       },
     );
+  }
+
+  List<PlannedExercise> _plannedExercisesForDate(DateTime date) {
+    final record = widget.records
+        .where((item) => _isSameDay(item.date, date))
+        .firstOrNull;
+    if (record != null && record.planSnapshot.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(record.planSnapshot);
+        if (decoded is Map) {
+          return PlannedTrainingSession.fromJson(
+            Map<String, Object?>.from(decoded),
+          ).exercises;
+        }
+      } on Object {
+        // Fall back to the saved schedule or the current plan for legacy data.
+      }
+    }
+    final saved = _scheduledForDate(date)?.plannedSession;
+    if (saved != null) return saved.exercises;
+    return _planBuilder
+            .buildWeek(
+              trainingDays: widget.settings.trainingDays,
+              sessionMinutes: widget.settings.sessionMinutes,
+              goal: widget.settings.goal,
+              experience: widget.settings.experience,
+              equipment: widget.settings.equipment,
+              avoidedExerciseIds: widget.settings.avoidedExerciseIds,
+            )
+            .where((session) => session.weekday == date.weekday)
+            .firstOrNull
+            ?.exercises ??
+        const [];
   }
 
   _CalendarDayStatus? _calendarStatusForDate(DateTime date) {
@@ -635,6 +716,8 @@ class _DayDetailCard extends StatelessWidget {
     required this.date,
     required this.localeName,
     required this.session,
+    required this.completedRecord,
+    required this.plannedExercises,
     required this.isCompleted,
     required this.isInProgress,
     required this.isSkipped,
@@ -649,6 +732,8 @@ class _DayDetailCard extends StatelessWidget {
   final DateTime date;
   final String localeName;
   final _TrainingSession? session;
+  final WorkoutRecord? completedRecord;
+  final List<PlannedExercise> plannedExercises;
   final bool isCompleted;
   final bool isInProgress;
   final bool isSkipped;
@@ -748,6 +833,31 @@ class _DayDetailCard extends StatelessWidget {
               ),
             ],
           ),
+          if (plannedExercises.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Text(
+              context.l10n.activityPlannedRoutine,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: AppSpacing.x1),
+            for (final exercise in plannedExercises)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.fitness_center_rounded, size: 16),
+                    const SizedBox(width: AppSpacing.x2),
+                    Expanded(
+                      child: Text(
+                        '${exercise.name} · ${exercise.prescription}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
           if (isCompleted) ...[
             const SizedBox(height: AppSpacing.x4),
             Container(
@@ -765,6 +875,42 @@ class _DayDetailCard extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+          if (isCompleted && completedRecord != null) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Text(
+              context.l10n.activityActualRecord,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: AppSpacing.x1),
+            Text(
+              '${completedRecord!.durationMinutes} min · ${context.l10n.activityExerciseCount(completedRecord!.exerciseCount)}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            for (final exercise in completedRecord!.exercises)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
+                child: Text(
+                  exercise,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            if (completedRecord!.completedOutsideApp ||
+                completedRecord!.setResults.isEmpty) ...[
+              const SizedBox(height: AppSpacing.x1),
+              Text(
+                context.l10n.activityOutsideAppDataNote,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ] else ...[
+              const SizedBox(height: AppSpacing.x1),
+              Text(
+                context.l10n.activitySetCount(
+                  completedRecord!.setResults.length,
+                ),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
           ],
           if (isInProgress) ...[
             const SizedBox(height: AppSpacing.x4),
@@ -810,7 +956,7 @@ class _DayDetailCard extends StatelessWidget {
                 label: Text(context.l10n.activityUndoSkip),
               ),
             ),
-          ] else ...[
+          ] else if (!isCompleted) ...[
             const SizedBox(height: AppSpacing.x3),
             SizedBox(
               width: double.infinity,
@@ -821,8 +967,6 @@ class _DayDetailCard extends StatelessWidget {
                   canComplete
                       ? isInProgress
                             ? context.l10n.activityContinueWorkout
-                            : isCompleted
-                            ? context.l10n.activityRepeatWorkout
                             : context.l10n.activityStartSession
                       : context.l10n.activityScheduledSession,
                 ),
@@ -830,33 +974,41 @@ class _DayDetailCard extends StatelessWidget {
             ),
           ],
           if (!isCompleted && !isInProgress && !isSkipped) ...[
-            if (canComplete) ...[
-              const SizedBox(height: AppSpacing.x2),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: onMarkCompleted,
-                  icon: const Icon(Icons.check_rounded, size: 18),
-                  label: Text(context.l10n.activityCompletedOutside),
+            const SizedBox(height: AppSpacing.x2),
+            Align(
+              alignment: Alignment.centerRight,
+              child: PopupMenuButton<_SessionAction>(
+                tooltip: context.l10n.activityMoreActions,
+                onSelected: (action) {
+                  switch (action) {
+                    case _SessionAction.completeOutside:
+                      onMarkCompleted();
+                    case _SessionAction.skip:
+                      onSkip();
+                    case _SessionAction.reschedule:
+                      onReschedule();
+                  }
+                },
+                itemBuilder: (context) => [
+                  if (canComplete)
+                    PopupMenuItem(
+                      value: _SessionAction.completeOutside,
+                      child: Text(context.l10n.activityCompletedOutside),
+                    ),
+                  PopupMenuItem(
+                    value: _SessionAction.skip,
+                    child: Text(context.l10n.activitySkipSession),
+                  ),
+                  PopupMenuItem(
+                    value: _SessionAction.reschedule,
+                    child: Text(context.l10n.activityChangeDay),
+                  ),
+                ],
+                child: TextButton.icon(
+                  onPressed: null,
+                  icon: const Icon(Icons.more_horiz_rounded, size: 18),
+                  label: Text(context.l10n.activityMoreActions),
                 ),
-              ),
-            ],
-            const SizedBox(height: AppSpacing.x2),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton.icon(
-                onPressed: onSkip,
-                icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
-                label: Text(context.l10n.activitySkipSession),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.x2),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton.icon(
-                onPressed: onReschedule,
-                icon: const Icon(Icons.event_repeat_rounded, size: 18),
-                label: Text(context.l10n.activityChangeDay),
               ),
             ),
           ],
@@ -915,6 +1067,8 @@ class _TrainingSession {
   final int exerciseCount;
   final IconData icon;
 }
+
+enum _SessionAction { completeOutside, skip, reschedule }
 
 String _formatDate(DateTime date, String localeName) =>
     DateFormat('EEEE, d MMMM', localeName).format(date);
