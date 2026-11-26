@@ -11,6 +11,7 @@ import '../../../core/widgets/forza_brand.dart';
 import '../../profile/models/profile_settings.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/workout_record.dart';
+import '../../../../domain/use_cases/training_progression_advisor.dart';
 import '../../../../data/repositories/workout_log_repository.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
@@ -42,10 +43,12 @@ class TrainingSessionFlow extends StatefulWidget {
 
 class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   static const _planBuilder = TrainingPlanBuilder();
+  static const _progressionAdvisor = TrainingProgressionAdvisor();
   WorkoutLogRepository get _workoutRepository => widget.workoutLogRepository;
   final Map<int, List<WorkoutSetResult>> _setResults = {};
   final Set<String> _completedSets = {};
   List<Exercise> _catalog = const [];
+  List<WorkoutRecord> _workoutHistory = const [];
   bool _restoring = true;
 
   PlannedTrainingSession get _plannedSession =>
@@ -102,6 +105,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     try {
       await DemoExerciseRepository.instance.load();
       _catalog = DemoExerciseRepository.instance.search();
+      _workoutHistory = await _workoutRepository.load();
       final raw = await _workoutRepository.loadActiveWorkout();
       if (raw != null) {
         final draft = jsonDecode(raw) as Map<String, Object?>;
@@ -515,6 +519,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
+        const SizedBox(height: AppSpacing.x3),
+        _buildProgressionGuidance(context),
         const SizedBox(height: AppSpacing.x6),
         for (var index = 0; index < _exercises.length; index++) ...[
           _ExerciseSessionCard(
@@ -610,6 +616,68 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         const SizedBox(height: AppSpacing.x2),
         const _SessionSaveNote(),
       ],
+    );
+  }
+
+  Widget _buildProgressionGuidance(BuildContext context) {
+    final exercise = _plannedSession.exercises[_currentExercise];
+    final advice = _progressionAdvisor.evaluate(
+      exercise: exercise,
+      goal: widget.settings.goal,
+      experience: widget.settings.experience,
+      history: _workoutHistory,
+    );
+    final message = switch (advice.status) {
+      TrainingProgressionStatus.noHistory =>
+        context.l10n.sessionProgressionNoHistory,
+      TrainingProgressionStatus.keepBuilding =>
+        context.l10n.sessionProgressionKeepBuilding(
+          advice.requiredSessions,
+          advice.targetValue,
+        ),
+      TrainingProgressionStatus.readyToIncrease =>
+        context.l10n.sessionProgressionReadyToIncrease(
+          advice.targetValue,
+          advice.requiredSessions,
+        ),
+      TrainingProgressionStatus.readyToVary =>
+        context.l10n.sessionProgressionBodyweightReady(
+          advice.targetValue,
+          advice.requiredSessions,
+        ),
+      TrainingProgressionStatus.habitFocus =>
+        context.l10n.sessionProgressionHabitFocus,
+      TrainingProgressionStatus.returningAfterBreak =>
+        context.l10n.sessionProgressionReturningAfterBreak,
+      TrainingProgressionStatus.timedKeepBuilding =>
+        context.l10n.sessionProgressionTimedKeepBuilding(
+          advice.requiredSessions,
+          advice.targetValue,
+        ),
+      TrainingProgressionStatus.timedReadyToVary =>
+        context.l10n.sessionProgressionTimedReadyToVary(
+          advice.requiredSessions,
+          advice.targetValue,
+        ),
+    };
+
+    return AppSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.sessionProgressionTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(message, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: AppSpacing.x1),
+          Text(
+            context.l10n.sessionProgressionTemplateNote,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
     );
   }
 

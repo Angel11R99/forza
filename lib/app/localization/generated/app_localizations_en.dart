@@ -1265,6 +1265,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingRecoverySource => 'ACSM resistance training guidance';
 
   @override
+  String get onboardingProgressionTemplateNote =>
+      'This plan is an initial template. Suggestions use your logged sets and never change the plan automatically; you decide whether to apply them.';
+
+  @override
+  String get sessionProgressionTitle => 'Progression suggestion';
+
+  @override
+  String get sessionProgressionNoHistory =>
+      'There are not enough records for this exercise yet. Complete your sets and log reps and load if you used weight.';
+
+  @override
+  String sessionProgressionKeepBuilding(int sessions, int repetitions) {
+    return 'Keep the same load and focus on technique; do not increase yet. Before suggesting more load, we require $sessions consecutive workouts with at least $repetitions reps in every set.';
+  }
+
+  @override
+  String sessionProgressionReadyToIncrease(int repetitions, int sessions) {
+    return 'You reached $repetitions reps in every set for $sessions consecutive workouts. If it felt comfortable, pain-free, and controlled, try the smallest available load increase and return to the lower end of the rep range.';
+  }
+
+  @override
+  String sessionProgressionBodyweightReady(int repetitions, int sessions) {
+    return 'You completed $repetitions reps in every set for $sessions consecutive workouts. If your technique stayed steady, you can try a slightly harder bodyweight variation.';
+  }
+
+  @override
+  String get sessionProgressionHabitFocus =>
+      'For a habit-building goal, prioritize consistency and technique. You do not need to increase load automatically.';
+
+  @override
+  String get sessionProgressionReturningAfterBreak =>
+      'It has been over a month since you logged this exercise. Resume with a comfortable load and complete new sessions before considering an increase.';
+
+  @override
+  String sessionProgressionTimedKeepBuilding(int sessions, int seconds) {
+    return 'Log the seconds and keep the movement controlled. Before suggesting a harder variation, we require $sessions consecutive workouts with $seconds seconds in every set.';
+  }
+
+  @override
+  String sessionProgressionTimedReadyToVary(int sessions, int seconds) {
+    return 'You completed $seconds seconds in every set for $sessions consecutive workouts. If you stayed in control, you can try a slightly harder variation; do not add weight.';
+  }
+
+  @override
+  String get sessionProgressionTemplateNote =>
+      'Suggestions are based on your logs. The plan is a template and does not change automatically; you decide whether to apply them.';
+
+  @override
   String get onboardingSessionTime => 'Time budget per session';
 
   @override

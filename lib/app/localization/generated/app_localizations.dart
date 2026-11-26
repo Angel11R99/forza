@@ -2228,6 +2228,72 @@ abstract class AppLocalizations {
   /// **'ACSM resistance training guidance'**
   String get onboardingRecoverySource;
 
+  /// No description provided for @onboardingProgressionTemplateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This plan is an initial template. Suggestions use your logged sets and never change the plan automatically; you decide whether to apply them.'**
+  String get onboardingProgressionTemplateNote;
+
+  /// No description provided for @sessionProgressionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Progression suggestion'**
+  String get sessionProgressionTitle;
+
+  /// No description provided for @sessionProgressionNoHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'There are not enough records for this exercise yet. Complete your sets and log reps and load if you used weight.'**
+  String get sessionProgressionNoHistory;
+
+  /// No description provided for @sessionProgressionKeepBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the same load and focus on technique; do not increase yet. Before suggesting more load, we require {sessions} consecutive workouts with at least {repetitions} reps in every set.'**
+  String sessionProgressionKeepBuilding(int sessions, int repetitions);
+
+  /// No description provided for @sessionProgressionReadyToIncrease.
+  ///
+  /// In en, this message translates to:
+  /// **'You reached {repetitions} reps in every set for {sessions} consecutive workouts. If it felt comfortable, pain-free, and controlled, try the smallest available load increase and return to the lower end of the rep range.'**
+  String sessionProgressionReadyToIncrease(int repetitions, int sessions);
+
+  /// No description provided for @sessionProgressionBodyweightReady.
+  ///
+  /// In en, this message translates to:
+  /// **'You completed {repetitions} reps in every set for {sessions} consecutive workouts. If your technique stayed steady, you can try a slightly harder bodyweight variation.'**
+  String sessionProgressionBodyweightReady(int repetitions, int sessions);
+
+  /// No description provided for @sessionProgressionHabitFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'For a habit-building goal, prioritize consistency and technique. You do not need to increase load automatically.'**
+  String get sessionProgressionHabitFocus;
+
+  /// No description provided for @sessionProgressionReturningAfterBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'It has been over a month since you logged this exercise. Resume with a comfortable load and complete new sessions before considering an increase.'**
+  String get sessionProgressionReturningAfterBreak;
+
+  /// No description provided for @sessionProgressionTimedKeepBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Log the seconds and keep the movement controlled. Before suggesting a harder variation, we require {sessions} consecutive workouts with {seconds} seconds in every set.'**
+  String sessionProgressionTimedKeepBuilding(int sessions, int seconds);
+
+  /// No description provided for @sessionProgressionTimedReadyToVary.
+  ///
+  /// In en, this message translates to:
+  /// **'You completed {seconds} seconds in every set for {sessions} consecutive workouts. If you stayed in control, you can try a slightly harder variation; do not add weight.'**
+  String sessionProgressionTimedReadyToVary(int sessions, int seconds);
+
+  /// No description provided for @sessionProgressionTemplateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions are based on your logs. The plan is a template and does not change automatically; you decide whether to apply them.'**
+  String get sessionProgressionTemplateNote;
+
   /// No description provided for @onboardingSessionTime.
   ///
   /// In en, this message translates to:
