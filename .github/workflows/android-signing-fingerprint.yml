@@ -1,0 +1,28 @@
+name: Show Android signing fingerprint
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fingerprint:
+    if: github.ref == 'refs/heads/main' && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Validate signing secrets and print the certificate SHA-1
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        shell: bash
+        run: |
+          set +x
+          [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" ]] || { echo 'Android signing secrets are incomplete.' >&2; exit 1; }
+          KEYSTORE_PATH="$RUNNER_TEMP/forza-release.jks"
+          trap 'rm -f "$KEYSTORE_PATH"' EXIT
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          echo 'Release signing certificate SHA-1 (safe to register in Firebase):'
+          keytool -list -v -keystore "$KEYSTORE_PATH" -alias "$KEY_ALIAS" -storepass "$KEYSTORE_PASSWORD" | sed -n '/SHA1:/p'
