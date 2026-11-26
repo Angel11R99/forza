@@ -1,40 +1,50 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../domain/models/account_identity.dart';
 import '../../domain/repositories/account_auth_repository.dart';
+import '../../firebase_options.dart';
 
 class GoogleAccountAuthRepository implements AccountAuthRepository {
-  GoogleAccountAuthRepository({GoogleSignIn? googleSignIn})
-    : _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+  GoogleAccountAuthRepository({
+    this.firebaseAuth,
+    this.firestore,
+    GoogleSignIn? googleSignIn,
+  }) : _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
 
-  static const _iosClientId = String.fromEnvironment(
-    'FORZA_GOOGLE_IOS_CLIENT_ID',
-  );
   static const _androidServerClientId = String.fromEnvironment(
     'FORZA_GOOGLE_ANDROID_SERVER_CLIENT_ID',
   );
 
+  final FirebaseAuth? firebaseAuth;
+  final FirebaseFirestore? firestore;
+  FirebaseAuth get _auth => firebaseAuth ?? FirebaseAuth.instance;
+  FirebaseFirestore get _database => firestore ?? FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn;
-  final StreamController<AccountIdentity?> _accountChanges =
-      StreamController<AccountIdentity?>.broadcast();
   Future<void>? _initialization;
-  StreamSubscription<GoogleSignInAuthenticationEvent>? _eventSubscription;
+  StreamSubscription<User?>? _authSubscription;
   AccountIdentity? _currentAccount;
 
   @override
   AccountIdentity? get currentAccount => _currentAccount;
 
   @override
-  Stream<AccountIdentity?> get accountChanges => _accountChanges.stream;
+  Stream<AccountIdentity?> get accountChanges async* {
+    yield _currentAccount;
+    if (Firebase.apps.isNotEmpty || firebaseAuth != null) {
+      yield* _auth.authStateChanges().map(_toIdentity);
+    }
+  }
 
   @override
   Future<void> initialize() async {
     final existing = _initialization;
     if (existing != null) return existing;
-
     final initialization = _initializeGoogleSignIn();
     _initialization = initialization;
     try {
@@ -46,54 +56,68 @@ class GoogleAccountAuthRepository implements AccountAuthRepository {
   }
 
   Future<void> _initializeGoogleSignIn() async {
-    await _googleSignIn.initialize(
-      clientId: defaultTargetPlatform == TargetPlatform.iOS
-          ? _configuredValue(_iosClientId)
-          : null,
-      serverClientId: defaultTargetPlatform == TargetPlatform.android
-          ? _configuredValue(_androidServerClientId)
-          : null,
-    );
-    await _eventSubscription?.cancel();
-    _eventSubscription = _googleSignIn.authenticationEvents.listen(
-      (event) => switch (event) {
-        GoogleSignInAuthenticationEventSignIn(:final user) => _publish(
-          _toIdentity(user),
-        ),
-        GoogleSignInAuthenticationEventSignOut() => _publish(null),
-      },
-    );
+    if (!kIsWeb) {
+      await _googleSignIn.initialize(
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? DefaultFirebaseOptions.ios.iosClientId
+            : defaultTargetPlatform == TargetPlatform.macOS
+            ? DefaultFirebaseOptions.macos.iosClientId
+            : null,
+        serverClientId: defaultTargetPlatform == TargetPlatform.android
+            ? _configuredValue(_androidServerClientId)
+            : null,
+      );
+    }
+    await _authSubscription?.cancel();
+    _authSubscription = _auth.authStateChanges().listen((user) {
+      _currentAccount = _toIdentity(user);
+    });
+    _currentAccount = _toIdentity(_auth.currentUser);
   }
 
   @override
   Future<AccountIdentity?> restore() async {
     await initialize();
-    try {
-      final pending = _googleSignIn.attemptLightweightAuthentication();
-      if (pending == null) return _currentAccount;
-      final user = await pending;
-      if (user == null) return _currentAccount;
-      final identity = _toIdentity(user);
-      _publish(identity);
-      return identity;
-    } on Object catch (error) {
-      throw _mapFailure(error);
-    }
+    return _toIdentity(_auth.currentUser);
   }
 
   @override
   Future<AccountIdentity?> signInWithGoogle() async {
     await initialize();
-    if (!_googleSignIn.supportsAuthenticate()) {
+    if (!kIsWeb && !_googleSignIn.supportsAuthenticate()) {
       throw const AccountAuthException(AccountAuthFailure.unavailable);
     }
     try {
-      final user = await _googleSignIn.authenticate();
-      final identity = _toIdentity(user);
-      _publish(identity);
-      return identity;
+      final UserCredential result;
+      if (kIsWeb) {
+        result = await _auth.signInWithPopup(GoogleAuthProvider());
+      } else {
+        final googleUser = await _googleSignIn.authenticate();
+        final googleAuth = googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+        );
+        result = await _auth.signInWithCredential(credential);
+      }
+      final user = result.user;
+      if (user == null) return null;
+      final userDocument = _database.collection('users').doc(user.uid);
+      final existingUser = await userDocument.get();
+      await userDocument.set({
+        'uid': user.uid,
+        'email': user.email,
+        'displayName': user.displayName,
+        'photoURL': user.photoURL,
+        'provider': 'google.com',
+        'updatedAt': FieldValue.serverTimestamp(),
+        if (!existingUser.exists) 'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      _currentAccount = _toIdentity(user);
+      return _currentAccount;
     } on GoogleSignInException catch (error) {
       if (error.code == GoogleSignInExceptionCode.canceled) return null;
+      throw _mapFailure(error);
+    } on FirebaseAuthException catch (error) {
       throw _mapFailure(error);
     } on Object catch (error) {
       throw _mapFailure(error);
@@ -104,24 +128,22 @@ class GoogleAccountAuthRepository implements AccountAuthRepository {
   Future<void> signOut() async {
     await initialize();
     try {
-      await _googleSignIn.signOut();
-      _publish(null);
+      await _auth.signOut();
+      if (!kIsWeb) await _googleSignIn.signOut();
+      _currentAccount = null;
     } on Object catch (error) {
       throw _mapFailure(error);
     }
   }
 
-  AccountIdentity _toIdentity(GoogleSignInAccount user) => AccountIdentity(
-    providerUserId: user.id,
-    email: user.email,
-    displayName: user.displayName,
-    photoUrl: user.photoUrl,
-  );
-
-  void _publish(AccountIdentity? identity) {
-    _currentAccount = identity;
-    if (!_accountChanges.isClosed) _accountChanges.add(identity);
-  }
+  AccountIdentity? _toIdentity(User? user) => user == null
+      ? null
+      : AccountIdentity(
+          providerUserId: user.uid,
+          email: user.email ?? '',
+          displayName: user.displayName,
+          photoUrl: user.photoURL,
+        );
 
   AccountAuthException _mapFailure(Object error) {
     if (error is AccountAuthException) return error;
@@ -131,6 +153,14 @@ class GoogleAccountAuthRepository implements AccountAuthRepository {
           error.code == GoogleSignInExceptionCode.providerConfigurationError;
       return AccountAuthException(
         configurationError
+            ? AccountAuthFailure.configuration
+            : AccountAuthFailure.unavailable,
+      );
+    }
+    if (error is FirebaseAuthException) {
+      return AccountAuthException(
+        error.code == 'invalid-credential' ||
+                error.code == 'operation-not-allowed'
             ? AccountAuthFailure.configuration
             : AccountAuthFailure.unavailable,
       );
