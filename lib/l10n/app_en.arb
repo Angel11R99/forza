@@ -628,6 +628,7 @@
   "progressTitle": "Your progress",
   "progressSubtitle": "Your consistency, in perspective.",
   "progressLast30Days": "Last 30 days",
+  "progressNoHistoryInPeriod": "No workouts in this period.",
   "progressLastWorkout": "Last workout · {date}",
   "progressGoToActivity": "Go to Activity",
   "progressNoSetData": "No sets logged",

@@ -44,21 +44,29 @@ class ProgressView extends StatefulWidget {
 }
 
 class _ProgressViewState extends State<ProgressView> {
+  _HistoryPeriod _historyPeriod = _HistoryPeriod.last30Days;
+
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
     final cutoff = DateTime(today.year, today.month, today.day - 29);
-    final sessions =
+    final recentSessions =
         widget.records
             .where((record) => !record.date.isBefore(cutoff))
             .map(WorkoutHistoryEntry.fromRecord)
             .toList(growable: false)
           ..sort((first, second) => second.date.compareTo(first.date));
-    final totalMinutes = sessions.fold<int>(
+    final historySessions =
+        widget.records
+            .map(WorkoutHistoryEntry.fromRecord)
+            .where((session) => _historyPeriod.includes(session.date, today))
+            .toList(growable: false)
+          ..sort((first, second) => second.date.compareTo(first.date));
+    final totalMinutes = recentSessions.fold<int>(
       0,
       (total, session) => total + session.durationMinutes,
     );
-    final loggedSetCount = sessions.fold<int>(
+    final loggedSetCount = recentSessions.fold<int>(
       0,
       (total, session) => total + session.loggedSets.length,
     );
@@ -107,7 +115,7 @@ class _ProgressViewState extends State<ProgressView> {
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   padding: const EdgeInsets.all(AppSpacing.x6),
-                  child: sessions.isEmpty
+                  child: recentSessions.isEmpty
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -140,7 +148,7 @@ class _ProgressViewState extends State<ProgressView> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  '${sessions.length}',
+                                  '${recentSessions.length}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .displaySmall
@@ -166,7 +174,7 @@ class _ProgressViewState extends State<ProgressView> {
                             Text(
                               context.l10n.progressLastWorkout(
                                 _formatShortDate(
-                                  sessions.first.date,
+                                  recentSessions.first.date,
                                   Localizations.localeOf(context)
                                       .toLanguageTag(),
                                 ),
@@ -187,7 +195,7 @@ class _ProgressViewState extends State<ProgressView> {
                                 _SummaryValue(
                                   icon: Icons.fitness_center_rounded,
                                   label: context.l10n.progressExerciseCount(
-                                    sessions.fold<int>(
+                                    recentSessions.fold<int>(
                                       0,
                                       (sum, entry) => sum + entry.exerciseCount,
                                     ),
@@ -204,7 +212,7 @@ class _ProgressViewState extends State<ProgressView> {
                                       ? context.l10n.progressNoSetData
                                       : context.l10n.progressSetsAndReps(
                                           loggedSetCount,
-                                          sessions.fold<int>(
+                                          recentSessions.fold<int>(
                                             0,
                                             (sum, entry) =>
                                                 sum + entry.totalRepetitions,
@@ -216,7 +224,7 @@ class _ProgressViewState extends State<ProgressView> {
                                   icon: Icons.scale_outlined,
                                   label: _volumeLabel(
                                     context,
-                                    sessions.fold<double>(
+                                    recentSessions.fold<double>(
                                       0,
                                       (sum, entry) => sum + entry.totalVolumeKg,
                                     ),
@@ -330,9 +338,47 @@ class _ProgressViewState extends State<ProgressView> {
                         ),
                   onTap: _openPersonalRecords,
                 ),
-                const SizedBox(height: AppSpacing.x8),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            0,
+            horizontalPadding,
+            AppSpacing.x8,
+          ),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 SectionHeading(title: context.l10n.progressHistory),
-                if (sessions.isEmpty)
+                const SizedBox(height: AppSpacing.x2),
+                Wrap(
+                  spacing: AppSpacing.x2,
+                  runSpacing: AppSpacing.x2,
+                  children: [
+                    _historyPeriodChip(
+                      _HistoryPeriod.last30Days,
+                      context.l10n.progressPeriod30Days,
+                    ),
+                    _historyPeriodChip(
+                      _HistoryPeriod.last90Days,
+                      context.l10n.progressPeriod90Days,
+                    ),
+                    _historyPeriodChip(
+                      _HistoryPeriod.lastYear,
+                      context.l10n.progressPeriodYear,
+                    ),
+                    _historyPeriodChip(
+                      _HistoryPeriod.all,
+                      context.l10n.progressPeriodAll,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                if (historySessions.isEmpty)
                   AppSurfaceCard(
                     child: Row(
                       children: [
@@ -340,29 +386,49 @@ class _ProgressViewState extends State<ProgressView> {
                         const SizedBox(width: AppSpacing.x3),
                         Expanded(
                           child: Text(
-                            context.l10n.progressNoHistory,
+                            widget.records.isEmpty
+                                ? context.l10n.progressNoHistory
+                                : context.l10n.progressNoHistoryInPeriod,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                       ],
                     ),
-                  )
-                else
-                  for (final session in sessions)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                      child: _SessionHistoryCard(
-                        session: session,
-                        onTap: () => _openSession(context, session),
-                      ),
-                    ),
+                  ),
               ],
             ),
           ),
         ),
+        if (historySessions.isNotEmpty)
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              0,
+              horizontalPadding,
+              AppSpacing.x8,
+            ),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final session = historySessions[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+                  child: _SessionHistoryCard(
+                    session: session,
+                    onTap: () => _openSession(context, session),
+                  ),
+                );
+              }, childCount: historySessions.length),
+            ),
+          ),
       ],
     );
   }
+
+  Widget _historyPeriodChip(_HistoryPeriod period, String label) => ChoiceChip(
+    label: Text(label),
+    selected: _historyPeriod == period,
+    onSelected: (_) => setState(() => _historyPeriod = period),
+  );
 
   void _openSession(BuildContext context, WorkoutHistoryEntry session) {
     Navigator.of(context).push<void>(
@@ -429,6 +495,24 @@ class _ProgressViewState extends State<ProgressView> {
       ),
     );
     if (shouldDelete == true) await widget.onDeleteGoal(goal.id);
+  }
+}
+
+enum _HistoryPeriod {
+  last30Days(29),
+  last90Days(89),
+  lastYear(364),
+  all(null);
+
+  const _HistoryPeriod(this.daysBack);
+
+  final int? daysBack;
+
+  bool includes(DateTime date, DateTime today) {
+    final days = daysBack;
+    if (days == null) return true;
+    final cutoff = DateTime(today.year, today.month, today.day - days);
+    return !date.isBefore(cutoff);
   }
 }
 

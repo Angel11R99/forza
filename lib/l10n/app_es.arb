@@ -628,6 +628,7 @@
   "progressTitle": "Tu progreso",
   "progressSubtitle": "Tu constancia, en perspectiva.",
   "progressLast30Days": "Últimos 30 días",
+  "progressNoHistoryInPeriod": "No hay entrenamientos en este período.",
   "progressLastWorkout": "Último entrenamiento · {date}",
   "progressGoToActivity": "Ir a Actividad",
   "progressNoSetData": "Sin series registradas",

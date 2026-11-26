@@ -3224,6 +3224,12 @@ abstract class AppLocalizations {
   /// **'Last 30 days'**
   String get progressLast30Days;
 
+  /// No description provided for @progressNoHistoryInPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No workouts in this period.'**
+  String get progressNoHistoryInPeriod;
+
   /// No description provided for @progressLastWorkout.
   ///
   /// In en, this message translates to:

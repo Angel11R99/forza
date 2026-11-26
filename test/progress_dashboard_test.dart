@@ -75,6 +75,46 @@ void main() {
     expect(find.textContaining('Último entrenamiento'), findsOneWidget);
   });
 
+  testWidgets('history periods reveal older workouts and keep the list lazy', (
+    tester,
+  ) async {
+    final today = DateTime.now();
+    final records = List.generate(
+      120,
+      (index) => WorkoutRecord(
+        scheduledDate: today.subtract(Duration(days: 400 + index)),
+        completedAt: today.subtract(Duration(days: 400 + index)),
+        title: 'Sesión antigua $index',
+        goal: 'Fuerza',
+        durationMinutes: 30,
+        exerciseCount: 2,
+      ),
+    );
+
+    await tester.pumpWidget(_app(records: records));
+
+    final historyHeading = find.text('Historial de entrenamientos');
+    await tester.dragUntilVisible(
+      historyHeading,
+      find.byType(Scrollable).first,
+      const Offset(0, -500),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('No hay entrenamientos en este período.'), findsOneWidget);
+    final allTimeChip = find.widgetWithText(ChoiceChip, 'Todo');
+    await tester.ensureVisible(allTimeChip);
+    await tester.tap(allTimeChip);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sesión antigua 0'), findsWidgets);
+    expect(find.text('Sesión antigua 119'), findsNothing);
+
+    final last30DaysChip = find.widgetWithText(ChoiceChip, '30 días');
+    await tester.tap(last30DaysChip);
+    await tester.pumpAndSettle();
+    expect(find.text('No hay entrenamientos en este período.'), findsOneWidget);
+  });
+
   testWidgets(
     'measurements show a real change and overview cards open details',
     (tester) async {
