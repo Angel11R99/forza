@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
@@ -263,6 +264,8 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ),
         ),
+        const SizedBox(height: AppSpacing.x3),
+        _buildRecoveryGuidance(context),
         const SizedBox(height: AppSpacing.x4),
         for (final session in sessions) ...[
           SizedBox(
@@ -520,6 +523,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 children: [
                   for (final entry in _weekdays.entries)
                     FilterChip(
+                      key: ValueKey('training-day-${entry.key}'),
                       label: Text(
                         DateFormat.E(
                           Localizations.localeOf(context).toLanguageTag(),
@@ -536,6 +540,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                     ),
                 ],
               ),
+              const Divider(height: AppSpacing.x8),
+              _buildRecoveryGuidance(context),
               const Divider(height: AppSpacing.x8),
               Text(
                 context.l10n.onboardingSessionTime,
@@ -560,6 +566,60 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
       ],
     );
+  }
+
+  Widget _buildRecoveryGuidance(BuildContext context) {
+    final guidance = switch (_trainingDays.length) {
+      1 => context.l10n.onboardingRecoveryOnce,
+      2 || 3 => context.l10n.onboardingRecoveryTwoToThree,
+      4 => context.l10n.onboardingRecoveryFour,
+      5 || 6 => context.l10n.onboardingRecoveryFiveToSix,
+      _ => context.l10n.onboardingRecoverySeven,
+    };
+
+    return AppSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.onboardingRecoveryTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(guidance, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: AppSpacing.x1),
+          TextButton.icon(
+            onPressed: _openRecoverySource,
+            icon: const Icon(Icons.open_in_new),
+            label: Text(context.l10n.onboardingRecoverySource),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              minimumSize: const Size(48, 48),
+              tapTargetSize: MaterialTapTargetSize.padded,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openRecoverySource() async {
+    final uri = Uri.parse('https://pmc.ncbi.nlm.nih.gov/articles/PMC12965823/');
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.exerciseSourceOpenFailure)),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.exerciseSourceOpenFailure)),
+        );
+      }
+    }
   }
 
   void _next() => setState(() => _step++);

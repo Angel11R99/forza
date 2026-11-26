@@ -1239,6 +1239,32 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get onboardingRecoveryTitle => 'Training frequency and recovery';
+
+  @override
+  String get onboardingRecoveryOnce =>
+      'One session is a good start. To improve strength, ACSM recommends training the major muscle groups at least twice a week for healthy adults. You can increase frequency when it feels sustainable.';
+
+  @override
+  String get onboardingRecoveryTwoToThree =>
+      'The plan schedules full-body sessions. When possible, leave a day between them to spread the effort and recover.';
+
+  @override
+  String get onboardingRecoveryFour =>
+      'The plan alternates upper and lower body. Space sessions to give each muscle group time to recover.';
+
+  @override
+  String get onboardingRecoveryFiveToSix =>
+      'The plan alternates upper and lower body. This is a high frequency: schedule breaks based on your recovery and move days if needed.';
+
+  @override
+  String get onboardingRecoverySeven =>
+      'You can select all seven days, but that leaves no full day without strength training. We recommend reserving at least one day for rest or light activity; you can change your schedule anytime.';
+
+  @override
+  String get onboardingRecoverySource => 'ACSM resistance training guidance';
+
+  @override
   String get onboardingSessionTime => 'Time per session';
 
   @override
