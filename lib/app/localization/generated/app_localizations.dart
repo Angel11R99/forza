@@ -3689,6 +3689,60 @@ abstract class AppLocalizations {
   /// **'Take a moment to prepare your space and review today\'s workout.'**
   String get sessionPreparationDescription;
 
+  /// No description provided for @sessionDraftReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review saved workout'**
+  String get sessionDraftReviewTitle;
+
+  /// No description provided for @sessionDraftReviewDateMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'There is a saved workout from {date}. You can resume it with its original routine or discard it to start the selected session.'**
+  String sessionDraftReviewDateMismatch(String date);
+
+  /// No description provided for @sessionDraftReviewLegacy.
+  ///
+  /// In en, this message translates to:
+  /// **'This draft is from an older version and did not save the exact routine. You can continue using the current routine; your partial logs will be kept. You can also discard it.'**
+  String get sessionDraftReviewLegacy;
+
+  /// No description provided for @sessionDraftReviewCorrupt.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved draft cannot be read. It will be kept until you choose to discard it and start a new session.'**
+  String get sessionDraftReviewCorrupt;
+
+  /// No description provided for @sessionContinueSavedWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue saved workout'**
+  String get sessionContinueSavedWorkout;
+
+  /// No description provided for @sessionContinueWithCurrentPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with current routine'**
+  String get sessionContinueWithCurrentPlan;
+
+  /// No description provided for @sessionDiscardWorkoutDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard draft and start this session'**
+  String get sessionDiscardWorkoutDraft;
+
+  /// No description provided for @sessionRestoredOriginalPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'The original saved routine was restored so each set stays linked to the same exercise.'**
+  String get sessionRestoredOriginalPlan;
+
+  /// No description provided for @sessionUnknownDate.
+  ///
+  /// In en, this message translates to:
+  /// **'another date'**
+  String get sessionUnknownDate;
+
   /// No description provided for @sessionWaterBottle.
   ///
   /// In en, this message translates to:

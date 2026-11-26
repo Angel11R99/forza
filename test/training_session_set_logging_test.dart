@@ -141,12 +141,15 @@ void main() {
       plannedSession,
     );
     await _startSession(tester);
+    await _tap(tester, find.text('Iniciar serie de 30 segundos'));
     await _enter(tester, 'set-0-repetitions', '35');
     await _tap(tester, find.byKey(const ValueKey('complete-set-0')));
 
     expect(find.text('1 de 2 series completadas'), findsOneWidget);
     expect(find.text('Descanso entre series'), findsOneWidget);
     await _skipRest(tester);
+    await tester.pump(const Duration(seconds: 31));
+    expect(find.text('1 de 2 series completadas'), findsOneWidget);
     final savedDraft = jsonDecode(
       (await repository.loadActiveWorkout())!,
     ) as Map<String, Object?>;

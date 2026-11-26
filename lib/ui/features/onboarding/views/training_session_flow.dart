@@ -50,9 +50,22 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   final Set<String> _completedSets = {};
   List<Exercise> _catalog = const [];
   List<WorkoutRecord> _workoutHistory = const [];
+  PlannedTrainingSession? _restoredPlannedSession;
+  PlannedTrainingSession? _reviewPlannedSession;
+  Map<String, Object?>? _draftToReview;
+  DateTime? _restoredScheduledDate;
+  DateTime? _reviewScheduledDate;
+  int? _restoredPlanVersion;
+  Future<void> _pendingDraftWrite = Future<void>.value();
   bool _restoring = true;
+  bool _reviewDraftDateMismatch = false;
+  bool _reviewDraftCorrupt = false;
+  bool _restoredDifferentPlan = false;
+  bool _isSavingRecord = false;
+  bool _isAbandoning = false;
 
   PlannedTrainingSession get _plannedSession =>
+      _restoredPlannedSession ??
       widget.plannedSession ??
       _planBuilder.buildWeek(
         trainingDays: widget.settings.trainingDays,
@@ -62,6 +75,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         equipment: widget.settings.equipment,
         avoidedExerciseIds: widget.settings.avoidedExerciseIds,
       )[widget.sessionIndex.clamp(0, widget.settings.trainingDays.length - 1)];
+
+  DateTime get _sessionDate => _restoredScheduledDate ?? widget.scheduledDate;
+  int get _sessionPlanVersion => _restoredPlanVersion ?? widget.planVersion;
 
   List<_SessionExercise> get _exercises => _plannedSession.exercises
       .map(
@@ -111,60 +127,178 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       _workoutHistory = await _workoutRepository.load();
       final raw = await _workoutRepository.loadActiveWorkout();
       if (raw != null) {
-        final draft = jsonDecode(raw) as Map<String, Object?>;
-        final date = DateTime(
-          widget.scheduledDate.year,
-          widget.scheduledDate.month,
-          widget.scheduledDate.day,
-        );
-        if (draft['scheduledDate'] == date.toIso8601String()) {
-          _currentExercise = (draft['currentExercise'] as int? ?? 0).clamp(
-            0,
-            _exercises.length - 1,
+        final decoded = jsonDecode(raw);
+        if (decoded is! Map) {
+          _reviewDraftCorrupt = true;
+          _screen = _SessionScreen.reviewDraft;
+        } else {
+          final draft = Map<String, Object?>.from(decoded);
+          _reviewDraftDateMismatch = !_matchesScheduledDate(
+            draft['scheduledDate'],
+            widget.scheduledDate,
           );
-          _elapsedSeconds = draft['elapsedSeconds'] as int? ?? 0;
-          _remainingRestSeconds = draft['remainingRestSeconds'] as int? ?? 45;
-          final savedRestDuration = draft['restDurationSeconds'] as int? ?? 45;
-          _restDurationSeconds = [30, 45, 60, 90].contains(savedRestDuration)
-              ? savedRestDuration
-              : 45;
-          _restContext = _RestContext.values.firstWhere(
-            (context) => context.name == draft['restContext'],
-            orElse: () => _RestContext.betweenExercises,
-          );
-          _timedRemainingSeconds = draft['timedRemainingSeconds'] as int? ?? 30;
-          _cooldownIndex = (draft['cooldownIndex'] as int? ?? 0).clamp(0, 2);
-          _resumeTimedSet = draft['resumeTimedSet'] as bool? ?? false;
-          _resumeScreen = _SessionScreen.values.firstWhere(
-            (screen) => screen.name == draft['resumeScreen'],
-            orElse: () => _SessionScreen.exerciseList,
-          );
-          _screen = _SessionScreen.paused;
-          final savedSets = draft['sets'] as List<Object?>? ?? const [];
-          for (final item in savedSets.whereType<Map<String, Object?>>()) {
-            final result = WorkoutSetResult.fromJson(item);
-            (_setResults[result.exercisePosition] ??= []).add(result);
+          _draftToReview = draft;
+          final savedPlanJson = draft['planSnapshot'];
+          if (savedPlanJson is Map) {
+            try {
+              _reviewPlannedSession = PlannedTrainingSession.fromJson(
+                Map<String, Object?>.from(savedPlanJson),
+              );
+            } on Object {
+              _reviewDraftCorrupt = true;
+            }
           }
-          _completedSets.addAll(
-            (draft['completedSets'] as List<Object?>? ?? const [])
-                .whereType<String>(),
+          final savedDate = DateTime.tryParse(
+            draft['scheduledDate'] as String? ?? '',
           );
+          _reviewScheduledDate = savedDate == null
+              ? null
+              : DateTime(savedDate.year, savedDate.month, savedDate.day);
+
+          if (_reviewDraftDateMismatch ||
+              _reviewPlannedSession == null && !_reviewDraftCorrupt) {
+            _screen = _SessionScreen.reviewDraft;
+          } else if (!_reviewDraftCorrupt) {
+            _activateDraft(
+              draft,
+              savedPlan: _reviewPlannedSession,
+              savedDate: _reviewScheduledDate,
+            );
+          } else {
+            _screen = _SessionScreen.reviewDraft;
+          }
         }
       }
     } on Object {
-      // Ignore an invalid draft and allow a fresh session.
+      _reviewDraftCorrupt = true;
+      _screen = _SessionScreen.reviewDraft;
     }
     if (mounted) setState(() => _restoring = false);
   }
 
+  bool _matchesScheduledDate(Object? value, DateTime date) {
+    if (value is! String) return false;
+    final savedDate = DateTime.tryParse(value);
+    return savedDate != null &&
+        DateTime(savedDate.year, savedDate.month, savedDate.day) ==
+            DateTime(date.year, date.month, date.day);
+  }
+
+  void _activateDraft(
+    Map<String, Object?> draft, {
+    PlannedTrainingSession? savedPlan,
+    DateTime? savedDate,
+  }) {
+    final currentPlan = _plannedSession;
+    final savedPlanVersion = draft['planVersion'];
+    _restoredDifferentPlan =
+        savedPlan != null &&
+        (jsonEncode(savedPlan.toJson()) != jsonEncode(currentPlan.toJson()) ||
+            savedPlanVersion != widget.planVersion);
+    _restoredPlannedSession = savedPlan;
+    _restoredScheduledDate = savedDate;
+    _restoredPlanVersion = savedPlanVersion is int && savedPlanVersion > 0
+        ? savedPlanVersion
+        : widget.planVersion;
+    _currentExercise = (draft['currentExercise'] as int? ?? 0).clamp(
+      0,
+      _exercises.length - 1,
+    );
+    _elapsedSeconds = (draft['elapsedSeconds'] as int? ?? 0).clamp(0, 86400);
+    _remainingRestSeconds = (draft['remainingRestSeconds'] as int? ?? 45).clamp(
+      0,
+      90,
+    );
+    final savedRestDuration = draft['restDurationSeconds'] as int? ?? 45;
+    _restDurationSeconds = [30, 45, 60, 90].contains(savedRestDuration)
+        ? savedRestDuration
+        : 45;
+    _restContext = _RestContext.values.firstWhere(
+      (context) => context.name == draft['restContext'],
+      orElse: () => _RestContext.betweenExercises,
+    );
+    _timedRemainingSeconds = (draft['timedRemainingSeconds'] as int? ?? 30)
+        .clamp(0, 3600);
+    _cooldownIndex = (draft['cooldownIndex'] as int? ?? 0).clamp(
+      0,
+      _cooldownMovements.length - 1,
+    );
+    _resumeTimedSet = draft['resumeTimedSet'] as bool? ?? false;
+    _resumeScreen = _SessionScreen.values.firstWhere(
+      (screen) =>
+          screen.name == draft['resumeScreen'] &&
+          screen != _SessionScreen.paused &&
+          screen != _SessionScreen.reviewDraft &&
+          screen != _SessionScreen.confirmAbandon &&
+          screen != _SessionScreen.preparation,
+      orElse: () => _SessionScreen.exerciseList,
+    );
+    _setResults.clear();
+    _completedSets.clear();
+    final savedSets = draft['sets'] as List<Object?>? ?? const [];
+    for (final item in savedSets.whereType<Map<String, Object?>>()) {
+      try {
+        final result = WorkoutSetResult.fromJson(item);
+        if (result.exercisePosition >= 0 &&
+            result.exercisePosition < _exercises.length &&
+            result.setIndex >= 0 &&
+            result.setIndex < _exercises[result.exercisePosition].setCount &&
+            (result.repetitions == null || result.repetitions! >= 0) &&
+            (result.durationSeconds == null || result.durationSeconds! >= 0) &&
+            (result.loadKg == null ||
+                result.loadKg!.isFinite &&
+                    result.loadKg! >= 0)) {
+          final sets = _setResults.putIfAbsent(
+            result.exercisePosition,
+            () => [],
+          );
+          final existingIndex = sets.indexWhere(
+            (saved) => saved.setIndex == result.setIndex,
+          );
+          if (existingIndex == -1) {
+            sets.add(result);
+          } else {
+            sets[existingIndex] = result;
+          }
+        }
+      } on Object {
+        continue;
+      }
+    }
+    for (final key
+        in (draft['completedSets'] as List<Object?>? ?? const [])
+            .whereType<String>()) {
+      final parts = key.split(':');
+      if (parts.length != 2) continue;
+      final exercise = int.tryParse(parts[0]);
+      final set = int.tryParse(parts[1]);
+      if (exercise == null ||
+          set == null ||
+          exercise < 0 ||
+          exercise >= _exercises.length ||
+          set < 0 ||
+          set >= _exercises[exercise].setCount) {
+        continue;
+      }
+      final result = _resultFor(exercise, set);
+      final hasRecordedValue = _exercises[exercise].isTimed
+          ? (result?.durationSeconds ?? 0) > 0
+          : (result?.repetitions ?? 0) > 0;
+      if (hasRecordedValue) _completedSets.add(key);
+    }
+    _screen = _SessionScreen.paused;
+  }
+
   Future<void> _saveDraft() {
     final date = DateTime(
-      widget.scheduledDate.year,
-      widget.scheduledDate.month,
-      widget.scheduledDate.day,
+      _sessionDate.year,
+      _sessionDate.month,
+      _sessionDate.day,
     );
-    return _workoutRepository.saveActiveWorkout({
+    final payload = <String, Object?>{
       'scheduledDate': date.toIso8601String(),
+      'planVersion': _sessionPlanVersion,
+      'planSnapshot': _plannedSession.toJson(),
       'currentExercise': _currentExercise,
       'elapsedSeconds': _elapsedSeconds,
       'remainingRestSeconds': _remainingRestSeconds,
@@ -180,7 +314,11 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           ...sets.map((set) => set.toJson()),
       ],
       'completedSets': _completedSets.toList(),
-    });
+    };
+    _pendingDraftWrite = _pendingDraftWrite
+        .catchError((Object _) {})
+        .then((_) => _workoutRepository.saveActiveWorkout(payload));
+    return _pendingDraftWrite;
   }
 
   @override
@@ -193,87 +331,96 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   @override
   Widget build(BuildContext context) {
-    if (_restoring) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_title(context)),
-        leading: IconButton(
-          tooltip: _screen == _SessionScreen.preparation
-              ? context.l10n.sessionBack
-              : context.l10n.sessionBackStep,
-          onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        actions: [
-          if (_screen != _SessionScreen.confirmAbandon)
-            IconButton(
-              tooltip: context.l10n.sessionExitTitle,
-              onPressed: _requestExit,
-              icon: const Icon(Icons.close_rounded),
-            ),
-          if (_screen == _SessionScreen.exerciseList ||
-              _screen == _SessionScreen.rest)
-            IconButton(
-              tooltip: context.l10n.sessionPause,
-              onPressed: _pause,
-              icon: const Icon(Icons.pause_rounded),
-            ),
-        ],
-      ),
-      body: SafeArea(
-        top: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final horizontalPadding = AppSpacing.pageGutter(
-              constraints.maxWidth,
-            );
-            return Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 640),
-                child: Column(
-                  children: [
-                    if (_screen == _SessionScreen.exerciseList ||
-                        _screen == _SessionScreen.rest)
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: horizontalPadding,
-                        ),
-                        child: _SessionProgress(
-                          current: _completedSetCount,
-                          total: _totalSetCount,
-                        ),
-                      ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.all(horizontalPadding),
-                        child: _buildScreen(context),
-                      ),
+    return PopScope<Object?>(
+      canPop:
+          _screen == _SessionScreen.preparation ||
+          _screen == _SessionScreen.reviewDraft,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && !_restoring) _goBack();
+      },
+      child: _restoring
+          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+          : Scaffold(
+              appBar: AppBar(
+                title: Text(_title(context)),
+                leading: IconButton(
+                  tooltip: _screen == _SessionScreen.preparation
+                      ? context.l10n.sessionBack
+                      : context.l10n.sessionBackStep,
+                  onPressed: _goBack,
+                  icon: const Icon(Icons.arrow_back_rounded),
+                ),
+                actions: [
+                  if (_screen != _SessionScreen.confirmAbandon &&
+                      _screen != _SessionScreen.reviewDraft)
+                    IconButton(
+                      tooltip: context.l10n.sessionExitTitle,
+                      onPressed: _requestExit,
+                      icon: const Icon(Icons.close_rounded),
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        horizontalPadding,
-                        AppSpacing.x2,
-                        horizontalPadding,
-                        AppSpacing.x4,
-                      ),
-                      child: _screen == _SessionScreen.summary
-                          ? _buildSummaryAction(context)
-                          : _buildPrimaryAction(context),
+                  if (_screen == _SessionScreen.exerciseList ||
+                      _screen == _SessionScreen.rest)
+                    IconButton(
+                      tooltip: context.l10n.sessionPause,
+                      onPressed: _pause,
+                      icon: const Icon(Icons.pause_rounded),
                     ),
-                  ],
+                ],
+              ),
+              body: SafeArea(
+                top: false,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final horizontalPadding = AppSpacing.pageGutter(
+                      constraints.maxWidth,
+                    );
+                    return Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 640),
+                        child: Column(
+                          children: [
+                            if (_screen == _SessionScreen.exerciseList ||
+                                _screen == _SessionScreen.rest)
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: horizontalPadding,
+                                ),
+                                child: _SessionProgress(
+                                  current: _completedSetCount,
+                                  total: _totalSetCount,
+                                ),
+                              ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                padding: EdgeInsets.all(horizontalPadding),
+                                child: _buildScreen(context),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                horizontalPadding,
+                                AppSpacing.x2,
+                                horizontalPadding,
+                                AppSpacing.x4,
+                              ),
+                              child: _screen == _SessionScreen.summary
+                                  ? _buildSummaryAction(context)
+                                  : _buildPrimaryAction(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            );
-          },
-        ),
-      ),
+            ),
     );
   }
 
   String _title(BuildContext context) => switch (_screen) {
     _SessionScreen.preparation => context.l10n.sessionTitlePreparation,
+    _SessionScreen.reviewDraft => context.l10n.sessionDraftReviewTitle,
     _SessionScreen.warmup => context.l10n.sessionTitleWarmup,
     _SessionScreen.exerciseList => context.l10n.sessionTitleWorkout,
     _SessionScreen.rest => context.l10n.sessionTitleRest,
@@ -286,6 +433,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   Widget _buildScreen(BuildContext context) => switch (_screen) {
     _SessionScreen.preparation => _buildPreparation(context),
+    _SessionScreen.reviewDraft => _buildDraftReview(context),
     _SessionScreen.warmup => _buildWarmup(context),
     _SessionScreen.exerciseList => _buildExerciseList(context),
     _SessionScreen.rest => _buildRest(context),
@@ -490,7 +638,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         const SizedBox(height: AppSpacing.x4),
         for (final item in [
           (context.l10n.sessionWaterBottle, Icons.water_drop_outlined),
-          (context.l10n.sessionClearSpace, Icons.check_circle_outline_rounded),
+          (context.l10n.sessionClearSpace, Icons.space_dashboard_outlined),
           (context.l10n.sessionEquipmentReady, Icons.fitness_center_outlined),
         ]) ...[
           AppSurfaceCard(
@@ -503,7 +651,6 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                 Icon(item.$2, size: 20),
                 const SizedBox(width: AppSpacing.x3),
                 Expanded(child: Text(item.$1)),
-                const Icon(Icons.check_rounded, size: 18),
               ],
             ),
           ),
@@ -512,6 +659,126 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         const _SessionSaveNote(),
       ],
     );
+  }
+
+  Widget _buildDraftReview(BuildContext context) {
+    final savedDate = _reviewScheduledDate == null
+        ? null
+        : MaterialLocalizations.of(context)
+              .formatMediumDate(_reviewScheduledDate!);
+    final message = _reviewDraftCorrupt
+        ? context.l10n.sessionDraftReviewCorrupt
+        : _reviewDraftDateMismatch
+        ? context.l10n.sessionDraftReviewDateMismatch(
+            savedDate ?? context.l10n.sessionUnknownDate,
+          )
+        : context.l10n.sessionDraftReviewLegacy;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SessionEyebrow(label: context.l10n.sessionDraftReviewTitle),
+        const SizedBox(height: AppSpacing.x3),
+        Text(
+          context.l10n.sessionDraftReviewTitle,
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppSpacing.x3),
+        AppSurfaceCard(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.info_outline_rounded),
+              const SizedBox(width: AppSpacing.x3),
+              Expanded(
+                child: Text(
+                  message,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDraftReviewActions(BuildContext context) {
+    final canContinueSavedSession =
+        !_reviewDraftCorrupt &&
+        _reviewDraftDateMismatch &&
+        _draftToReview != null &&
+        _reviewPlannedSession != null &&
+        _reviewScheduledDate != null;
+    final canContinueLegacySession =
+        !_reviewDraftCorrupt &&
+        !_reviewDraftDateMismatch &&
+        _draftToReview != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (canContinueSavedSession)
+          FilledButton.icon(
+            onPressed: _continueSavedDraft,
+            icon: const Icon(Icons.restore_rounded),
+            label: Text(context.l10n.sessionContinueSavedWorkout),
+          ),
+        if (canContinueLegacySession)
+          FilledButton.icon(
+            onPressed: _continueLegacyDraft,
+            icon: const Icon(Icons.play_arrow_rounded),
+            label: Text(context.l10n.sessionContinueWithCurrentPlan),
+          ),
+        if (canContinueSavedSession || canContinueLegacySession)
+          const SizedBox(height: AppSpacing.x2),
+        OutlinedButton.icon(
+          onPressed: _discardReviewedDraft,
+          icon: const Icon(Icons.delete_outline_rounded),
+          label: Text(context.l10n.sessionDiscardWorkoutDraft),
+        ),
+      ],
+    );
+  }
+
+  void _continueSavedDraft() {
+    final draft = _draftToReview;
+    final savedPlan = _reviewPlannedSession;
+    final savedDate = _reviewScheduledDate;
+    if (draft == null || savedPlan == null || savedDate == null) return;
+    setState(() {
+      _activateDraft(draft, savedPlan: savedPlan, savedDate: savedDate);
+      _draftToReview = null;
+      _reviewDraftDateMismatch = false;
+    });
+  }
+
+  void _continueLegacyDraft() {
+    final draft = _draftToReview;
+    if (draft == null) return;
+    setState(() {
+      _activateDraft(draft);
+      _restoredDifferentPlan = true;
+      _draftToReview = null;
+      _reviewDraftDateMismatch = false;
+    });
+  }
+
+  Future<void> _discardReviewedDraft() async {
+    await _pendingDraftWrite.catchError((Object _) {});
+    await _workoutRepository.clearActiveWorkout();
+    if (!mounted) return;
+    setState(() {
+      _restoredPlannedSession = null;
+      _restoredScheduledDate = null;
+      _restoredPlanVersion = null;
+      _draftToReview = null;
+      _reviewPlannedSession = null;
+      _reviewScheduledDate = null;
+      _reviewDraftDateMismatch = false;
+      _reviewDraftCorrupt = false;
+      _restoredDifferentPlan = false;
+      _screen = _SessionScreen.preparation;
+    });
   }
 
   Widget _buildExerciseList(BuildContext context) {
@@ -599,6 +866,12 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
                   final key = '$_currentExercise:$setIndex';
                   if (completed) {
                     _completedSets.add(key);
+                    if (_exercises[_currentExercise].isTimed &&
+                        _timedSetRunning) {
+                      _timedSetTimer?.cancel();
+                      _timedSetRunning = false;
+                      _timedRemainingSeconds = 30;
+                    }
                   } else {
                     _completedSets.remove(key);
                   }
@@ -1031,6 +1304,24 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           context.l10n.sessionPauseDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
+        if (_restoredDifferentPlan) ...[
+          const SizedBox(height: AppSpacing.x3),
+          AppSurfaceCard(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline_rounded),
+                const SizedBox(width: AppSpacing.x3),
+                Expanded(
+                  child: Text(
+                    context.l10n.sessionRestoredOriginalPlan,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: AppSpacing.x6),
         AppSurfaceCard(
           child: Row(
@@ -1252,6 +1543,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     return SizedBox(
       width: double.infinity,
       child: switch (_screen) {
+        _SessionScreen.reviewDraft => _buildDraftReviewActions(context),
         _SessionScreen.preparation => FilledButton.icon(
           onPressed: () => setState(() => _screen = _SessionScreen.warmup),
           icon: const Icon(Icons.arrow_forward_rounded),
@@ -1324,11 +1616,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FilledButton(
-              onPressed: () async {
-                await _workoutRepository.clearActiveWorkout();
-                if (!context.mounted) return;
-                Navigator.of(context).pop();
-              },
+              onPressed: _isAbandoning ? null : _abandonSession,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 13),
                 child: Text(context.l10n.sessionAbandonConfirm),
@@ -1479,6 +1767,11 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 
   void _startRestTimer() {
     _restTimer?.cancel();
+    if (_remainingRestSeconds <= 0) {
+      setState(() => _screen = _SessionScreen.exerciseList);
+      _saveDraft();
+      return;
+    }
     _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return timer.cancel();
       if (_screen != _SessionScreen.rest) return;
@@ -1569,15 +1862,18 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     setState(() => _timedSetRunning = true);
     _timedSetTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return timer.cancel();
+      if (_isExerciseComplete(_currentExercise)) {
+        timer.cancel();
+        setState(() => _timedSetRunning = false);
+        return;
+      }
       if (_timedRemainingSeconds <= 1) {
         timer.cancel();
-        final setIndex =
-            List.generate(
-              _exercises[_currentExercise].setCount,
-              (index) => index,
-            ).firstWhere(
-              (index) => !_completedSets.contains('$_currentExercise:$index'),
-            );
+        final setIndex = _nextIncompleteSetIndex(_currentExercise);
+        if (setIndex >= _exercises[_currentExercise].setCount) {
+          setState(() => _timedSetRunning = false);
+          return;
+        }
         final sets = _setResults.putIfAbsent(_currentExercise, () => []);
         final existing = sets.indexWhere((set) => set.setIndex == setIndex);
         final result = WorkoutSetResult(
@@ -1621,9 +1917,13 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   }
 
   Future<void> _saveRecord() async {
+    if (_isSavingRecord) return;
+    _isSavingRecord = true;
     _restTimer?.cancel();
     _sessionTimer?.cancel();
+    _timedSetTimer?.cancel();
     final durationMinutes = (_elapsedSeconds / 60).ceil().clamp(1, 99);
+    await _pendingDraftWrite.catchError((Object _) {});
     await _workoutRepository.clearActiveWorkout();
     if (!mounted) return;
     final results = [for (final sets in _setResults.values) ...sets]
@@ -1638,7 +1938,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         .toSet();
     Navigator.of(context).pop(
       WorkoutRecord(
-        scheduledDate: widget.scheduledDate,
+        scheduledDate: _sessionDate,
         completedAt: DateTime.now(),
         title: _plannedSession.title,
         goal: widget.settings.goal,
@@ -1652,11 +1952,20 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           for (final index in completedPositions.toList()..sort())
             _exercises[index].catalogId,
         ],
-        planVersion: widget.planVersion,
+        planVersion: _sessionPlanVersion,
         planSnapshot: jsonEncode(_plannedSession.toJson()),
         setResults: results,
       ),
     );
+  }
+
+  Future<void> _abandonSession() async {
+    if (_isAbandoning) return;
+    _isAbandoning = true;
+    await _pendingDraftWrite.catchError((Object _) {});
+    await _workoutRepository.clearActiveWorkout();
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   bool _isExerciseComplete(int exercise) => List.generate(
@@ -1721,6 +2030,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     switch (_screen) {
       case _SessionScreen.preparation:
         Navigator.of(context).pop();
+      case _SessionScreen.reviewDraft:
+        Navigator.of(context).pop();
       case _SessionScreen.warmup:
         setState(() => _screen = _SessionScreen.preparation);
       case _SessionScreen.exerciseList:
@@ -1742,6 +2053,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
 }
 
 enum _SessionScreen {
+  reviewDraft,
   preparation,
   warmup,
   exerciseList,
