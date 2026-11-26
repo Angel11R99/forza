@@ -1850,6 +1850,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get progressLast30Days => 'Last 30 days';
 
   @override
+  String get progressNoHistoryInPeriod => 'No workouts in this period.';
+
+  @override
   String progressLastWorkout(Object date) {
     return 'Last workout · $date';
   }
