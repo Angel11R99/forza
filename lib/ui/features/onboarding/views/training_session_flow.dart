@@ -89,6 +89,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
           name: exercise.name,
           focus: exercise.focus,
           isTimed: exercise.timed,
+          tracksExternalLoad: exercise.tracksExternalLoad,
           setCount: exercise.prescription.startsWith('2 series') ? 2 : 3,
           detail: '${exercise.focus} · ${exercise.prescription}',
           icon: switch (exercise.focus) {
@@ -835,6 +836,15 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               weightUnit: widget.weightUnit,
               label: context.l10n.sessionSet(setIndex + 1),
               isTimed: _exercises[_currentExercise].isTimed,
+              tracksExternalLoad:
+                  _exercises[_currentExercise].tracksExternalLoad ||
+                  (_catalogExerciseFor(_exercises[_currentExercise])
+                          ?.tracksExternalLoad ??
+                      false),
+              allowsAdditionalLoad:
+                  _catalogExerciseFor(_exercises[_currentExercise])
+                      ?.allowsAdditionalLoad ??
+                  false,
               result: _resultFor(_currentExercise, setIndex),
               target: _localizedPrescriptionTarget(
                 context,
@@ -2097,13 +2107,15 @@ class _WarmupMovement {
   final IconData icon;
 }
 
-class _WorkoutSetEditor extends StatelessWidget {
+class _WorkoutSetEditor extends StatefulWidget {
   const _WorkoutSetEditor({
     super.key,
     required this.setIndex,
     required this.weightUnit,
     required this.label,
     required this.isTimed,
+    required this.tracksExternalLoad,
+    required this.allowsAdditionalLoad,
     required this.result,
     required this.target,
     required this.suggestion,
@@ -2118,6 +2130,8 @@ class _WorkoutSetEditor extends StatelessWidget {
   final int setIndex;
   final String weightUnit;
   final bool isTimed;
+  final bool tracksExternalLoad;
+  final bool allowsAdditionalLoad;
   final WorkoutSetResult? result;
   final String target;
   final WorkoutSetResult? suggestion;
@@ -2128,9 +2142,28 @@ class _WorkoutSetEditor extends StatelessWidget {
   final ValueChanged<WorkoutSetResult> onChanged;
 
   @override
+  State<_WorkoutSetEditor> createState() => _WorkoutSetEditorState();
+}
+
+class _WorkoutSetEditorState extends State<_WorkoutSetEditor> {
+  bool _showAdditionalLoad = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _showAdditionalLoad = widget.result?.loadKg != null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final value =
-        result ?? const WorkoutSetResult(exercisePosition: 0, setIndex: 0);
+        widget.result ??
+        const WorkoutSetResult(exercisePosition: 0, setIndex: 0);
+    final showLoadField =
+        !widget.isTimed &&
+        (widget.tracksExternalLoad ||
+            widget.allowsAdditionalLoad && _showAdditionalLoad ||
+            value.loadKg != null);
     return AppSurfaceCard(
       padding: const EdgeInsets.all(AppSpacing.x3),
       child: Column(
@@ -2139,29 +2172,29 @@ class _WorkoutSetEditor extends StatelessWidget {
           Row(
             children: [
               Icon(
-                completed
+                widget.completed
                     ? Icons.check_circle_rounded
-                    : isNext
+                    : widget.isNext
                     ? Icons.radio_button_checked_rounded
                     : Icons.radio_button_unchecked_rounded,
                 size: 20,
-                color: completed || isNext
+                color: widget.completed || widget.isNext
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: AppSpacing.x2),
               Expanded(
                 child: Text(
-                  label,
+                  widget.label,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
-              if (completed)
+              if (widget.completed)
                 Text(
                   context.l10n.sessionSetComplete,
                   style: Theme.of(context).textTheme.labelMedium,
                 )
-              else if (isNext)
+              else if (widget.isNext)
                 Text(
                   context.l10n.sessionNextSet,
                   style: Theme.of(context).textTheme.labelMedium,
@@ -2169,63 +2202,69 @@ class _WorkoutSetEditor extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.x1),
-          Text(target, style: Theme.of(context).textTheme.bodySmall),
+          Text(widget.target, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: AppSpacing.x2),
           Row(
             children: [
               Expanded(
                 child: _numberField(
                   context: context,
-                  key: ValueKey('set-$setIndex-repetitions'),
-                  label: isTimed
+                  key: ValueKey('set-${widget.setIndex}-repetitions'),
+                  label: widget.isTimed
                       ? context.l10n.sessionSeconds
                       : context.l10n.sessionRepetitions,
-                  initialValue: isTimed
+                  initialValue: widget.isTimed
                       ? value.durationSeconds
                       : value.repetitions,
-                  suggestion: isTimed
-                      ? suggestion?.durationSeconds
-                      : suggestion?.repetitions,
-                  onChanged: (number) => onChanged(
+                  suggestion: widget.isTimed
+                      ? widget.suggestion?.durationSeconds
+                      : widget.suggestion?.repetitions,
+                  onChanged: (number) => widget.onChanged(
                     WorkoutSetResult(
                       exercisePosition: value.exercisePosition,
                       setIndex: value.setIndex,
-                      repetitions: isTimed
+                      repetitions: widget.isTimed
                           ? value.repetitions
                           : number?.toInt(),
                       loadKg: value.loadKg,
-                      durationSeconds: isTimed
+                      durationSeconds: widget.isTimed
                           ? number?.toInt()
                           : value.durationSeconds,
                     ),
                   ),
                 ),
               ),
-              if (!isTimed) ...[
+              if (showLoadField) ...[
                 const SizedBox(width: AppSpacing.x2),
                 Expanded(
                   child: _numberField(
                     context: context,
-                    key: ValueKey('set-$setIndex-load'),
+                    key: ValueKey('set-${widget.setIndex}-load'),
                     label: context.l10n.sessionLoad.replaceAll(
                       '(kg)',
-                      '($weightUnit)',
+                      '(${widget.weightUnit})',
                     ),
                     initialValue: value.loadKg == null
                         ? null
-                        : weightFromKilograms(value.loadKg!, weightUnit),
-                    suggestion: suggestion?.loadKg == null
+                        : weightFromKilograms(value.loadKg!, widget.weightUnit),
+                    suggestion: widget.suggestion?.loadKg == null
                         ? null
-                        : weightFromKilograms(suggestion!.loadKg!, weightUnit),
+                        : weightFromKilograms(
+                            widget.suggestion!.loadKg!,
+                            widget.weightUnit,
+                          ),
                     decimal: true,
-                    onChanged: (number) => onChanged(
+                    onChanged: (number) => widget.onChanged(
                       WorkoutSetResult(
                         exercisePosition: value.exercisePosition,
                         setIndex: value.setIndex,
                         repetitions: value.repetitions,
                         loadKg: number == null
                             ? null
-                            : weightToKilograms(number.toDouble(), weightUnit),
+                            : weightToKilograms(
+                                number.toDouble(),
+                                widget.weightUnit,
+                              ),
                         durationSeconds: value.durationSeconds,
                       ),
                     ),
@@ -2234,27 +2273,63 @@ class _WorkoutSetEditor extends StatelessWidget {
               ],
             ],
           ),
+          if (!widget.isTimed &&
+              widget.allowsAdditionalLoad &&
+              !widget.tracksExternalLoad &&
+              !showLoadField)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                key: ValueKey('add-load-${widget.setIndex}'),
+                onPressed: () => setState(() => _showAdditionalLoad = true),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(context.l10n.sessionAddExternalLoad),
+              ),
+            ),
+          if (!widget.isTimed &&
+              widget.allowsAdditionalLoad &&
+              !widget.tracksExternalLoad &&
+              showLoadField)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                key: ValueKey('remove-load-${widget.setIndex}'),
+                onPressed: () {
+                  setState(() => _showAdditionalLoad = false);
+                  widget.onChanged(
+                    WorkoutSetResult(
+                      exercisePosition: value.exercisePosition,
+                      setIndex: value.setIndex,
+                      repetitions: value.repetitions,
+                      durationSeconds: value.durationSeconds,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.remove_circle_outline_rounded),
+                label: Text(context.l10n.sessionRemoveExternalLoad),
+              ),
+            ),
           const SizedBox(height: AppSpacing.x2),
           SizedBox(
             width: double.infinity,
-            child: completed
+            child: widget.completed
                 ? OutlinedButton.icon(
-                    onPressed: () => onCompletedChanged(false),
+                    onPressed: () => widget.onCompletedChanged(false),
                     icon: const Icon(Icons.undo_rounded),
                     label: Text(context.l10n.sessionUndoSet),
                   )
-                : isNext
+                : widget.isNext
                 ? FilledButton.icon(
-                    key: ValueKey('complete-set-$setIndex'),
-                    onPressed: canComplete
-                        ? () => onCompletedChanged(true)
+                    key: ValueKey('complete-set-${widget.setIndex}'),
+                    onPressed: widget.canComplete
+                        ? () => widget.onCompletedChanged(true)
                         : null,
                     icon: const Icon(Icons.check_rounded),
                     label: Text(context.l10n.sessionCompleteSetAction),
                   )
                 : TextButton.icon(
-                    onPressed: canComplete
-                        ? () => onCompletedChanged(true)
+                    onPressed: widget.canComplete
+                        ? () => widget.onCompletedChanged(true)
                         : null,
                     icon: const Icon(Icons.check_rounded),
                     label: Text(context.l10n.sessionCompleteSetAction),
@@ -2312,6 +2387,7 @@ class _SessionExercise {
     required this.name,
     required this.focus,
     this.isTimed = false,
+    this.tracksExternalLoad = false,
     required this.setCount,
     required this.icon,
     this.detail = '',
@@ -2321,6 +2397,7 @@ class _SessionExercise {
   final String name;
   final String focus;
   final bool isTimed;
+  final bool tracksExternalLoad;
   final int setCount;
   final String detail;
   final IconData icon;

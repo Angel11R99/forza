@@ -42,10 +42,12 @@ class TrainingProgressionAdvisor {
     final requiredSessions = experience == 'Estoy empezando' ? 3 : 2;
     final targetRange = _repetitionRange(exercise.prescription);
     final requiresLoad =
-        _planBuilder.exerciseOptions
-            .firstWhere((option) => option.catalogId == exercise.catalogId)
-            .equipment !=
-        null;
+        exercise.tracksExternalLoad ||
+        _planBuilder.exerciseOptions.any(
+          (option) =>
+              option.catalogId == exercise.catalogId &&
+              option.tracksExternalLoad,
+        );
     if (targetRange == null) {
       return TrainingProgressionAdvice(
         status: TrainingProgressionStatus.keepBuilding,

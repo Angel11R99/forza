@@ -1614,7 +1614,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionSeconds => 'Seconds';
 
   @override
-  String get sessionLoad => 'Weight (kg)';
+  String get sessionLoad => 'External load (kg)';
+
+  @override
+  String get sessionAddExternalLoad => 'Add external load';
+
+  @override
+  String get sessionRemoveExternalLoad => 'Remove external load';
 
   @override
   String sessionProgress(Object current, Object total) {

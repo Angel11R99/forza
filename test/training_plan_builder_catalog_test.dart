@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forza/domain/models/exercise.dart';
 import 'package:forza/domain/use_cases/training_plan_builder.dart';
 
 void main() {
@@ -262,7 +263,69 @@ void main() {
       restored.exercises.map((exercise) => exercise.catalogId),
       session.exercises.map((exercise) => exercise.catalogId),
     );
+    expect(
+      restored.exercises.map((exercise) => exercise.tracksExternalLoad),
+      session.exercises.map((exercise) => exercise.tracksExternalLoad),
+    );
   });
+
+  test(
+    'older plan snapshots remain readable without load tracking metadata',
+    () {
+      final session = builder
+          .buildWeek(
+            trainingDays: const {DateTime.monday},
+            sessionMinutes: 45,
+            goal: 'Ganar fuerza',
+            experience: 'Estoy empezando',
+            equipment: const {'Mancuernas'},
+          )
+          .single;
+      final snapshot = session.toJson();
+      final exercises = (snapshot['exercises']! as List<Object?>)
+          .cast<Map<String, Object?>>();
+      for (final exercise in exercises) {
+        exercise.remove('tracksExternalLoad');
+      }
+
+      final restored = PlannedTrainingSession.fromJson(snapshot);
+      expect(
+        restored.exercises.every((exercise) => !exercise.tracksExternalLoad),
+        isTrue,
+      );
+      expect(
+        builder.exerciseOptions
+            .where((option) => option.catalogId == '1254')
+            .single
+            .tracksExternalLoad,
+        isFalse,
+      );
+      expect(
+        builder.exerciseOptions
+            .where((option) => option.catalogId == '1700')
+            .single
+            .tracksExternalLoad,
+        isTrue,
+      );
+    },
+  );
+
+  test(
+    'catalog metadata marks only suitable bodyweight options as loadable',
+    () {
+      final entries = (jsonDecode(catalogJson) as List<Object?>)
+          .map((item) => Map<String, Object?>.from(item! as Map))
+          .map(Exercise.fromJson)
+          .toList();
+      final lunge = entries.singleWhere((exercise) => exercise.id == '3470');
+      final plank = entries.singleWhere((exercise) => exercise.id == '0464');
+
+      expect(lunge.equipment, 'Peso corporal');
+      expect(lunge.tracksExternalLoad, isFalse);
+      expect(lunge.allowsAdditionalLoad, isTrue);
+      expect(plank.allowsAdditionalLoad, isFalse);
+    },
+  );
 
   test('avoided movements are replaced with compatible catalog options', () {
     final sessions = builder.buildWeek(

@@ -13,6 +13,7 @@ class Exercise {
     this.secondaryMuscles = const [],
     this.alternativeIds = const [],
     this.animation,
+    this.allowsAdditionalLoad = false,
   });
 
   final String id;
@@ -28,6 +29,27 @@ class Exercise {
   final List<String> englishInstructions;
   final List<String> alternativeIds;
   final ExerciseAnimation? animation;
+  final bool allowsAdditionalLoad;
+
+  static const _quantifiableLoadEquipment = {
+    'Mancuernas',
+    'Barra',
+    'Barra EZ',
+    'Barra hexagonal',
+    'Barra olímpica',
+    'Carga adicional',
+    'Máquina de palanca',
+    'Máquina Smith',
+    'Pesa rusa',
+    'Polea',
+  };
+
+  static bool tracksLoadForEquipment(String? equipment) =>
+      _quantifiableLoadEquipment.contains(equipment);
+
+  /// Whether this catalog entry uses resistance that can be recorded as kg.
+  /// Equipment is catalog metadata, so workout UI never guesses from names.
+  bool get tracksExternalLoad => tracksLoadForEquipment(equipment);
 
   factory Exercise.fromJson(Map<String, Object?> json) {
     return Exercise(
@@ -52,6 +74,7 @@ class Exercise {
       animation: json['animation'] == null
           ? null
           : ExerciseAnimation.fromJson(_object(json['animation'], 'animation')),
+      allowsAdditionalLoad: json['allowsAdditionalLoad'] as bool? ?? false,
     );
   }
 }
