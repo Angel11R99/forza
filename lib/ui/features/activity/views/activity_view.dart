@@ -67,6 +67,11 @@ class _ActivityViewState extends State<ActivityView> {
       _visibleMonth.year,
       _visibleMonth.month + offset,
     );
+    _focusMonth(nextMonth);
+  }
+
+  void _focusMonth(DateTime month) {
+    final nextMonth = DateTime(month.year, month.month);
     final lastDay = DateTime(nextMonth.year, nextMonth.month + 1, 0).day;
 
     setState(() {
@@ -248,6 +253,7 @@ class _ActivityViewState extends State<ActivityView> {
                         localeName: localeName,
                         onPrevious: () => _moveMonth(-1),
                         onNext: () => _moveMonth(1),
+                        onToday: () => _selectDate(DateTime.now()),
                       ),
                       const SizedBox(height: AppSpacing.x2),
                       LayoutBuilder(
@@ -261,7 +267,7 @@ class _ActivityViewState extends State<ActivityView> {
                               .clamp(44.0, 60.0)
                               .toDouble();
 
-                          return TableCalendar<bool>(
+                          return TableCalendar<_CalendarDayStatus>(
                             firstDay: DateTime(2000, 1, 1),
                             lastDay: DateTime(2100, 12, 31),
                             focusedDay: _visibleMonth,
@@ -274,11 +280,28 @@ class _ActivityViewState extends State<ActivityView> {
                             sixWeekMonthsEnforced: true,
                             selectedDayPredicate: (day) =>
                                 _isSameDay(day, _selectedDate),
-                            eventLoader: (day) =>
-                                _isSameDay(day, _selectedDate) ||
-                                    _sessionForDate(day) == null
-                                ? const []
-                                : const [true],
+                            eventLoader: (day) {
+                              final status = _calendarStatusForDate(day);
+                              return status == null ? const [] : [status];
+                            },
+                            calendarBuilders: CalendarBuilders<_CalendarDayStatus>(
+                              markerBuilder: (context, day, events) {
+                                if (events.isEmpty) return null;
+                                final status = events.first;
+                                return Positioned(
+                                  bottom: 1,
+                                  child: Semantics(
+                                    label:
+                                        '${DateFormat.yMMMMd(localeName).format(day)} · ${_calendarStatusLabel(context, status)}',
+                                    child: Icon(
+                                      status.icon,
+                                      size: 14,
+                                      color: context.appColors.accent,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                             onDaySelected: (selectedDay, focusedDay) {
                               setState(() {
                                 _selectedDate = _dateOnly(selectedDay);
@@ -289,12 +312,7 @@ class _ActivityViewState extends State<ActivityView> {
                               });
                             },
                             onPageChanged: (focusedDay) {
-                              setState(() {
-                                _visibleMonth = DateTime(
-                                  focusedDay.year,
-                                  focusedDay.month,
-                                );
-                              });
+                              _focusMonth(focusedDay);
                             },
                             daysOfWeekStyle: DaysOfWeekStyle(
                               weekdayStyle: Theme.of(context)
@@ -354,19 +372,13 @@ class _ActivityViewState extends State<ActivityView> {
                           );
                         },
                       ),
+                      const SizedBox(height: AppSpacing.x2),
+                      const _CalendarLegend(),
                     ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.x8),
-                SectionHeading(
-                  title: context.l10n.activityTodayDetail,
-                  actionLabel: _isSameDay(_selectedDate, DateTime.now())
-                      ? null
-                      : context.l10n.activityToday,
-                  onAction: _isSameDay(_selectedDate, DateTime.now())
-                      ? null
-                      : () => _selectDate(DateTime.now()),
-                ),
+                SectionHeading(title: context.l10n.activityTodayDetail),
                 _DayDetailCard(
                   date: _selectedDate,
                   localeName: localeName,
@@ -447,6 +459,30 @@ class _ActivityViewState extends State<ActivityView> {
     );
   }
 
+  _CalendarDayStatus? _calendarStatusForDate(DateTime date) {
+    final completed =
+        widget.records.any((record) => _isSameDay(record.date, date)) ||
+        _scheduledForDate(date)?.isCompleted == true;
+    if (completed) return _CalendarDayStatus.completed;
+    final scheduled = _scheduledForDate(date);
+    if (scheduled?.isSkipped == true) return _CalendarDayStatus.skipped;
+    if (scheduled?.isInProgress == true) {
+      return _CalendarDayStatus.inProgress;
+    }
+    if (scheduled != null || _sessionForDate(date) != null) {
+      return _CalendarDayStatus.pending;
+    }
+    if (widget.scheduledSessions.any(
+      (item) =>
+          item.originalDate != null &&
+          _isSameDay(item.originalDate!, date) &&
+          !_isSameDay(item.scheduledDate, date),
+    )) {
+      return _CalendarDayStatus.rescheduled;
+    }
+    return null;
+  }
+
   ScheduledTrainingSession? _scheduledForDate(DateTime date) {
     for (final session in widget.scheduledSessions) {
       if (_isSameDay(session.scheduledDate, date)) return session;
@@ -478,18 +514,90 @@ class _ActivityViewState extends State<ActivityView> {
       first.day == second.day;
 }
 
+enum _CalendarDayStatus {
+  pending(Icons.circle_outlined),
+  completed(Icons.check_circle_rounded),
+  skipped(Icons.cancel_outlined),
+  inProgress(Icons.play_circle_outline_rounded),
+  rescheduled(Icons.event_repeat_rounded);
+
+  const _CalendarDayStatus(this.icon);
+  final IconData icon;
+}
+
+String _calendarStatusLabel(BuildContext context, _CalendarDayStatus status) =>
+    switch (status) {
+      _CalendarDayStatus.pending => context.l10n.homeStatusPending,
+      _CalendarDayStatus.completed => context.l10n.activitySessionCompleted,
+      _CalendarDayStatus.skipped => context.l10n.activitySessionSkipped,
+      _CalendarDayStatus.inProgress => context.l10n.activityWorkoutInProgress,
+      _CalendarDayStatus.rescheduled => context.l10n.activityStatusRescheduled,
+    };
+
+String _calendarLegendLabel(BuildContext context, _CalendarDayStatus status) =>
+    switch (status) {
+      _CalendarDayStatus.pending => context.l10n.homeStatusPending,
+      _CalendarDayStatus.completed => context.l10n.homeStatusCompleted,
+      _CalendarDayStatus.skipped => context.l10n.homeStatusSkipped,
+      _CalendarDayStatus.inProgress => context.l10n.activityStatusInProgress,
+      _CalendarDayStatus.rescheduled => context.l10n.homeStatusRescheduled,
+    };
+
+class _CalendarLegend extends StatelessWidget {
+  const _CalendarLegend();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - AppSpacing.x3) / 2;
+        return Wrap(
+          alignment: WrapAlignment.center,
+          spacing: AppSpacing.x3,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final status in _CalendarDayStatus.values)
+              SizedBox(
+                width: itemWidth,
+                child: Semantics(
+                  label: _calendarStatusLabel(context, status),
+                  child: Column(
+                    children: [
+                      Icon(
+                        status.icon,
+                        size: 14,
+                        color: context.appColors.accent,
+                      ),
+                      Text(
+                        _calendarLegendLabel(context, status),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _MonthHeader extends StatelessWidget {
   const _MonthHeader({
     required this.month,
     required this.localeName,
     required this.onPrevious,
     required this.onNext,
+    required this.onToday,
   });
 
   final DateTime month;
   final String localeName;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
+  final VoidCallback onToday;
 
   @override
   Widget build(BuildContext context) {
@@ -506,6 +614,11 @@ class _MonthHeader extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
+        ),
+        IconButton(
+          tooltip: context.l10n.activityToday,
+          onPressed: onToday,
+          icon: const Icon(Icons.today_rounded),
         ),
         IconButton(
           tooltip: context.l10n.activityNextMonth,
@@ -619,20 +732,19 @@ class _DayDetailCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.x4),
           const Divider(height: 1),
           const SizedBox(height: AppSpacing.x4),
-          Row(
+          Wrap(
+            spacing: AppSpacing.x6,
+            runSpacing: AppSpacing.x2,
             children: [
-              const Icon(Icons.schedule_rounded, size: 18),
-              const SizedBox(width: AppSpacing.x2),
-              Text(
-                session!.duration,
-                style: Theme.of(context).textTheme.bodyMedium,
+              _SessionMetric(
+                icon: Icons.schedule_rounded,
+                label: session!.duration,
               ),
-              const SizedBox(width: AppSpacing.x6),
-              const Icon(Icons.fitness_center_rounded, size: 18),
-              const SizedBox(width: AppSpacing.x2),
-              Text(
-                context.l10n.activityExerciseCount(session!.exerciseCount),
-                style: Theme.of(context).textTheme.bodyMedium,
+              _SessionMetric(
+                icon: Icons.fitness_center_rounded,
+                label: context.l10n.activityExerciseCount(
+                  session!.exerciseCount,
+                ),
               ),
             ],
           ),
@@ -649,7 +761,7 @@ class _DayDetailCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.check_circle_rounded, size: 19),
                   const SizedBox(width: AppSpacing.x2),
-                  Text(context.l10n.activitySessionCompleted),
+                  Expanded(child: Text(context.l10n.activitySessionCompleted)),
                 ],
               ),
             ),
@@ -752,6 +864,23 @@ class _DayDetailCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SessionMetric extends StatelessWidget {
+  const _SessionMetric({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 18),
+      const SizedBox(width: AppSpacing.x2),
+      Text(label, style: Theme.of(context).textTheme.bodyMedium),
+    ],
+  );
 }
 
 class _SessionIcon extends StatelessWidget {
