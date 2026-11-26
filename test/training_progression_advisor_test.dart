@@ -12,6 +12,7 @@ void main() {
     name: 'Press con mancuernas',
     focus: 'Pecho',
     prescription: '2 series · 6–8 repeticiones',
+    tracksExternalLoad: true,
   );
   const session = PlannedTrainingSession(
     weekday: DateTime.monday,
@@ -254,6 +255,42 @@ void main() {
       );
     },
   );
+
+  test('unquantified band resistance does not require a numeric load', () {
+    const bandExercise = PlannedExercise(
+      catalogId: '1254',
+      name: 'Press con banda',
+      focus: 'Pecho',
+      prescription: '2 series · 8–12 repeticiones',
+    );
+    const bandSession = PlannedTrainingSession(
+      weekday: DateTime.monday,
+      title: 'Cuerpo completo',
+      focus: 'Rutina de cuerpo completo',
+      durationMinutes: 45,
+      exercises: [bandExercise],
+    );
+
+    expect(
+      advisor
+          .evaluate(
+            exercise: bandExercise,
+            goal: 'Ganar músculo',
+            experience: 'Tengo algo de experiencia',
+            history: _history(
+              bandSession,
+              count: 2,
+              goal: 'Ganar músculo',
+              repetitions: const [12, 12],
+              catalogId: '1254',
+              recordLoad: false,
+            ),
+            asOf: DateTime(2026, 1, 10),
+          )
+          .status,
+      TrainingProgressionStatus.readyToVary,
+    );
+  });
 }
 
 List<WorkoutRecord> _history(

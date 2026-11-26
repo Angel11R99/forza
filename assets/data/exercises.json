@@ -11362,6 +11362,7 @@
     "name": "Elevación de pantorrillas de pie con peso corporal",
     "muscleGroup": "Piernas",
     "equipment": "Peso corporal",
+    "allowsAdditionalLoad": true,
     "instructions": [
       "Ponte de pie con los pies separados a la altura de los hombros, con las puntas de los pies apuntando hacia adelante.",
       "Coloca las manos sobre una pared o superficie estable para mantener el equilibrio.",
@@ -35743,6 +35744,7 @@
     "name": "Estocada hacia adelante (masculino)",
     "muscleGroup": "Piernas",
     "equipment": "Peso corporal",
+    "allowsAdditionalLoad": true,
     "instructions": [
       "Ponte de pie con los pies separados a la altura de las caderas y las manos en las caderas.",
       "Da un paso grande hacia adelante con el pie derecho, bajando el cuerpo hasta una posición de zancada.",
@@ -44484,6 +44486,7 @@
     "name": "Puente de glúteos bajo en el suelo",
     "muscleGroup": "Piernas",
     "equipment": "Peso corporal",
+    "allowsAdditionalLoad": true,
     "instructions": [
       "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo.",
       "Coloca los brazos a los lados del cuerpo, con las palmas hacia abajo.",
@@ -47271,6 +47274,7 @@
     "name": "flexiones",
     "muscleGroup": "Pecho",
     "equipment": "Peso corporal",
+    "allowsAdditionalLoad": true,
     "instructions": [
       "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y los pies juntos.",
       "Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo el cuerpo en línea recta.",

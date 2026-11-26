@@ -2789,8 +2789,20 @@ abstract class AppLocalizations {
   /// No description provided for @sessionLoad.
   ///
   /// In en, this message translates to:
-  /// **'Weight (kg)'**
+  /// **'External load (kg)'**
   String get sessionLoad;
+
+  /// No description provided for @sessionAddExternalLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Add external load'**
+  String get sessionAddExternalLoad;
+
+  /// No description provided for @sessionRemoveExternalLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove external load'**
+  String get sessionRemoveExternalLoad;
 
   /// No description provided for @sessionProgress.
   ///

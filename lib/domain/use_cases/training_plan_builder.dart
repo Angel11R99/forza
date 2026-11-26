@@ -1,3 +1,5 @@
+import '../models/exercise.dart';
+
 class PlannedExercise {
   const PlannedExercise({
     required this.catalogId,
@@ -5,6 +7,7 @@ class PlannedExercise {
     required this.focus,
     required this.prescription,
     this.timed = false,
+    this.tracksExternalLoad = false,
   });
 
   final String catalogId;
@@ -12,6 +15,7 @@ class PlannedExercise {
   final String focus;
   final String prescription;
   final bool timed;
+  final bool tracksExternalLoad;
 }
 
 class PlannedTrainingSession {
@@ -42,6 +46,7 @@ class PlannedTrainingSession {
           'focus': exercise.focus,
           'prescription': exercise.prescription,
           'timed': exercise.timed,
+          'tracksExternalLoad': exercise.tracksExternalLoad,
         },
     ],
   };
@@ -62,13 +67,15 @@ class PlannedTrainingSession {
       final focus = exercise['focus'];
       final prescription = exercise['prescription'];
       final timed = exercise['timed'];
+      final tracksExternalLoad = exercise['tracksExternalLoad'] ?? false;
       if ([
             id,
             name,
             focus,
             prescription,
           ].any((value) => value is! String || value.trim().isEmpty) ||
-          timed is! bool) {
+          timed is! bool ||
+          tracksExternalLoad is! bool) {
         throw const FormatException('Un ejercicio guardado no es válido.');
       }
       exercises.add(
@@ -78,6 +85,7 @@ class PlannedTrainingSession {
           focus: focus as String,
           prescription: prescription as String,
           timed: timed,
+          tracksExternalLoad: tracksExternalLoad,
         ),
       );
     }
@@ -113,12 +121,14 @@ class TrainingExerciseOption {
     required this.name,
     required this.focus,
     required this.equipment,
+    required this.tracksExternalLoad,
   });
 
   final String catalogId;
   final String name;
   final String focus;
   final String? equipment;
+  final bool tracksExternalLoad;
 }
 
 class TrainingPlanBuilder {
@@ -131,6 +141,7 @@ class TrainingPlanBuilder {
         name: exercise.name,
         focus: exercise.focus,
         equipment: exercise.equipment,
+        tracksExternalLoad: exercise.tracksExternalLoad,
       ),
   ]);
 
@@ -327,6 +338,7 @@ class TrainingPlanBuilder {
           name: exercise.name,
           focus: exercise.focus,
           timed: exercise.timed,
+          tracksExternalLoad: exercise.tracksExternalLoad,
           prescription: exercise.timed
               ? '$sets series · 20–40 segundos'
               : '$sets series · ${_repetitions(goal)}',
@@ -419,4 +431,6 @@ class _ExerciseTemplate {
   final String focus;
   final String? equipment;
   final bool timed;
+
+  bool get tracksExternalLoad => Exercise.tracksLoadForEquipment(equipment);
 }

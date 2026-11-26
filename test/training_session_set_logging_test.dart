@@ -42,7 +42,7 @@ void main() {
       weightUnit: 'lb',
     );
     await _startSession(tester);
-    expect(find.text('Carga (lb)'), findsNWidgets(2));
+    expect(find.text('Carga externa (lb)'), findsNWidgets(2));
     await _enter(tester, 'set-0-load', '100');
     final savedDraft = jsonDecode(
       (await repository.loadActiveWorkout())!,
@@ -63,6 +63,82 @@ void main() {
     await _resumeSession(tester);
     expect(_fieldText(tester, 'set-0-load'), '100');
   });
+
+  testWidgets(
+    'bodyweight exercise adds and removes external load independently per set',
+    (tester) async {
+      final database = AppDatabase(NativeDatabase.memory());
+      addTearDown(() async => database.close());
+      final repository = WorkoutLogRepository(database: database);
+      const settings = TrainingSettings();
+      const plannedSession = PlannedTrainingSession(
+        weekday: 2,
+        title: 'Sesión de prueba',
+        focus: 'Piernas',
+        durationMinutes: 20,
+        exercises: [
+          PlannedExercise(
+            catalogId: '3470',
+            name: 'Estocada',
+            focus: 'Piernas',
+            prescription: '2 series · 8–12 repeticiones',
+          ),
+        ],
+      );
+      await tester.runAsync(() async {
+        await database.customSelect('SELECT 1').get();
+      });
+      await _showSession(
+        tester,
+        settings,
+        repository,
+        DateTime(2026, 11, 24),
+        plannedSession,
+        weightUnit: 'lb',
+      );
+      await _startSession(tester);
+
+      expect(find.byKey(const ValueKey('set-0-load')), findsNothing);
+      expect(find.byKey(const ValueKey('set-1-load')), findsNothing);
+      await _tap(tester, find.byKey(const ValueKey('add-load-0')));
+      expect(find.byKey(const ValueKey('set-0-load')), findsOneWidget);
+      expect(find.byKey(const ValueKey('set-1-load')), findsNothing);
+      await _enter(tester, 'set-0-load', '20');
+
+      final loadedDraft = jsonDecode(
+        (await repository.loadActiveWorkout())!,
+      ) as Map<String, Object?>;
+      final loadedSet = (loadedDraft['sets'] as List<Object?>)
+          .whereType<Map<String, Object?>>()
+          .single;
+      expect(loadedSet['loadKg'], closeTo(9.0718474, 0.000001));
+
+      await _showSession(
+        tester,
+        settings,
+        repository,
+        DateTime(2026, 11, 24),
+        plannedSession,
+        weightUnit: 'lb',
+      );
+      await _resumeSession(tester);
+      expect(find.byKey(const ValueKey('set-0-load')), findsOneWidget);
+      expect(_fieldText(tester, 'set-0-load'), '20');
+      expect(find.byKey(const ValueKey('set-1-load')), findsNothing);
+
+      await _tap(tester, find.byKey(const ValueKey('remove-load-0')));
+      expect(find.byKey(const ValueKey('set-0-load')), findsNothing);
+      expect(find.byKey(const ValueKey('add-load-0')), findsOneWidget);
+      expect(find.byKey(const ValueKey('set-1-load')), findsNothing);
+      final clearedDraft = jsonDecode(
+        (await repository.loadActiveWorkout())!,
+      ) as Map<String, Object?>;
+      final clearedSet = (clearedDraft['sets'] as List<Object?>)
+          .whereType<Map<String, Object?>>()
+          .single;
+      expect(clearedSet['loadKg'], isNull);
+    },
+  );
 
   testWidgets('logs, edits, unmarks, and restores independent rep sets', (
     tester,
