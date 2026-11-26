@@ -10,6 +10,7 @@ import '../../../../app/localization/localization_extensions.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../../core/widgets/forza_brand.dart';
 import '../models/exercise_filter_selection.dart';
+import '../models/exercise_localized_labels.dart';
 import '../widgets/exercise_list_card.dart';
 import 'exercise_detail_page.dart';
 import 'exercise_filters_page.dart';
@@ -97,13 +98,22 @@ class _ExercisesViewState extends State<ExercisesView> {
     );
   }
 
-  void _clearSearchAndFilters() {
-    _searchController.clear();
-    setState(() {
-      _searchQuery = '';
-      _filters = const ExerciseFilterSelection();
-    });
-  }
+  void _clearFilters() =>
+      setState(() => _filters = const ExerciseFilterSelection());
+
+  void _removeMuscleGroup(String value) => setState(() {
+    _filters = ExerciseFilterSelection(
+      muscleGroups: Set.unmodifiable({..._filters.muscleGroups}..remove(value)),
+      equipment: _filters.equipment,
+    );
+  });
+
+  void _removeEquipment(String value) => setState(() {
+    _filters = ExerciseFilterSelection(
+      muscleGroups: _filters.muscleGroups,
+      equipment: Set.unmodifiable({..._filters.equipment}..remove(value)),
+    );
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -172,86 +182,96 @@ class _ExercisesViewState extends State<ExercisesView> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.x6),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (value) =>
-                            setState(() => _searchQuery = value),
-                        textInputAction: TextInputAction.search,
-                        decoration: InputDecoration(
-                          hintText: context.l10n.exerciseSearchHint,
-                          prefixIcon: const Icon(Icons.search_rounded),
-                          suffixIcon: _searchQuery.isEmpty
-                              ? null
-                              : IconButton(
-                                  tooltip: context.l10n.exerciseClearSearch,
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    setState(() => _searchQuery = '');
-                                  },
-                                  icon: const Icon(Icons.close_rounded),
-                                ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.x2),
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: _filters.isEmpty
-                            ? context.appColors.surface
-                            : context.appColors.surfaceMuted,
-                        borderRadius: BorderRadius.circular(AppRadius.medium),
-                        border: Border.all(
-                          color: _filters.isEmpty
-                              ? context.appColors.divider
-                              : context.appColors.accent,
-                        ),
-                      ),
-                      child: IconButton(
-                        tooltip: _filters.count == 0
-                            ? context.l10n.exerciseOpenFilters
-                            : context.l10n.exerciseActiveFilters(
-                                _filters.count,
-                              ),
-                        onPressed: _openFilters,
-                        icon: Badge(
-                          isLabelVisible: _filters.count > 0,
-                          label: Text('${_filters.count}'),
-                          child: const Icon(Icons.tune_rounded),
-                        ),
-                      ),
-                    ),
-                  ],
+              ],
+            ),
+          ),
+        ),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _PinnedCatalogControls(
+            child: ColoredBox(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: _CatalogSearchControls(
+                  controller: _searchController,
+                  query: _searchQuery,
+                  filterCount: _filters.count,
+                  hasFilters: !_filters.isEmpty,
+                  onQueryChanged: (value) =>
+                      setState(() => _searchQuery = value),
+                  onClearQuery: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                  onOpenFilters: _openFilters,
                 ),
-                const SizedBox(height: AppSpacing.x6),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _searchQuery.trim().isNotEmpty
-                            ? context.l10n.exerciseSearchResultsTitle
-                            : context.l10n.exerciseAllResultsTitle,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
+              ),
+            ),
+          ),
+        ),
+        if (!_filters.isEmpty)
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              AppSpacing.x2,
+              horizontalPadding,
+              0,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: Wrap(
+                spacing: AppSpacing.x2,
+                runSpacing: AppSpacing.x2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  for (final group in _filters.muscleGroups)
+                    InputChip(
+                      label: Text(localizedExerciseMuscleGroup(context, group)),
+                      onDeleted: () => _removeMuscleGroup(group),
                     ),
-                    Semantics(
-                      liveRegion: true,
-                      label: context.l10n.exerciseFoundCount(results.length),
-                      child: ExcludeSemantics(
-                        child: Text(
-                          '${results.length}',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: context.appColors.textSecondary,
-                              ),
-                        ),
+                  for (final equipment in _filters.equipment)
+                    InputChip(
+                      label: Text(
+                        localizedExerciseEquipment(context, equipment),
                       ),
+                      onDeleted: () => _removeEquipment(equipment),
                     ),
-                  ],
+                  TextButton(
+                    onPressed: _clearFilters,
+                    child: Text(context.l10n.exerciseRemoveActiveFilters),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            AppSpacing.x4,
+            horizontalPadding,
+            AppSpacing.x2,
+          ),
+          sliver: SliverToBoxAdapter(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _searchQuery.trim().isNotEmpty || !_filters.isEmpty
+                        ? context.l10n.exerciseSearchResultsTitle
+                        : context.l10n.exerciseAllResultsTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                Semantics(
+                  liveRegion: true,
+                  label: context.l10n.exerciseFoundCount(results.length),
+                  child: ExcludeSemantics(
+                    child: Text(
+                      '${results.length}',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(color: context.appColors.textSecondary),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -261,7 +281,15 @@ class _ExercisesViewState extends State<ExercisesView> {
           SliverPadding(
             padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
             sliver: SliverToBoxAdapter(
-              child: _EmptyResults(onClear: _clearSearchAndFilters),
+              child: _EmptyResults(
+                hasQuery: _searchQuery.trim().isNotEmpty,
+                hasFilters: !_filters.isEmpty,
+                onClearQuery: () {
+                  _searchController.clear();
+                  setState(() => _searchQuery = '');
+                },
+                onClearFilters: _clearFilters,
+              ),
             ),
           )
         else if (useGrid)
@@ -316,9 +344,17 @@ class _ExercisesViewState extends State<ExercisesView> {
 }
 
 class _EmptyResults extends StatelessWidget {
-  const _EmptyResults({required this.onClear});
+  const _EmptyResults({
+    required this.hasQuery,
+    required this.hasFilters,
+    required this.onClearQuery,
+    required this.onClearFilters,
+  });
 
-  final VoidCallback onClear;
+  final bool hasQuery;
+  final bool hasFilters;
+  final VoidCallback onClearQuery;
+  final VoidCallback onClearFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -339,14 +375,127 @@ class _EmptyResults extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: AppSpacing.x4),
-          OutlinedButton.icon(
-            onPressed: onClear,
-            icon: const Icon(Icons.refresh_rounded),
-            label: Text(context.l10n.exerciseClearSearchAndFilters),
-          ),
+          if (hasQuery || hasFilters) ...[
+            const SizedBox(height: AppSpacing.x4),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: AppSpacing.x2,
+              runSpacing: AppSpacing.x2,
+              children: [
+                if (hasQuery)
+                  OutlinedButton.icon(
+                    onPressed: onClearQuery,
+                    icon: const Icon(Icons.search_off_rounded),
+                    label: Text(context.l10n.exerciseClearSearch),
+                  ),
+                if (hasFilters)
+                  OutlinedButton.icon(
+                    onPressed: onClearFilters,
+                    icon: const Icon(Icons.filter_alt_off_rounded),
+                    label: Text(context.l10n.exerciseRemoveActiveFilters),
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
+}
+
+class _CatalogSearchControls extends StatelessWidget {
+  const _CatalogSearchControls({
+    required this.controller,
+    required this.query,
+    required this.filterCount,
+    required this.hasFilters,
+    required this.onQueryChanged,
+    required this.onClearQuery,
+    required this.onOpenFilters,
+  });
+
+  final TextEditingController controller;
+  final String query;
+  final int filterCount;
+  final bool hasFilters;
+  final ValueChanged<String> onQueryChanged;
+  final VoidCallback onClearQuery;
+  final VoidCallback onOpenFilters;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 72,
+    child: Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: controller,
+            onChanged: onQueryChanged,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: context.l10n.exerciseSearchHint,
+              prefixIcon: const Icon(Icons.search_rounded),
+              suffixIcon: query.isEmpty
+                  ? null
+                  : IconButton(
+                      tooltip: context.l10n.exerciseClearSearch,
+                      onPressed: onClearQuery,
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.x2),
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: hasFilters
+                ? context.appColors.surfaceMuted
+                : context.appColors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.medium),
+            border: Border.all(
+              color: hasFilters
+                  ? context.appColors.accent
+                  : context.appColors.divider,
+            ),
+          ),
+          child: IconButton(
+            tooltip: filterCount == 0
+                ? context.l10n.exerciseOpenFilters
+                : context.l10n.exerciseActiveFilters(filterCount),
+            onPressed: onOpenFilters,
+            icon: Badge(
+              isLabelVisible: filterCount > 0,
+              label: Text('$filterCount'),
+              child: const Icon(Icons.tune_rounded),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _PinnedCatalogControls extends SliverPersistentHeaderDelegate {
+  const _PinnedCatalogControls({required this.child});
+
+  final Widget child;
+
+  @override
+  double get minExtent => 72;
+
+  @override
+  double get maxExtent => 72;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => child;
+
+  @override
+  bool shouldRebuild(_PinnedCatalogControls oldDelegate) =>
+      oldDelegate.child != child;
 }

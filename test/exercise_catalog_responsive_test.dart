@@ -16,8 +16,8 @@ class _ExerciseRepository implements ExerciseRepository {
       id: 'movement-$index',
       name: 'Ejercicio con un nombre descriptivo largo $index',
       englishName: 'Long descriptive exercise name $index',
-      muscleGroup: 'Pecho',
-      equipment: 'Mancuernas',
+      muscleGroup: index.isEven ? 'Pecho' : 'Espalda',
+      equipment: index.isEven ? 'Mancuernas' : 'Barra',
       instructions: const ['Instructions'],
     ),
   );
@@ -26,10 +26,10 @@ class _ExerciseRepository implements ExerciseRepository {
   Future<void> load() async {}
 
   @override
-  List<String> get muscleGroups => const ['Pecho'];
+  List<String> get muscleGroups => const ['Pecho', 'Espalda'];
 
   @override
-  List<String> get equipmentTypes => const ['Mancuernas'];
+  List<String> get equipmentTypes => const ['Mancuernas', 'Barra'];
 
   @override
   List<Exercise> search({
@@ -88,5 +88,70 @@ void main() {
         expect(tester.takeException(), isNull);
       }
     }
+  });
+
+  testWidgets('active filters can be cleared without erasing the query', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        locale: const Locale('es'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        home: Scaffold(body: ExercisesView(repository: _ExerciseRepository())),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextField), 'nombre');
+    await tester.tap(find.byTooltip('Abrir filtros'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pecho'));
+    await tester.tap(find.text('Barra'));
+    await tester.tap(find.textContaining('Mostrar resultados'));
+    await tester.pumpAndSettle();
+    expect(find.text('0'), findsOneWidget);
+    expect(find.byType(InputChip), findsNWidgets(2));
+
+    final muscleChip = tester.widget<InputChip>(
+      find.widgetWithText(InputChip, 'Pecho'),
+    );
+    muscleChip.onDeleted!();
+    await tester.pump();
+    expect(find.byType(InputChip), findsOneWidget);
+    expect(find.text('4'), findsOneWidget);
+
+    await tester.tap(find.text('Limpiar filtros'));
+    await tester.pump();
+    expect(find.text('nombre'), findsOneWidget);
+    expect(find.text('8'), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const PageStorageKey<String>('exercises-scroll')),
+      const Offset(0, -600),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Abrir filtros'), findsOneWidget);
+    expect(find.text('nombre'), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const PageStorageKey<String>('exercises-scroll')),
+      const Offset(0, 600),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('Ejercicio con un nombre').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Cómo hacerlo'), findsOneWidget);
+    Navigator.of(tester.element(find.byType(Scaffold).last)).pop();
+    await tester.pumpAndSettle();
+    expect(find.text('nombre'), findsOneWidget);
   });
 }

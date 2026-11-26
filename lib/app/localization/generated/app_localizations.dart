@@ -326,6 +326,12 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get exerciseClearFilters;
 
+  /// No description provided for @exerciseRemoveActiveFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get exerciseRemoveActiveFilters;
+
   /// No description provided for @exerciseAdjustSearchTitle.
   ///
   /// In en, this message translates to:
