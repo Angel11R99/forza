@@ -15,6 +15,7 @@ class AccountAuthViewModel extends ChangeNotifier {
   final AccountAuthRepository repository;
   late final StreamSubscription<AccountIdentity?> _accountSubscription;
   bool _isLoading = false;
+  bool _hasRestored = false;
   AccountAuthFailure? _failure;
 
   AccountIdentity? get account => repository.currentAccount;
@@ -22,7 +23,8 @@ class AccountAuthViewModel extends ChangeNotifier {
   AccountAuthFailure? get failure => _failure;
 
   Future<void> restore() async {
-    if (_isLoading) return;
+    if (_isLoading || _hasRestored) return;
+    _hasRestored = true;
     _setLoading(true);
     try {
       await repository.restore();

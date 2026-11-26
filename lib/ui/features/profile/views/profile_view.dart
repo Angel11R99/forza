@@ -120,7 +120,6 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final displayProfile = _localizedProfile(context);
     final horizontalPadding = AppSpacing.pageGutter(
       MediaQuery.sizeOf(context).width,
     );
@@ -148,99 +147,59 @@ class _ProfileViewState extends State<ProfileView> {
                 ListenableBuilder(
                   listenable: widget.accountAuthViewModel,
                   builder: (context, _) {
-                    final account = widget.accountAuthViewModel.account;
-                    final googleName = account?.displayName?.trim();
-                    final displayName = googleName == null || googleName.isEmpty
-                        ? displayProfile.fullName
-                        : googleName;
-                    final photoUrl = account?.photoUrl;
-                    return AppSurfaceCard(
-                      padding: const EdgeInsets.all(AppSpacing.x4),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundColor: context.appColors.accentSoft,
-                            foregroundColor: context.appColors.accent,
-                            backgroundImage: photoUrl == null
-                                ? null
-                                : NetworkImage(photoUrl),
-                            child: photoUrl == null
-                                ? Text(
-                                    _initials(displayName),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge,
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: AppSpacing.x4),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  displayName,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const SizedBox(height: AppSpacing.x1),
-                                Text(
-                                  account?.email ??
-                                      context.l10n.profileGuestDescription,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                const SizedBox(height: AppSpacing.x2),
-                                Text(
-                                  displayProfile.goal,
-                                  style: Theme.of(context).textTheme.labelLarge
-                                      ?.copyWith(
-                                        color: context.appColors.accent,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                    return _AccountIdentityCard(
+                      model: widget.accountAuthViewModel,
+                      onSignIn: _openAccountAccess,
                     );
                   },
                 ),
                 const SizedBox(height: AppSpacing.x8),
-                _ProfileSection(
-                  title: context.l10n.profileEyebrow,
-                  options: [
-                    _ProfileOption(
-                      icon: Icons.language_rounded,
-                      title: context.l10n.settingsLanguageSelection,
-                      subtitle:
-                          widget.localeController.locale?.languageCode == 'en'
-                          ? context.l10n.settingsLanguageEnglish
-                          : widget.localeController.locale?.languageCode == 'es'
-                          ? context.l10n.settingsLanguageSpanish
-                          : context.l10n.settingsLanguageAutomatic,
-                      onTap: _editLanguage,
-                    ),
-                    _ProfileOption(
-                      icon: Icons.person_outline_rounded,
-                      title: context.l10n.profileEdit,
-                      subtitle: context.l10n.profileEditSubtitle,
-                      onTap: _editProfile,
-                    ),
-                    _ProfileOption(
-                      icon: Icons.login_rounded,
-                      title: context.l10n.profileAccountAccess,
-                      subtitle: context.l10n.profileAccountAccessSubtitle,
-                      onTap: _openAccountAccess,
-                    ),
-                    _ProfileOption(
-                      icon: Icons.lock_outline_rounded,
-                      title: context.l10n.profilePrivacy,
-                      subtitle: _privacy.privateProfile
-                          ? context.l10n.profilePrivate
-                          : context.l10n.profileVisible,
-                      onTap: _editPrivacy,
-                    ),
-                  ],
+                ListenableBuilder(
+                  listenable: widget.accountAuthViewModel,
+                  builder: (context, _) {
+                    final hasAccount =
+                        widget.accountAuthViewModel.account != null;
+                    return _ProfileSection(
+                      title: context.l10n.profileEyebrow,
+                      options: [
+                        _ProfileOption(
+                          icon: Icons.language_rounded,
+                          title: context.l10n.settingsLanguageSelection,
+                          subtitle:
+                              widget.localeController.locale?.languageCode ==
+                                  'en'
+                              ? context.l10n.settingsLanguageEnglish
+                              : widget.localeController.locale?.languageCode ==
+                                    'es'
+                              ? context.l10n.settingsLanguageSpanish
+                              : context.l10n.settingsLanguageAutomatic,
+                          onTap: _editLanguage,
+                        ),
+                        if (hasAccount) ...[
+                          _ProfileOption(
+                            icon: Icons.person_outline_rounded,
+                            title: context.l10n.profileEdit,
+                            subtitle: context.l10n.profileEditSubtitle,
+                            onTap: _editProfile,
+                          ),
+                          _ProfileOption(
+                            icon: Icons.login_rounded,
+                            title: context.l10n.profileAccountAccess,
+                            subtitle: context.l10n.profileAccountAccessSubtitle,
+                            onTap: _openAccountAccess,
+                          ),
+                          _ProfileOption(
+                            icon: Icons.lock_outline_rounded,
+                            title: context.l10n.profilePrivacy,
+                            subtitle: _privacy.privateProfile
+                                ? context.l10n.profilePrivate
+                                : context.l10n.profileVisible,
+                            onTap: _editPrivacy,
+                          ),
+                        ],
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 _ProfileSection(
@@ -447,6 +406,108 @@ class _ProfileViewState extends State<ProfileView> {
         : _profile.fullName,
     goal: _localizedGoal(context, _profile.goal),
   );
+}
+
+class _AccountIdentityCard extends StatelessWidget {
+  const _AccountIdentityCard({required this.model, required this.onSignIn});
+
+  final AccountAuthViewModel model;
+  final VoidCallback onSignIn;
+
+  @override
+  Widget build(BuildContext context) {
+    final account = model.account;
+    final displayName = account?.displayName?.trim();
+    final hasDisplayName = displayName != null && displayName.isNotEmpty;
+
+    return AppSurfaceCard(
+      padding: const EdgeInsets.all(AppSpacing.x4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: context.appColors.accentSoft,
+                foregroundColor: context.appColors.accent,
+                backgroundImage: account?.photoUrl == null
+                    ? null
+                    : NetworkImage(account!.photoUrl!),
+                child: account?.photoUrl != null
+                    ? null
+                    : hasDisplayName
+                    ? Text(
+                        _initials(displayName),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      )
+                    : const Icon(Icons.person_outline_rounded, size: 28),
+              ),
+              const SizedBox(width: AppSpacing.x4),
+              Expanded(
+                child: account == null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            model.isLoading
+                                ? context.l10n.profileAccountChecking
+                                : context.l10n.profileNoAccount,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: AppSpacing.x1),
+                          Text(
+                            model.isLoading
+                                ? context.l10n.profileAccountCheckingDescription
+                                : context.l10n.profileGuestDescription,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            hasDisplayName ? displayName : account.email,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          if (hasDisplayName) ...[
+                            const SizedBox(height: AppSpacing.x1),
+                            Text(
+                              account.email,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
+                          const SizedBox(height: AppSpacing.x2),
+                          Text(
+                            context.l10n.profileGoogleConnected,
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+          if (account == null && !model.isLoading) ...[
+            const SizedBox(height: AppSpacing.x4),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onSignIn,
+                icon: const Icon(Icons.login_rounded),
+                label: Text(context.l10n.accountSignInWithGoogle),
+              ),
+            ),
+          ],
+          if (account == null && model.isLoading) ...[
+            const SizedBox(height: AppSpacing.x3),
+            const LinearProgressIndicator(),
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 class _ProfileSection extends StatelessWidget {
