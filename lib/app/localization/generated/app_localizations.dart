@@ -3719,6 +3719,12 @@ abstract class AppLocalizations {
   /// **'Exercise {current} of {total}'**
   String sessionExerciseCountProgress(Object current, Object total);
 
+  /// No description provided for @sessionSetsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {total} sets completed'**
+  String sessionSetsProgress(int current, int total);
+
   /// No description provided for @sessionViewRoutine.
   ///
   /// In en, this message translates to:
@@ -3766,6 +3772,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set log'**
   String get sessionSetLog;
+
+  /// No description provided for @sessionNextSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Next set'**
+  String get sessionNextSet;
+
+  /// No description provided for @sessionCompleteSetAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete set'**
+  String get sessionCompleteSetAction;
+
+  /// No description provided for @sessionUndoSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmark set'**
+  String get sessionUndoSet;
+
+  /// No description provided for @sessionPreviousSetSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion from previous set'**
+  String get sessionPreviousSetSuggestion;
 
   /// No description provided for @sessionRestHeadline.
   ///
