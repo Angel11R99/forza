@@ -309,65 +309,65 @@ class _ExercisePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 264,
+      constraints: const BoxConstraints(minHeight: 264),
       padding: const EdgeInsets.all(AppSpacing.x3),
       decoration: BoxDecoration(
         color: context.appColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppRadius.large),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Center(
-              child: SizedBox(
-                height: 220,
-                child: ExerciseFlipCard(
-                  key: const Key('exercise-flip-card'),
-                  frontHint: context.l10n.exerciseFlipSemanticsFront,
-                  backHint: context.l10n.exerciseFlipSemanticsBack,
-                  front: Center(
-                    child: SizedBox(
-                      width: 220,
-                      height: 220,
-                      child: ExerciseAnimationView(
-                        exerciseId: exercise.id,
-                        animation: exercise.animation,
-                        label: localizedExerciseName(context, exercise),
-                        fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
-                        showControls: true,
-                      ),
+          Center(
+            child: SizedBox(
+              height: 220,
+              child: ExerciseFlipCard(
+                key: const Key('exercise-flip-card'),
+                frontHint: context.l10n.exerciseFlipSemanticsFront,
+                backHint: context.l10n.exerciseFlipSemanticsBack,
+                front: Center(
+                  child: SizedBox(
+                    width: 220,
+                    height: 220,
+                    child: ExerciseAnimationView(
+                      exerciseId: exercise.id,
+                      animation: exercise.animation,
+                      label: localizedExerciseName(context, exercise),
+                      fallbackIcon: exerciseGroupIcon(exercise.muscleGroup),
+                      showControls: true,
                     ),
                   ),
-                  back: _ExerciseInfoFace(exercise: exercise),
                 ),
+                back: _ExerciseInfoFace(exercise: exercise),
               ),
             ),
           ),
           const SizedBox(height: AppSpacing.x1),
+          Text(
+            exercise.animation == null
+                ? context.l10n.exerciseAnimationUnavailable
+                : context.l10n.exerciseAnimationIllustrative,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: context.appColors.textSecondary),
+          ),
+          const SizedBox(height: AppSpacing.x1),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: Text(
-                  exercise.animation == null
-                      ? context.l10n.exerciseAnimationUnavailable
-                      : context.l10n.exerciseAnimationIllustrative,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall
-                      ?.copyWith(color: context.appColors.textSecondary),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.x2),
               Icon(
                 Icons.flip_rounded,
                 size: 16,
                 color: context.appColors.textSecondary,
               ),
               const SizedBox(width: AppSpacing.x1),
-              Text(
-                context.l10n.exerciseFlipHint,
-                style: Theme.of(context).textTheme.labelSmall
-                    ?.copyWith(color: context.appColors.textSecondary),
+              Flexible(
+                child: Text(
+                  context.l10n.exerciseFlipHint,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelSmall
+                      ?.copyWith(color: context.appColors.textSecondary),
+                ),
               ),
             ],
           ),
@@ -438,41 +438,47 @@ class _ExerciseInfoFace extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.control),
           ),
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 18,
-                      color: context.appColors.textSecondary,
-                    ),
-                    const SizedBox(width: AppSpacing.x2),
-                    Expanded(
-                      child: Text(
-                        context.l10n.exerciseInfoHeading,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.x2),
-                if (useColumns)
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - AppSpacing.x6,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(flex: 3, child: benefit),
-                      const SizedBox(width: AppSpacing.x3),
-                      Expanded(flex: 2, child: muscleDetails),
+                      Icon(
+                        Icons.info_outline_rounded,
+                        size: 18,
+                        color: context.appColors.textSecondary,
+                      ),
+                      const SizedBox(width: AppSpacing.x2),
+                      Expanded(
+                        child: Text(
+                          context.l10n.exerciseInfoHeading,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                      ),
                     ],
-                  )
-                else ...[
-                  benefit,
+                  ),
                   const SizedBox(height: AppSpacing.x2),
-                  muscleDetails,
+                  if (useColumns)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 3, child: benefit),
+                        const SizedBox(width: AppSpacing.x3),
+                        Expanded(flex: 2, child: muscleDetails),
+                      ],
+                    )
+                  else ...[
+                    benefit,
+                    const SizedBox(height: AppSpacing.x2),
+                    muscleDetails,
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );

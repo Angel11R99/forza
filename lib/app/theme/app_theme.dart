@@ -25,6 +25,110 @@ abstract final class AppTheme {
           onError: colors.inverseText,
         );
 
+    final textTheme = TextTheme(
+      displayLarge: TextStyle(
+        fontFamily: 'Barlow Condensed',
+        color: colors.textPrimary,
+        fontSize: 32,
+        height: 1.08,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.8,
+      ),
+      displayMedium: TextStyle(
+        fontFamily: 'Barlow Condensed',
+        color: colors.textPrimary,
+        fontSize: 28,
+        height: 1.1,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.65,
+      ),
+      displaySmall: TextStyle(
+        fontFamily: 'Barlow Condensed',
+        color: colors.textPrimary,
+        fontSize: 28,
+        height: 1.12,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.8,
+      ),
+      headlineLarge: TextStyle(
+        fontFamily: 'Barlow Condensed',
+        color: colors.textPrimary,
+        fontSize: 24,
+        height: 1.12,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.45,
+      ),
+      headlineMedium: TextStyle(
+        fontFamily: 'Barlow Condensed',
+        color: colors.textPrimary,
+        fontSize: 24,
+        height: 1.15,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.45,
+      ),
+      headlineSmall: TextStyle(
+        fontFamily: 'Barlow Condensed',
+        color: colors.textPrimary,
+        fontSize: 24,
+        height: 1.18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.45,
+      ),
+      titleLarge: TextStyle(
+        color: colors.textPrimary,
+        fontSize: 18,
+        height: 1.2,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.25,
+      ),
+      titleMedium: TextStyle(
+        color: colors.textPrimary,
+        fontSize: 16,
+        height: 1.25,
+        fontWeight: FontWeight.w600,
+      ),
+      titleSmall: TextStyle(
+        color: colors.textPrimary,
+        fontSize: 14,
+        height: 1.3,
+        fontWeight: FontWeight.w600,
+      ),
+      bodyLarge: TextStyle(
+        color: colors.textPrimary,
+        fontSize: 16,
+        height: 1.45,
+      ),
+      bodyMedium: TextStyle(
+        color: colors.textSecondary,
+        fontSize: 14,
+        height: 1.4,
+        fontWeight: FontWeight.w500,
+      ),
+      bodySmall: TextStyle(
+        color: colors.textSecondary,
+        fontSize: 12,
+        height: 1.4,
+        fontWeight: FontWeight.w500,
+      ),
+      labelMedium: TextStyle(
+        color: colors.textPrimary,
+        fontSize: 12,
+        height: 1.25,
+        fontWeight: FontWeight.w600,
+      ),
+      labelSmall: TextStyle(
+        color: colors.textSecondary,
+        fontSize: 12,
+        height: 1.25,
+        fontWeight: FontWeight.w600,
+      ),
+      labelLarge: TextStyle(
+        color: colors.textPrimary,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
@@ -35,121 +139,14 @@ abstract final class AppTheme {
       dividerColor: colors.divider,
       visualDensity: VisualDensity.standard,
       iconTheme: IconThemeData(color: colors.textPrimary),
-      textTheme: TextTheme(
-        displayLarge: TextStyle(
-          fontFamily: 'Barlow Condensed',
-          color: colors.textPrimary,
-          fontSize: 32,
-          height: 1.08,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.8,
-        ),
-        displayMedium: TextStyle(
-          fontFamily: 'Barlow Condensed',
-          color: colors.textPrimary,
-          fontSize: 28,
-          height: 1.1,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.65,
-        ),
-        displaySmall: TextStyle(
-          fontFamily: 'Barlow Condensed',
-          color: colors.textPrimary,
-          fontSize: 28,
-          height: 1.12,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.8,
-        ),
-        headlineLarge: TextStyle(
-          fontFamily: 'Barlow Condensed',
-          color: colors.textPrimary,
-          fontSize: 24,
-          height: 1.12,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.45,
-        ),
-        headlineMedium: TextStyle(
-          fontFamily: 'Barlow Condensed',
-          color: colors.textPrimary,
-          fontSize: 24,
-          height: 1.15,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.45,
-        ),
-        headlineSmall: TextStyle(
-          fontFamily: 'Barlow Condensed',
-          color: colors.textPrimary,
-          fontSize: 24,
-          height: 1.18,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.45,
-        ),
-        titleLarge: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 18,
-          height: 1.2,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.25,
-        ),
-        titleMedium: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 16,
-          height: 1.25,
-          fontWeight: FontWeight.w600,
-        ),
-        titleSmall: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 14,
-          height: 1.3,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 16,
-          height: 1.45,
-        ),
-        bodyMedium: TextStyle(
-          color: colors.textSecondary,
-          fontSize: 14,
-          height: 1.4,
-          fontWeight: FontWeight.w500,
-        ),
-        bodySmall: TextStyle(
-          color: colors.textSecondary,
-          fontSize: 12,
-          height: 1.4,
-          fontWeight: FontWeight.w500,
-        ),
-        labelMedium: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 12,
-          height: 1.25,
-          fontWeight: FontWeight.w600,
-        ),
-        labelSmall: TextStyle(
-          color: colors.textSecondary,
-          fontSize: 12,
-          height: 1.25,
-          fontWeight: FontWeight.w600,
-        ),
-        labelLarge: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: colors.background,
         foregroundColor: colors.textPrimary,
         surfaceTintColor: Colors.transparent,
         centerTitle: false,
         scrolledUnderElevation: 0,
-        titleTextStyle: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.2,
-        ),
+        titleTextStyle: textTheme.titleMedium,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colors.surface.withValues(alpha: 0.96),
@@ -157,11 +154,10 @@ abstract final class AppTheme {
         elevation: 0,
         height: 66,
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => TextStyle(
+          (states) => textTheme.labelSmall!.copyWith(
             color: states.contains(WidgetState.selected)
                 ? colors.accent
                 : colors.textSecondary,
-            fontSize: 12,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w600
                 : FontWeight.w500,
@@ -178,22 +174,14 @@ abstract final class AppTheme {
       navigationRailTheme: NavigationRailThemeData(
         selectedIconTheme: IconThemeData(color: colors.accent),
         unselectedIconTheme: IconThemeData(color: colors.textSecondary),
-        selectedLabelTextStyle: TextStyle(color: colors.accent),
-        unselectedLabelTextStyle: TextStyle(color: colors.textSecondary),
+        selectedLabelTextStyle: textTheme.labelSmall!.copyWith(
+          color: colors.accent,
+        ),
+        unselectedLabelTextStyle: textTheme.labelSmall,
       ),
       listTileTheme: ListTileThemeData(
-        titleTextStyle: TextStyle(
-          color: colors.textPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          height: 1.25,
-        ),
-        subtitleTextStyle: TextStyle(
-          color: colors.textSecondary,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          height: 1.3,
-        ),
+        titleTextStyle: textTheme.titleMedium,
+        subtitleTextStyle: textTheme.bodyMedium!.copyWith(height: 1.3),
       ),
       dividerTheme: DividerThemeData(
         color: colors.divider,
@@ -217,7 +205,7 @@ abstract final class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.small),
           ),
-          textStyle: TextStyle(fontWeight: FontWeight.w600),
+          textStyle: textTheme.titleSmall,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -229,7 +217,7 @@ abstract final class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.small),
           ),
-          textStyle: TextStyle(fontWeight: FontWeight.w600),
+          textStyle: textTheme.titleSmall,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -253,8 +241,10 @@ abstract final class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: colors.surface,
         selectedColor: colors.accentSoft,
-        labelStyle: TextStyle(color: colors.textPrimary),
-        secondaryLabelStyle: TextStyle(color: colors.textPrimary),
+        labelStyle: textTheme.labelMedium!.copyWith(color: colors.textPrimary),
+        secondaryLabelStyle: textTheme.labelMedium!.copyWith(
+          color: colors.textPrimary,
+        ),
         checkmarkColor: colors.accent,
         side: BorderSide(color: colors.divider),
         shape: RoundedRectangleBorder(

@@ -404,9 +404,13 @@ class _ActivityViewState extends State<ActivityView> {
                                 color: Colors.transparent,
                                 shape: BoxShape.circle,
                               ),
-                              selectedTextStyle: TextStyle(
-                                color: context.appColors.inverseText,
-                              ),
+                              selectedTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color: context.appColors.inverseText,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                               selectedDecoration: BoxDecoration(
                                 color: context.appColors.accent,
                                 shape: BoxShape.circle,
