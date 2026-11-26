@@ -3803,6 +3803,36 @@ abstract class AppLocalizations {
   /// **'Take a breather'**
   String get sessionRestHeadline;
 
+  /// No description provided for @sessionRestBetweenSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest between sets'**
+  String get sessionRestBetweenSets;
+
+  /// No description provided for @sessionRestBetweenExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise changeover'**
+  String get sessionRestBetweenExercises;
+
+  /// No description provided for @sessionRestDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest duration'**
+  String get sessionRestDuration;
+
+  /// No description provided for @sessionNextSetAfterRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: set {number}'**
+  String sessionNextSetAfterRest(int number);
+
+  /// No description provided for @sessionStartWhenReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Start when you’re ready'**
+  String get sessionStartWhenReady;
+
   /// No description provided for @sessionBeforeExercise.
   ///
   /// In en, this message translates to:
