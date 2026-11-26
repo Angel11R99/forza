@@ -639,13 +639,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStatusCompleted => 'completed';
 
   @override
+  String get homeStatusSkipped => 'skipped';
+
+  @override
   String get homeStatusPending => 'pending';
 
   @override
   String get homeStatusRest => 'rest';
-
-  @override
-  String get homeStatusSkipped => 'skipped';
 
   @override
   String get homeStatusRescheduled => 'rescheduled';
@@ -724,6 +724,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activitySessionSkipped => 'Workout skipped';
+
+  @override
+  String get activityStatusRescheduled => 'Rescheduled';
+
+  @override
+  String get activityStatusInProgress => 'In progress';
 
   @override
   String get activityUndoSkip => 'Undo skip';

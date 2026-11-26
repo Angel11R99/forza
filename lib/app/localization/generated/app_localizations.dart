@@ -1130,6 +1130,12 @@ abstract class AppLocalizations {
   /// **'completed'**
   String get homeStatusCompleted;
 
+  /// No description provided for @homeStatusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'skipped'**
+  String get homeStatusSkipped;
+
   /// No description provided for @homeStatusPending.
   ///
   /// In en, this message translates to:
@@ -1141,12 +1147,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'rest'**
   String get homeStatusRest;
-
-  /// No description provided for @homeStatusSkipped.
-  ///
-  /// In en, this message translates to:
-  /// **'skipped'**
-  String get homeStatusSkipped;
 
   /// No description provided for @homeStatusRescheduled.
   ///
@@ -1279,6 +1279,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Workout skipped'**
   String get activitySessionSkipped;
+
+  /// No description provided for @activityStatusRescheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescheduled'**
+  String get activityStatusRescheduled;
+
+  /// No description provided for @activityStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get activityStatusInProgress;
 
   /// No description provided for @activityUndoSkip.
   ///
