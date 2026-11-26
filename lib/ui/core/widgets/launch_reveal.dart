@@ -23,7 +23,7 @@ class _LaunchRevealState extends State<LaunchReveal>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 620),
+    duration: const Duration(milliseconds: 800),
   )..addStatusListener(_handleStatus);
   bool _started = false;
   bool _finished = false;
@@ -88,7 +88,7 @@ class _LaunchRevealState extends State<LaunchReveal>
                 child: AnimatedBuilder(
                   animation: _controller,
                   builder: (context, _) {
-                    final revealProgress = Curves.easeInOutCubic.transform(
+                    final revealProgress = Curves.easeInOutQuart.transform(
                       (_controller.value / 0.82).clamp(0.0, 1.0).toDouble(),
                     );
                     final fadeProgress = Curves.easeOut.transform(
