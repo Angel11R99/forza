@@ -291,6 +291,95 @@ void main() {
       TrainingProgressionStatus.readyToVary,
     );
   });
+
+  test(
+    'progression includes extra sets captured for an individual session',
+    () {
+      final expandedSnapshot = jsonEncode({
+        ...session.toJson(),
+        'sessionSetCounts': {'0': 3},
+      });
+      final history = [
+        for (var sessionIndex = 1; sessionIndex <= 2; sessionIndex++)
+          WorkoutRecord(
+            scheduledDate: DateTime(2026, 1, sessionIndex),
+            completedAt: DateTime(2026, 1, sessionIndex, 12),
+            title: session.title,
+            goal: 'Ganar fuerza',
+            durationMinutes: 30,
+            exerciseCount: 1,
+            exerciseIds: [exercise.catalogId],
+            planSnapshot: expandedSnapshot,
+            setResults: [
+              for (var setIndex = 0; setIndex < 3; setIndex++)
+                WorkoutSetResult(
+                  exercisePosition: 0,
+                  setIndex: setIndex,
+                  repetitions: 8,
+                  loadKg: 10,
+                ),
+            ],
+          ),
+      ];
+
+      expect(
+        advisor
+            .evaluate(
+              exercise: exercise,
+              goal: 'Ganar fuerza',
+              experience: 'Entreno hace tiempo',
+              history: history,
+              asOf: DateTime(2026, 1, 10),
+            )
+            .status,
+        TrainingProgressionStatus.readyToIncrease,
+      );
+    },
+  );
+
+  test(
+    'reduced session volume does not lower the plan progression threshold',
+    () {
+      final reducedSnapshot = jsonEncode({
+        ...session.toJson(),
+        'sessionSetCounts': {'0': 1},
+      });
+      final history = [
+        for (var sessionIndex = 1; sessionIndex <= 2; sessionIndex++)
+          WorkoutRecord(
+            scheduledDate: DateTime(2026, 1, sessionIndex),
+            completedAt: DateTime(2026, 1, sessionIndex, 12),
+            title: session.title,
+            goal: 'Ganar fuerza',
+            durationMinutes: 30,
+            exerciseCount: 1,
+            exerciseIds: [exercise.catalogId],
+            planSnapshot: reducedSnapshot,
+            setResults: const [
+              WorkoutSetResult(
+                exercisePosition: 0,
+                setIndex: 0,
+                repetitions: 8,
+                loadKg: 10,
+              ),
+            ],
+          ),
+      ];
+
+      expect(
+        advisor
+            .evaluate(
+              exercise: exercise,
+              goal: 'Ganar fuerza',
+              experience: 'Entreno hace tiempo',
+              history: history,
+              asOf: DateTime(2026, 1, 10),
+            )
+            .status,
+        TrainingProgressionStatus.keepBuilding,
+      );
+    },
+  );
 }
 
 List<WorkoutRecord> _history(

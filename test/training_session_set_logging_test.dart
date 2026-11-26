@@ -7,6 +7,7 @@ import 'package:forza/app/localization/generated/app_localizations.dart';
 import 'package:forza/app/theme/app_theme.dart';
 import 'package:forza/data/database/app_database.dart';
 import 'package:forza/data/repositories/workout_log_repository.dart';
+import 'package:forza/domain/models/workout_record.dart';
 import 'package:forza/domain/use_cases/training_plan_builder.dart';
 import 'package:forza/ui/features/onboarding/views/training_session_flow.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
@@ -137,6 +138,114 @@ void main() {
           .whereType<Map<String, Object?>>()
           .single;
       expect(clearedSet['loadKg'], isNull);
+    },
+  );
+
+  testWidgets(
+    'additional series count toward progress and save with the original plan',
+    (tester) async {
+      final database = AppDatabase(NativeDatabase.memory());
+      addTearDown(() async => database.close());
+      final repository = WorkoutLogRepository(database: database);
+      const settings = TrainingSettings();
+      const plannedSession = PlannedTrainingSession(
+        weekday: 2,
+        title: 'Sesión de prueba',
+        focus: 'Piernas',
+        durationMinutes: 20,
+        exercises: [
+          PlannedExercise(
+            catalogId: '3470',
+            name: 'Estocada',
+            focus: 'Piernas',
+            prescription: '2 series · 8–12 repeticiones',
+          ),
+        ],
+      );
+      WorkoutRecord? savedRecord;
+      await tester.runAsync(() async {
+        await database.customSelect('SELECT 1').get();
+      });
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('es'),
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () async {
+                  savedRecord = await Navigator.of(context).push<WorkoutRecord>(
+                    MaterialPageRoute(
+                      builder: (_) => TrainingSessionFlow(
+                        settings: settings,
+                        workoutLogRepository: repository,
+                        scheduledDate: DateTime(2026, 11, 24),
+                        plannedSession: plannedSession,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Abrir prueba'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await _tap(tester, find.text('Abrir prueba'));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump();
+      await _startSession(tester);
+
+      expect(
+        find.text('Recomendadas: 2 · Para esta sesión: 2'),
+        findsOneWidget,
+      );
+      await _tap(tester, find.byKey(const ValueKey('add-session-set')));
+      expect(
+        find.text('Recomendadas: 2 · Para esta sesión: 3'),
+        findsOneWidget,
+      );
+      expect(find.text('Serie adicional 3'), findsOneWidget);
+
+      for (var setIndex = 0; setIndex < 3; setIndex++) {
+        await _enter(tester, 'set-$setIndex-repetitions', '8');
+        await _tap(tester, find.byKey(ValueKey('complete-set-$setIndex')));
+        await _skipRest(tester);
+      }
+      expect(find.text('3 de 3 series completadas'), findsOneWidget);
+      await _tap(tester, find.byKey(const ValueKey('remove-session-set')));
+      expect(find.text('Eliminar resultado de la serie'), findsOneWidget);
+      await _tap(tester, find.text('Cancelar'));
+      expect(find.text('3 de 3 series completadas'), findsOneWidget);
+      await _tap(tester, find.byKey(const ValueKey('remove-session-set')));
+      await _tap(tester, find.text('Confirmar'));
+      expect(find.text('2 de 2 series completadas'), findsOneWidget);
+      await _tap(tester, find.byKey(const ValueKey('add-session-set')));
+      await _enter(tester, 'set-2-repetitions', '8');
+      await _tap(tester, find.byKey(const ValueKey('complete-set-2')));
+      expect(find.text('3 de 3 series completadas'), findsOneWidget);
+      await _tap(tester, find.text('Completar entrenamiento'));
+      await _tap(tester, find.text('Ver vuelta a la calma'));
+      await _tap(tester, find.text('Omitir vuelta a la calma e ir al resumen'));
+      await _tap(tester, find.text('Finalizar'));
+      await tester.pumpAndSettle();
+
+      expect(savedRecord, isNotNull);
+      expect(savedRecord!.setResults.map((set) => set.setIndex), [0, 1, 2]);
+      final snapshot =
+          jsonDecode(savedRecord!.planSnapshot) as Map<String, Object?>;
+      final exercises = snapshot['exercises']! as List<Object?>;
+      final savedExercise = exercises.single! as Map<String, Object?>;
+      expect(savedExercise['prescription'], '2 series · 8–12 repeticiones');
+      expect((snapshot['sessionSetCounts']! as Map<String, Object?>)['0'], 3);
     },
   );
 

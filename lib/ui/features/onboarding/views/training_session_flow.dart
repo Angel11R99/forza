@@ -50,6 +50,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   static const _progressionAdvisor = TrainingProgressionAdvisor();
   WorkoutLogRepository get _workoutRepository => widget.workoutLogRepository;
   final Map<int, List<WorkoutSetResult>> _setResults = {};
+  final Map<int, int> _sessionSetCounts = {};
   final Set<String> _completedSets = {};
   List<Exercise> _catalog = const [];
   List<WorkoutRecord> _workoutHistory = const [];
@@ -83,14 +84,19 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
   int get _sessionPlanVersion => _restoredPlanVersion ?? widget.planVersion;
 
   List<_SessionExercise> get _exercises => _plannedSession.exercises
-      .map(
-        (exercise) => _SessionExercise(
+      .asMap()
+      .entries
+      .map((entry) {
+        final exercise = entry.value;
+        final recommendedSetCount = _recommendedSetCount(exercise);
+        return _SessionExercise(
           catalogId: exercise.catalogId,
           name: exercise.name,
           focus: exercise.focus,
           isTimed: exercise.timed,
           tracksExternalLoad: exercise.tracksExternalLoad,
-          setCount: exercise.prescription.startsWith('2 series') ? 2 : 3,
+          recommendedSetCount: recommendedSetCount,
+          setCount: _sessionSetCounts[entry.key] ?? recommendedSetCount,
           detail: '${exercise.focus} · ${exercise.prescription}',
           icon: switch (exercise.focus) {
             'Piernas' => Icons.accessibility_new_rounded,
@@ -98,8 +104,8 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             'Core' => Icons.accessibility_new_rounded,
             _ => Icons.fitness_center_rounded,
           },
-        ),
-      )
+        );
+      })
       .toList(growable: false);
 
   _SessionScreen _screen = _SessionScreen.preparation;
@@ -200,6 +206,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         (jsonEncode(savedPlan.toJson()) != jsonEncode(currentPlan.toJson()) ||
             savedPlanVersion != widget.planVersion);
     _restoredPlannedSession = savedPlan;
+    _sessionSetCounts
+      ..clear()
+      ..addAll(_decodeSessionSetCounts(draft['sessionSetCounts']));
     _restoredScheduledDate = savedDate;
     _restoredPlanVersion = savedPlanVersion is int && savedPlanVersion > 0
         ? savedPlanVersion
@@ -302,6 +311,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
       'scheduledDate': date.toIso8601String(),
       'planVersion': _sessionPlanVersion,
       'planSnapshot': _plannedSession.toJson(),
+      'sessionSetCounts': _sessionSetCountsForStorage(),
       'currentExercise': _currentExercise,
       'elapsedSeconds': _elapsedSeconds,
       'remainingRestSeconds': _remainingRestSeconds,
@@ -322,6 +332,93 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         .catchError((Object _) {})
         .then((_) => _workoutRepository.saveActiveWorkout(payload));
     return _pendingDraftWrite;
+  }
+
+  Map<int, int> _decodeSessionSetCounts(Object? value) {
+    if (value is! Map) return const {};
+    final decoded = <int, int>{};
+    for (final entry in value.entries) {
+      final exercisePosition = int.tryParse(entry.key.toString());
+      final setCount = entry.value;
+      if (exercisePosition == null ||
+          exercisePosition < 0 ||
+          exercisePosition >= _plannedSession.exercises.length ||
+          setCount is! int ||
+          setCount < 1 ||
+          setCount > 20) {
+        continue;
+      }
+      final recommended = _recommendedSetCount(
+        _plannedSession.exercises[exercisePosition],
+      );
+      if (setCount != recommended) decoded[exercisePosition] = setCount;
+    }
+    return decoded;
+  }
+
+  Map<String, int> _sessionSetCountsForStorage() => {
+    for (var index = 0; index < _exercises.length; index++)
+      '$index': _exercises[index].setCount,
+  };
+
+  void _addSessionSet() {
+    final count = _exercises[_currentExercise].setCount;
+    if (count >= 20) return;
+    final newCount = count + 1;
+    setState(() {
+      if (newCount == _exercises[_currentExercise].recommendedSetCount) {
+        _sessionSetCounts.remove(_currentExercise);
+      } else {
+        _sessionSetCounts[_currentExercise] = newCount;
+      }
+    });
+    _saveDraft();
+  }
+
+  Future<void> _removeLastSessionSet() async {
+    final exercisePosition = _currentExercise;
+    final setIndex = _exercises[exercisePosition].setCount - 1;
+    final completed = _completedSets.contains('$exercisePosition:$setIndex');
+    if (completed) {
+      final shouldRemove = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.l10n.sessionRemoveCompletedSetTitle),
+          content: Text(context.l10n.sessionRemoveCompletedSetMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(context.l10n.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(context.l10n.activityConfirmAction),
+            ),
+          ],
+        ),
+      );
+      if (shouldRemove != true || !mounted) return;
+    }
+
+    final newCount = setIndex;
+    setState(() {
+      _completedSets.remove('$exercisePosition:$setIndex');
+      _setResults[exercisePosition]?.removeWhere(
+        (result) => result.setIndex == setIndex,
+      );
+      if (_timedSetRunning && exercisePosition == _currentExercise) {
+        _timedSetTimer?.cancel();
+        _timedSetRunning = false;
+        _timedRemainingSeconds = 30;
+      }
+      final recommended = _exercises[exercisePosition].recommendedSetCount;
+      if (newCount == recommended) {
+        _sessionSetCounts.remove(exercisePosition);
+      } else {
+        _sessionSetCounts[exercisePosition] = newCount;
+      }
+    });
+    _saveDraft();
   }
 
   @override
@@ -772,6 +869,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     if (!mounted) return;
     setState(() {
       _restoredPlannedSession = null;
+      _sessionSetCounts.clear();
       _restoredScheduledDate = null;
       _restoredPlanVersion = null;
       _draftToReview = null;
@@ -824,6 +922,14 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             context.l10n.sessionSetLog,
             style: Theme.of(context).textTheme.titleLarge,
           ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(
+            context.l10n.sessionSetCountSummary(
+              _exercises[_currentExercise].recommendedSetCount,
+              _exercises[_currentExercise].setCount,
+            ),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: AppSpacing.x2),
           for (
             var setIndex = 0;
@@ -834,7 +940,9 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
               key: ValueKey('workout-set-$_currentExercise-$setIndex'),
               setIndex: setIndex,
               weightUnit: widget.weightUnit,
-              label: context.l10n.sessionSet(setIndex + 1),
+              label: setIndex < _exercises[_currentExercise].recommendedSetCount
+                  ? context.l10n.sessionSet(setIndex + 1)
+                  : context.l10n.sessionAdditionalSet(setIndex + 1),
               isTimed: _exercises[_currentExercise].isTimed,
               tracksExternalLoad:
                   _exercises[_currentExercise].tracksExternalLoad ||
@@ -925,6 +1033,33 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             ),
             const SizedBox(height: AppSpacing.x2),
           ],
+          Wrap(
+            spacing: AppSpacing.x2,
+            runSpacing: AppSpacing.x1,
+            children: [
+              TextButton.icon(
+                key: const ValueKey('add-session-set'),
+                onPressed: _exercises[_currentExercise].setCount >= 20
+                    ? null
+                    : _addSessionSet,
+                icon: const Icon(Icons.add_rounded),
+                label: Text(context.l10n.sessionAddSet),
+              ),
+              if (_exercises[_currentExercise].setCount > 1)
+                TextButton.icon(
+                  key: const ValueKey('remove-session-set'),
+                  onPressed: _removeLastSessionSet,
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
+                  label: Text(
+                    _completedSets.contains(
+                          '$_currentExercise:${_exercises[_currentExercise].setCount - 1}',
+                        )
+                        ? context.l10n.sessionRemoveCompletedSet
+                        : context.l10n.sessionRemovePendingSet,
+                  ),
+                ),
+            ],
+          ),
         ],
         const SizedBox(height: AppSpacing.x2),
         const _SessionSaveNote(),
@@ -1939,13 +2074,22 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
     await _pendingDraftWrite.catchError((Object _) {});
     await _workoutRepository.clearActiveWorkout();
     if (!mounted) return;
-    final results = [for (final sets in _setResults.values) ...sets]
-        .where(
-          (result) => _completedSets.contains(
-            '${result.exercisePosition}:${result.setIndex}',
-          ),
-        )
-        .toList(growable: false);
+    final results =
+        [for (final sets in _setResults.values) ...sets]
+            .where(
+              (result) => _completedSets.contains(
+                '${result.exercisePosition}:${result.setIndex}',
+              ),
+            )
+            .toList(growable: false)
+          ..sort((first, second) {
+            final exerciseOrder = first.exercisePosition.compareTo(
+              second.exercisePosition,
+            );
+            return exerciseOrder != 0
+                ? exerciseOrder
+                : first.setIndex.compareTo(second.setIndex);
+          });
     final completedPositions = results
         .map((result) => result.exercisePosition)
         .toSet();
@@ -1966,7 +2110,10 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
         ],
         exercisePositions: recordPositions,
         planVersion: _sessionPlanVersion,
-        planSnapshot: jsonEncode(_plannedSession.toJson()),
+        planSnapshot: jsonEncode({
+          ..._plannedSession.toJson(),
+          'sessionSetCounts': _sessionSetCountsForStorage(),
+        }),
         setResults: results,
       ),
     );
@@ -2388,6 +2535,7 @@ class _SessionExercise {
     required this.focus,
     this.isTimed = false,
     this.tracksExternalLoad = false,
+    required this.recommendedSetCount,
     required this.setCount,
     required this.icon,
     this.detail = '',
@@ -2398,6 +2546,7 @@ class _SessionExercise {
   final String focus;
   final bool isTimed;
   final bool tracksExternalLoad;
+  final int recommendedSetCount;
   final int setCount;
   final String detail;
   final IconData icon;
@@ -2530,6 +2679,13 @@ String _localizedPrescriptionTarget(BuildContext context, String prescription) {
     _ => context.l10n.sessionRepTargetComfortable,
   };
 }
+
+int _recommendedSetCount(PlannedExercise exercise) =>
+    int.tryParse(
+      RegExp(r'^(\d+)\s+series').firstMatch(exercise.prescription)?.group(1) ??
+          '',
+    ) ??
+    3;
 
 String _localizedWarmupTitle(BuildContext context, String title) =>
     switch (title) {

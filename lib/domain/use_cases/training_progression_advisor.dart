@@ -149,7 +149,10 @@ class TrainingProgressionAdvisor {
             (exercise) => exercise.catalogId == currentExercise.catalogId,
           );
           if (position >= 0) {
-            expectedSets = _setCount(session.exercises[position].prescription);
+            final recommendedSets = _setCount(
+              session.exercises[position].prescription,
+            );
+            expectedSets = _sessionSetCount(decoded, position, recommendedSets);
           }
         }
       } on Object {
@@ -179,6 +182,21 @@ class TrainingProgressionAdvisor {
         RegExp(r'^(\d+)\s+series').firstMatch(prescription)?.group(1) ?? '',
       ) ??
       0;
+
+  int _sessionSetCount(
+    Map<dynamic, dynamic> snapshot,
+    int exercisePosition,
+    int recommendedCount,
+  ) {
+    final rawCounts = snapshot['sessionSetCounts'];
+    if (rawCounts is! Map) return recommendedCount;
+    final count = rawCounts[exercisePosition.toString()];
+    return count is int && count >= 1 && count <= 20
+        ? count > recommendedCount
+              ? count
+              : recommendedCount
+        : recommendedCount;
+  }
 
   (int, int)? _repetitionRange(String prescription) {
     final match = RegExp(r'(\d+)\s*[–-]\s*(\d+)').firstMatch(prescription);

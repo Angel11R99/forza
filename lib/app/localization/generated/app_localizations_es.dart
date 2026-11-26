@@ -1632,6 +1632,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sessionRemoveExternalLoad => 'Quitar carga externa';
 
   @override
+  String sessionSetCountSummary(int recommended, int planned) {
+    return 'Recomendadas: $recommended · Para esta sesión: $planned';
+  }
+
+  @override
+  String sessionAdditionalSet(int number) {
+    return 'Serie adicional $number';
+  }
+
+  @override
+  String get sessionAddSet => 'Añadir serie';
+
+  @override
+  String get sessionRemovePendingSet => 'Quitar última serie';
+
+  @override
+  String get sessionRemoveCompletedSet => 'Eliminar serie completada';
+
+  @override
+  String get sessionRemoveCompletedSetTitle => 'Eliminar resultado de la serie';
+
+  @override
+  String get sessionRemoveCompletedSetMessage =>
+      'Se eliminarán los resultados de la última serie de esta sesión. La prescripción semanal no cambiará.';
+
+  @override
   String sessionProgress(Object current, Object total) {
     return 'Ejercicio $current de $total';
   }

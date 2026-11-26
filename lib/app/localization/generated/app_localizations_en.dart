@@ -1623,6 +1623,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionRemoveExternalLoad => 'Remove external load';
 
   @override
+  String sessionSetCountSummary(int recommended, int planned) {
+    return 'Recommended: $recommended · This session: $planned';
+  }
+
+  @override
+  String sessionAdditionalSet(int number) {
+    return 'Additional set $number';
+  }
+
+  @override
+  String get sessionAddSet => 'Add set';
+
+  @override
+  String get sessionRemovePendingSet => 'Remove last set';
+
+  @override
+  String get sessionRemoveCompletedSet => 'Delete completed set';
+
+  @override
+  String get sessionRemoveCompletedSetTitle => 'Delete set results?';
+
+  @override
+  String get sessionRemoveCompletedSetMessage =>
+      'The results for the last set in this session will be deleted. Your weekly prescription will stay the same.';
+
+  @override
   String sessionProgress(Object current, Object total) {
     return 'Exercise $current of $total';
   }
