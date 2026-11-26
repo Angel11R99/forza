@@ -548,24 +548,38 @@ class _CalendarLegend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      spacing: AppSpacing.x3,
-      runSpacing: AppSpacing.x2,
-      children: [
-        for (final status in _CalendarDayStatus.values)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(status.icon, size: 14, color: context.appColors.accent),
-              const SizedBox(width: AppSpacing.x1),
-              Text(
-                _calendarLegendLabel(context, status),
-                style: Theme.of(context).textTheme.bodySmall,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - AppSpacing.x3) / 2;
+        return Wrap(
+          alignment: WrapAlignment.center,
+          spacing: AppSpacing.x3,
+          runSpacing: AppSpacing.x2,
+          children: [
+            for (final status in _CalendarDayStatus.values)
+              SizedBox(
+                width: itemWidth,
+                child: Semantics(
+                  label: _calendarStatusLabel(context, status),
+                  child: Column(
+                    children: [
+                      Icon(
+                        status.icon,
+                        size: 14,
+                        color: context.appColors.accent,
+                      ),
+                      Text(
+                        _calendarLegendLabel(context, status),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 }
