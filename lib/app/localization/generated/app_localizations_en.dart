@@ -1206,7 +1206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountWelcomeDescription =>
-      'You can use Forza without signing in. If you connect Google, we show your name, email, and photo; your workouts stay on this device and are not synced.';
+      'You can use Forza without signing in. Connect Google to sync your workouts, schedule, goals, measurements, and preferences with your private account.';
 
   @override
   String get accountSignInWithGoogle => 'Continue with Google';

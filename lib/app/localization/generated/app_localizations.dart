@@ -2135,7 +2135,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountWelcomeDescription.
   ///
   /// In en, this message translates to:
-  /// **'You can use Forza without signing in. If you connect Google, we show your name, email, and photo; your workouts stay on this device and are not synced.'**
+  /// **'You can use Forza without signing in. Connect Google to sync your workouts, schedule, goals, measurements, and preferences with your private account.'**
   String get accountWelcomeDescription;
 
   /// No description provided for @accountSignInWithGoogle.

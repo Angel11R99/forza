@@ -13,6 +13,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 - **Calentamiento y vuelta a la calma:** hay secuencias breves opcionales antes y después del entrenamiento. La vuelta a la calma se adapta a los grupos musculares de la sesión, muestra instrucciones por paso y se puede omitir; no modifica los resultados ni la duración registrada.
 - **Guías de ejercicios:** catálogo local de 1.324 ejercicios, instrucciones en español e inglés y 1.260 medios animados. 509 ejercicios reciben notas técnicas de familias con fuentes; 815 variantes permanecen sin notas curadas y conservan las instrucciones y el fallback. El inventario por ID y grupo está en [notas técnicas pendientes](11-inventario-notas-tecnicas.md).
 - **Respaldo:** exportación/restauración local en JSON con validación y confirmación antes de reemplazar datos. No incluye catálogo ni preferencias de perfil que aún no persisten.
+- **Sincronización Firebase:** iniciar sesión con Google sincroniza local-first el respaldo y ajustes del usuario en una ruta privada de Firestore. La configuración y resolución de conflictos están en [Firebase y sincronización](firebase-sync.md).
 
 ## Siguiente trabajo
 
@@ -29,7 +30,7 @@ Estado contrastado con el código de `main` el 24-11-2026. La app ya cubre buena
 ## Mejoras posteriores
 
 - **Cobertura de medios autorizados:** hay 1.260 ejercicios con fotogramas y 64 con fallback. Se añadieron tres coincidencias de la fuente CC0 y se inventariaron los casos restantes; mantener fallback si la fuente no representa con precisión el ejercicio ([#17](https://github.com/Angel11R99/forza/issues/17); [inventario](10-inventario-medios-ejercicios.md)).
-- **Cuenta:** Google Sign-In opcional solo para mostrar identidad del proveedor; no crea cuenta de servidor ni sincroniza datos. Antes de probar o distribuir login real faltan los IDs OAuth y las firmas específicas del proyecto ([#5](https://github.com/Angel11R99/forza/issues/5); [configuración](google-sign-in-setup.md)).
+- **Cuenta:** Google Sign-In opcional usa Firebase Authentication y Firestore. La prueba de Google OAuth real requiere registrar SHA-1 de cada certificado Android; Apple requiere URL scheme nativo ([configuración](google-sign-in-setup.md)).
 - **Gym Bro:** propuesta de investigación documentada en [diseño y evaluación](12-diseno-gym-bro.md); el backend y servicios quedan pendientes de aprobación del propietario ([#22](https://github.com/Angel11R99/forza/issues/22)).
 
 La propuesta de Gym Bro está en [diseño y evaluación](12-diseno-gym-bro.md). No implica que haya backend o cuenta social implementados.

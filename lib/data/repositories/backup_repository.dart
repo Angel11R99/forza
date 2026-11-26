@@ -14,6 +14,7 @@ import 'body_measurement_repository.dart';
 import 'training_schedule_repository.dart';
 import 'training_settings_repository.dart';
 import 'workout_log_repository.dart';
+import 'profile_settings_repository.dart';
 
 class ValidatedForzaBackup {
   const ValidatedForzaBackup({
@@ -26,6 +27,9 @@ class ValidatedForzaBackup {
     this.bodyMeasurements = const [],
     required this.appearanceMode,
     required this.activeWorkout,
+    this.appPreferences = const AppPreferences(),
+    this.notificationSettings = const NotificationSettings(),
+    this.privacySettings = const PrivacySettings(),
   });
 
   final DateTime exportedAt;
@@ -37,6 +41,9 @@ class ValidatedForzaBackup {
   final List<BodyMeasurement> bodyMeasurements;
   final String appearanceMode;
   final Map<String, Object?>? activeWorkout;
+  final AppPreferences appPreferences;
+  final NotificationSettings notificationSettings;
+  final PrivacySettings privacySettings;
 }
 
 class BackupRepository {
@@ -47,9 +54,12 @@ class BackupRepository {
     required this.scheduleRepository,
     required this.goalRepository,
     BodyMeasurementRepository? bodyMeasurementRepository,
+    ProfileSettingsRepository? profileSettingsRepository,
   }) : bodyMeasurementRepository =
            bodyMeasurementRepository ??
-           BodyMeasurementRepository(database: database);
+           BodyMeasurementRepository(database: database),
+       profileSettingsRepository =
+           profileSettingsRepository ?? ProfileSettingsRepository();
 
   static const formatName = 'FORZA_BACKUP';
   static const version = 1;
@@ -61,6 +71,7 @@ class BackupRepository {
   final TrainingScheduleRepository scheduleRepository;
   final PersonalGoalRepository goalRepository;
   final BodyMeasurementRepository bodyMeasurementRepository;
+  final ProfileSettingsRepository profileSettingsRepository;
 
   Future<String> exportJson({required String appearanceMode}) async {
     final activeDraft = await workoutLogRepository.loadActiveWorkout();
@@ -86,6 +97,73 @@ class BackupRepository {
       ],
       'appearanceMode': appearanceMode,
       'activeWorkout': activeDraft == null ? null : jsonDecode(activeDraft),
+      'appPreferences': _appPreferencesToJson(
+        await profileSettingsRepository.loadAppPreferences(),
+      ),
+      'notificationSettings': _notificationSettingsToJson(
+        await profileSettingsRepository.loadNotifications(),
+      ),
+      'privacySettings': _privacySettingsToJson(
+        await profileSettingsRepository.loadPrivacy(),
+      ),
+    });
+  }
+
+  /// Combines a local backup with a cloud backup, keeping local values when
+  /// both backups contain the same logical record.
+  String mergeJson(String localSource, String cloudSource) {
+    final local = validate(localSource);
+    final cloud = validate(cloudSource);
+
+    final records = <String, Map<String, Object?>>{};
+    for (final record in cloud.records) {
+      records[_key(record.date)] = record.toJson();
+    }
+    for (final record in local.records) {
+      records[_key(record.date)] = record.toJson();
+    }
+
+    final schedule = <String, Map<String, Object?>>{};
+    for (final session in cloud.schedule) {
+      schedule[_key(session.scheduledDate)] = _scheduleToJson(session);
+    }
+    for (final session in local.schedule) {
+      schedule[_key(session.scheduledDate)] = _scheduleToJson(session);
+    }
+
+    final goals = <String, Map<String, Object?>>{};
+    for (final goal in cloud.goals) {
+      goals[goal.id] = _goalToJson(goal);
+    }
+    for (final goal in local.goals) {
+      goals[goal.id] = _goalToJson(goal);
+    }
+
+    final measurements = <String, Map<String, Object?>>{};
+    for (final measurement in cloud.bodyMeasurements) {
+      measurements[measurement.id] = measurement.toJson();
+    }
+    for (final measurement in local.bodyMeasurements) {
+      measurements[measurement.id] = measurement.toJson();
+    }
+
+    return jsonEncode({
+      'format': formatName,
+      'version': version,
+      'exportedAt': DateTime.now().toIso8601String(),
+      'trainingSettings': _settingsToJson(local.settings),
+      'planVersion': local.planVersion,
+      'workoutRecords': records.values.toList(),
+      'scheduledSessions': schedule.values.toList(),
+      'personalGoals': goals.values.toList(),
+      'bodyMeasurements': measurements.values.toList(),
+      'appearanceMode': local.appearanceMode,
+      'activeWorkout': local.activeWorkout ?? cloud.activeWorkout,
+      'appPreferences': _appPreferencesToJson(local.appPreferences),
+      'notificationSettings': _notificationSettingsToJson(
+        local.notificationSettings,
+      ),
+      'privacySettings': _privacySettingsToJson(local.privacySettings),
     });
   }
 
@@ -170,6 +248,11 @@ class BackupRepository {
         bodyMeasurements: measurements,
         appearanceMode: appearance,
         activeWorkout: activeWorkout,
+        appPreferences: _appPreferences(root['appPreferences']),
+        notificationSettings: _notificationSettings(
+          root['notificationSettings'],
+        ),
+        privacySettings: _privacySettings(root['privacySettings']),
       );
     } on FormatException {
       rethrow;
@@ -316,6 +399,11 @@ class BackupRepository {
       });
 
       await bodyMeasurementRepository.replaceAll(backup.bodyMeasurements);
+      await profileSettingsRepository.saveAppPreferences(backup.appPreferences);
+      await profileSettingsRepository.saveNotifications(
+        backup.notificationSettings,
+      );
+      await profileSettingsRepository.savePrivacy(backup.privacySettings);
 
       await database
           .into(database.appMetadata)
@@ -543,6 +631,87 @@ class BackupRepository {
     }
     return json;
   }
+
+  static AppPreferences _appPreferences(Object? value) {
+    if (value == null) return const AppPreferences();
+    final json = _map(value, 'appPreferences');
+    final unit = json['weightUnit'];
+    final weekStartsOn = json['weekStartsOn'];
+    final hapticsEnabled = json['hapticsEnabled'];
+    if (!const {'kg', 'lb'}.contains(unit) ||
+        !const {'Lunes', 'Domingo'}.contains(weekStartsOn) ||
+        hapticsEnabled is! bool) {
+      throw const FormatException(
+        'Las preferencias de la aplicación no son válidas.',
+      );
+    }
+    return AppPreferences(
+      weightUnit: unit as String,
+      weekStartsOn: weekStartsOn as String,
+      hapticsEnabled: hapticsEnabled,
+    );
+  }
+
+  static NotificationSettings _notificationSettings(Object? value) {
+    if (value == null) return const NotificationSettings();
+    final json = _map(value, 'notificationSettings');
+    final enabled = json['workoutReminders'];
+    final hour = json['reminderHour'];
+    final minute = json['reminderMinute'];
+    if (enabled is! bool ||
+        hour is! int ||
+        hour < 0 ||
+        hour > 23 ||
+        minute is! int ||
+        minute < 0 ||
+        minute > 59) {
+      throw const FormatException(
+        'Los ajustes de notificaciones no son válidos.',
+      );
+    }
+    return NotificationSettings(
+      workoutReminders: enabled,
+      reminderHour: hour,
+      reminderMinute: minute,
+    );
+  }
+
+  static PrivacySettings _privacySettings(Object? value) {
+    if (value == null) return const PrivacySettings();
+    final json = _map(value, 'privacySettings');
+    final privateProfile = json['privateProfile'];
+    final shareActivity = json['shareWorkoutActivity'];
+    if (privateProfile is! bool || shareActivity is! bool) {
+      throw const FormatException('Los ajustes de privacidad no son válidos.');
+    }
+    return PrivacySettings(
+      privateProfile: privateProfile,
+      shareWorkoutActivity: shareActivity,
+    );
+  }
+
+  static Map<String, Object?> _appPreferencesToJson(
+    AppPreferences preferences,
+  ) => {
+    'weightUnit': preferences.weightUnit,
+    'weekStartsOn': preferences.weekStartsOn,
+    'hapticsEnabled': preferences.hapticsEnabled,
+  };
+
+  static Map<String, Object?> _notificationSettingsToJson(
+    NotificationSettings settings,
+  ) => {
+    'workoutReminders': settings.workoutReminders,
+    'reminderHour': settings.reminderHour,
+    'reminderMinute': settings.reminderMinute,
+  };
+
+  static Map<String, Object?> _privacySettingsToJson(
+    PrivacySettings settings,
+  ) => {
+    'privateProfile': settings.privateProfile,
+    'shareWorkoutActivity': settings.shareWorkoutActivity,
+  };
 
   static Map<String, Object?> _settingsToJson(TrainingSettings settings) => {
     'trainingDays': settings.trainingDays.toList()..sort(),

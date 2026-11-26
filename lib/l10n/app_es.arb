@@ -440,7 +440,7 @@
   "profileResetCompleted": "Datos eliminados. Configura un nuevo plan para continuar.",
   "profileResetFailed": "No se pudieron borrar los datos. No se completó el reinicio.",
   "accountWelcomeTitle": "Una cuenta es opcional.",
-  "accountWelcomeDescription": "Puedes usar Forza sin iniciar sesión. Si conectas Google, mostramos tu nombre, correo y foto; tus entrenamientos siguen en este dispositivo y no se sincronizan.",
+  "accountWelcomeDescription": "Puedes usar Forza sin iniciar sesión. Conecta Google para sincronizar tus entrenamientos, agenda, objetivos, medidas y preferencias con tu cuenta privada.",
   "accountSignInWithGoogle": "Continuar con Google",
   "accountSwitchGoogle": "Cambiar cuenta de Google",
   "accountContinueWithoutAccount": "Seguir sin cuenta",

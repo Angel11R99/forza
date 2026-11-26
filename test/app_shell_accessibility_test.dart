@@ -17,8 +17,11 @@ import 'package:forza/data/repositories/training_settings_repository.dart';
 import 'package:forza/ui/core/view_models/app_shell_view_model.dart';
 import 'package:forza/ui/core/widgets/app_scaffold.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
+import 'support/shared_preferences_async_test_setup.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setupSharedPreferencesAsyncForTest();
   testWidgets(
     'bottom navigation remains accessible at 320 px with large text and reduced motion',
     (tester) async {

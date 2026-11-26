@@ -32,6 +32,8 @@ Configura estos repository secrets con la clave de firma de producción existent
 
 No se genera una clave nueva. Sin cualquiera de estos secretos, la publicación falla antes de compilar. El workflow valida, ejecuta análisis y pruebas, genera únicamente el APK release firmado, crea el tag y adjunta `forza-vVERSION.apk` con notas automáticas. No ejecutes el workflow desde una rama distinta de `main`.
 
+Para registrar Google Sign-In en Firebase, ejecuta **Show Android signing fingerprint** desde Actions, con `main` seleccionado. La acción imprime solo la SHA-1 pública de la clave configurada y no publica un APK. Registra esa huella junto con la SHA-1 debug en Firebase Console.
+
 ## Límites de GitHub
 
 GitHub no impide que terceros desarrollen en ramas privadas o en forks. El estado aprobado, el nombre de rama convenido y la política de PR controlan qué contribuciones acepta el proyecto. GitHub no puede evitar todos los bypass si se cambia la configuración de protección. La publicación requiere secrets configurados en GitHub; los archivos de este repositorio no crean esas credenciales.

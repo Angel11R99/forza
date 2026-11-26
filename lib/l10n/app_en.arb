@@ -440,7 +440,7 @@
   "profileResetCompleted": "Data deleted. Set up a new plan to continue.",
   "profileResetFailed": "Data could not be deleted. The reset was not completed.",
   "accountWelcomeTitle": "An account is optional.",
-  "accountWelcomeDescription": "You can use Forza without signing in. If you connect Google, we show your name, email, and photo; your workouts stay on this device and are not synced.",
+  "accountWelcomeDescription": "You can use Forza without signing in. Connect Google to sync your workouts, schedule, goals, measurements, and preferences with your private account.",
   "accountSignInWithGoogle": "Continue with Google",
   "accountSwitchGoogle": "Switch Google account",
   "accountContinueWithoutAccount": "Continue without an account",
