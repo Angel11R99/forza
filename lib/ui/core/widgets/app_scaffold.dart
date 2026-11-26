@@ -737,20 +737,17 @@ class _BottomNavigationDestinationState
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.x1,
                   ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      widget.label,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: labelStyle?.copyWith(
-                        color: widget.selected
-                            ? colors.accent
-                            : colors.textSecondary,
-                        fontWeight: widget.selected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                      ),
+                  child: Text(
+                    widget.label,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    style: labelStyle?.copyWith(
+                      color: widget.selected
+                          ? colors.accent
+                          : colors.textSecondary,
+                      fontWeight: widget.selected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
                     ),
                   ),
                 ),

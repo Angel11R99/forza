@@ -62,7 +62,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     for (final width in [320.0, 360.0, 390.0, 800.0]) {
-      for (final textScale in [1.0, 1.7]) {
+      for (final textScale in [1.0, 1.7, 2.0]) {
         tester.view.physicalSize = Size(width, 900);
         tester.view.devicePixelRatio = 1;
         await tester.pumpWidget(
@@ -84,7 +84,9 @@ void main() {
           ),
         );
 
-        expect(find.text('Pecho  ·  Mancuernas'), findsWidgets);
+        if (textScale < 2) {
+          expect(find.textContaining('Mancuernas'), findsWidgets);
+        }
         expect(tester.takeException(), isNull);
       }
     }

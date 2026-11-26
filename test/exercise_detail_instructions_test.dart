@@ -155,6 +155,58 @@ void main() {
       },
     );
   }
+
+  testWidgets(
+    'exercise preview adapts at 200% text without clipping the hint',
+    (tester) async {
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      for (final width in [320.0, 360.0, 390.0, 800.0]) {
+        for (final (brightness, languageCode) in [
+          (Brightness.light, 'es'),
+          (Brightness.dark, 'en'),
+        ]) {
+          tester.view.physicalSize = Size(width, 1000);
+          tester.view.devicePixelRatio = 1;
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: brightness == Brightness.light
+                  ? ThemeMode.light
+                  : ThemeMode.dark,
+              locale: Locale(languageCode),
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                ...GlobalMaterialLocalizations.delegates,
+              ],
+              home: MediaQuery(
+                data: MediaQueryData(
+                  size: Size(width, 1000),
+                  textScaler: const TextScaler.linear(2),
+                ),
+                child: ExerciseDetailPage(
+                  exercise: exercise,
+                  repository: _EmptyExerciseRepository(),
+                ),
+              ),
+            ),
+          );
+
+          expect(
+            find.text(
+              languageCode == 'es'
+                  ? 'Sin ilustración animada · consulta los pasos'
+                  : 'No animation available · follow the steps',
+            ),
+            findsOneWidget,
+          );
+          expect(tester.takeException(), isNull);
+        }
+      }
+    },
+  );
 }
 
 class _EmptyExerciseRepository implements ExerciseRepository {

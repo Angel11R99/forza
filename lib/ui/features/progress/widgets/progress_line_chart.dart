@@ -23,7 +23,7 @@ class ProgressLineChart extends StatelessWidget {
       child: ExcludeSemantics(
         child: SizedBox(
           width: double.infinity,
-          height: 190,
+          height: 190 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.5),
           child: CustomPaint(
             painter: _ProgressChartPainter(
               values: values,
@@ -31,7 +31,9 @@ class ProgressLineChart extends StatelessWidget {
               lineColor: lineColor ?? context.appColors.accent,
               gridColor: context.appColors.divider,
               pointFill: context.appColors.surface,
-              labelColor: context.appColors.textSecondary,
+              labelStyle: Theme.of(context).textTheme.labelSmall!
+                  .copyWith(color: context.appColors.textSecondary),
+              textScale: MediaQuery.textScalerOf(context).scale(1),
             ),
           ),
         ),
@@ -47,7 +49,8 @@ class _ProgressChartPainter extends CustomPainter {
     required this.lineColor,
     required this.gridColor,
     required this.pointFill,
-    required this.labelColor,
+    required this.labelStyle,
+    required this.textScale,
   });
 
   final List<double> values;
@@ -55,7 +58,8 @@ class _ProgressChartPainter extends CustomPainter {
   final Color lineColor;
   final Color gridColor;
   final Color pointFill;
-  final Color labelColor;
+  final TextStyle labelStyle;
+  final double textScale;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -64,7 +68,7 @@ class _ProgressChartPainter extends CustomPainter {
     const left = 12.0;
     const right = 12.0;
     const top = 12.0;
-    const bottom = 30.0;
+    final bottom = 30.0 * textScale.clamp(1, 2);
     final chartWidth = size.width - left - right;
     final chartHeight = size.height - top - bottom;
     if (chartWidth <= 0 || chartHeight <= 0) return;
@@ -127,14 +131,14 @@ class _ProgressChartPainter extends CustomPainter {
       _paintLabel(
         canvas,
         labels.first,
-        Offset(plot.left, size.height - 18),
+        Offset(plot.left, size.height - 18 * textScale.clamp(1, 2)),
         TextAlign.left,
       );
       if (labels.length > 1) {
         _paintLabel(
           canvas,
           labels.last,
-          Offset(plot.right, size.height - 18),
+          Offset(plot.right, size.height - 18 * textScale.clamp(1, 2)),
           TextAlign.right,
         );
       }
@@ -150,7 +154,9 @@ class _ProgressChartPainter extends CustomPainter {
     final painter = TextPainter(
       text: TextSpan(
         text: label,
-        style: TextStyle(color: labelColor, fontSize: 12),
+        style: labelStyle.copyWith(
+          fontSize: (labelStyle.fontSize ?? 12) * textScale.clamp(1, 2),
+        ),
       ),
       textDirection: TextDirection.ltr,
       textAlign: align,
@@ -168,5 +174,6 @@ class _ProgressChartPainter extends CustomPainter {
       oldDelegate.lineColor != lineColor ||
       oldDelegate.gridColor != gridColor ||
       oldDelegate.pointFill != pointFill ||
-      oldDelegate.labelColor != labelColor;
+      oldDelegate.labelStyle != labelStyle ||
+      oldDelegate.textScale != textScale;
 }

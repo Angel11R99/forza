@@ -303,7 +303,7 @@ class _ExercisesViewState extends State<ExercisesView> {
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: columns,
-                mainAxisExtent: 136 * textScale.clamp(1, 1.25),
+                mainAxisExtent: 184 * textScale.clamp(1, 1.25),
                 crossAxisSpacing: AppSpacing.x2,
                 mainAxisSpacing: AppSpacing.x2,
               ),

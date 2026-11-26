@@ -58,7 +58,7 @@ Evitar que el ejemplo se copie con un color de acento inventado. Conectar despu�
 - Tratar 393 × 852 como el tamaño de referencia de un frame, no como tamaño fijo de dispositivo.
 - Usar SafeArea, constraints, scroll y widgets flexibles; evitar `Positioned` absoluto para contenido común.
 - Verificar targets táctiles, contraste, escalado de texto, labels semánticos en iconos funcionales y foco visible.
-- En pantallas estrechas y con texto ampliado, apilar los encabezados con acciones y conservar una sola línea en las etiquetas de navegación.
+- En pantallas estrechas y con texto ampliado, apilar los encabezados con acciones y permitir que las etiquetas de navegación envuelvan el texto sin reducir la fuente.
 - Respetar `disableAnimations` en cambios de destino y exponer nombre, selección y acción de cada pestaña en Semantics.
 - Imágenes remotas: definir proporción, `BoxFit`, placeholder, error y caché; evitar saltos de layout.
 - Revisar modo oscuro solo si el producto lo solicita; no asumir que el panel oscuro de Figma representa una variante oscura de la app.

@@ -131,17 +131,11 @@ class _PersonalGoalEditorPageState extends State<PersonalGoalEditorPage> {
                     items: [
                       DropdownMenuItem(
                         value: PersonalGoalType.sessionsPerWeek,
-                        child: Text(
-                          context.l10n.progressWeeklySessions,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        child: Text(context.l10n.progressWeeklySessions),
                       ),
                       DropdownMenuItem(
                         value: PersonalGoalType.exerciseLoad,
-                        child: Text(
-                          context.l10n.progressExerciseLoadRecord,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        child: Text(context.l10n.progressExerciseLoadRecord),
                       ),
                     ],
                     onChanged: (value) {
@@ -290,7 +284,7 @@ class _ExerciseGoalPicker extends StatelessWidget {
               selected == null
                   ? context.l10n.progressSelectExercise
                   : _localizedName(context, selected),
-              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.left,
             ),
           ),
         ),
@@ -328,9 +322,8 @@ class _ExerciseGoalPicker extends StatelessWidget {
                   padding: const EdgeInsets.only(top: AppSpacing.x1),
                   child: Text(
                     field.errorText!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: Theme.of(context).colorScheme.error),
                   ),
                 )
               : const SizedBox.shrink(),
