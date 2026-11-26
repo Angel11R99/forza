@@ -64,15 +64,14 @@ class ExerciseListCard extends StatelessWidget {
           children: [
             Text(
               localizedExerciseName(context, exercise),
-              maxLines: 2,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.x1),
             Text(
               '${localizedExerciseMuscleGroup(context, exercise.muscleGroup)}  ·  ${localizedExerciseEquipment(context, exercise.equipment)}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
