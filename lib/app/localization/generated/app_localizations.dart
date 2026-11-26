@@ -1490,6 +1490,24 @@ abstract class AppLocalizations {
   /// **'Connected with Google'**
   String get profileGoogleConnected;
 
+  /// No description provided for @profileNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No account'**
+  String get profileNoAccount;
+
+  /// No description provided for @profileAccountChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking account'**
+  String get profileAccountChecking;
+
+  /// No description provided for @profileAccountCheckingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking whether an account is connected.'**
+  String get profileAccountCheckingDescription;
+
   /// No description provided for @profileGuestDescription.
   ///
   /// In en, this message translates to:

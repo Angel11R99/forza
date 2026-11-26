@@ -853,6 +853,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileGoogleConnected => 'Conectado con Google';
 
   @override
+  String get profileNoAccount => 'Sin cuenta';
+
+  @override
+  String get profileAccountChecking => 'Comprobando cuenta';
+
+  @override
+  String get profileAccountCheckingDescription =>
+      'Estamos revisando si hay una cuenta conectada.';
+
+  @override
   String get profileGuestDescription =>
       'Sin cuenta · datos guardados en este dispositivo';
 
