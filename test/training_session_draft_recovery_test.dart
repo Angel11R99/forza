@@ -66,6 +66,48 @@ void main() {
     expect(find.text('Entrenamiento pausado'), findsAtLeastNWidgets(1));
   });
 
+  testWidgets(
+    'session-specific set count survives draft restore and can shrink',
+    (tester) async {
+      final harness = await _Harness.create(tester);
+      addTearDown(harness.close);
+      final baseExercise = harness.plan.exercises.first;
+      final plan = PlannedTrainingSession(
+        weekday: harness.plan.weekday,
+        title: harness.plan.title,
+        focus: harness.plan.focus,
+        durationMinutes: harness.plan.durationMinutes,
+        exercises: [
+          PlannedExercise(
+            catalogId: baseExercise.catalogId,
+            name: baseExercise.name,
+            focus: baseExercise.focus,
+            prescription: '2 series · 8–12 repeticiones',
+            tracksExternalLoad: baseExercise.tracksExternalLoad,
+          ),
+        ],
+      );
+
+      await harness.show(plan: plan);
+      await _tap(tester, find.text('Ver calentamiento'));
+      await _tap(tester, find.text('Comenzar entrenamiento'));
+      await _tap(tester, find.byKey(const ValueKey('add-session-set')));
+      expect(find.text('0 de 3 series completadas'), findsOneWidget);
+      final draft = jsonDecode(
+        (await harness.repository.loadActiveWorkout())!,
+      ) as Map<String, Object?>;
+      expect((draft['sessionSetCounts']! as Map<String, Object?>)['0'], 3);
+
+      await harness.show(plan: plan);
+      await _tap(tester, find.text('Continuar entrenamiento'));
+      expect(find.text('0 de 3 series completadas'), findsOneWidget);
+      expect(find.text('Serie adicional 3'), findsOneWidget);
+      await _tap(tester, find.byKey(const ValueKey('remove-session-set')));
+      expect(find.text('0 de 2 series completadas'), findsOneWidget);
+      expect(find.text('Serie adicional 3'), findsNothing);
+    },
+  );
+
   testWidgets('asks before applying a legacy draft to the current plan', (
     tester,
   ) async {

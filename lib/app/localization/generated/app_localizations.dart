@@ -2804,6 +2804,48 @@ abstract class AppLocalizations {
   /// **'Remove external load'**
   String get sessionRemoveExternalLoad;
 
+  /// No description provided for @sessionSetCountSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended: {recommended} · This session: {planned}'**
+  String sessionSetCountSummary(int recommended, int planned);
+
+  /// No description provided for @sessionAdditionalSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional set {number}'**
+  String sessionAdditionalSet(int number);
+
+  /// No description provided for @sessionAddSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add set'**
+  String get sessionAddSet;
+
+  /// No description provided for @sessionRemovePendingSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove last set'**
+  String get sessionRemovePendingSet;
+
+  /// No description provided for @sessionRemoveCompletedSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete completed set'**
+  String get sessionRemoveCompletedSet;
+
+  /// No description provided for @sessionRemoveCompletedSetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete set results?'**
+  String get sessionRemoveCompletedSetTitle;
+
+  /// No description provided for @sessionRemoveCompletedSetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The results for the last set in this session will be deleted. Your weekly prescription will stay the same.'**
+  String get sessionRemoveCompletedSetMessage;
+
   /// No description provided for @sessionProgress.
   ///
   /// In en, this message translates to:
