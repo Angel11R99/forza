@@ -81,6 +81,7 @@ class AppShellViewModel extends ChangeNotifier {
   List<BodyMeasurement> _bodyMeasurements = const [];
   bool _isReady = false;
   bool _needsFirstRunSetup = false;
+  int _firstRunSetupRevision = 0;
   bool _hasActiveWorkout = false;
   DateTime? _activeWorkoutDate;
   int _streakAnimationRevision = 0;
@@ -124,6 +125,7 @@ class AppShellViewModel extends ChangeNotifier {
   int get streakAnimationFrom => _streakAnimationFrom;
 
   Future<void> restore() async {
+    final firstRunSetupRevision = _firstRunSetupRevision;
     var settings = const TrainingSettings();
     var records = const <WorkoutRecord>[];
     var setupComplete = false;
@@ -182,7 +184,9 @@ class AppShellViewModel extends ChangeNotifier {
 
     _trainingSettings = settings;
     _workoutRecords = records;
-    _needsFirstRunSetup = !setupComplete;
+    if (firstRunSetupRevision == _firstRunSetupRevision) {
+      _needsFirstRunSetup = !setupComplete;
+    }
     _isReady = true;
     notifyListeners();
     _scheduleStreakRollover();
@@ -211,6 +215,7 @@ class AppShellViewModel extends ChangeNotifier {
   Future<void> completeFirstRun(TrainingSettings? settings) async {
     if (settings != null) await saveTrainingSettings(settings);
     await _settingsRepository.completeSetup();
+    _firstRunSetupRevision++;
     _needsFirstRunSetup = false;
     notifyListeners();
   }
@@ -335,6 +340,7 @@ class AppShellViewModel extends ChangeNotifier {
 
   Future<void> restoreBackup(ValidatedForzaBackup backup) async {
     await _backupRepository.restore(backup);
+    _firstRunSetupRevision++;
     _trainingSettings = backup.settings;
     _workoutRecords = backup.records;
     _streakAnimationRevision = 0;
@@ -376,6 +382,7 @@ class AppShellViewModel extends ChangeNotifier {
           );
     });
 
+    _firstRunSetupRevision++;
     _trainingSettings = const TrainingSettings();
     _workoutRecords = const [];
     _scheduledSessions = const [];

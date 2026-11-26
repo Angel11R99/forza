@@ -70,6 +70,7 @@ class _AppScaffoldState extends State<AppScaffold>
   late final Animation<Offset> _moduleOffset;
   int? _pendingDestination;
   bool _isOpeningFirstRun = false;
+  bool _firstRunSetupScheduled = false;
   AppPreferences _preferences = const AppPreferences();
   Locale? _notificationLocale;
   Timer? _reminderRolloverTimer;
@@ -222,11 +223,25 @@ class _AppScaffoldState extends State<AppScaffold>
     }
     if (mounted) setState(() {});
     await _synchronizeWorkoutRemindersSafely();
-    if (_viewModel.needsFirstRunSetup) {
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _startFirstRunSetup(),
-      );
+    _scheduleFirstRunSetup();
+  }
+
+  void _scheduleFirstRunSetup() {
+    if (!mounted ||
+        !_viewModel.needsFirstRunSetup ||
+        _isOpeningFirstRun ||
+        _firstRunSetupScheduled) {
+      return;
     }
+
+    _firstRunSetupScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _firstRunSetupScheduled = false;
+      if (!mounted || !_viewModel.needsFirstRunSetup || _isOpeningFirstRun) {
+        return;
+      }
+      unawaited(_startFirstRunSetup());
+    });
   }
 
   Future<void> _refreshScheduleAndReminders() async {
