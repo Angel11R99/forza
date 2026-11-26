@@ -482,6 +482,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     const ExercisesView(),
                     ProgressView(
                       records: _viewModel.workoutRecords,
+                      onShowActivity: () => _selectDestination(1),
                       goals: _viewModel.personalGoals,
                       measurements: _viewModel.bodyMeasurements,
                       onSaveGoal: _viewModel.savePersonalGoal,

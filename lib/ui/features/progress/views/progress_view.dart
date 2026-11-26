@@ -11,6 +11,7 @@ import '../../../../domain/models/workout_record.dart';
 import '../../../../domain/models/personal_goal.dart';
 import '../../../../domain/models/body_measurement.dart';
 import '../models/progress_models.dart';
+import '../models/personal_records.dart';
 import 'progress_detail_pages.dart';
 import 'personal_goal_editor_page.dart';
 import '../../../../app/localization/localization_extensions.dart';
@@ -19,6 +20,7 @@ class ProgressView extends StatefulWidget {
   const ProgressView({
     super.key,
     required this.records,
+    required this.onShowActivity,
     this.goals = const [],
     required this.onSaveGoal,
     required this.onDeleteGoal,
@@ -28,6 +30,7 @@ class ProgressView extends StatefulWidget {
   });
 
   final List<WorkoutRecord> records;
+  final VoidCallback onShowActivity;
   final List<PersonalGoal> goals;
   final Future<void> Function(PersonalGoal) onSaveGoal;
   final Future<void> Function(String) onDeleteGoal;
@@ -54,6 +57,23 @@ class _ProgressViewState extends State<ProgressView> {
     final totalMinutes = sessions.fold<int>(
       0,
       (total, session) => total + session.durationMinutes,
+    );
+    final loggedSetCount = sessions.fold<int>(
+      0,
+      (total, session) => total + session.loggedSets.length,
+    );
+    final measurements = widget.measurements.toList()
+      ..sort((first, second) => second.date.compareTo(first.date));
+    final latestMeasurement = measurements.firstOrNull;
+    final previousMeasurement = measurements.length > 1
+        ? measurements[1]
+        : null;
+    final personalRecords = buildPersonalRecords(widget.records)
+      ..sort((first, second) => second.date.compareTo(first.date));
+    final latestPersonalRecord = personalRecords.firstOrNull;
+    final hasStrengthData = widget.records.any(
+      (record) =>
+          record.setResults.any((set) => set.loadKg != null && set.loadKg! > 0),
     );
     final horizontalPadding = AppSpacing.pageGutter(
       MediaQuery.sizeOf(context).width,
@@ -87,92 +107,130 @@ class _ProgressViewState extends State<ProgressView> {
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   padding: const EdgeInsets.all(AppSpacing.x6),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.progressLast30Days,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.x2),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${sessions.length}',
-                            style: Theme.of(context).textTheme.displaySmall
-                                ?.copyWith(color: context.appColors.accent),
-                          ),
-                          const SizedBox(width: AppSpacing.x2),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: AppSpacing.x1,
-                            ),
-                            child: Text(
-                              context.l10n.progressSessions,
+                  child: sessions.isEmpty
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.l10n.progressLast30Days,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.x4),
-                      Row(
-                        children: [
-                          _SummaryValue(
-                            icon: Icons.schedule_rounded,
-                            label: context.l10n.progressTimeTotal(
-                              totalMinutes ~/ 60,
-                              totalMinutes % 60,
+                            const SizedBox(height: AppSpacing.x2),
+                            Text(
+                              context.l10n.progressEmptyDescription,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                          ),
-                          const SizedBox(width: AppSpacing.x6),
-                          _SummaryValue(
-                            icon: Icons.fitness_center_rounded,
-                            label: context.l10n.progressExerciseCount(
-                              sessions.fold<int>(
-                                0,
-                                (sum, entry) => sum + entry.exerciseCount,
-                              ),
+                            const SizedBox(height: AppSpacing.x3),
+                            FilledButton.icon(
+                              onPressed: widget.onShowActivity,
+                              icon: const Icon(Icons.play_arrow_rounded),
+                              label: Text(context.l10n.progressGoToActivity),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.x3),
-                      Row(
-                        children: [
-                          _SummaryValue(
-                            icon: Icons.repeat_rounded,
-                            label: context.l10n.progressSetsAndReps(
-                              sessions.fold<int>(
-                                0,
-                                (sum, entry) => sum + entry.loggedSets.length,
-                              ),
-                              sessions.fold<int>(
-                                0,
-                                (sum, entry) => sum + entry.totalRepetitions,
-                              ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.l10n.progressLast30Days,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                          ),
-                          const SizedBox(width: AppSpacing.x6),
-                          _SummaryValue(
-                            icon: Icons.scale_outlined,
-                            label: _volumeLabel(
-                              context,
-                              sessions.fold<double>(
-                                0,
-                                (sum, entry) => sum + entry.totalVolumeKg,
-                              ),
+                            const SizedBox(height: AppSpacing.x2),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${sessions.length}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall
+                                      ?.copyWith(
+                                        color: context.appColors.accent,
+                                      ),
+                                ),
+                                const SizedBox(width: AppSpacing.x2),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: AppSpacing.x1,
+                                  ),
+                                  child: Text(
+                                    context.l10n.progressSessions,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.x2),
-                      Text(
-                        context.l10n.progressVolumeExplanation,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
+                            const SizedBox(height: AppSpacing.x1),
+                            Text(
+                              context.l10n.progressLastWorkout(
+                                _formatShortDate(
+                                  sessions.first.date,
+                                  Localizations.localeOf(context)
+                                      .toLanguageTag(),
+                                ),
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const SizedBox(height: AppSpacing.x4),
+                            Row(
+                              children: [
+                                _SummaryValue(
+                                  icon: Icons.schedule_rounded,
+                                  label: context.l10n.progressTimeTotal(
+                                    totalMinutes ~/ 60,
+                                    totalMinutes % 60,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.x6),
+                                _SummaryValue(
+                                  icon: Icons.fitness_center_rounded,
+                                  label: context.l10n.progressExerciseCount(
+                                    sessions.fold<int>(
+                                      0,
+                                      (sum, entry) => sum + entry.exerciseCount,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.x3),
+                            Row(
+                              children: [
+                                _SummaryValue(
+                                  icon: Icons.repeat_rounded,
+                                  label: loggedSetCount == 0
+                                      ? context.l10n.progressNoSetData
+                                      : context.l10n.progressSetsAndReps(
+                                          loggedSetCount,
+                                          sessions.fold<int>(
+                                            0,
+                                            (sum, entry) =>
+                                                sum + entry.totalRepetitions,
+                                          ),
+                                        ),
+                                ),
+                                const SizedBox(width: AppSpacing.x6),
+                                _SummaryValue(
+                                  icon: Icons.scale_outlined,
+                                  label: _volumeLabel(
+                                    context,
+                                    sessions.fold<double>(
+                                      0,
+                                      (sum, entry) => sum + entry.totalVolumeKg,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.x2),
+                            Text(
+                              context.l10n.progressVolumeExplanation,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(
@@ -205,59 +263,72 @@ class _ProgressViewState extends State<ProgressView> {
                   onAction: _openBodyEvolution,
                 ),
                 AppSurfaceCard(
-                  child: widget.measurements.isEmpty
-                      ? Text(
-                          context.l10n.progressMeasurementsEmpty,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        )
-                      : Text(
-                          '${_formatShortDate(widget.measurements.last.date, Localizations.localeOf(context).toLanguageTag())} · ${widget.measurements.last.weightKg.toStringAsFixed(1)} kg',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
+                  padding: EdgeInsets.zero,
+                  child: InkWell(
+                    onTap: _openBodyEvolution,
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.x4),
+                      child: latestMeasurement == null
+                          ? Text(
+                              context.l10n.progressMeasurementsEmpty,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${_formatShortDate(latestMeasurement.date, Localizations.localeOf(context).toLanguageTag())} · ${latestMeasurement.weightKg.toStringAsFixed(1)} kg',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium,
+                                ),
+                                if (previousMeasurement != null) ...[
+                                  const SizedBox(height: AppSpacing.x1),
+                                  Text(
+                                    context.l10n.progressWeightChange(
+                                      _signedDifference(
+                                        latestMeasurement.weightKg -
+                                            previousMeasurement.weightKg,
+                                      ),
+                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium,
+                                  ),
+                                ],
+                              ],
+                            ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(title: context.l10n.progressStrengthEvolution),
-                AppSurfaceCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.progressStrengthDescription,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.x2),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: _openStrengthEvolution,
-                          icon: const Icon(Icons.show_chart_rounded),
-                          label: Text(context.l10n.progressStrengthEvolution),
-                        ),
-                      ),
-                    ],
-                  ),
+                _ProgressDestinationCard(
+                  icon: Icons.show_chart_rounded,
+                  title: context.l10n.progressStrengthEvolution,
+                  description: hasStrengthData
+                      ? context.l10n.progressStrengthDescription
+                      : context.l10n.progressStrengthEmpty,
+                  onTap: _openStrengthEvolution,
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(title: context.l10n.progressPersonalRecords),
-                AppSurfaceCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.progressRecordsDescription,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.x2),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: _openPersonalRecords,
-                          icon: const Icon(Icons.emoji_events_outlined),
-                          label: Text(context.l10n.progressPersonalRecords),
+                _ProgressDestinationCard(
+                  icon: Icons.emoji_events_outlined,
+                  title: context.l10n.progressPersonalRecords,
+                  description: latestPersonalRecord == null
+                      ? context.l10n.progressRecordsEmpty
+                      : context.l10n.progressRecentRecord(
+                          latestPersonalRecord.exercise,
+                          _formatVolume(latestPersonalRecord.value),
+                          latestPersonalRecord.unit,
+                          _formatShortDate(
+                            latestPersonalRecord.date,
+                            Localizations.localeOf(context).toLanguageTag(),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                  onTap: _openPersonalRecords,
                 ),
                 const SizedBox(height: AppSpacing.x8),
                 SectionHeading(title: context.l10n.progressHistory),
@@ -528,6 +599,56 @@ class _SummaryValue extends StatelessWidget {
   }
 }
 
+class _ProgressDestinationCard extends StatelessWidget {
+  const _ProgressDestinationCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => AppSurfaceCard(
+    padding: EdgeInsets.zero,
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.medium),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.x4),
+        child: Row(
+          children: [
+            Icon(icon, color: context.appColors.accent, size: 24),
+            const SizedBox(width: AppSpacing.x3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.x2),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: context.appColors.textSecondary,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 String _formatShortDate(DateTime date, String localeName) =>
     DateFormat.MMMd(localeName).format(date);
 
@@ -548,3 +669,6 @@ String _localizedSessionTitle(BuildContext context, String title) =>
 String _formatVolume(double volume) => volume == volume.roundToDouble()
     ? volume.toStringAsFixed(0)
     : volume.toStringAsFixed(1);
+
+String _signedDifference(double difference) =>
+    '${difference > 0 ? '+' : ''}${difference.toStringAsFixed(1)}';
