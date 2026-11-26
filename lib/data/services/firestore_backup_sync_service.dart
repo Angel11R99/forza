@@ -9,9 +9,25 @@ import '../database/app_database.dart';
 import '../repositories/backup_repository.dart';
 import '../repositories/profile_settings_repository.dart';
 
+enum CloudSyncPhase {
+  signedOut,
+  consentRequired,
+  syncing,
+  synced,
+  pending,
+  failed,
+}
+
+class CloudSyncStatus {
+  const CloudSyncStatus(this.phase, {this.lastSyncedAt});
+
+  final CloudSyncPhase phase;
+  final DateTime? lastSyncedAt;
+}
+
 /// Keeps the local-first FORZA backup format mirrored in the signed-in user's
 /// private Firestore account. Local values win when records share an ID.
-class FirestoreBackupSyncService {
+class FirestoreBackupSyncService extends ChangeNotifier {
   FirestoreBackupSyncService({
     required this.database,
     required this.backupRepository,
@@ -19,6 +35,7 @@ class FirestoreBackupSyncService {
     required this.applyAppearance,
     required this.profileSettingsRepository,
     required this.appearanceChanges,
+    this.onDataRestored,
     FirebaseAuth? auth,
     FirebaseFirestore? firestore,
   }) : _auth = auth ?? FirebaseAuth.instance,
@@ -26,6 +43,7 @@ class FirestoreBackupSyncService {
 
   static const _chunkByteLimit = 650000;
   static const _maxChunks = 32;
+  static const _maxRetryDelay = Duration(minutes: 5);
 
   final AppDatabase database;
   final BackupRepository backupRepository;
@@ -33,6 +51,7 @@ class FirestoreBackupSyncService {
   final Future<void> Function(String mode) applyAppearance;
   final ProfileSettingsRepository profileSettingsRepository;
   final Listenable appearanceChanges;
+  final Future<void> Function()? onDataRestored;
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
   final String _writerId = DateTime.now().microsecondsSinceEpoch.toRadixString(
@@ -44,8 +63,16 @@ class FirestoreBackupSyncService {
   StreamSubscription<void>? _profileSettingsChanges;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _manifestChanges;
   Timer? _uploadTimer;
+  Timer? _retryTimer;
   bool _isApplyingCloud = false;
+  bool _isSyncing = false;
+  bool _rescheduleAfterSync = false;
+  bool _isSwitchingLocalAccount = false;
   bool _isDisposed = false;
+  int _retryAttempt = 0;
+  CloudSyncStatus _status = const CloudSyncStatus(CloudSyncPhase.signedOut);
+
+  CloudSyncStatus get status => _status;
 
   void start() {
     _databaseChanges = database
@@ -67,48 +94,169 @@ class FirestoreBackupSyncService {
         .watch()
         .listen((_) => _scheduleUpload());
     _profileSettingsChanges = profileSettingsRepository.changes.listen(
-      (_) => _scheduleUpload(),
+      (_) => unawaited(_onProfileSettingsChanged()),
     );
     appearanceChanges.addListener(_scheduleUpload);
     _authSubscription = _auth.authStateChanges().listen(_onAuthChanged);
   }
 
-  Future<void> dispose() async {
+  @override
+  void dispose() {
     _isDisposed = true;
     _uploadTimer?.cancel();
-    await _authSubscription?.cancel();
-    await _databaseChanges?.cancel();
-    await _profileSettingsChanges?.cancel();
-    await _manifestChanges?.cancel();
+    _retryTimer?.cancel();
+    unawaited(_authSubscription?.cancel());
+    unawaited(_databaseChanges?.cancel());
+    unawaited(_profileSettingsChanges?.cancel());
+    unawaited(_manifestChanges?.cancel());
     appearanceChanges.removeListener(_scheduleUpload);
+    super.dispose();
   }
 
   Future<void> _onAuthChanged(User? user) async {
     await _manifestChanges?.cancel();
     _manifestChanges = null;
     _uploadTimer?.cancel();
-    if (user == null || _isDisposed) return;
+    _retryTimer?.cancel();
+    if (user == null || _isDisposed) {
+      _setStatus(const CloudSyncStatus(CloudSyncPhase.signedOut));
+      return;
+    }
 
     try {
-      final manifest = _manifest(user.uid);
+      await _switchLocalAccount(user.uid);
+      if (!await profileSettingsRepository.isCloudSyncEnabled(user.uid)) {
+        _setStatus(
+          CloudSyncStatus(
+            CloudSyncPhase.consentRequired,
+            lastSyncedAt: await profileSettingsRepository.lastCloudSync(
+              user.uid,
+            ),
+          ),
+        );
+        return;
+      }
+      await _syncInitial(user.uid);
+    } on Object catch (error, stackTrace) {
+      debugPrint('FORZA Firestore sync could not start: $error\n$stackTrace');
+      await _markFailed(user.uid);
+    }
+  }
+
+  Future<void> _switchLocalAccount(String uid) async {
+    _isSwitchingLocalAccount = true;
+    try {
+      final owner = await profileSettingsRepository.cloudSyncOwner();
+      if (owner == uid) return;
+      if (owner == null || owner.isEmpty) {
+        // Keep pre-account guest data local. It can be uploaded only after the
+        // user explicitly accepts the sync consent in Profile.
+        await profileSettingsRepository.setCloudSyncOwner(uid);
+        return;
+      }
+
+      final previousBackup = await _exportLocal();
+      await (database
+          .into(database.localAccountBackups)
+          .insertOnConflictUpdate(
+            LocalAccountBackupsCompanion.insert(
+              uid: owner,
+              backupJson: previousBackup,
+              updatedAt: DateTime.now().toUtc().toIso8601String(),
+            ),
+          ));
+      final savedAccount = await (database.select(
+        database.localAccountBackups,
+      )..where((row) => row.uid.equals(uid))).getSingleOrNull();
+      if (savedAccount == null) {
+        await backupRepository.clearLocalData();
+        await (database.delete(
+          database.cloudSyncBaselines,
+        )..where((row) => row.uid.equals(uid))).go();
+        await applyAppearance('system');
+      } else {
+        final backup = backupRepository.validate(savedAccount.backupJson);
+        await backupRepository.restore(backup);
+        await applyAppearance(backup.appearanceMode);
+      }
+      await profileSettingsRepository.setCloudSyncOwner(uid);
+      await onDataRestored?.call();
+    } finally {
+      _isSwitchingLocalAccount = false;
+    }
+  }
+
+  Future<void> _onProfileSettingsChanged() async {
+    final user = _auth.currentUser;
+    if (user == null || _isDisposed || _isSwitchingLocalAccount || _isSyncing) {
+      return;
+    }
+    if (!await profileSettingsRepository.isCloudSyncEnabled(user.uid)) {
+      _uploadTimer?.cancel();
+      _retryTimer?.cancel();
+      await _manifestChanges?.cancel();
+      _manifestChanges = null;
+      _setStatus(
+        CloudSyncStatus(
+          CloudSyncPhase.consentRequired,
+          lastSyncedAt: await profileSettingsRepository.lastCloudSync(user.uid),
+        ),
+      );
+      return;
+    }
+    if (_manifestChanges == null) {
+      await _syncInitial(user.uid);
+    } else {
+      _scheduleUpload();
+    }
+  }
+
+  Future<void> retryNow() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null ||
+        !await profileSettingsRepository.isCloudSyncEnabled(uid)) {
+      return;
+    }
+    _retryTimer?.cancel();
+    _retryAttempt = 0;
+    await _syncInitial(uid);
+  }
+
+  Future<void> _syncInitial(String uid) async {
+    if (_isSyncing || _isDisposed || _auth.currentUser?.uid != uid) return;
+    _isSyncing = true;
+    _setStatus(
+      CloudSyncStatus(
+        CloudSyncPhase.syncing,
+        lastSyncedAt: await profileSettingsRepository.lastCloudSync(uid),
+      ),
+    );
+
+    try {
+      final manifest = _manifest(uid);
       final cloudDocument = await manifest.get();
       final localJson = await _exportLocal();
       if (!cloudDocument.exists) {
-        await _upload(user.uid, localJson);
+        await _upload(uid, localJson);
+        await _saveBaseline(uid, localJson);
       } else {
-        final cloudJson = await _download(user.uid, cloudDocument.data()!);
-        await _mergeCloudIntoLocal(user.uid, cloudJson);
+        final cloudJson = await _download(uid, cloudDocument.data()!);
+        await _mergeCloudIntoLocal(uid, localJson, cloudJson);
       }
 
-      if (_isDisposed || _auth.currentUser?.uid != user.uid) return;
+      if (_isDisposed || _auth.currentUser?.uid != uid) return;
       _manifestChanges = manifest.snapshots().listen((snapshot) {
         final data = snapshot.data();
         if (snapshot.exists && data != null && data['writer'] != _writerId) {
-          unawaited(_handleRemoteSnapshot(user.uid, data));
+          unawaited(_handleRemoteSnapshot(uid, data));
         }
       });
+      await _markCompleted(uid);
     } on Object catch (error, stackTrace) {
       debugPrint('FORZA Firestore sync could not start: $error\n$stackTrace');
+      await _markFailed(uid);
+    } finally {
+      _finishSync();
     }
   }
 
@@ -116,51 +264,105 @@ class FirestoreBackupSyncService {
     String uid,
     Map<String, dynamic> manifest,
   ) async {
-    if (_isApplyingCloud || _isDisposed || _auth.currentUser?.uid != uid) {
+    if (_isApplyingCloud ||
+        _isSyncing ||
+        _isDisposed ||
+        _auth.currentUser?.uid != uid) {
+      if (_isSyncing && !_isApplyingCloud) _rescheduleAfterSync = true;
       return;
     }
     try {
+      _isSyncing = true;
+      _setStatus(
+        CloudSyncStatus(
+          CloudSyncPhase.syncing,
+          lastSyncedAt: await profileSettingsRepository.lastCloudSync(uid),
+        ),
+      );
       final cloudJson = await _download(uid, manifest);
       final localJson = await _exportLocal();
-      if (_equivalent(localJson, cloudJson)) return;
-
-      final mergedJson = backupRepository.mergeJson(localJson, cloudJson);
+      final baseline = await _readBaseline(uid);
+      final mergedJson = backupRepository.mergeJson(
+        localJson,
+        cloudJson,
+        baselineSource: baseline,
+      );
       final mergedBackup = backupRepository.validate(mergedJson);
-      _isApplyingCloud = true;
-      try {
-        await backupRepository.restore(mergedBackup);
-        await applyAppearance(mergedBackup.appearanceMode);
-      } finally {
-        _isApplyingCloud = false;
+      if (!_equivalent(localJson, mergedJson)) {
+        _isApplyingCloud = true;
+        try {
+          await backupRepository.restore(mergedBackup);
+          await applyAppearance(mergedBackup.appearanceMode);
+          await onDataRestored?.call();
+        } finally {
+          _isApplyingCloud = false;
+        }
       }
       if (!_equivalent(mergedJson, cloudJson)) {
         await _upload(uid, mergedJson);
       }
+      await _saveBaseline(uid, mergedJson);
+      await _markCompleted(uid);
     } on Object catch (error, stackTrace) {
       debugPrint(
         'FORZA Firestore sync could not apply remote data: $error\n$stackTrace',
       );
+      await _markFailed(uid);
+    } finally {
+      _finishSync();
     }
   }
 
-  Future<void> _mergeCloudIntoLocal(String uid, String cloudJson) async {
-    final localJson = await _exportLocal();
-    final mergedJson = backupRepository.mergeJson(localJson, cloudJson);
+  Future<void> _mergeCloudIntoLocal(
+    String uid,
+    String localJson,
+    String cloudJson,
+  ) async {
+    final baseline = await _readBaseline(uid);
+    final mergedJson = backupRepository.mergeJson(
+      localJson,
+      cloudJson,
+      baselineSource: baseline,
+    );
     final mergedBackup = backupRepository.validate(mergedJson);
-    _isApplyingCloud = true;
-    try {
-      await backupRepository.restore(mergedBackup);
-      await applyAppearance(mergedBackup.appearanceMode);
-    } finally {
-      _isApplyingCloud = false;
+    if (!_equivalent(localJson, mergedJson)) {
+      _isApplyingCloud = true;
+      try {
+        await backupRepository.restore(mergedBackup);
+        await applyAppearance(mergedBackup.appearanceMode);
+        await onDataRestored?.call();
+      } finally {
+        _isApplyingCloud = false;
+      }
     }
     if (!_equivalent(mergedJson, cloudJson)) {
       await _upload(uid, mergedJson);
     }
+    await _saveBaseline(uid, mergedJson);
   }
 
   void _scheduleUpload() {
-    if (_isApplyingCloud || _isDisposed || _auth.currentUser == null) return;
+    unawaited(_scheduleUploadIfAllowed());
+  }
+
+  Future<void> _scheduleUploadIfAllowed() async {
+    if (_isApplyingCloud || _isDisposed) return;
+    if (_isSyncing) {
+      _rescheduleAfterSync = true;
+      return;
+    }
+    final user = _auth.currentUser;
+    if (user == null ||
+        !await profileSettingsRepository.isCloudSyncEnabled(user.uid)) {
+      return;
+    }
+    await profileSettingsRepository.setPendingCloudSync(user.uid, true);
+    _setStatus(
+      CloudSyncStatus(
+        CloudSyncPhase.pending,
+        lastSyncedAt: await profileSettingsRepository.lastCloudSync(user.uid),
+      ),
+    );
     _uploadTimer?.cancel();
     _uploadTimer = Timer(const Duration(seconds: 2), () {
       unawaited(_uploadLocal());
@@ -170,13 +372,152 @@ class FirestoreBackupSyncService {
   Future<void> _uploadLocal() async {
     final user = _auth.currentUser;
     if (user == null || _isDisposed || _isApplyingCloud) return;
+    _isSyncing = true;
+    _setStatus(
+      CloudSyncStatus(
+        CloudSyncPhase.syncing,
+        lastSyncedAt: await profileSettingsRepository.lastCloudSync(user.uid),
+      ),
+    );
     try {
-      await _upload(user.uid, await _exportLocal());
+      if (!await profileSettingsRepository.isCloudSyncEnabled(user.uid)) return;
+      final manifest = _manifest(user.uid);
+      final cloudDocument = await manifest.get();
+      final localJson = await _exportLocal();
+      final baseline = await _readBaseline(user.uid);
+      String mergedJson;
+      String? cloudJson;
+      if (cloudDocument.exists) {
+        cloudJson = await _download(user.uid, cloudDocument.data()!);
+        mergedJson = backupRepository.mergeJson(
+          localJson,
+          cloudJson,
+          baselineSource: baseline,
+        );
+      } else {
+        mergedJson = localJson;
+      }
+      if (!_equivalent(localJson, mergedJson)) {
+        final backup = backupRepository.validate(mergedJson);
+        _isApplyingCloud = true;
+        try {
+          await backupRepository.restore(backup);
+          await applyAppearance(backup.appearanceMode);
+          await onDataRestored?.call();
+        } finally {
+          _isApplyingCloud = false;
+        }
+      }
+      if (cloudJson == null || !_equivalent(mergedJson, cloudJson)) {
+        await _upload(user.uid, mergedJson);
+      }
+      await _saveBaseline(user.uid, mergedJson);
+      await _markCompleted(user.uid);
     } on Object catch (error, stackTrace) {
       debugPrint(
         'FORZA Firestore sync could not upload local data: $error\n$stackTrace',
       );
+      await _markFailed(user.uid);
+    } finally {
+      _finishSync();
     }
+  }
+
+  void _finishSync() {
+    _isSyncing = false;
+    if (_rescheduleAfterSync && !_isDisposed && !_isApplyingCloud) {
+      _rescheduleAfterSync = false;
+      _scheduleUpload();
+    }
+  }
+
+  Future<void> deleteRemoteData() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) throw StateError('Se necesita una cuenta conectada.');
+    _uploadTimer?.cancel();
+    _retryTimer?.cancel();
+    await _manifestChanges?.cancel();
+    _manifestChanges = null;
+    final manifest = _manifest(uid);
+    final current = await manifest.get();
+    final snapshotId = current.data()?['snapshotId'];
+    if (snapshotId is String) {
+      final chunks = await manifest
+          .collection('snapshots')
+          .doc(snapshotId)
+          .collection('chunks')
+          .get();
+      for (var offset = 0; offset < chunks.docs.length; offset += 400) {
+        final batch = _firestore.batch();
+        for (final chunk in chunks.docs.skip(offset).take(400)) {
+          batch.delete(chunk.reference);
+        }
+        await batch.commit();
+      }
+    }
+    await manifest.delete();
+    final userProfile = _firestore.collection('users').doc(uid);
+    if ((await userProfile.get()).exists) await userProfile.delete();
+    await profileSettingsRepository.setCloudSyncEnabled(uid, false);
+    await profileSettingsRepository.setPendingCloudSync(uid, false);
+    _setStatus(
+      CloudSyncStatus(
+        CloudSyncPhase.consentRequired,
+        lastSyncedAt: await profileSettingsRepository.lastCloudSync(uid),
+      ),
+    );
+  }
+
+  Future<String?> _readBaseline(String uid) async => (await (database.select(
+    database.cloudSyncBaselines,
+  )..where((row) => row.uid.equals(uid))).getSingleOrNull())?.backupJson;
+
+  Future<void> _saveBaseline(String uid, String json) async {
+    await (database
+        .into(database.cloudSyncBaselines)
+        .insertOnConflictUpdate(
+          CloudSyncBaselinesCompanion.insert(
+            uid: uid,
+            backupJson: json,
+            updatedAt: DateTime.now().toUtc().toIso8601String(),
+          ),
+        ));
+  }
+
+  Future<void> _markCompleted(String uid) async {
+    _retryTimer?.cancel();
+    _retryAttempt = 0;
+    final timestamp = DateTime.now().toUtc();
+    await profileSettingsRepository.markCloudSyncCompleted(uid, timestamp);
+    _setStatus(CloudSyncStatus(CloudSyncPhase.synced, lastSyncedAt: timestamp));
+  }
+
+  Future<void> _markFailed(String uid) async {
+    await profileSettingsRepository.setPendingCloudSync(uid, true);
+    _setStatus(
+      CloudSyncStatus(
+        CloudSyncPhase.failed,
+        lastSyncedAt: await profileSettingsRepository.lastCloudSync(uid),
+      ),
+    );
+    if (_isDisposed || _auth.currentUser?.uid != uid) return;
+    final delaySeconds = (1 << _retryAttempt.clamp(0, 8)).clamp(2, 300);
+    _retryAttempt++;
+    final delay = Duration(seconds: delaySeconds);
+    _retryTimer?.cancel();
+    _retryTimer = Timer(
+      delay > _maxRetryDelay ? _maxRetryDelay : delay,
+      () => unawaited(retryNow()),
+    );
+  }
+
+  void _setStatus(CloudSyncStatus next) {
+    if (_status.phase == next.phase &&
+        _status.lastSyncedAt == next.lastSyncedAt) {
+      return;
+    }
+    _status = next;
+    if (!_isDisposed) notifyListeners();
   }
 
   Future<String> _exportLocal() =>

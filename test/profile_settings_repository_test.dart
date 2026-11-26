@@ -100,6 +100,22 @@ void main() {
     );
     expect(storage.values, isEmpty);
   });
+
+  test('cloud sync consent is opt-in and scoped to each account', () async {
+    final storage = _MemoryProfilePreferencesStorage();
+    final repository = ProfileSettingsRepository(storage: storage);
+
+    expect(await repository.isCloudSyncEnabled('uid-a'), isFalse);
+    await repository.setCloudSyncEnabled('uid-a', true);
+    expect(await repository.isCloudSyncEnabled('uid-a'), isTrue);
+    expect(await repository.isCloudSyncEnabled('uid-b'), isFalse);
+
+    await repository.setPendingCloudSync('uid-a', true);
+    expect(await repository.hasPendingCloudSync('uid-a'), isTrue);
+    await repository.markCloudSyncCompleted('uid-a', DateTime.utc(2026, 1, 1));
+    expect(await repository.hasPendingCloudSync('uid-a'), isFalse);
+    expect(await repository.lastCloudSync('uid-a'), DateTime.utc(2026, 1, 1));
+  });
 }
 
 class _MemoryProfilePreferencesStorage implements ProfilePreferencesStorage {

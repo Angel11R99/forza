@@ -100,7 +100,9 @@ class _AppScaffoldState extends State<AppScaffold>
   @override
   void initState() {
     super.initState();
-    _viewModel = widget.viewModel ?? AppShellViewModel();
+    _viewModel =
+        widget.viewModel ??
+        AppShellViewModel(localeController: widget.localeController);
     _profileSettingsRepository =
         widget.profileSettingsRepository ?? ProfileSettingsRepository();
     _profileSettingsChanges = _profileSettingsRepository.changes.listen((_) {
@@ -126,6 +128,8 @@ class _AppScaffoldState extends State<AppScaffold>
             database: database,
           ),
           profileSettingsRepository: _profileSettingsRepository,
+          readLanguageCode: () => widget.localeController.locale?.languageCode,
+          writeLanguageCode: widget.localeController.setLanguageCode,
         ),
         appearanceMode: () => widget.appearance.mode.name,
         applyAppearance: (mode) => widget.appearance.setMode(
@@ -136,6 +140,7 @@ class _AppScaffoldState extends State<AppScaffold>
         ),
         profileSettingsRepository: _profileSettingsRepository,
         appearanceChanges: widget.appearance,
+        onDataRestored: _restoreSettings,
       )..start();
     }
     WidgetsBinding.instance.addObserver(this);
@@ -165,7 +170,7 @@ class _AppScaffoldState extends State<AppScaffold>
     WidgetsBinding.instance.removeObserver(this);
     _reminderRolloverTimer?.cancel();
     unawaited(_profileSettingsChanges.cancel());
-    unawaited(_cloudSyncService?.dispose());
+    _cloudSyncService?.dispose();
     _moduleController
       ..removeStatusListener(_onModuleTransitionStatus)
       ..dispose();
@@ -193,6 +198,7 @@ class _AppScaffoldState extends State<AppScaffold>
     if (state == AppLifecycleState.resumed) {
       _scheduleReminderRollover();
       unawaited(_refreshScheduleAndReminders());
+      unawaited(_cloudSyncService?.retryNow());
     }
   }
 
@@ -580,6 +586,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       trainingSettings: _viewModel.trainingSettings,
                       preferences: _preferences,
                       accountAuthViewModel: _accountAuthViewModel,
+                      cloudSyncService: _cloudSyncService,
                       profileSettingsRepository: _profileSettingsRepository,
                       onPreferencesChanged: (preferences) =>
                           setState(() => _preferences = preferences),

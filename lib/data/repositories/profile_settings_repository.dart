@@ -31,11 +31,56 @@ class ProfileSettingsRepository {
   static const _appPreferencesKey = 'profile_app_preferences_v1';
   static const _notificationSettingsKey = 'profile_notifications_v1';
   static const _privacySettingsKey = 'profile_privacy_v1';
+  static const _syncOwnerKey = 'profile_cloud_sync_owner_v1';
+  static const _lastSyncKeyPrefix = 'profile_cloud_sync_last_';
+  static const _syncEnabledKeyPrefix = 'profile_cloud_sync_enabled_';
+  static const _pendingSyncKeyPrefix = 'profile_cloud_sync_pending_';
 
   final ProfilePreferencesStorage _storage;
   final StreamController<void> _changes = StreamController<void>.broadcast();
 
   Stream<void> get changes => _changes.stream;
+
+  Future<bool> isCloudSyncEnabled(String uid) async =>
+      (await _storage.read(_uidKey(_syncEnabledKeyPrefix, uid))) == 'true';
+
+  Future<void> setCloudSyncEnabled(String uid, bool enabled) async {
+    await _storage.write(_uidKey(_syncEnabledKeyPrefix, uid), '$enabled');
+    if (!_changes.isClosed) _changes.add(null);
+  }
+
+  Future<String?> cloudSyncOwner() => _storage.read(_syncOwnerKey);
+
+  Future<void> setCloudSyncOwner(String? uid) async {
+    if (uid == null) {
+      await _storage.write(_syncOwnerKey, '');
+    } else {
+      await _storage.write(_syncOwnerKey, uid);
+    }
+  }
+
+  Future<bool> hasPendingCloudSync(String uid) async =>
+      (await _storage.read(_uidKey(_pendingSyncKeyPrefix, uid))) == 'true';
+
+  Future<void> setPendingCloudSync(String uid, bool pending) async {
+    await _storage.write(_uidKey(_pendingSyncKeyPrefix, uid), '$pending');
+  }
+
+  Future<DateTime?> lastCloudSync(String uid) async {
+    final value = await _storage.read(_uidKey(_lastSyncKeyPrefix, uid));
+    return value == null ? null : DateTime.tryParse(value);
+  }
+
+  Future<void> markCloudSyncCompleted(String uid, DateTime timestamp) async {
+    await _storage.write(
+      _uidKey(_lastSyncKeyPrefix, uid),
+      timestamp.toUtc().toIso8601String(),
+    );
+    await setPendingCloudSync(uid, false);
+  }
+
+  String _uidKey(String prefix, String uid) =>
+      '$prefix${base64Url.encode(utf8.encode(uid)).replaceAll('=', '')}';
 
   Future<AppPreferences> loadAppPreferences() async {
     final json = await _read(_appPreferencesKey);

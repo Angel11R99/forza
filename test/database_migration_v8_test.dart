@@ -66,7 +66,7 @@ void main() {
     final version = await database
         .customSelect('PRAGMA user_version')
         .getSingle();
-    expect(version.read<int>('user_version'), 8);
+    expect(version.read<int>('user_version'), 10);
     final planColumns = await database
         .customSelect('PRAGMA table_info(training_plans)')
         .get();

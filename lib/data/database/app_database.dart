@@ -159,6 +159,24 @@ class AppMetadata extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
+class LocalAccountBackups extends Table {
+  TextColumn get uid => text()();
+  TextColumn get backupJson => text()();
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {uid};
+}
+
+class CloudSyncBaselines extends Table {
+  TextColumn get uid => text()();
+  TextColumn get backupJson => text()();
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {uid};
+}
+
 @DriftDatabase(
   tables: [
     TrainingPlans,
@@ -171,6 +189,8 @@ class AppMetadata extends Table {
     PersonalGoals,
     BodyMeasurements,
     AppMetadata,
+    LocalAccountBackups,
+    CloudSyncBaselines,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -191,7 +211,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -232,6 +252,8 @@ class AppDatabase extends _$AppDatabase {
           personalGoals.exerciseCatalogId,
         );
       }
+      if (from < 9) await migrator.createTable(localAccountBackups);
+      if (from < 10) await migrator.createTable(cloudSyncBaselines);
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

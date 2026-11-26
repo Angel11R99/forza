@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:material_ui/material_ui.dart';
 
+import '../../../app/localization/locale_controller.dart';
 import '../../../data/database/app_database.dart'
     hide BodyMeasurement, PersonalGoal, ScheduledTrainingSession;
 import '../../../data/migrations/legacy_shared_preferences_migration.dart';
@@ -28,6 +29,7 @@ class AppShellViewModel extends ChangeNotifier {
     PersonalGoalRepository? personalGoalRepository,
     BodyMeasurementRepository? bodyMeasurementRepository,
     BackupRepository? backupRepository,
+    LocaleController? localeController,
   }) : _database = database ?? AppDatabase.instance,
        _settingsRepository =
            settingsRepository ??
@@ -57,6 +59,10 @@ class AppShellViewModel extends ChangeNotifier {
           scheduleRepository: _trainingScheduleRepository,
           goalRepository: _personalGoalRepository,
           bodyMeasurementRepository: _bodyMeasurementRepository,
+          readLanguageCode: localeController?.locale == null
+              ? null
+              : () => localeController?.locale?.languageCode,
+          writeLanguageCode: localeController?.setLanguageCode,
         );
   }
 

@@ -21,8 +21,8 @@ keytool -list -v -keystore "C:\ruta\release.jks" -alias "ALIAS"
 
 ## Firestore
 
-La app sincroniza el contenido del respaldo local con una copia privada del usuario autenticado. Las reglas de `firestore.rules` limitan cada perfil y copia al UID de Firebase Authentication, y deniegan el acceso por defecto. Para el modelo y resolución de conflictos, consulta [Firebase y sincronización](firebase-sync.md).
+Iniciar sesión no sube el respaldo. La sincronización es opcional y se activa desde Perfil después de aceptar el consentimiento. Las reglas de `firestore.rules` limitan cada perfil y copia al UID de Firebase Authentication, y deniegan el acceso por defecto. Para el modelo, eliminación de la copia y resolución de conflictos, consulta [Firebase y sincronización](firebase-sync.md).
 
 ## iOS y macOS
 
-Los registros Firebase y opciones FlutterFire están creados. El URL scheme nativo de Google Sign-In todavía requiere completar los valores del cliente iOS en los archivos `Info.plist`; esta integración no se debe considerar validada en Apple hasta configurar y compilar en macOS con los identificadores OAuth finales.
+Los registros Firebase y opciones FlutterFire están creados. Los archivos `Info.plist` contienen el client ID y URL scheme de OAuth iOS. La integración aún requiere compilar en macOS y probar el inicio, restauración de sesión y cierre de sesión en iOS/macOS.

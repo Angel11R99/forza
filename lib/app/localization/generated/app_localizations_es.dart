@@ -847,7 +847,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileAccountAccessSubtitle =>
-      'Opcional · tus datos siguen en este dispositivo';
+      'Opcional · la sincronización se activa por separado';
 
   @override
   String get profileGoogleConnected => 'Conectado con Google';
@@ -1212,7 +1212,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get accountWelcomeDescription =>
-      'Puedes usar Forza sin iniciar sesión. Conecta Google para sincronizar tus entrenamientos, agenda, objetivos, medidas y preferencias con tu cuenta privada.';
+      'Puedes entrenar sin una cuenta. Iniciar sesión con Google no sube tus datos; la sincronización se activa por separado en Perfil.';
 
   @override
   String get accountSignInWithGoogle => 'Continuar con Google';
@@ -1235,7 +1235,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get accountLocalDataNote =>
-      'Iniciar o cerrar sesión con Google no borra entrenamientos, preferencias ni respaldos. Forza no sube estos datos ni los sincroniza.';
+      'Tus datos se quedan en este dispositivo hasta que aceptes activar la sincronización en Perfil.';
 
   @override
   String get accountConfigurationRequired =>
@@ -1958,6 +1958,98 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileAccountData => 'Datos de cuenta';
+
+  @override
+  String get cloudSyncTitle => 'Sincronización en la nube';
+
+  @override
+  String get cloudSyncDescription =>
+      'La sincronización es opcional. Tus datos siguen disponibles sin conexión y solo se envían a tu cuenta privada de Firestore después de que la actives.';
+
+  @override
+  String get cloudSyncToggleTitle => 'Sincronizar mis datos';
+
+  @override
+  String get cloudSyncToggleDescription =>
+      'Incluye plan, agenda, entrenamientos, series, objetivos, medidas y ajustes de la app.';
+
+  @override
+  String get cloudSyncStatusHeading => 'Estado';
+
+  @override
+  String get cloudSyncStatusSignedOut => 'Inicia sesión para sincronizar.';
+
+  @override
+  String get cloudSyncStatusDisabled =>
+      'Desactivada · los cambios se guardan solo en este dispositivo.';
+
+  @override
+  String get cloudSyncStatusSyncing => 'Sincronizando tus datos…';
+
+  @override
+  String get cloudSyncStatusSynced => 'Sincronización al día.';
+
+  @override
+  String get cloudSyncStatusPending => 'Hay cambios pendientes de sincronizar.';
+
+  @override
+  String get cloudSyncStatusFailed =>
+      'No se pudo sincronizar. Puedes reintentar.';
+
+  @override
+  String get cloudSyncLastSync => 'Última sincronización';
+
+  @override
+  String get cloudSyncRetry => 'Reintentar ahora';
+
+  @override
+  String get cloudSyncConsentTitle => 'Activar sincronización';
+
+  @override
+  String get cloudSyncConsentDescription =>
+      'Se subirá a tu cuenta privada de Firestore una copia de tu plan y agenda, entrenamientos y series, objetivos, medidas, sesión activa, apariencia y preferencias, notificaciones y privacidad. Si ya hay datos en la nube, se combinarán y se conservará tu versión local cuando coincidan registros. Puedes desactivarla después.';
+
+  @override
+  String get cloudSyncConsentAccept => 'Activar y sincronizar';
+
+  @override
+  String get cloudSyncEnableFailed =>
+      'No se pudo activar la sincronización. Inténtalo de nuevo.';
+
+  @override
+  String get cloudSyncDisableTitle => 'Desactivar sincronización';
+
+  @override
+  String get cloudSyncDisableDescription =>
+      'Los cambios nuevos quedarán solo en este dispositivo. La copia que ya está en la nube no se borrará.';
+
+  @override
+  String get cloudSyncDisableButton => 'Desactivar';
+
+  @override
+  String get cloudSyncDeleteSection => 'Copia en la nube';
+
+  @override
+  String get cloudSyncDeleteDescription =>
+      'Elimina tu perfil y copia de Firestore. Conserva tus datos locales y tu cuenta de Google.';
+
+  @override
+  String get cloudSyncDeleteButton => 'Eliminar copia en la nube';
+
+  @override
+  String get cloudSyncDeleteTitle => '¿Eliminar la copia en la nube?';
+
+  @override
+  String get cloudSyncDeleteConfirm =>
+      'Esta acción elimina de Firestore tu perfil y todos los datos sincronizados. Tus datos de este dispositivo y tu cuenta de Google se conservarán.';
+
+  @override
+  String get cloudSyncDeleteCompleted =>
+      'Se eliminó la copia de Firestore. Los datos locales se conservaron.';
+
+  @override
+  String get cloudSyncDeleteFailed =>
+      'No se pudo eliminar la copia en la nube. Revisa la conexión e inténtalo de nuevo.';
 
   @override
   String get profileConfirmHeading => 'Confirma tus datos';
