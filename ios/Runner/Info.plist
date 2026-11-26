@@ -17,7 +17,7 @@
 	<key>CFBundleName</key>
 	<string>FORZA</string>
 	<key>GIDClientID</key>
-	<string>$(FORZA_GOOGLE_IOS_CLIENT_ID)</string>
+	<string>351157789875-l2dl2dc03oij0sc32t5tgna7hi50jnjt.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -25,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>FORZA_GOOGLE_IOS_REVERSED_CLIENT_ID</string>
+				<string>com.googleusercontent.apps.351157789875-l2dl2dc03oij0sc32t5tgna7hi50jnjt</string>
 			</array>
 		</dict>
 	</array>

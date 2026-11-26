@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "351157789875-n0m2dfja2lvu2ul6mevvc7h4bgpvje56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.forza",
+            "certificate_hash": "9d3afc02409cb231aa2857caa1bcd2057da0aa89"
+          }
+        },
+        {
           "client_id": "351157789875-tm217g66o27l7151gqes56g4fd45fuka.apps.googleusercontent.com",
           "client_type": 3
         }
