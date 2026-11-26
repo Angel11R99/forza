@@ -36,6 +36,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   late final Set<String> _avoidedExerciseIds = {
     ...widget.initialSettings.avoidedExerciseIds,
   };
+  bool _editingFromReview = false;
 
   static const _goals = ['Ganar fuerza', 'Ganar músculo', 'Crear el hábito'];
   static const _equipmentOptions = [
@@ -71,12 +72,16 @@ class _OnboardingViewState extends State<OnboardingView> {
               : context.l10n.onboardingPreview,
         ),
         leading: IconButton(
-          tooltip: _step == 0
+          tooltip: _editingFromReview
+              ? context.l10n.onboardingReturnToPreview
+              : _step == 0
               ? context.l10n.onboardingBack
               : context.l10n.onboardingPreviousStep,
-          onPressed: _step == 0
+          onPressed: _editingFromReview
+              ? _backFromCurrentStep
+              : _step == 0
               ? () => Navigator.of(context).maybePop()
-              : () => setState(() => _step--),
+              : _backFromCurrentStep,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
       ),
@@ -153,16 +158,36 @@ class _OnboardingViewState extends State<OnboardingView> {
       ? context.l10n.onboardingCreateMyPlan
       : context.l10n.onboardingContinue;
 
-  bool get _canCreatePlan => _planBuilder
-      .buildWeek(
-        trainingDays: _trainingDays,
-        sessionMinutes: _sessionMinutes,
-        goal: _goal,
-        experience: _experience,
-        equipment: _equipment,
-        avoidedExerciseIds: _avoidedExerciseIds,
-      )
-      .any((session) => session.exercises.isNotEmpty);
+  bool get _canCreatePlan {
+    final sessions = _planBuilder.buildWeek(
+      trainingDays: _trainingDays,
+      sessionMinutes: _sessionMinutes,
+      goal: _goal,
+      experience: _experience,
+      equipment: _equipment,
+      avoidedExerciseIds: _avoidedExerciseIds,
+    );
+    return sessions.isNotEmpty &&
+        sessions.every((session) => session.exercises.isNotEmpty);
+  }
+
+  void _editSection(int step) {
+    setState(() {
+      _editingFromReview = true;
+      _step = step;
+    });
+  }
+
+  void _backFromCurrentStep() {
+    setState(() {
+      if (_editingFromReview) {
+        _step = 4;
+        _editingFromReview = false;
+      } else {
+        _step--;
+      }
+    });
+  }
 
   Widget _buildStep(BuildContext context) {
     return switch (_step) {
@@ -209,8 +234,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                 const SizedBox(height: AppSpacing.x2),
                 Text(
                   context.l10n.profilePlanSummary(
-                    _goalLabel(context, _goal),
                     _trainingDays.length,
+                    _goalLabel(context, _goal),
                     _sessionMinutes,
                   ),
                   style: Theme.of(context).textTheme.bodyMedium
@@ -265,74 +290,90 @@ class _OnboardingViewState extends State<OnboardingView> {
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
+                const SizedBox(height: AppSpacing.x3),
+                Wrap(
+                  spacing: AppSpacing.x1,
+                  runSpacing: AppSpacing.x1,
+                  children: [
+                    _editButton(context, context.l10n.onboardingEditGoal, 0),
+                    _editButton(
+                      context,
+                      context.l10n.onboardingEditExperience,
+                      1,
+                    ),
+                    _editButton(
+                      context,
+                      context.l10n.onboardingEditSchedule,
+                      2,
+                    ),
+                    _editButton(
+                      context,
+                      context.l10n.onboardingEditEquipment,
+                      3,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
         const SizedBox(height: AppSpacing.x3),
+        if (sessions.any((session) => session.exercises.isEmpty)) ...[
+          AppSurfaceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(width: AppSpacing.x2),
+                    Expanded(
+                      child: Text(
+                        context.l10n.onboardingEmptySessionConflict,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                _editButton(context, context.l10n.onboardingEditEquipment, 3),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.x3),
+        ],
         _buildRecoveryGuidance(context),
         const SizedBox(height: AppSpacing.x4),
         for (final session in sessions) ...[
           SizedBox(
             width: double.infinity,
             child: AppSurfaceCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: EdgeInsets.zero,
+              child: ExpansionTile(
+                title: Text(
+                  '${DateFormat.E(Localizations.localeOf(context).toLanguageTag()).format(DateTime(2024, 1, session.weekday))} · ${_sessionTitle(context, session.title)}',
+                ),
+                subtitle: session.exercises.isEmpty
+                    ? Text(context.l10n.onboardingNoCompatibleExercises)
+                    : Text(
+                        context.l10n.onboardingSessionSummary(
+                          session.exercises.length,
+                          session.durationMinutes,
+                        ),
+                      ),
                 children: [
-                  Text(
-                    '${DateFormat.E(Localizations.localeOf(context).toLanguageTag()).format(DateTime(2024, 1, session.weekday))} · ${_sessionTitle(context, session.title)}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.x2),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (session.exercises.isEmpty)
-                        Text(
-                          context.l10n.onboardingNoCompatibleExercises,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        )
-                      else
-                        for (final exercise in session.exercises)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: AppSpacing.x1,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: AppSpacing.x1,
-                                    right: AppSpacing.x2,
-                                  ),
-                                  child: Container(
-                                    width: 6,
-                                    height: 6,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    localizedTrainingExerciseName(
-                                      context,
-                                      exercise.name,
-                                    ),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                    ],
-                  ),
+                  for (final exercise in session.exercises)
+                    ListTile(
+                      title: Text(
+                        localizedTrainingExerciseName(context, exercise.name),
+                      ),
+                      subtitle: Text(_localizedPrescription(context, exercise)),
+                      dense: true,
+                    ),
                 ],
               ),
             ),
@@ -346,6 +387,29 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
       ],
     );
+  }
+
+  Widget _editButton(BuildContext context, String label, int step) =>
+      TextButton.icon(
+        onPressed: () => _editSection(step),
+        icon: const Icon(Icons.edit_outlined, size: 18),
+        label: Text(label),
+      );
+
+  String _localizedPrescription(
+    BuildContext context,
+    PlannedExercise exercise,
+  ) {
+    final sets = int.tryParse(exercise.prescription.split(' ').first) ?? 0;
+    if (exercise.timed) {
+      return context.l10n.onboardingTimedPrescription(sets);
+    }
+    final repetitions = switch (_goal) {
+      'Ganar fuerza' => context.l10n.onboardingStrengthRepRange,
+      'Ganar músculo' => context.l10n.onboardingMuscleRepRange,
+      _ => context.l10n.onboardingHabitRepRange,
+    };
+    return context.l10n.onboardingRepPrescription(sets, repetitions);
   }
 
   Widget _buildEquipmentStep(BuildContext context) {
@@ -631,7 +695,14 @@ class _OnboardingViewState extends State<OnboardingView> {
     }
   }
 
-  void _next() => setState(() => _step++);
+  void _next() => setState(() {
+    if (_editingFromReview) {
+      _step = 4;
+      _editingFromReview = false;
+    } else {
+      _step++;
+    }
+  });
 
   void _finish() {
     Navigator.of(context).pop(

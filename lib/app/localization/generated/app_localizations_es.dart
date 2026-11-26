@@ -1457,6 +1457,55 @@ class AppLocalizationsEs extends AppLocalizations {
       'Este es un punto de partida. Podrás ajustar tu plan desde Perfil.';
 
   @override
+  String get onboardingEditGoal => 'Objetivo';
+
+  @override
+  String get onboardingEditExperience => 'Experiencia';
+
+  @override
+  String get onboardingEditSchedule => 'Días y duración';
+
+  @override
+  String get onboardingEditEquipment => 'Equipo y exclusiones';
+
+  @override
+  String get onboardingReturnToPreview => 'Volver al resumen del plan';
+
+  @override
+  String get onboardingEmptySessionConflict =>
+      'Al menos una sesión quedó sin ejercicios compatibles. Ajusta los días, el equipo o los movimientos a evitar antes de crear el plan.';
+
+  @override
+  String onboardingSessionSummary(int count, int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ejercicios',
+      one: '1 ejercicio',
+    );
+    return '$_temp0 · ~$minutes min estimados';
+  }
+
+  @override
+  String onboardingTimedPrescription(int sets) {
+    return '$sets series · 20–40 segundos';
+  }
+
+  @override
+  String onboardingRepPrescription(int sets, String target) {
+    return '$sets series · $target';
+  }
+
+  @override
+  String get onboardingStrengthRepRange => '6–8 repeticiones';
+
+  @override
+  String get onboardingMuscleRepRange => '8–12 repeticiones';
+
+  @override
+  String get onboardingHabitRepRange => '8–12 repeticiones a ritmo cómodo';
+
+  @override
   String onboardingPlanExperience(Object experience) {
     return 'Experiencia: $experience';
   }
