@@ -1,4 +1,5 @@
 import 'workout_record.dart';
+import '../use_cases/weight_units.dart';
 
 enum PersonalGoalType { sessionsPerWeek, exerciseLoad }
 
@@ -52,11 +53,15 @@ class PersonalGoal {
     return catalogIds.length > 1;
   }
 
-  double currentValue(List<WorkoutRecord> records, {DateTime? today}) {
+  double currentValue(
+    List<WorkoutRecord> records, {
+    DateTime? today,
+    String weekStartsOn = 'Lunes',
+  }) {
     if (type == PersonalGoalType.sessionsPerWeek) {
       final now = today ?? DateTime.now();
       final date = DateTime(now.year, now.month, now.day);
-      final weekStart = date.subtract(Duration(days: date.weekday - 1));
+      final weekStart = startOfWeek(date, weekStartsOn);
       final weekEnd = weekStart.add(const Duration(days: 7));
       return records
           .where(

@@ -60,6 +60,7 @@ class _AppScaffoldState extends State<AppScaffold>
   late final Animation<Offset> _moduleOffset;
   int? _pendingDestination;
   bool _isOpeningFirstRun = false;
+  AppPreferences _preferences = const AppPreferences();
   Locale? _notificationLocale;
   Timer? _reminderRolloverTimer;
 
@@ -166,6 +167,12 @@ class _AppScaffoldState extends State<AppScaffold>
   Future<void> _restoreSettings() async {
     await _viewModel.restore();
     if (!mounted) return;
+    try {
+      _preferences = await _profileSettingsRepository.loadAppPreferences();
+    } on Object {
+      _preferences = const AppPreferences();
+    }
+    if (mounted) setState(() {});
     await _synchronizeWorkoutRemindersSafely();
     if (_viewModel.needsFirstRunSetup) {
       WidgetsBinding.instance.addPostFrameCallback(
@@ -362,6 +369,7 @@ class _AppScaffoldState extends State<AppScaffold>
           scheduledDate: sessionDate,
           plannedSession: planned?.plannedSession,
           planVersion: planned?.planVersion ?? 1,
+          weightUnit: _preferences.weightUnit,
         ),
       ),
     );
@@ -466,6 +474,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       hasActiveWorkout: _viewModel.hasActiveWorkout,
                       activeWorkoutDate: _viewModel.activeWorkoutDate,
                       scheduledSessions: _viewModel.scheduledSessions,
+                      weekStartsOn: _preferences.weekStartsOn,
                     ),
                     ActivityView(
                       settings: _viewModel.trainingSettings,
@@ -478,6 +487,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       onSessionStarted: _markSessionStartedAndSync,
                       onSkipSession: _skipSessionAndSync,
                       onUndoSkipSession: _undoSkipSessionAndSync,
+                      preferences: _preferences,
                     ),
                     const ExercisesView(),
                     ProgressView(
@@ -489,11 +499,14 @@ class _AppScaffoldState extends State<AppScaffold>
                       onDeleteGoal: _viewModel.deletePersonalGoal,
                       onSaveMeasurement: _viewModel.saveBodyMeasurement,
                       onDeleteMeasurement: _viewModel.deleteBodyMeasurement,
+                      preferences: _preferences,
                     ),
                     ProfileView(
                       trainingSettings: _viewModel.trainingSettings,
                       accountAuthViewModel: _accountAuthViewModel,
                       profileSettingsRepository: _profileSettingsRepository,
+                      onPreferencesChanged: (preferences) =>
+                          setState(() => _preferences = preferences),
                       onNotificationsChanged: _saveNotificationSettings,
                       themeMode: widget.appearance.mode,
                       onThemeModeChanged: widget.appearance.setMode,

@@ -13,11 +13,17 @@ import '../models/personal_records.dart';
 import '../widgets/progress_line_chart.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
+import '../../../../domain/use_cases/weight_units.dart';
 
 class SessionDetailPage extends StatelessWidget {
-  const SessionDetailPage({super.key, required this.session});
+  const SessionDetailPage({
+    super.key,
+    required this.session,
+    this.weightUnit = 'kg',
+  });
 
   final WorkoutHistoryEntry session;
+  final String weightUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +132,11 @@ class SessionDetailPage extends StatelessWidget {
                                               bottom: AppSpacing.x1,
                                             ),
                                             child: Text(
-                                              _setSummary(context, set),
+                                              _setSummary(
+                                                context,
+                                                set,
+                                                weightUnit: weightUnit,
+                                              ),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium,
@@ -157,9 +167,14 @@ class SessionDetailPage extends StatelessWidget {
 }
 
 class StrengthEvolutionPage extends StatefulWidget {
-  const StrengthEvolutionPage({super.key, required this.records});
+  const StrengthEvolutionPage({
+    super.key,
+    required this.records,
+    this.weightUnit = 'kg',
+  });
 
   final List<WorkoutRecord> records;
+  final String weightUnit;
 
   @override
   State<StrengthEvolutionPage> createState() => _StrengthEvolutionPageState();
@@ -186,7 +201,11 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
         ? matching.first
         : (series.isEmpty ? null : series.first);
     final values =
-        selected?.points.map((point) => point.loadKg).toList() ??
+        selected?.points
+            .map(
+              (point) => weightFromKilograms(point.loadKg, widget.weightUnit),
+            )
+            .toList() ??
         const <double>[];
     final labels =
         selected?.points
@@ -307,7 +326,10 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                         ),
                         const SizedBox(height: AppSpacing.x1),
                         Text(
-                          context.l10n.progressStrengthMetric,
+                          context.l10n.progressStrengthMetric.replaceAll(
+                            'kg',
+                            widget.weightUnit,
+                          ),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: AppSpacing.x2),
@@ -319,11 +341,14 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                         ProgressLineChart(
                           values: values,
                           labels: labels,
-                          summary: context.l10n.progressStrengthChartSummary(
-                            values.first.toStringAsFixed(1),
-                            values.last.toStringAsFixed(1),
-                            selected.points.length,
-                          ),
+                          summary: context.l10n
+                              .progressStrengthChartSummary(
+                                values.first.toStringAsFixed(1),
+                                values.last.toStringAsFixed(1),
+                                selected.points.length,
+                              )
+                              .replaceAll('kilograms', widget.weightUnit)
+                              .replaceAll('kilogramos', widget.weightUnit),
                         ),
                       ],
                     ),
@@ -334,7 +359,8 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                       Expanded(
                         child: _ValueCard(
                           label: context.l10n.progressStart,
-                          value: '${values.first.toStringAsFixed(1)} kg',
+                          value:
+                              '${values.first.toStringAsFixed(1)} ${widget.weightUnit}',
                           icon: Icons.flag_outlined,
                         ),
                       ),
@@ -342,7 +368,8 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                       Expanded(
                         child: _ValueCard(
                           label: context.l10n.progressCurrent,
-                          value: '${values.last.toStringAsFixed(1)} kg',
+                          value:
+                              '${values.last.toStringAsFixed(1)} ${widget.weightUnit}',
                           icon: Icons.trending_up_rounded,
                         ),
                       ),
@@ -351,10 +378,12 @@ class _StrengthEvolutionPageState extends State<StrengthEvolutionPage> {
                   const SizedBox(height: AppSpacing.x2),
                   AppSurfaceCard(
                     child: Text(
-                      context.l10n.progressStrengthChange(
-                        change > 0 ? '+' : '',
-                        change.toStringAsFixed(1),
-                      ),
+                      context.l10n
+                          .progressStrengthChange(
+                            change > 0 ? '+' : '',
+                            change.toStringAsFixed(1),
+                          )
+                          .replaceAll('kg.', '${widget.weightUnit}.'),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
@@ -381,12 +410,14 @@ class BodyEvolutionPage extends StatefulWidget {
     required this.measurements,
     required this.onSaveMeasurement,
     required this.onDeleteMeasurement,
+    this.weightUnit = 'kg',
   });
 
   final List<MeasurementEntry> measurements;
   final Future<void> Function(BodyMeasurement, {BodyMeasurement? previous})
   onSaveMeasurement;
   final Future<void> Function(DateTime) onDeleteMeasurement;
+  final String weightUnit;
 
   @override
   State<BodyEvolutionPage> createState() => _BodyEvolutionPageState();
@@ -406,10 +437,15 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
     final ordered = _orderedMeasurements;
     final first = ordered.isEmpty ? null : ordered.first;
     final latest = ordered.isEmpty ? null : ordered.last;
-    final change = first == null || latest == null
+    final changeKg = first == null || latest == null
         ? null
         : latest.weightKg - first.weightKg;
-    final values = ordered.map((entry) => entry.weightKg).toList();
+    final change = changeKg == null
+        ? null
+        : weightFromKilograms(changeKg, widget.weightUnit);
+    final values = ordered
+        .map((entry) => weightFromKilograms(entry.weightKg, widget.weightUnit))
+        .toList();
     final labels = ordered
         .map((entry) => '${entry.date.day}/${entry.date.month}')
         .toList();
@@ -464,17 +500,20 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                         ),
                         const SizedBox(height: AppSpacing.x1),
                         Text(
-                          'kg',
+                          widget.weightUnit,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: AppSpacing.x2),
                         ProgressLineChart(
                           values: values,
                           labels: labels,
-                          summary: context.l10n.progressWeightChartSummary(
-                            first!.weightKg.toStringAsFixed(1),
-                            latest!.weightKg.toStringAsFixed(1),
-                          ),
+                          summary: context.l10n
+                              .progressWeightChartSummary(
+                                values.first.toStringAsFixed(1),
+                                values.last.toStringAsFixed(1),
+                              )
+                              .replaceAll('kilograms', widget.weightUnit)
+                              .replaceAll('kilogramos', widget.weightUnit),
                         ),
                       ],
                     ),
@@ -485,7 +524,8 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                       Expanded(
                         child: _ValueCard(
                           label: context.l10n.progressLastEntry,
-                          value: '${latest.weightKg.toStringAsFixed(1)} kg',
+                          value:
+                              '${values.last.toStringAsFixed(1)} ${widget.weightUnit}',
                           icon: Icons.monitor_weight_outlined,
                         ),
                       ),
@@ -494,7 +534,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                         child: _ValueCard(
                           label: context.l10n.progressPeriodChange,
                           value:
-                              '${change! > 0 ? '+' : ''}${change.toStringAsFixed(1)} kg',
+                              '${change! > 0 ? '+' : ''}${change.toStringAsFixed(1)} ${widget.weightUnit}',
                           icon: Icons.trending_up_rounded,
                         ),
                       ),
@@ -509,6 +549,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
                       padding: const EdgeInsets.only(bottom: AppSpacing.x2),
                       child: _MeasurementSummaryCard(
                         entry: entry,
+                        weightUnit: widget.weightUnit,
                         onEdit: () => _openMeasurementForm(entry),
                         onDelete: () => _deleteMeasurement(entry),
                       ),
@@ -543,6 +584,7 @@ class _BodyEvolutionPageState extends State<BodyEvolutionPage> {
       MaterialPageRoute<BodyMeasurement>(
         builder: (_) => MeasurementFormPage(
           measurement: previous,
+          weightUnit: widget.weightUnit,
           onSaveMeasurement: (measurement) =>
               widget.onSaveMeasurement(measurement, previous: previous),
         ),
@@ -598,10 +640,12 @@ class MeasurementFormPage extends StatefulWidget {
     super.key,
     this.measurement,
     required this.onSaveMeasurement,
+    this.weightUnit = 'kg',
   });
 
   final BodyMeasurement? measurement;
   final Future<void> Function(BodyMeasurement) onSaveMeasurement;
+  final String weightUnit;
 
   @override
   State<MeasurementFormPage> createState() => _MeasurementFormPageState();
@@ -622,7 +666,9 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     super.initState();
     final measurement = widget.measurement;
     if (measurement == null) return;
-    _weightController.text = _formatValue(measurement.weightKg);
+    _weightController.text = _formatValue(
+      weightFromKilograms(measurement.weightKg, widget.weightUnit),
+    );
     _chestController.text = _optionalText(measurement.chestCm);
     _waistController.text = _optionalText(measurement.waistCm);
     _hipsController.text = _optionalText(measurement.hipsCm);
@@ -693,7 +739,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                   _MeasurementField(
                     controller: _weightController,
                     label: context.l10n.progressBodyWeight,
-                    unit: 'kg',
+                    unit: widget.weightUnit,
                     required: true,
                     minimum: 1,
                     maximum: 500,
@@ -766,7 +812,10 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
     if (!_formKey.currentState!.validate()) return;
     final entry = BodyMeasurement(
       date: _date,
-      weightKg: double.parse(_weightController.text.replaceAll(',', '.')),
+      weightKg: weightToKilograms(
+        double.parse(_weightController.text.replaceAll(',', '.')),
+        widget.weightUnit,
+      ),
       chestCm: _optionalValue(_chestController),
       waistCm: _optionalValue(_waistController),
       hipsCm: _optionalValue(_hipsController),
@@ -844,9 +893,14 @@ class _MeasurementField extends StatelessWidget {
 }
 
 class PersonalRecordsPage extends StatelessWidget {
-  const PersonalRecordsPage({super.key, required this.records});
+  const PersonalRecordsPage({
+    super.key,
+    required this.records,
+    this.weightUnit = 'kg',
+  });
 
   final List<WorkoutRecord> records;
+  final String weightUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -900,7 +954,10 @@ class PersonalRecordsPage extends StatelessWidget {
                   for (final record in personalRecords)
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.x2),
-                      child: _RecordCard(record: record),
+                      child: _RecordCard(
+                        record: record,
+                        weightUnit: weightUnit,
+                      ),
                     ),
               ],
             ),
@@ -912,9 +969,10 @@ class PersonalRecordsPage extends StatelessWidget {
 }
 
 class _RecordCard extends StatelessWidget {
-  const _RecordCard({required this.record});
+  const _RecordCard({required this.record, required this.weightUnit});
 
   final PersonalRecord record;
+  final String weightUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -950,7 +1008,7 @@ class _RecordCard extends StatelessWidget {
             ),
           ),
           Text(
-            '${record.value % 1 == 0 ? record.value.toInt() : record.value} ${record.unit}',
+            '${_formatValue(record.unit == 'kg' ? weightFromKilograms(record.value, weightUnit) : record.value)} ${record.unit == 'kg' ? weightUnit : record.unit}',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ],
@@ -962,11 +1020,13 @@ class _RecordCard extends StatelessWidget {
 class _MeasurementSummaryCard extends StatelessWidget {
   const _MeasurementSummaryCard({
     required this.entry,
+    required this.weightUnit,
     required this.onEdit,
     required this.onDelete,
   });
 
   final MeasurementEntry entry;
+  final String weightUnit;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -1025,7 +1085,7 @@ class _MeasurementSummaryCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${entry.weightKg.toStringAsFixed(1)} kg',
+                '${weightFromKilograms(entry.weightKg, weightUnit).toStringAsFixed(1)} $weightUnit',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Row(
@@ -1092,7 +1152,11 @@ String _formatValue(double value) => value == value.roundToDouble()
 
 String _optionalText(double? value) => value == null ? '' : _formatValue(value);
 
-String _setSummary(BuildContext context, WorkoutSetResult set) {
+String _setSummary(
+  BuildContext context,
+  WorkoutSetResult set, {
+  String weightUnit = 'kg',
+}) {
   final values = <String>[
     if (set.repetitions != null)
       context.l10n.progressValueWithUnit(
@@ -1101,8 +1165,8 @@ String _setSummary(BuildContext context, WorkoutSetResult set) {
       ),
     if (set.loadKg != null)
       context.l10n.progressValueWithUnit(
-        _formatValue(set.loadKg!),
-        context.l10n.progressKilograms,
+        _formatValue(weightFromKilograms(set.loadKg!, weightUnit)),
+        weightUnit,
       ),
     if (set.durationSeconds != null)
       context.l10n.progressValueWithUnit(

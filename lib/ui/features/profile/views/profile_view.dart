@@ -23,6 +23,7 @@ class ProfileView extends StatefulWidget {
     required this.trainingSettings,
     required this.onTrainingSettingsChanged,
     required this.profileSettingsRepository,
+    this.onPreferencesChanged,
     required this.accountAuthViewModel,
     this.onNotificationsChanged,
     required this.themeMode,
@@ -38,6 +39,7 @@ class ProfileView extends StatefulWidget {
   final VoidCallback onManageBackups;
   final LocaleController localeController;
   final ProfileSettingsRepository profileSettingsRepository;
+  final ValueChanged<AppPreferences>? onPreferencesChanged;
   final AccountAuthViewModel accountAuthViewModel;
   final Future<bool> Function(
     NotificationSettings previous,
@@ -347,6 +349,7 @@ class _ProfileViewState extends State<ProfileView> {
     }
     if (!mounted) return;
     setState(() => _preferences = updated);
+    widget.onPreferencesChanged?.call(updated);
   }
 
   void _editAppearance() {

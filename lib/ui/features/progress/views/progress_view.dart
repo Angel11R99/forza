@@ -15,6 +15,8 @@ import '../models/personal_records.dart';
 import 'progress_detail_pages.dart';
 import 'personal_goal_editor_page.dart';
 import '../../../../app/localization/localization_extensions.dart';
+import '../../../../domain/use_cases/weight_units.dart';
+import '../../profile/models/profile_settings.dart';
 
 class ProgressView extends StatefulWidget {
   const ProgressView({
@@ -27,6 +29,7 @@ class ProgressView extends StatefulWidget {
     required this.measurements,
     required this.onSaveMeasurement,
     required this.onDeleteMeasurement,
+    this.preferences = const AppPreferences(),
   });
 
   final List<WorkoutRecord> records;
@@ -38,6 +41,7 @@ class ProgressView extends StatefulWidget {
   final Future<void> Function(BodyMeasurement, {BodyMeasurement? previous})
   onSaveMeasurement;
   final Future<void> Function(DateTime) onDeleteMeasurement;
+  final AppPreferences preferences;
 
   @override
   State<ProgressView> createState() => _ProgressViewState();
@@ -260,6 +264,7 @@ class _ProgressViewState extends State<ProgressView> {
                       child: _PersonalGoalCard(
                         goal: goal,
                         records: widget.records,
+                        preferences: widget.preferences,
                         onEdit: () => _openGoalEditor(goal),
                         onDelete: () => _deleteGoal(goal),
                       ),
@@ -286,7 +291,7 @@ class _ProgressViewState extends State<ProgressView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${_formatShortDate(latestMeasurement.date, Localizations.localeOf(context).toLanguageTag())} · ${latestMeasurement.weightKg.toStringAsFixed(1)} kg',
+                                  '${_formatShortDate(latestMeasurement.date, Localizations.localeOf(context).toLanguageTag())} · ${weightFromKilograms(latestMeasurement.weightKg, widget.preferences.weightUnit).toStringAsFixed(1)} ${widget.preferences.weightUnit}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium,
@@ -294,12 +299,17 @@ class _ProgressViewState extends State<ProgressView> {
                                 if (previousMeasurement != null) ...[
                                   const SizedBox(height: AppSpacing.x1),
                                   Text(
-                                    context.l10n.progressWeightChange(
-                                      _signedDifference(
-                                        latestMeasurement.weightKg -
-                                            previousMeasurement.weightKg,
-                                      ),
-                                    ),
+                                    context.l10n
+                                        .progressWeightChange(
+                                          _signedDifference(
+                                            latestMeasurement.weightKg -
+                                                previousMeasurement.weightKg,
+                                          ),
+                                        )
+                                        .replaceAll(
+                                          'kg',
+                                          widget.preferences.weightUnit,
+                                        ),
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium,
@@ -329,8 +339,13 @@ class _ProgressViewState extends State<ProgressView> {
                       ? context.l10n.progressRecordsEmpty
                       : context.l10n.progressRecentRecord(
                           latestPersonalRecord.exercise,
-                          _formatVolume(latestPersonalRecord.value),
-                          latestPersonalRecord.unit,
+                          _formatVolume(
+                            weightFromKilograms(
+                              latestPersonalRecord.value,
+                              widget.preferences.weightUnit,
+                            ),
+                          ),
+                          widget.preferences.weightUnit,
                           _formatShortDate(
                             latestPersonalRecord.date,
                             Localizations.localeOf(context).toLanguageTag(),
@@ -433,7 +448,10 @@ class _ProgressViewState extends State<ProgressView> {
   void _openSession(BuildContext context, WorkoutHistoryEntry session) {
     Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => SessionDetailPage(session: session),
+        builder: (_) => SessionDetailPage(
+          session: session,
+          weightUnit: widget.preferences.weightUnit,
+        ),
       ),
     );
   }
@@ -441,7 +459,10 @@ class _ProgressViewState extends State<ProgressView> {
   Future<void> _openStrengthEvolution() async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => StrengthEvolutionPage(records: widget.records),
+        builder: (_) => StrengthEvolutionPage(
+          records: widget.records,
+          weightUnit: widget.preferences.weightUnit,
+        ),
       ),
     );
   }
@@ -449,7 +470,10 @@ class _ProgressViewState extends State<ProgressView> {
   Future<void> _openPersonalRecords() async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => PersonalRecordsPage(records: widget.records),
+        builder: (_) => PersonalRecordsPage(
+          records: widget.records,
+          weightUnit: widget.preferences.weightUnit,
+        ),
       ),
     );
   }
@@ -459,6 +483,7 @@ class _ProgressViewState extends State<ProgressView> {
       MaterialPageRoute<void>(
         builder: (_) => BodyEvolutionPage(
           measurements: widget.measurements,
+          weightUnit: widget.preferences.weightUnit,
           onSaveMeasurement: widget.onSaveMeasurement,
           onDeleteMeasurement: widget.onDeleteMeasurement,
         ),
@@ -469,8 +494,11 @@ class _ProgressViewState extends State<ProgressView> {
   Future<void> _openGoalEditor([PersonalGoal? goal]) async {
     final updated = await Navigator.of(context).push<PersonalGoal>(
       MaterialPageRoute<PersonalGoal>(
-        builder: (_) =>
-            PersonalGoalEditorPage(goal: goal, records: widget.records),
+        builder: (_) => PersonalGoalEditorPage(
+          goal: goal,
+          records: widget.records,
+          weightUnit: widget.preferences.weightUnit,
+        ),
       ),
     );
     if (!mounted || updated == null) return;
@@ -521,27 +549,34 @@ class _PersonalGoalCard extends StatelessWidget {
   const _PersonalGoalCard({
     required this.goal,
     required this.records,
+    required this.preferences,
     required this.onEdit,
     required this.onDelete,
   });
 
   final PersonalGoal goal;
   final List<WorkoutRecord> records;
+  final AppPreferences preferences;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final current = goal.currentValue(records);
+    final current = goal.currentValue(
+      records,
+      weekStartsOn: preferences.weekStartsOn,
+    );
     final progress = (current / goal.targetValue).clamp(0.0, 1.0);
     final isWeekly = goal.type == PersonalGoalType.sessionsPerWeek;
     final ambiguousExercise = goal.hasAmbiguousExerciseIdentity(records);
     final currentLabel = isWeekly
         ? current.toStringAsFixed(0)
-        : _formatVolume(current);
+        : _formatVolume(weightFromKilograms(current, preferences.weightUnit));
     final targetLabel = isWeekly
         ? goal.targetValue.toStringAsFixed(0)
-        : _formatVolume(goal.targetValue);
+        : _formatVolume(
+            weightFromKilograms(goal.targetValue, preferences.weightUnit),
+          );
     return AppSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,7 +615,7 @@ class _PersonalGoalCard extends StatelessWidget {
               context.l10n.progressGoalCurrentTarget(
                 currentLabel,
                 targetLabel,
-                goal.unit,
+                isWeekly ? goal.unit : preferences.weightUnit,
               ),
               style: Theme.of(context).textTheme.bodyMedium,
             ),

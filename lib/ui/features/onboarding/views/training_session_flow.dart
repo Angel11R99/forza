@@ -13,6 +13,7 @@ import '../../profile/models/profile_settings.dart';
 import '../../../../domain/use_cases/training_plan_builder.dart';
 import '../../../../domain/models/workout_record.dart';
 import '../../../../domain/use_cases/training_progression_advisor.dart';
+import '../../../../domain/use_cases/weight_units.dart';
 import '../../../../data/repositories/workout_log_repository.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../exercises/models/exercise_localized_labels.dart';
@@ -29,6 +30,7 @@ class TrainingSessionFlow extends StatefulWidget {
     required this.scheduledDate,
     this.plannedSession,
     this.planVersion = 1,
+    this.weightUnit = 'kg',
   });
 
   final TrainingSettings settings;
@@ -37,6 +39,7 @@ class TrainingSessionFlow extends StatefulWidget {
   final DateTime scheduledDate;
   final PlannedTrainingSession? plannedSession;
   final int planVersion;
+  final String weightUnit;
 
   @override
   State<TrainingSessionFlow> createState() => _TrainingSessionFlowState();
@@ -829,6 +832,7 @@ class _TrainingSessionFlowState extends State<TrainingSessionFlow> {
             _WorkoutSetEditor(
               key: ValueKey('workout-set-$_currentExercise-$setIndex'),
               setIndex: setIndex,
+              weightUnit: widget.weightUnit,
               label: context.l10n.sessionSet(setIndex + 1),
               isTimed: _exercises[_currentExercise].isTimed,
               result: _resultFor(_currentExercise, setIndex),
@@ -2097,6 +2101,7 @@ class _WorkoutSetEditor extends StatelessWidget {
   const _WorkoutSetEditor({
     super.key,
     required this.setIndex,
+    required this.weightUnit,
     required this.label,
     required this.isTimed,
     required this.result,
@@ -2111,6 +2116,7 @@ class _WorkoutSetEditor extends StatelessWidget {
 
   final String label;
   final int setIndex;
+  final String weightUnit;
   final bool isTimed;
   final WorkoutSetResult? result;
   final String target;
@@ -2201,16 +2207,25 @@ class _WorkoutSetEditor extends StatelessWidget {
                   child: _numberField(
                     context: context,
                     key: ValueKey('set-$setIndex-load'),
-                    label: context.l10n.sessionLoad,
-                    initialValue: value.loadKg,
-                    suggestion: suggestion?.loadKg,
+                    label: context.l10n.sessionLoad.replaceAll(
+                      '(kg)',
+                      '($weightUnit)',
+                    ),
+                    initialValue: value.loadKg == null
+                        ? null
+                        : weightFromKilograms(value.loadKg!, weightUnit),
+                    suggestion: suggestion?.loadKg == null
+                        ? null
+                        : weightFromKilograms(suggestion!.loadKg!, weightUnit),
                     decimal: true,
                     onChanged: (number) => onChanged(
                       WorkoutSetResult(
                         exercisePosition: value.exercisePosition,
                         setIndex: value.setIndex,
                         repetitions: value.repetitions,
-                        loadKg: number?.toDouble(),
+                        loadKg: number == null
+                            ? null
+                            : weightToKilograms(number.toDouble(), weightUnit),
                         durationSeconds: value.durationSeconds,
                       ),
                     ),
@@ -2260,7 +2275,7 @@ class _WorkoutSetEditor extends StatelessWidget {
     bool decimal = false,
   }) => TextFormField(
     key: key,
-    initialValue: initialValue?.toString() ?? '',
+    initialValue: _editableNumber(initialValue),
     keyboardType: TextInputType.numberWithOptions(decimal: decimal),
     inputFormatters: [
       TextInputFormatter.withFunction((oldValue, newValue) {
@@ -2272,7 +2287,9 @@ class _WorkoutSetEditor extends StatelessWidget {
     ],
     decoration: InputDecoration(
       labelText: label,
-      hintText: suggestion?.toString(),
+      hintText: _editableNumber(suggestion).isEmpty
+          ? null
+          : _editableNumber(suggestion),
       helperText: suggestion == null
           ? null
           : context.l10n.sessionPreviousSetSuggestion,
@@ -2280,6 +2297,13 @@ class _WorkoutSetEditor extends StatelessWidget {
     onChanged: (text) =>
         onChanged(decimal ? double.tryParse(text) : int.tryParse(text)),
   );
+
+  String _editableNumber(num? value) {
+    if (value == null) return '';
+    return value == value.roundToDouble()
+        ? value.toInt().toString()
+        : value.toString();
+  }
 }
 
 class _SessionExercise {
