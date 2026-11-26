@@ -257,6 +257,12 @@
   "homeContinueWorkout": "Continuar entrenamiento",
   "homeViewTodaySession": "Ver sesión de hoy",
   "homeSessionAvailableOn": "Disponible el {weekday}",
+  "homeSessionCompleted": "Sesión completada",
+  "homeSessionCompletedDescription": "Buen trabajo. Ya completaste el entrenamiento de hoy.",
+  "homeSessionSkipped": "Sesión omitida",
+  "homeSessionSkippedDescription": "La sesión de hoy quedó omitida. Puedes revisar tu plan.",
+  "homeRecoveryDay": "Día de recuperación",
+  "homeRecoveryDescription": "Hoy no tienes una sesión programada. Descansa y recupérate.",
   "@homeSessionAvailableOn": {
     "placeholders": {
       "weekday": {"type": "String"}

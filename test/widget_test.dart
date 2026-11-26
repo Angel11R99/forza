@@ -17,7 +17,7 @@ class _MemoryLocalePreferences implements LocalePreferences {
 }
 
 void main() {
-  testWidgets('home workout goal follows the selected app language', (
+  testWidgets('home shows recovery when there is no scheduled workout', (
     WidgetTester tester,
   ) async {
     Widget app(Locale locale) => MaterialApp(
@@ -40,11 +40,11 @@ void main() {
     );
 
     await tester.pumpWidget(app(const Locale('en')));
-    expect(find.text('Build strength'), findsOneWidget);
-    expect(find.text('Ganar fuerza'), findsNothing);
+    expect(find.text('Recovery day'), findsOneWidget);
+    expect(find.text('Build strength'), findsNothing);
 
     await tester.pumpWidget(app(const Locale('es')));
-    expect(find.text('Ganar fuerza'), findsOneWidget);
+    expect(find.text('Día de recuperación'), findsOneWidget);
   });
 
   testWidgets('language selection updates the visible settings immediately', (
