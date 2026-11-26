@@ -1136,6 +1136,30 @@ abstract class AppLocalizations {
   /// **'pending'**
   String get homeStatusPending;
 
+  /// No description provided for @homeStatusRest.
+  ///
+  /// In en, this message translates to:
+  /// **'rest'**
+  String get homeStatusRest;
+
+  /// No description provided for @homeStatusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'skipped'**
+  String get homeStatusSkipped;
+
+  /// No description provided for @homeStatusRescheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'rescheduled'**
+  String get homeStatusRescheduled;
+
+  /// No description provided for @homeRescheduledExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescheduled workouts may appear on another day or outside this week.'**
+  String get homeRescheduledExplanation;
+
   /// No description provided for @activityTitle.
   ///
   /// In en, this message translates to:

@@ -445,31 +445,64 @@ class _WeeklySummary extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     final weekStart = today.subtract(Duration(days: today.weekday - 1));
     final weekEnd = weekStart.add(const Duration(days: 7));
-    final persistedWeek = scheduledSessions
-        .where(
-          (session) =>
-              !session.scheduledDate.isBefore(weekStart) &&
-              session.scheduledDate.isBefore(weekEnd),
-        )
-        .toList(growable: false);
-    final completedCount = persistedWeek.isEmpty
-        ? days.where((weekday) {
-            final scheduled = weekStart.add(Duration(days: weekday - 1));
-            return completedDates.any((date) => _sameDate(date, scheduled));
-          }).length
-        : persistedWeek
-              .where(
-                (session) =>
-                    !session.isSkipped &&
-                    (session.isCompleted ||
-                        completedDates.any(
-                          (date) => _sameDate(date, session.scheduledDate),
-                        )),
-              )
-              .length;
-    final weeklyTarget = persistedWeek.isEmpty
-        ? days.length
-        : persistedWeek.length;
+    final persistedWeek =
+        scheduledSessions
+            .where(
+              (session) =>
+                  !session.scheduledDate.isBefore(weekStart) &&
+                  session.scheduledDate.isBefore(weekEnd),
+            )
+            .toList(growable: false)
+          ..sort(
+            (first, second) =>
+                first.scheduledDate.compareTo(second.scheduledDate),
+          );
+    final sessionsByDay = <DateTime, ScheduledTrainingSession>{
+      for (final session in persistedWeek)
+        DateTime(
+          session.scheduledDate.year,
+          session.scheduledDate.month,
+          session.scheduledDate.day,
+        ): session,
+    };
+    final movedFrom = <DateTime>{
+      for (final session in scheduledSessions)
+        if (session.originalDate != null &&
+            !_sameDate(session.originalDate!, session.scheduledDate) &&
+            !session.originalDate!.isBefore(weekStart) &&
+            session.originalDate!.isBefore(weekEnd))
+          DateTime(
+            session.originalDate!.year,
+            session.originalDate!.month,
+            session.originalDate!.day,
+          ),
+    };
+    final movedOutOfWeek = scheduledSessions.any((session) {
+      final original = session.originalDate;
+      return original != null &&
+          !_sameDate(original, session.scheduledDate) &&
+          !original.isBefore(weekStart) &&
+          original.isBefore(weekEnd) &&
+          (session.scheduledDate.isBefore(weekStart) ||
+              !session.scheduledDate.isBefore(weekEnd));
+    });
+    final completedDays = <DateTime>{
+      for (final date in completedDates)
+        if (!date.isBefore(weekStart) && date.isBefore(weekEnd))
+          DateTime(date.year, date.month, date.day),
+      for (final session in persistedWeek)
+        if (session.isCompleted && !session.isSkipped)
+          DateTime(
+            session.scheduledDate.year,
+            session.scheduledDate.month,
+            session.scheduledDate.day,
+          ),
+    };
+    final completedCount = completedDays.length;
+    final weeklyTarget = days.length;
+    final progress = weeklyTarget == 0
+        ? 0.0
+        : (completedCount / weeklyTarget).clamp(0.0, 1.0).toDouble();
     return AppSurfaceCard(
       padding: EdgeInsets.zero,
       borderColor: Theme.of(context).brightness == Brightness.dark
@@ -527,25 +560,35 @@ class _WeeklySummary extends StatelessWidget {
               Row(
                 children: [
                   if (persistedWeek.isNotEmpty)
-                    for (final session in persistedWeek)
+                    for (var offset = 0; offset < 7; offset++)
                       Expanded(
                         child: _WeekdayProgress(
-                          weekday: session.scheduledDate.weekday,
-                          date: session.scheduledDate,
-                          completedDates: completedDates,
-                          isToday: _sameDate(session.scheduledDate, today),
-                          localeName: localeName,
-                        ),
-                      )
-                  else
-                    for (final weekday in days)
-                      Expanded(
-                        child: _WeekdayProgress(
-                          weekday: weekday,
-                          date: weekStart.add(Duration(days: weekday - 1)),
-                          completedDates: completedDates,
+                          date: weekStart.add(Duration(days: offset)),
+                          session:
+                              sessionsByDay[weekStart.add(
+                                Duration(days: offset),
+                              )],
+                          isCompleted: completedDays.contains(
+                            weekStart.add(Duration(days: offset)),
+                          ),
+                          isSkipped:
+                              sessionsByDay[weekStart.add(
+                                    Duration(days: offset),
+                                  )]
+                                  ?.isSkipped ??
+                              false,
+                          isRescheduled:
+                              movedFrom.contains(
+                                weekStart.add(Duration(days: offset)),
+                              ) &&
+                              !sessionsByDay.containsKey(
+                                weekStart.add(Duration(days: offset)),
+                              ),
+                          isPlanned: days.contains(
+                            weekStart.add(Duration(days: offset)).weekday,
+                          ),
                           isToday: _sameDate(
-                            weekStart.add(Duration(days: weekday - 1)),
+                            weekStart.add(Duration(days: offset)),
                             today,
                           ),
                           localeName: localeName,
@@ -553,9 +596,16 @@ class _WeeklySummary extends StatelessWidget {
                       ),
                 ],
               ),
+              if (movedFrom.isNotEmpty || movedOutOfWeek) ...[
+                const SizedBox(height: AppSpacing.x2),
+                Text(
+                  context.l10n.homeRescheduledExplanation,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
               const SizedBox(height: AppSpacing.x3),
               LinearProgressIndicator(
-                value: days.isEmpty ? 0 : completedCount / days.length,
+                value: progress,
                 minHeight: 4,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? const Color(0xFF3A3D40)
@@ -573,29 +623,41 @@ class _WeeklySummary extends StatelessWidget {
 
 class _WeekdayProgress extends StatelessWidget {
   const _WeekdayProgress({
-    required this.weekday,
     required this.date,
-    required this.completedDates,
+    required this.session,
+    required this.isCompleted,
+    required this.isSkipped,
+    required this.isRescheduled,
+    required this.isPlanned,
     required this.isToday,
     required this.localeName,
   });
 
-  final int weekday;
   final DateTime date;
-  final Set<DateTime> completedDates;
+  final ScheduledTrainingSession? session;
+  final bool isCompleted;
+  final bool isSkipped;
+  final bool isRescheduled;
+  final bool isPlanned;
   final bool isToday;
   final String localeName;
 
   @override
   Widget build(BuildContext context) {
-    final completed = completedDates.any((saved) => _sameDate(saved, date));
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final status = isCompleted
+        ? context.l10n.homeStatusCompleted
+        : isSkipped
+        ? context.l10n.homeStatusSkipped
+        : isRescheduled
+        ? context.l10n.homeStatusRescheduled
+        : isPlanned || session != null
+        ? context.l10n.homeStatusPending
+        : context.l10n.homeStatusRest;
     return Semantics(
       label: context.l10n.homeWeekdayStatus(
         DateFormat.E(localeName).format(date),
-        completed
-            ? context.l10n.homeStatusCompleted
-            : context.l10n.homeStatusPending,
+        status,
       ),
       child: Column(
         children: [
@@ -603,22 +665,34 @@ class _WeekdayProgress extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: completed ? context.appColors.accent : Colors.transparent,
+              color: isCompleted
+                  ? context.appColors.accent
+                  : isSkipped
+                  ? Theme.of(context).colorScheme.error
+                  : Colors.transparent,
               shape: BoxShape.circle,
               border: Border.all(
-                color: isToday || completed
+                color: isToday || isCompleted || isSkipped || isRescheduled
                     ? context.appColors.accent
                     : isDark
                     ? const Color(0xFF777A80)
                     : context.appColors.divider,
-                width: isToday && !completed ? 1.5 : 1,
+                width: isToday && !isCompleted ? 1.5 : 1,
               ),
             ),
             alignment: Alignment.center,
             child: Icon(
-              completed ? Icons.check_rounded : Icons.circle,
-              size: completed ? 18 : 6,
-              color: completed
+              isCompleted
+                  ? Icons.check_rounded
+                  : isSkipped
+                  ? Icons.close_rounded
+                  : isRescheduled
+                  ? Icons.event_repeat_rounded
+                  : Icons.circle,
+              size: isCompleted || isSkipped || isRescheduled ? 18 : 6,
+              color: isCompleted
+                  ? context.appColors.inverseText
+                  : isSkipped
                   ? context.appColors.inverseText
                   : isDark
                   ? const Color(0xFFB8BABD)

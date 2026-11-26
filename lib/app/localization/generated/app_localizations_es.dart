@@ -647,6 +647,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeStatusPending => 'pendiente';
 
   @override
+  String get homeStatusRest => 'descanso';
+
+  @override
+  String get homeStatusSkipped => 'omitida';
+
+  @override
+  String get homeStatusRescheduled => 'reprogramada';
+
+  @override
+  String get homeRescheduledExplanation =>
+      'Las sesiones reprogramadas pueden aparecer en otro día o fuera de esta semana.';
+
+  @override
   String get activityTitle => 'Actividad';
 
   @override

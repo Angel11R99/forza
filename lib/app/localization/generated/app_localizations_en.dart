@@ -642,6 +642,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStatusPending => 'pending';
 
   @override
+  String get homeStatusRest => 'rest';
+
+  @override
+  String get homeStatusSkipped => 'skipped';
+
+  @override
+  String get homeStatusRescheduled => 'rescheduled';
+
+  @override
+  String get homeRescheduledExplanation =>
+      'Rescheduled workouts may appear on another day or outside this week.';
+
+  @override
   String get activityTitle => 'Activity';
 
   @override
