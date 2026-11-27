@@ -16,6 +16,8 @@ import '../../onboarding/view_models/account_auth_view_model.dart';
 import '../models/profile_settings.dart';
 import 'cloud_sync_settings_page.dart';
 import 'profile_settings_pages.dart';
+import 'nutrition_profile_page.dart';
+import '../../../../domain/models/nutrition/nutrition_models.dart';
 import '../../../../app/localization/locale_controller.dart';
 import '../../../../app/localization/localization_extensions.dart';
 
@@ -64,6 +66,7 @@ class _ProfileViewState extends State<ProfileView> {
   late AppPreferences _preferences = widget.preferences;
   NotificationSettings _notifications = const NotificationSettings();
   PrivacySettings _privacy = const PrivacySettings();
+  NutritionProfile? _nutritionProfile;
   bool _profileSettingsLoaded = false;
   int _preferencesRevision = 0;
 
@@ -125,6 +128,8 @@ class _ProfileViewState extends State<ProfileView> {
       final notifications = await widget.profileSettingsRepository
           .loadNotifications();
       final privacy = await widget.profileSettingsRepository.loadPrivacy();
+      final nutritionProfile = await widget.profileSettingsRepository
+          .loadNutritionProfile();
       if (!mounted) return;
       setState(() {
         if (preferencesRevision == _preferencesRevision) {
@@ -132,6 +137,7 @@ class _ProfileViewState extends State<ProfileView> {
         }
         _notifications = notifications;
         _privacy = privacy;
+        _nutritionProfile = nutritionProfile;
         _profileSettingsLoaded = true;
       });
     } on Object {
@@ -272,6 +278,27 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 _ProfileSection(
+                  title: context.l10n.nutritionProfileSection,
+                  options: [
+                    _ProfileOption(
+                      icon: Icons.restaurant_menu_outlined,
+                      title: context.l10n.nutritionProfileTitle,
+                      subtitle: _nutritionProfile == null
+                          ? context.l10n.nutritionProfileNotConfigured
+                          : context.l10n.nutritionProfileConfigured(
+                              [
+                                if (_nutritionProfile!.ageYears != null)
+                                  '${_nutritionProfile!.ageYears}',
+                                if (_nutritionProfile!.heightCm != null)
+                                  '${_nutritionProfile!.heightCm!.toStringAsFixed(0)} cm',
+                              ].join(' · '),
+                            ),
+                      onTap: _editNutritionProfile,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x6),
+                _ProfileSection(
                   title: context.l10n.profilePreferences,
                   options: [
                     _ProfileOption(
@@ -346,6 +373,18 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() {
       widget.onTrainingSettingsChanged(updated);
     });
+  }
+
+  Future<void> _editNutritionProfile() async {
+    final updated = await Navigator.of(context).push<NutritionProfile>(
+      MaterialPageRoute<NutritionProfile>(
+        builder: (_) =>
+            NutritionProfilePage(repository: widget.profileSettingsRepository),
+      ),
+    );
+    if (updated != null && mounted) {
+      setState(() => _nutritionProfile = updated);
+    }
   }
 
   Future<void> _editProfile() async {

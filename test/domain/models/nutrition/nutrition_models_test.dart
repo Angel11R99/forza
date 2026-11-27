@@ -36,6 +36,29 @@ void main() {
     );
   });
 
+  test('nutrition profile JSON round-trips optional sensitive preferences', () {
+    final profile = NutritionProfile(
+      id: 'local',
+      version: 3,
+      updatedAt: DateTime.utc(2026, 11, 27),
+      ageYears: 30,
+      heightCm: 170,
+      countryCode: 'VE',
+      mealsPerDay: 4,
+      restrictions: const [
+        FoodRestriction(type: FoodRestrictionType.allergy, value: 'peanut'),
+      ],
+    );
+
+    final restored = NutritionProfile.fromJson(profile.toJson());
+
+    expect(restored.isValid, isTrue);
+    expect(restored.ageYears, 30);
+    expect(restored.heightCm, 170);
+    expect(restored.restrictions.single.type, FoodRestrictionType.allergy);
+    expect(restored.restrictions.single.value, 'peanut');
+  });
+
   test('catalog and recipes reject invalid provenance and amounts', () {
     final food = Food(
       id: 'oats',

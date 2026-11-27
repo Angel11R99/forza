@@ -138,13 +138,21 @@
   "exerciseInfoNoSupportingMuscles": "The catalog does not list supporting muscles.",
   "exerciseInfoMoreMuscles": "and {count} more",
   "@exerciseInfoBenefitStrength": {
-    "placeholders": {"muscle": {}}
+    "placeholders": {
+      "muscle": {}
+    }
   },
   "@exerciseInfoBenefitMobility": {
-    "placeholders": {"muscle": {}}
+    "placeholders": {
+      "muscle": {}
+    }
   },
   "@exerciseInfoMoreMuscles": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "@exerciseAnimationLabel": {
     "description": "Accessible label for the exercise animation",
@@ -266,7 +274,9 @@
   "homeRecoveryDescription": "You have no workout scheduled today. Rest and recover.",
   "@homeSessionAvailableOn": {
     "placeholders": {
-      "weekday": {"type": "String"}
+      "weekday": {
+        "type": "String"
+      }
     }
   },
   "homeWeeklySessionCount": "{done} of {target} sessions",
@@ -308,7 +318,13 @@
   "activityActualRecord": "Workout record",
   "activityOutsideAppDataNote": "The workout is recorded, but no sets or repetitions were saved.",
   "activitySetCount": "{count, plural, =1{1 set recorded} other{{count} sets recorded}}",
-  "@activitySetCount": {"placeholders": {"count": {"type": "int"}}},
+  "@activitySetCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "activityMoreActions": "More actions",
   "activityConfirmExternalTitle": "Record an outside workout",
   "activityConfirmExternalMessage": "It will be saved as completed without set or repetition data. Continue?",
@@ -342,6 +358,54 @@
   "profilePrivate": "Private profile",
   "profileVisible": "Visible profile",
   "profileTraining": "Training",
+  "nutritionProfileSection": "Nutrition",
+  "nutritionProfileTitle": "Nutrition profile",
+  "nutritionProfileNotConfigured": "Optional · personalize nutrition",
+  "nutritionProfileConfigured": "Optional profile · {summary}",
+  "nutritionProfileIntro": "Optional preferences are saved on this device. They do not prescribe a diet or change your training plan.",
+  "nutritionProfilePersonalSection": "About you",
+  "nutritionProfileAge": "Age (years)",
+  "nutritionProfileOptional": "Optional · only used if you choose to provide it",
+  "nutritionProfileAgeError": "Enter an age from 13 to 120, or leave it blank.",
+  "nutritionProfileHeight": "Height (cm)",
+  "nutritionProfileHeightHint": "Optional · enter only if you know it",
+  "nutritionProfileHeightError": "Enter a height from 100 to 250 cm, or leave it blank.",
+  "nutritionProfilePreferencesSection": "Food preferences",
+  "nutritionProfileBodyType": "Somatotype (optional)",
+  "nutritionBodyTypeEctomorph": "Ectomorph",
+  "nutritionBodyTypeMesomorph": "Mesomorph",
+  "nutritionBodyTypeEndomorph": "Endomorph",
+  "nutritionBodyTypeMixed": "Mixed",
+  "nutritionBodyTypeUnknown": "I don't know",
+  "nutritionProfileDiet": "Eating pattern",
+  "nutritionProfileGoal": "Nutrition goal",
+  "nutritionProfileGoalUnset": "Not set",
+  "nutritionGoalWellbeing": "General wellbeing",
+  "nutritionGoalTraining": "Support my training",
+  "nutritionGoalGain": "Gain weight",
+  "nutritionGoalLose": "Lose weight",
+  "nutritionGoalMaintain": "Maintain weight",
+  "nutritionProfileSomatotypeNote": "Somatotypes are descriptive and are not diagnoses or diet formulas. Leave this as unknown if unsure.",
+  "nutritionProfileDietAny": "No preference",
+  "nutritionProfileDietVegetarian": "Vegetarian",
+  "nutritionProfileDietVegan": "Vegan",
+  "nutritionProfileDietPescatarian": "Pescatarian",
+  "nutritionProfileBudget": "Relative budget",
+  "nutritionProfileBudgetLow": "Economical",
+  "nutritionProfileBudgetBalanced": "Balanced",
+  "nutritionProfileBudgetAny": "No preference",
+  "nutritionProfileCountry": "Country of purchase (ISO code)",
+  "nutritionProfileCountryHint": "Optional · for example, CO or VE; not inferred from language or location",
+  "nutritionProfileCountryError": "Enter a two-letter country code or leave it blank.",
+  "nutritionProfileRestrictionsSection": "Safety and exclusions",
+  "nutritionProfileAllergies": "Allergies",
+  "nutritionProfileIntolerances": "Intolerances",
+  "nutritionProfileExcluded": "Ingredients to avoid",
+  "nutritionProfileListHint": "Optional · separate items with commas; review food labels every time",
+  "nutritionProfilePrivacyNote": "You can skip these fields. No account is required. Age and height are not used to calculate calorie or macro targets.",
+  "nutritionProfileSaveError": "Could not save the nutrition profile.",
+  "commonSave": "Save",
+  "commonSaving": "Saving…",
   "profileMyPlan": "My training plan",
   "profilePlanSummary": "{goal} · {days} days · ~{minutes}-min budget",
   "profilePreferences": "Preferences",
@@ -489,17 +553,62 @@
   "sessionProgressionTitle": "Progression suggestion",
   "sessionProgressionNoHistory": "There are not enough records for this exercise yet. Complete your sets and log reps and load if you used weight.",
   "sessionProgressionKeepBuilding": "Keep the same load and focus on technique; do not increase yet. Before suggesting more load, we require {sessions} consecutive workouts with at least {repetitions} reps in every set.",
-  "@sessionProgressionKeepBuilding": { "placeholders": { "sessions": { "type": "int" }, "repetitions": { "type": "int" } } },
+  "@sessionProgressionKeepBuilding": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "repetitions": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionReadyToIncrease": "You reached {repetitions} reps in every set for {sessions} consecutive workouts. If it felt comfortable, pain-free, and controlled, try the smallest available load increase and return to the lower end of the rep range.",
-  "@sessionProgressionReadyToIncrease": { "placeholders": { "repetitions": { "type": "int" }, "sessions": { "type": "int" } } },
+  "@sessionProgressionReadyToIncrease": {
+    "placeholders": {
+      "repetitions": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionBodyweightReady": "You completed {repetitions} reps in every set for {sessions} consecutive workouts. If your technique stayed steady, you can try a slightly harder bodyweight variation.",
-  "@sessionProgressionBodyweightReady": { "placeholders": { "repetitions": { "type": "int" }, "sessions": { "type": "int" } } },
+  "@sessionProgressionBodyweightReady": {
+    "placeholders": {
+      "repetitions": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionHabitFocus": "For a habit-building goal, prioritize consistency and technique. You do not need to increase load automatically.",
   "sessionProgressionReturningAfterBreak": "It has been over a month since you logged this exercise. Resume with a comfortable load and complete new sessions before considering an increase.",
   "sessionProgressionTimedKeepBuilding": "Log the seconds and keep the movement controlled. Before suggesting a harder variation, we require {sessions} consecutive workouts with {seconds} seconds in every set.",
-  "@sessionProgressionTimedKeepBuilding": { "placeholders": { "sessions": { "type": "int" }, "seconds": { "type": "int" } } },
+  "@sessionProgressionTimedKeepBuilding": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionTimedReadyToVary": "You completed {seconds} seconds in every set for {sessions} consecutive workouts. If you stayed in control, you can try a slightly harder variation; do not add weight.",
-  "@sessionProgressionTimedReadyToVary": { "placeholders": { "sessions": { "type": "int" }, "seconds": { "type": "int" } } },
+  "@sessionProgressionTimedReadyToVary": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionTemplateNote": "Suggestions are based on your logs. The plan is a template and does not change automatically; you decide whether to apply them.",
   "onboardingSessionTime": "Time budget per session",
   "onboardingSessionBudgetNote": "The plan adjusts the number of exercises to this budget. Actual time varies with your pace and how long you spend warming up and cooling down. The timer between exercises is a 45-second guide.",
@@ -510,7 +619,13 @@
   "onboardingAvoidMovementTitle": "Movements you prefer to avoid (optional)",
   "onboardingAvoidMovementDescription": "Select exercises you prefer to leave out. This preference is not a medical diagnosis; consult a professional if you have health concerns.",
   "onboardingAvoidedMovementSummary": "Excluded movements: {movements}",
-  "@onboardingAvoidedMovementSummary": { "placeholders": { "movements": { "type": "String" } } },
+  "@onboardingAvoidedMovementSummary": {
+    "placeholders": {
+      "movements": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingAvoidedMovementApplied": "The plan prioritizes compatible options when available. Review each exercise before starting.",
   "onboardingNoCompatibleExercises": "No exercises match the selected equipment and exclusions. Adjust your preferences to generate a plan.",
   "onboardingPreviewTitle": "Here's your week",
@@ -522,11 +637,35 @@
   "onboardingReturnToPreview": "Return to plan summary",
   "onboardingEmptySessionConflict": "At least one session has no compatible exercises. Adjust training days, equipment, or excluded movements before creating the plan.",
   "onboardingSessionSummary": "{count, plural, =1{1 exercise} other{{count} exercises}} · ~{minutes} min estimated",
-  "@onboardingSessionSummary": { "placeholders": { "count": { "type": "int" }, "minutes": { "type": "int" } } },
+  "@onboardingSessionSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "onboardingTimedPrescription": "{sets} sets · 20–40 seconds",
-  "@onboardingTimedPrescription": { "placeholders": { "sets": { "type": "int" } } },
+  "@onboardingTimedPrescription": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      }
+    }
+  },
   "onboardingRepPrescription": "{sets} sets · {target}",
-  "@onboardingRepPrescription": { "placeholders": { "sets": { "type": "int" }, "target": { "type": "String" } } },
+  "@onboardingRepPrescription": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingStrengthRepRange": "6–8 reps",
   "onboardingMuscleRepRange": "8–12 reps",
   "onboardingHabitRepRange": "8–12 reps at a comfortable pace",
@@ -565,9 +704,24 @@
   "sessionAddExternalLoad": "Add external load",
   "sessionRemoveExternalLoad": "Remove external load",
   "sessionSetCountSummary": "Recommended: {recommended} · This session: {planned}",
-  "@sessionSetCountSummary": {"placeholders": {"recommended": {"type": "int"}, "planned": {"type": "int"}}},
+  "@sessionSetCountSummary": {
+    "placeholders": {
+      "recommended": {
+        "type": "int"
+      },
+      "planned": {
+        "type": "int"
+      }
+    }
+  },
   "sessionAdditionalSet": "Additional set {number}",
-  "@sessionAdditionalSet": {"placeholders": {"number": {"type": "int"}}},
+  "@sessionAdditionalSet": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "sessionAddSet": "Add set",
   "sessionRemovePendingSet": "Remove last set",
   "sessionRemoveCompletedSet": "Delete completed set",
@@ -615,7 +769,13 @@
   "progressExerciseCatalogRetry": "Retry loading catalog",
   "progressExerciseCatalogLoading": "Loading exercises…",
   "progressGoalExerciseNeedsResolution": "The older goal “{name}” needs you to choose the correct exercise so records are not combined.",
-  "@progressGoalExerciseNeedsResolution": { "placeholders": { "name": { "type": "String" } } },
+  "@progressGoalExerciseNeedsResolution": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "progressExerciseHint": "e.g. Goblet squat",
   "progressSaveGoal": "Save goal",
   "progressExerciseCount": "{count} exercises",
@@ -718,9 +878,30 @@
   "progressGoToActivity": "Go to Activity",
   "progressNoSetData": "No sets logged",
   "progressWeightChange": "Change since previous measurement: {change} kg",
-  "@progressWeightChange": {"placeholders": {"change": {"type": "String"}}},
+  "@progressWeightChange": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
   "progressRecentRecord": "Recent record · {exercise}: {value} {unit} · {date}",
-  "@progressRecentRecord": {"placeholders": {"exercise": {"type": "String"}, "value": {"type": "String"}, "unit": {"type": "String"}, "date": {"type": "String"}}},
+  "@progressRecentRecord": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "progressSessions": "workouts",
   "progressTimeTotal": "{hours} hr {minutes} min",
   "progressSetsAndReps": "{sets} sets · {reps} reps",
@@ -749,12 +930,33 @@
   "progressStrengthDescription": "Compare the heaviest logged load per workout for each exercise.",
   "progressWorkingWeight": "Working weight (kg)",
   "progressStrengthChartSummary": "The load changed from {start} to {current} kilograms across {sessions} logged workouts.",
-  "@progressStrengthChartSummary": { "placeholders": { "start": { "type": "String" }, "current": { "type": "String" }, "sessions": { "type": "int" } } },
+  "@progressStrengthChartSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
   "progressStrengthMetric": "Heaviest weight logged per workout (kg). Sets without a load are excluded.",
   "progressStrengthSinglePoint": "Only one workout has a logged load for this exercise.",
   "progressStrengthEmpty": "There are no weighted sets for this period. Log the weight used for your sets during a workout.",
   "progressStrengthChange": "Change between the first and last workout: {sign}{change} kg.",
-  "@progressStrengthChange": { "placeholders": { "sign": { "type": "String" }, "change": { "type": "String" } } },
+  "@progressStrengthChange": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
+  },
   "progressPeriodLabel": "Period",
   "progressPeriod30Days": "30 days",
   "progressPeriod90Days": "90 days",
@@ -824,7 +1026,13 @@
   "sessionPreparationDescription": "Take a moment to prepare your space and review today's workout.",
   "sessionDraftReviewTitle": "Review saved workout",
   "sessionDraftReviewDateMismatch": "There is a saved workout from {date}. You can resume it with its original routine or discard it to start the selected session.",
-  "@sessionDraftReviewDateMismatch": { "placeholders": { "date": { "type": "String" } } },
+  "@sessionDraftReviewDateMismatch": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "sessionDraftReviewLegacy": "This draft is from an older version and did not save the exact routine. You can continue using the current routine; your partial logs will be kept. You can also discard it.",
   "sessionDraftReviewCorrupt": "The saved draft cannot be read. It will be kept until you choose to discard it and start a new session.",
   "sessionContinueSavedWorkout": "Continue saved workout",
@@ -838,7 +1046,16 @@
   "sessionExerciseHeadline": "Keep going",
   "sessionExerciseCountProgress": "Exercise {current} of {total}",
   "sessionSetsProgress": "{current} of {total} sets completed",
-  "@sessionSetsProgress": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "@sessionSetsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "sessionViewRoutine": "View routine",
   "sessionRoutineTitle": "This session's routine",
   "sessionRoutineDescription": "Review every exercise. You can open the current or a previous exercise; upcoming ones unlock as you progress.",
@@ -856,7 +1073,13 @@
   "sessionRestBetweenExercises": "Exercise changeover",
   "sessionRestDuration": "Rest duration",
   "sessionNextSetAfterRest": "Next: set {number}",
-  "@sessionNextSetAfterRest": { "placeholders": { "number": { "type": "int" } } },
+  "@sessionNextSetAfterRest": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "sessionStartWhenReady": "Start when you’re ready",
   "sessionBeforeExercise": "Before {exercise}",
   "sessionTimerNote": "The timer is only a guide and runs while this screen is active.",

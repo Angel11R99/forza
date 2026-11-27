@@ -875,6 +875,164 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileTraining => 'Training';
 
   @override
+  String get nutritionProfileSection => 'Nutrition';
+
+  @override
+  String get nutritionProfileTitle => 'Nutrition profile';
+
+  @override
+  String get nutritionProfileNotConfigured =>
+      'Optional · personalize nutrition';
+
+  @override
+  String nutritionProfileConfigured(Object summary) {
+    return 'Optional profile · $summary';
+  }
+
+  @override
+  String get nutritionProfileIntro =>
+      'Optional preferences are saved on this device. They do not prescribe a diet or change your training plan.';
+
+  @override
+  String get nutritionProfilePersonalSection => 'About you';
+
+  @override
+  String get nutritionProfileAge => 'Age (years)';
+
+  @override
+  String get nutritionProfileOptional =>
+      'Optional · only used if you choose to provide it';
+
+  @override
+  String get nutritionProfileAgeError =>
+      'Enter an age from 13 to 120, or leave it blank.';
+
+  @override
+  String get nutritionProfileHeight => 'Height (cm)';
+
+  @override
+  String get nutritionProfileHeightHint =>
+      'Optional · enter only if you know it';
+
+  @override
+  String get nutritionProfileHeightError =>
+      'Enter a height from 100 to 250 cm, or leave it blank.';
+
+  @override
+  String get nutritionProfilePreferencesSection => 'Food preferences';
+
+  @override
+  String get nutritionProfileBodyType => 'Somatotype (optional)';
+
+  @override
+  String get nutritionBodyTypeEctomorph => 'Ectomorph';
+
+  @override
+  String get nutritionBodyTypeMesomorph => 'Mesomorph';
+
+  @override
+  String get nutritionBodyTypeEndomorph => 'Endomorph';
+
+  @override
+  String get nutritionBodyTypeMixed => 'Mixed';
+
+  @override
+  String get nutritionBodyTypeUnknown => 'I don\'t know';
+
+  @override
+  String get nutritionProfileDiet => 'Eating pattern';
+
+  @override
+  String get nutritionProfileGoal => 'Nutrition goal';
+
+  @override
+  String get nutritionProfileGoalUnset => 'Not set';
+
+  @override
+  String get nutritionGoalWellbeing => 'General wellbeing';
+
+  @override
+  String get nutritionGoalTraining => 'Support my training';
+
+  @override
+  String get nutritionGoalGain => 'Gain weight';
+
+  @override
+  String get nutritionGoalLose => 'Lose weight';
+
+  @override
+  String get nutritionGoalMaintain => 'Maintain weight';
+
+  @override
+  String get nutritionProfileSomatotypeNote =>
+      'Somatotypes are descriptive and are not diagnoses or diet formulas. Leave this as unknown if unsure.';
+
+  @override
+  String get nutritionProfileDietAny => 'No preference';
+
+  @override
+  String get nutritionProfileDietVegetarian => 'Vegetarian';
+
+  @override
+  String get nutritionProfileDietVegan => 'Vegan';
+
+  @override
+  String get nutritionProfileDietPescatarian => 'Pescatarian';
+
+  @override
+  String get nutritionProfileBudget => 'Relative budget';
+
+  @override
+  String get nutritionProfileBudgetLow => 'Economical';
+
+  @override
+  String get nutritionProfileBudgetBalanced => 'Balanced';
+
+  @override
+  String get nutritionProfileBudgetAny => 'No preference';
+
+  @override
+  String get nutritionProfileCountry => 'Country of purchase (ISO code)';
+
+  @override
+  String get nutritionProfileCountryHint =>
+      'Optional · for example, CO or VE; not inferred from language or location';
+
+  @override
+  String get nutritionProfileCountryError =>
+      'Enter a two-letter country code or leave it blank.';
+
+  @override
+  String get nutritionProfileRestrictionsSection => 'Safety and exclusions';
+
+  @override
+  String get nutritionProfileAllergies => 'Allergies';
+
+  @override
+  String get nutritionProfileIntolerances => 'Intolerances';
+
+  @override
+  String get nutritionProfileExcluded => 'Ingredients to avoid';
+
+  @override
+  String get nutritionProfileListHint =>
+      'Optional · separate items with commas; review food labels every time';
+
+  @override
+  String get nutritionProfilePrivacyNote =>
+      'You can skip these fields. No account is required. Age and height are not used to calculate calorie or macro targets.';
+
+  @override
+  String get nutritionProfileSaveError =>
+      'Could not save the nutrition profile.';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get commonSaving => 'Saving…';
+
+  @override
   String get profileMyPlan => 'My training plan';
 
   @override

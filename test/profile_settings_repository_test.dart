@@ -1,8 +1,35 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/repositories/profile_settings_repository.dart';
+import 'package:forza/domain/models/nutrition/nutrition_models.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
 
 void main() {
+  test(
+    'nutrition profile persists locally and can be cleared for guests',
+    () async {
+      final storage = _MemoryProfilePreferencesStorage();
+      final repository = ProfileSettingsRepository(storage: storage);
+      expect(await repository.loadNutritionProfile(), isNull);
+
+      final profile = NutritionProfile(
+        id: 'local-profile',
+        version: 1,
+        updatedAt: DateTime.utc(2026, 11, 27),
+        dietaryPattern: DietaryPattern.vegetarian,
+        restrictions: const [
+          FoodRestriction(type: FoodRestrictionType.allergy, value: 'peanut'),
+        ],
+      );
+      await repository.saveNutritionProfile(profile);
+
+      final restored = await repository.loadNutritionProfile();
+      expect(restored?.dietaryPattern, DietaryPattern.vegetarian);
+      expect(restored?.restrictions.single.type, FoodRestrictionType.allergy);
+      await repository.clearNutritionProfile();
+      expect(await repository.loadNutritionProfile(), isNull);
+    },
+  );
+
   test(
     'saves and restores every profile preference without writing defaults',
     () async {
