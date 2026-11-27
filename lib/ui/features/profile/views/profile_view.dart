@@ -58,10 +58,9 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  ForzaProfile _profile = const ForzaProfile(
-    fullName: 'Atleta FORZA',
-    goal: 'Ganar fuerza',
-  );
+  String? _profileDisplayName;
+  String? _profileNameUid;
+  int _profileNameRequest = 0;
   late AppPreferences _preferences = widget.preferences;
   NotificationSettings _notifications = const NotificationSettings();
   PrivacySettings _privacy = const PrivacySettings();
@@ -72,15 +71,50 @@ class _ProfileViewState extends State<ProfileView> {
   void initState() {
     super.initState();
     _loadProfileSettings();
+    widget.accountAuthViewModel.addListener(_onAccountChanged);
+    _onAccountChanged();
     unawaited(widget.accountAuthViewModel.restore());
   }
 
   @override
   void didUpdateWidget(covariant ProfileView oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountAuthViewModel != widget.accountAuthViewModel) {
+      oldWidget.accountAuthViewModel.removeListener(_onAccountChanged);
+      widget.accountAuthViewModel.addListener(_onAccountChanged);
+      _profileNameUid = null;
+      _onAccountChanged();
+    }
     if (oldWidget.preferences == widget.preferences) return;
     _preferencesRevision++;
     _preferences = widget.preferences;
+  }
+
+  @override
+  void dispose() {
+    widget.accountAuthViewModel.removeListener(_onAccountChanged);
+    super.dispose();
+  }
+
+  void _onAccountChanged() {
+    final uid = widget.accountAuthViewModel.account?.providerUserId;
+    if (uid == _profileNameUid) return;
+    _profileNameUid = uid;
+    _profileDisplayName = null;
+    final request = ++_profileNameRequest;
+    if (mounted) setState(() {});
+    if (uid != null) unawaited(_loadProfileDisplayName(uid, request));
+  }
+
+  Future<void> _loadProfileDisplayName(String uid, int request) async {
+    try {
+      final name = await widget.profileSettingsRepository
+          .loadProfileDisplayName(uid);
+      if (!mounted || request != _profileNameRequest) return;
+      setState(() => _profileDisplayName = name);
+    } on Object {
+      // The Google identity remains a safe fallback when local settings fail.
+    }
   }
 
   Future<void> _loadProfileSettings() async {
@@ -154,6 +188,7 @@ class _ProfileViewState extends State<ProfileView> {
                     return _AccountIdentityCard(
                       model: widget.accountAuthViewModel,
                       onSignIn: _openAccountAccess,
+                      customName: _profileDisplayName,
                     );
                   },
                 ),
@@ -310,18 +345,43 @@ class _ProfileViewState extends State<ProfileView> {
     if (updated == null || !mounted) return;
     setState(() {
       widget.onTrainingSettingsChanged(updated);
-      _profile = ForzaProfile(fullName: _profile.fullName, goal: updated.goal);
     });
   }
 
   Future<void> _editProfile() async {
+    final account = widget.accountAuthViewModel.account;
+    if (account == null) return;
+    final googleName = account.displayName?.trim();
     final updated = await Navigator.of(context).push<ForzaProfile>(
       MaterialPageRoute<ForzaProfile>(
-        builder: (_) => ProfileEditPage(profile: _localizedProfile(context)),
+        builder: (_) => ProfileEditPage(
+          profile: ForzaProfile(
+            fullName:
+                _profileDisplayName ??
+                (googleName?.isNotEmpty == true ? googleName! : ''),
+            useGoogleName: _profileDisplayName == null,
+          ),
+          email: account.email,
+          googleName: googleName?.isNotEmpty == true ? googleName : null,
+        ),
       ),
     );
     if (updated == null || !mounted) return;
-    setState(() => _profile = updated);
+    try {
+      final savedName = updated.useGoogleName ? null : updated.fullName.trim();
+      await widget.profileSettingsRepository.saveProfileDisplayName(
+        account.providerUserId,
+        savedName,
+      );
+      if (!mounted ||
+          widget.accountAuthViewModel.account?.providerUserId !=
+              account.providerUserId) {
+        return;
+      }
+      setState(() => _profileDisplayName = savedName);
+    } on Object {
+      if (mounted) _showSettingsSaveError();
+    }
   }
 
   Future<void> _editPreferences() async {
@@ -432,13 +492,6 @@ class _ProfileViewState extends State<ProfileView> {
       ),
     );
   }
-
-  ForzaProfile _localizedProfile(BuildContext context) => ForzaProfile(
-    fullName: _profile.fullName == 'Atleta FORZA'
-        ? context.l10n.profileDefaultName
-        : _profile.fullName,
-    goal: _localizedGoal(context, _profile.goal),
-  );
 }
 
 String _cloudSyncSubtitle(BuildContext context, CloudSyncPhase phase) =>
@@ -452,15 +505,23 @@ String _cloudSyncSubtitle(BuildContext context, CloudSyncPhase phase) =>
     };
 
 class _AccountIdentityCard extends StatelessWidget {
-  const _AccountIdentityCard({required this.model, required this.onSignIn});
+  const _AccountIdentityCard({
+    required this.model,
+    required this.onSignIn,
+    this.customName,
+  });
 
   final AccountAuthViewModel model;
   final VoidCallback onSignIn;
+  final String? customName;
 
   @override
   Widget build(BuildContext context) {
     final account = model.account;
-    final displayName = account?.displayName?.trim();
+    final providerName = account?.displayName?.trim();
+    final displayName = customName?.trim().isNotEmpty == true
+        ? customName!.trim()
+        : providerName;
     final hasDisplayName = displayName != null && displayName.isNotEmpty;
 
     return AppSurfaceCard(

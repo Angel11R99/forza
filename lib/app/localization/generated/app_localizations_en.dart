@@ -1901,6 +1901,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileNameRequired => 'Enter your name.';
 
   @override
+  String get profileNameTooLong => 'Name must be 80 characters or fewer.';
+
+  @override
+  String get profileUseGoogleName => 'Use Google name';
+
+  @override
+  String get profileNameLocalNote =>
+      'This display name is saved on this device only.';
+
+  @override
   String get profileEmailInvalid => 'Enter a valid email address.';
 
   @override
