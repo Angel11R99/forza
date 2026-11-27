@@ -5805,6 +5805,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'History'**
   String get nutritionTabHistory;
+
+  /// No description provided for @healthConnectionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Connections'**
+  String get healthConnectionsSection;
+
+  /// No description provided for @healthConnectionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Health connections'**
+  String get healthConnectionsTitle;
+
+  /// No description provided for @healthConnectionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import activity and wellbeing from your device'**
+  String get healthConnectionsSubtitle;
+
+  /// No description provided for @healthConnectionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which health data to import into FORZA. Connecting is optional and you can keep using the app without it.'**
+  String get healthConnectionsDescription;
+
+  /// No description provided for @healthLocalOnlyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data stays on this device'**
+  String get healthLocalOnlyTitle;
+
+  /// No description provided for @healthLocalOnlyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported data is stored locally. FORZA does not send it to Firestore or other services.'**
+  String get healthLocalOnlyDescription;
+
+  /// No description provided for @healthStatusUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t check availability'**
+  String get healthStatusUnavailable;
+
+  /// No description provided for @healthTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get healthTryAgain;
+
+  /// No description provided for @healthDeviceUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Health connections aren’t available on this device'**
+  String get healthDeviceUnsupported;
+
+  /// No description provided for @healthDeviceUnsupportedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can keep using FORZA without connecting a health platform.'**
+  String get healthDeviceUnsupportedDescription;
+
+  /// No description provided for @healthIosPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Health isn’t enabled yet'**
+  String get healthIosPendingTitle;
+
+  /// No description provided for @healthIosPendingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection needs HealthKit setup and validation. FORZA still works without it.'**
+  String get healthIosPendingDescription;
+
+  /// No description provided for @healthChooseData.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what to import'**
+  String get healthChooseData;
+
+  /// No description provided for @healthSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get healthSteps;
+
+  /// No description provided for @healthWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get healthWeight;
+
+  /// No description provided for @healthSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get healthSleep;
+
+  /// No description provided for @healthWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get healthWorkouts;
+
+  /// No description provided for @healthStepsReason.
+  ///
+  /// In en, this message translates to:
+  /// **'To give context to your daily activity.'**
+  String get healthStepsReason;
+
+  /// No description provided for @healthWeightReason.
+  ///
+  /// In en, this message translates to:
+  /// **'To view measurements recorded in your health platform.'**
+  String get healthWeightReason;
+
+  /// No description provided for @healthSleepReason.
+  ///
+  /// In en, this message translates to:
+  /// **'To view sleep sessions; this won’t change your plan.'**
+  String get healthSleepReason;
+
+  /// No description provided for @healthWorkoutReason.
+  ///
+  /// In en, this message translates to:
+  /// **'To view recorded sessions; workout calories and steps aren’t added to totals.'**
+  String get healthWorkoutReason;
+
+  /// No description provided for @healthPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow data access'**
+  String get healthPermissionTitle;
+
+  /// No description provided for @healthPermissionExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'FORZA will request read-only access to the selected categories. Your health platform lets you accept or deny each permission.'**
+  String get healthPermissionExplanation;
+
+  /// No description provided for @healthContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get healthContinue;
+
+  /// No description provided for @healthSelectAtLeastOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one data type.'**
+  String get healthSelectAtLeastOne;
+
+  /// No description provided for @healthPermissionUnverifiable.
+  ///
+  /// In en, this message translates to:
+  /// **'iOS doesn’t disclose whether read access was granted.'**
+  String get healthPermissionUnverifiable;
+
+  /// No description provided for @healthPermissionGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission granted'**
+  String get healthPermissionGranted;
+
+  /// No description provided for @healthPermissionNotGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission not granted'**
+  String get healthPermissionNotGranted;
+
+  /// No description provided for @healthIosPermissionCaveat.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Health doesn’t reveal when read access is denied. If no data appears, check FORZA’s permissions in the Health app.'**
+  String get healthIosPermissionCaveat;
+
+  /// No description provided for @healthImporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing…'**
+  String get healthImporting;
+
+  /// No description provided for @healthImportNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Import now'**
+  String get healthImportNow;
+
+  /// No description provided for @healthConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect and allow read access'**
+  String get healthConnect;
+
+  /// No description provided for @healthImportComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Import complete.'**
+  String get healthImportComplete;
+
+  /// No description provided for @healthImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t import. Check your permissions and try again.'**
+  String get healthImportFailed;
+
+  /// No description provided for @healthLastImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Last import:'**
+  String get healthLastImport;
+
+  /// No description provided for @healthImportedRecordCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported records:'**
+  String get healthImportedRecordCount;
+
+  /// No description provided for @healthRecentData.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent data and source'**
+  String get healthRecentData;
+
+  /// No description provided for @healthDisconnectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect health data'**
+  String get healthDisconnectTitle;
+
+  /// No description provided for @healthDisconnectExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Data imported by FORZA on this device will be deleted. Android revokes Health Connect permissions and applies the change after FORZA restarts. Apple Health permissions are managed in the Health app.'**
+  String get healthDisconnectExplanation;
+
+  /// No description provided for @healthDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect and delete data'**
+  String get healthDisconnect;
 }
 
 class _AppLocalizationsDelegate

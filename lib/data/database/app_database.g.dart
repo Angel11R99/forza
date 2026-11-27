@@ -5562,6 +5562,958 @@ class NutritionMealLogsCompanion extends UpdateCompanion<NutritionMealLog> {
   }
 }
 
+class $HealthRecordsTable extends HealthRecords
+    with TableInfo<$HealthRecordsTable, HealthRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HealthRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ownerScopeMeta = const VerificationMeta(
+    'ownerScope',
+  );
+  @override
+  late final GeneratedColumn<String> ownerScope = GeneratedColumn<String>(
+    'owner_scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dataTypeMeta = const VerificationMeta(
+    'dataType',
+  );
+  @override
+  late final GeneratedColumn<String> dataType = GeneratedColumn<String>(
+    'data_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _unitMeta = const VerificationMeta('unit');
+  @override
+  late final GeneratedColumn<String> unit = GeneratedColumn<String>(
+    'unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startAtMeta = const VerificationMeta(
+    'startAt',
+  );
+  @override
+  late final GeneratedColumn<String> startAt = GeneratedColumn<String>(
+    'start_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endAtMeta = const VerificationMeta('endAt');
+  @override
+  late final GeneratedColumn<String> endAt = GeneratedColumn<String>(
+    'end_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourcePlatformMeta = const VerificationMeta(
+    'sourcePlatform',
+  );
+  @override
+  late final GeneratedColumn<String> sourcePlatform = GeneratedColumn<String>(
+    'source_platform',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceNameMeta = const VerificationMeta(
+    'sourceName',
+  );
+  @override
+  late final GeneratedColumn<String> sourceName = GeneratedColumn<String>(
+    'source_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _importedAtMeta = const VerificationMeta(
+    'importedAt',
+  );
+  @override
+  late final GeneratedColumn<String> importedAt = GeneratedColumn<String>(
+    'imported_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    ownerScope,
+    dataType,
+    value,
+    unit,
+    startAt,
+    endAt,
+    sourcePlatform,
+    sourceId,
+    sourceName,
+    importedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'health_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HealthRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('owner_scope')) {
+      context.handle(
+        _ownerScopeMeta,
+        ownerScope.isAcceptableOrUnknown(data['owner_scope']!, _ownerScopeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerScopeMeta);
+    }
+    if (data.containsKey('data_type')) {
+      context.handle(
+        _dataTypeMeta,
+        dataType.isAcceptableOrUnknown(data['data_type']!, _dataTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dataTypeMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('unit')) {
+      context.handle(
+        _unitMeta,
+        unit.isAcceptableOrUnknown(data['unit']!, _unitMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_unitMeta);
+    }
+    if (data.containsKey('start_at')) {
+      context.handle(
+        _startAtMeta,
+        startAt.isAcceptableOrUnknown(data['start_at']!, _startAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startAtMeta);
+    }
+    if (data.containsKey('end_at')) {
+      context.handle(
+        _endAtMeta,
+        endAt.isAcceptableOrUnknown(data['end_at']!, _endAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endAtMeta);
+    }
+    if (data.containsKey('source_platform')) {
+      context.handle(
+        _sourcePlatformMeta,
+        sourcePlatform.isAcceptableOrUnknown(
+          data['source_platform']!,
+          _sourcePlatformMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourcePlatformMeta);
+    }
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceIdMeta);
+    }
+    if (data.containsKey('source_name')) {
+      context.handle(
+        _sourceNameMeta,
+        sourceName.isAcceptableOrUnknown(data['source_name']!, _sourceNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceNameMeta);
+    }
+    if (data.containsKey('imported_at')) {
+      context.handle(
+        _importedAtMeta,
+        importedAt.isAcceptableOrUnknown(data['imported_at']!, _importedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_importedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HealthRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HealthRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      ownerScope: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_scope'],
+      )!,
+      dataType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data_type'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+      unit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}unit'],
+      )!,
+      startAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_at'],
+      )!,
+      endAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_at'],
+      )!,
+      sourcePlatform: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_platform'],
+      )!,
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      )!,
+      sourceName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_name'],
+      )!,
+      importedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}imported_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HealthRecordsTable createAlias(String alias) {
+    return $HealthRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class HealthRecord extends DataClass implements Insertable<HealthRecord> {
+  final String id;
+  final String ownerScope;
+  final String dataType;
+  final String value;
+  final String unit;
+  final String startAt;
+  final String endAt;
+  final String sourcePlatform;
+  final String sourceId;
+  final String sourceName;
+  final String importedAt;
+  const HealthRecord({
+    required this.id,
+    required this.ownerScope,
+    required this.dataType,
+    required this.value,
+    required this.unit,
+    required this.startAt,
+    required this.endAt,
+    required this.sourcePlatform,
+    required this.sourceId,
+    required this.sourceName,
+    required this.importedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['owner_scope'] = Variable<String>(ownerScope);
+    map['data_type'] = Variable<String>(dataType);
+    map['value'] = Variable<String>(value);
+    map['unit'] = Variable<String>(unit);
+    map['start_at'] = Variable<String>(startAt);
+    map['end_at'] = Variable<String>(endAt);
+    map['source_platform'] = Variable<String>(sourcePlatform);
+    map['source_id'] = Variable<String>(sourceId);
+    map['source_name'] = Variable<String>(sourceName);
+    map['imported_at'] = Variable<String>(importedAt);
+    return map;
+  }
+
+  HealthRecordsCompanion toCompanion(bool nullToAbsent) {
+    return HealthRecordsCompanion(
+      id: Value(id),
+      ownerScope: Value(ownerScope),
+      dataType: Value(dataType),
+      value: Value(value),
+      unit: Value(unit),
+      startAt: Value(startAt),
+      endAt: Value(endAt),
+      sourcePlatform: Value(sourcePlatform),
+      sourceId: Value(sourceId),
+      sourceName: Value(sourceName),
+      importedAt: Value(importedAt),
+    );
+  }
+
+  factory HealthRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HealthRecord(
+      id: serializer.fromJson<String>(json['id']),
+      ownerScope: serializer.fromJson<String>(json['ownerScope']),
+      dataType: serializer.fromJson<String>(json['dataType']),
+      value: serializer.fromJson<String>(json['value']),
+      unit: serializer.fromJson<String>(json['unit']),
+      startAt: serializer.fromJson<String>(json['startAt']),
+      endAt: serializer.fromJson<String>(json['endAt']),
+      sourcePlatform: serializer.fromJson<String>(json['sourcePlatform']),
+      sourceId: serializer.fromJson<String>(json['sourceId']),
+      sourceName: serializer.fromJson<String>(json['sourceName']),
+      importedAt: serializer.fromJson<String>(json['importedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'ownerScope': serializer.toJson<String>(ownerScope),
+      'dataType': serializer.toJson<String>(dataType),
+      'value': serializer.toJson<String>(value),
+      'unit': serializer.toJson<String>(unit),
+      'startAt': serializer.toJson<String>(startAt),
+      'endAt': serializer.toJson<String>(endAt),
+      'sourcePlatform': serializer.toJson<String>(sourcePlatform),
+      'sourceId': serializer.toJson<String>(sourceId),
+      'sourceName': serializer.toJson<String>(sourceName),
+      'importedAt': serializer.toJson<String>(importedAt),
+    };
+  }
+
+  HealthRecord copyWith({
+    String? id,
+    String? ownerScope,
+    String? dataType,
+    String? value,
+    String? unit,
+    String? startAt,
+    String? endAt,
+    String? sourcePlatform,
+    String? sourceId,
+    String? sourceName,
+    String? importedAt,
+  }) => HealthRecord(
+    id: id ?? this.id,
+    ownerScope: ownerScope ?? this.ownerScope,
+    dataType: dataType ?? this.dataType,
+    value: value ?? this.value,
+    unit: unit ?? this.unit,
+    startAt: startAt ?? this.startAt,
+    endAt: endAt ?? this.endAt,
+    sourcePlatform: sourcePlatform ?? this.sourcePlatform,
+    sourceId: sourceId ?? this.sourceId,
+    sourceName: sourceName ?? this.sourceName,
+    importedAt: importedAt ?? this.importedAt,
+  );
+  HealthRecord copyWithCompanion(HealthRecordsCompanion data) {
+    return HealthRecord(
+      id: data.id.present ? data.id.value : this.id,
+      ownerScope: data.ownerScope.present
+          ? data.ownerScope.value
+          : this.ownerScope,
+      dataType: data.dataType.present ? data.dataType.value : this.dataType,
+      value: data.value.present ? data.value.value : this.value,
+      unit: data.unit.present ? data.unit.value : this.unit,
+      startAt: data.startAt.present ? data.startAt.value : this.startAt,
+      endAt: data.endAt.present ? data.endAt.value : this.endAt,
+      sourcePlatform: data.sourcePlatform.present
+          ? data.sourcePlatform.value
+          : this.sourcePlatform,
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
+      sourceName: data.sourceName.present
+          ? data.sourceName.value
+          : this.sourceName,
+      importedAt: data.importedAt.present
+          ? data.importedAt.value
+          : this.importedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HealthRecord(')
+          ..write('id: $id, ')
+          ..write('ownerScope: $ownerScope, ')
+          ..write('dataType: $dataType, ')
+          ..write('value: $value, ')
+          ..write('unit: $unit, ')
+          ..write('startAt: $startAt, ')
+          ..write('endAt: $endAt, ')
+          ..write('sourcePlatform: $sourcePlatform, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('sourceName: $sourceName, ')
+          ..write('importedAt: $importedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    ownerScope,
+    dataType,
+    value,
+    unit,
+    startAt,
+    endAt,
+    sourcePlatform,
+    sourceId,
+    sourceName,
+    importedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HealthRecord &&
+          other.id == this.id &&
+          other.ownerScope == this.ownerScope &&
+          other.dataType == this.dataType &&
+          other.value == this.value &&
+          other.unit == this.unit &&
+          other.startAt == this.startAt &&
+          other.endAt == this.endAt &&
+          other.sourcePlatform == this.sourcePlatform &&
+          other.sourceId == this.sourceId &&
+          other.sourceName == this.sourceName &&
+          other.importedAt == this.importedAt);
+}
+
+class HealthRecordsCompanion extends UpdateCompanion<HealthRecord> {
+  final Value<String> id;
+  final Value<String> ownerScope;
+  final Value<String> dataType;
+  final Value<String> value;
+  final Value<String> unit;
+  final Value<String> startAt;
+  final Value<String> endAt;
+  final Value<String> sourcePlatform;
+  final Value<String> sourceId;
+  final Value<String> sourceName;
+  final Value<String> importedAt;
+  final Value<int> rowid;
+  const HealthRecordsCompanion({
+    this.id = const Value.absent(),
+    this.ownerScope = const Value.absent(),
+    this.dataType = const Value.absent(),
+    this.value = const Value.absent(),
+    this.unit = const Value.absent(),
+    this.startAt = const Value.absent(),
+    this.endAt = const Value.absent(),
+    this.sourcePlatform = const Value.absent(),
+    this.sourceId = const Value.absent(),
+    this.sourceName = const Value.absent(),
+    this.importedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HealthRecordsCompanion.insert({
+    required String id,
+    required String ownerScope,
+    required String dataType,
+    required String value,
+    required String unit,
+    required String startAt,
+    required String endAt,
+    required String sourcePlatform,
+    required String sourceId,
+    required String sourceName,
+    required String importedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       ownerScope = Value(ownerScope),
+       dataType = Value(dataType),
+       value = Value(value),
+       unit = Value(unit),
+       startAt = Value(startAt),
+       endAt = Value(endAt),
+       sourcePlatform = Value(sourcePlatform),
+       sourceId = Value(sourceId),
+       sourceName = Value(sourceName),
+       importedAt = Value(importedAt);
+  static Insertable<HealthRecord> custom({
+    Expression<String>? id,
+    Expression<String>? ownerScope,
+    Expression<String>? dataType,
+    Expression<String>? value,
+    Expression<String>? unit,
+    Expression<String>? startAt,
+    Expression<String>? endAt,
+    Expression<String>? sourcePlatform,
+    Expression<String>? sourceId,
+    Expression<String>? sourceName,
+    Expression<String>? importedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (ownerScope != null) 'owner_scope': ownerScope,
+      if (dataType != null) 'data_type': dataType,
+      if (value != null) 'value': value,
+      if (unit != null) 'unit': unit,
+      if (startAt != null) 'start_at': startAt,
+      if (endAt != null) 'end_at': endAt,
+      if (sourcePlatform != null) 'source_platform': sourcePlatform,
+      if (sourceId != null) 'source_id': sourceId,
+      if (sourceName != null) 'source_name': sourceName,
+      if (importedAt != null) 'imported_at': importedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HealthRecordsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? ownerScope,
+    Value<String>? dataType,
+    Value<String>? value,
+    Value<String>? unit,
+    Value<String>? startAt,
+    Value<String>? endAt,
+    Value<String>? sourcePlatform,
+    Value<String>? sourceId,
+    Value<String>? sourceName,
+    Value<String>? importedAt,
+    Value<int>? rowid,
+  }) {
+    return HealthRecordsCompanion(
+      id: id ?? this.id,
+      ownerScope: ownerScope ?? this.ownerScope,
+      dataType: dataType ?? this.dataType,
+      value: value ?? this.value,
+      unit: unit ?? this.unit,
+      startAt: startAt ?? this.startAt,
+      endAt: endAt ?? this.endAt,
+      sourcePlatform: sourcePlatform ?? this.sourcePlatform,
+      sourceId: sourceId ?? this.sourceId,
+      sourceName: sourceName ?? this.sourceName,
+      importedAt: importedAt ?? this.importedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (ownerScope.present) {
+      map['owner_scope'] = Variable<String>(ownerScope.value);
+    }
+    if (dataType.present) {
+      map['data_type'] = Variable<String>(dataType.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (unit.present) {
+      map['unit'] = Variable<String>(unit.value);
+    }
+    if (startAt.present) {
+      map['start_at'] = Variable<String>(startAt.value);
+    }
+    if (endAt.present) {
+      map['end_at'] = Variable<String>(endAt.value);
+    }
+    if (sourcePlatform.present) {
+      map['source_platform'] = Variable<String>(sourcePlatform.value);
+    }
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
+    }
+    if (sourceName.present) {
+      map['source_name'] = Variable<String>(sourceName.value);
+    }
+    if (importedAt.present) {
+      map['imported_at'] = Variable<String>(importedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HealthRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('ownerScope: $ownerScope, ')
+          ..write('dataType: $dataType, ')
+          ..write('value: $value, ')
+          ..write('unit: $unit, ')
+          ..write('startAt: $startAt, ')
+          ..write('endAt: $endAt, ')
+          ..write('sourcePlatform: $sourcePlatform, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('sourceName: $sourceName, ')
+          ..write('importedAt: $importedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $HealthConnectionSettingsTable extends HealthConnectionSettings
+    with TableInfo<$HealthConnectionSettingsTable, HealthConnectionSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HealthConnectionSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _ownerScopeMeta = const VerificationMeta(
+    'ownerScope',
+  );
+  @override
+  late final GeneratedColumn<String> ownerScope = GeneratedColumn<String>(
+    'owner_scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enabledTypesJsonMeta = const VerificationMeta(
+    'enabledTypesJson',
+  );
+  @override
+  late final GeneratedColumn<String> enabledTypesJson = GeneratedColumn<String>(
+    'enabled_types_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _lastImportAtMeta = const VerificationMeta(
+    'lastImportAt',
+  );
+  @override
+  late final GeneratedColumn<String> lastImportAt = GeneratedColumn<String>(
+    'last_import_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    ownerScope,
+    enabledTypesJson,
+    lastImportAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'health_connection_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HealthConnectionSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('owner_scope')) {
+      context.handle(
+        _ownerScopeMeta,
+        ownerScope.isAcceptableOrUnknown(data['owner_scope']!, _ownerScopeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerScopeMeta);
+    }
+    if (data.containsKey('enabled_types_json')) {
+      context.handle(
+        _enabledTypesJsonMeta,
+        enabledTypesJson.isAcceptableOrUnknown(
+          data['enabled_types_json']!,
+          _enabledTypesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_import_at')) {
+      context.handle(
+        _lastImportAtMeta,
+        lastImportAt.isAcceptableOrUnknown(
+          data['last_import_at']!,
+          _lastImportAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {ownerScope};
+  @override
+  HealthConnectionSetting map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HealthConnectionSetting(
+      ownerScope: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_scope'],
+      )!,
+      enabledTypesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}enabled_types_json'],
+      )!,
+      lastImportAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_import_at'],
+      ),
+    );
+  }
+
+  @override
+  $HealthConnectionSettingsTable createAlias(String alias) {
+    return $HealthConnectionSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class HealthConnectionSetting extends DataClass
+    implements Insertable<HealthConnectionSetting> {
+  final String ownerScope;
+  final String enabledTypesJson;
+  final String? lastImportAt;
+  const HealthConnectionSetting({
+    required this.ownerScope,
+    required this.enabledTypesJson,
+    this.lastImportAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['owner_scope'] = Variable<String>(ownerScope);
+    map['enabled_types_json'] = Variable<String>(enabledTypesJson);
+    if (!nullToAbsent || lastImportAt != null) {
+      map['last_import_at'] = Variable<String>(lastImportAt);
+    }
+    return map;
+  }
+
+  HealthConnectionSettingsCompanion toCompanion(bool nullToAbsent) {
+    return HealthConnectionSettingsCompanion(
+      ownerScope: Value(ownerScope),
+      enabledTypesJson: Value(enabledTypesJson),
+      lastImportAt: lastImportAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastImportAt),
+    );
+  }
+
+  factory HealthConnectionSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HealthConnectionSetting(
+      ownerScope: serializer.fromJson<String>(json['ownerScope']),
+      enabledTypesJson: serializer.fromJson<String>(json['enabledTypesJson']),
+      lastImportAt: serializer.fromJson<String?>(json['lastImportAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'ownerScope': serializer.toJson<String>(ownerScope),
+      'enabledTypesJson': serializer.toJson<String>(enabledTypesJson),
+      'lastImportAt': serializer.toJson<String?>(lastImportAt),
+    };
+  }
+
+  HealthConnectionSetting copyWith({
+    String? ownerScope,
+    String? enabledTypesJson,
+    Value<String?> lastImportAt = const Value.absent(),
+  }) => HealthConnectionSetting(
+    ownerScope: ownerScope ?? this.ownerScope,
+    enabledTypesJson: enabledTypesJson ?? this.enabledTypesJson,
+    lastImportAt: lastImportAt.present ? lastImportAt.value : this.lastImportAt,
+  );
+  HealthConnectionSetting copyWithCompanion(
+    HealthConnectionSettingsCompanion data,
+  ) {
+    return HealthConnectionSetting(
+      ownerScope: data.ownerScope.present
+          ? data.ownerScope.value
+          : this.ownerScope,
+      enabledTypesJson: data.enabledTypesJson.present
+          ? data.enabledTypesJson.value
+          : this.enabledTypesJson,
+      lastImportAt: data.lastImportAt.present
+          ? data.lastImportAt.value
+          : this.lastImportAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HealthConnectionSetting(')
+          ..write('ownerScope: $ownerScope, ')
+          ..write('enabledTypesJson: $enabledTypesJson, ')
+          ..write('lastImportAt: $lastImportAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(ownerScope, enabledTypesJson, lastImportAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HealthConnectionSetting &&
+          other.ownerScope == this.ownerScope &&
+          other.enabledTypesJson == this.enabledTypesJson &&
+          other.lastImportAt == this.lastImportAt);
+}
+
+class HealthConnectionSettingsCompanion
+    extends UpdateCompanion<HealthConnectionSetting> {
+  final Value<String> ownerScope;
+  final Value<String> enabledTypesJson;
+  final Value<String?> lastImportAt;
+  final Value<int> rowid;
+  const HealthConnectionSettingsCompanion({
+    this.ownerScope = const Value.absent(),
+    this.enabledTypesJson = const Value.absent(),
+    this.lastImportAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HealthConnectionSettingsCompanion.insert({
+    required String ownerScope,
+    this.enabledTypesJson = const Value.absent(),
+    this.lastImportAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : ownerScope = Value(ownerScope);
+  static Insertable<HealthConnectionSetting> custom({
+    Expression<String>? ownerScope,
+    Expression<String>? enabledTypesJson,
+    Expression<String>? lastImportAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (ownerScope != null) 'owner_scope': ownerScope,
+      if (enabledTypesJson != null) 'enabled_types_json': enabledTypesJson,
+      if (lastImportAt != null) 'last_import_at': lastImportAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HealthConnectionSettingsCompanion copyWith({
+    Value<String>? ownerScope,
+    Value<String>? enabledTypesJson,
+    Value<String?>? lastImportAt,
+    Value<int>? rowid,
+  }) {
+    return HealthConnectionSettingsCompanion(
+      ownerScope: ownerScope ?? this.ownerScope,
+      enabledTypesJson: enabledTypesJson ?? this.enabledTypesJson,
+      lastImportAt: lastImportAt ?? this.lastImportAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (ownerScope.present) {
+      map['owner_scope'] = Variable<String>(ownerScope.value);
+    }
+    if (enabledTypesJson.present) {
+      map['enabled_types_json'] = Variable<String>(enabledTypesJson.value);
+    }
+    if (lastImportAt.present) {
+      map['last_import_at'] = Variable<String>(lastImportAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HealthConnectionSettingsCompanion(')
+          ..write('ownerScope: $ownerScope, ')
+          ..write('enabledTypesJson: $enabledTypesJson, ')
+          ..write('lastImportAt: $lastImportAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5593,6 +6545,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $NutritionProfilesTable(this);
   late final $NutritionMealLogsTable nutritionMealLogs =
       $NutritionMealLogsTable(this);
+  late final $HealthRecordsTable healthRecords = $HealthRecordsTable(this);
+  late final $HealthConnectionSettingsTable healthConnectionSettings =
+      $HealthConnectionSettingsTable(this);
   late final Index workoutSessionsScheduledDateIdx = Index(
     'workout_sessions_scheduled_date_idx',
     'CREATE INDEX workout_sessions_scheduled_date_idx ON workout_sessions (scheduled_date)',
@@ -5613,6 +6568,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'nutrition_meal_logs_logged_at_idx',
     'CREATE INDEX nutrition_meal_logs_logged_at_idx ON nutrition_meal_logs (logged_at)',
   );
+  late final Index healthRecordsOwnerTypeIdx = Index(
+    'health_records_owner_type_idx',
+    'CREATE INDEX health_records_owner_type_idx ON health_records (owner_scope, data_type)',
+  );
+  late final Index healthRecordsOwnerStartIdx = Index(
+    'health_records_owner_start_idx',
+    'CREATE INDEX health_records_owner_start_idx ON health_records (owner_scope, start_at)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5632,11 +6595,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cloudSyncBaselines,
     nutritionProfiles,
     nutritionMealLogs,
+    healthRecords,
+    healthConnectionSettings,
     workoutSessionsScheduledDateIdx,
     workoutSessionsCompletedAtIdx,
     scheduledTrainingSessionsDateIdx,
     bodyMeasurementsDateIdx,
     nutritionMealLogsLoggedAtIdx,
+    healthRecordsOwnerTypeIdx,
+    healthRecordsOwnerStartIdx,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -9975,6 +10942,536 @@ typedef $$NutritionMealLogsTableProcessedTableManager =
       NutritionMealLog,
       PrefetchHooks Function()
     >;
+typedef $$HealthRecordsTableCreateCompanionBuilder =
+    HealthRecordsCompanion Function({
+      required String id,
+      required String ownerScope,
+      required String dataType,
+      required String value,
+      required String unit,
+      required String startAt,
+      required String endAt,
+      required String sourcePlatform,
+      required String sourceId,
+      required String sourceName,
+      required String importedAt,
+      Value<int> rowid,
+    });
+typedef $$HealthRecordsTableUpdateCompanionBuilder =
+    HealthRecordsCompanion Function({
+      Value<String> id,
+      Value<String> ownerScope,
+      Value<String> dataType,
+      Value<String> value,
+      Value<String> unit,
+      Value<String> startAt,
+      Value<String> endAt,
+      Value<String> sourcePlatform,
+      Value<String> sourceId,
+      Value<String> sourceName,
+      Value<String> importedAt,
+      Value<int> rowid,
+    });
+
+class $$HealthRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $HealthRecordsTable> {
+  $$HealthRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerScope => $composableBuilder(
+    column: $table.ownerScope,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dataType => $composableBuilder(
+    column: $table.dataType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startAt => $composableBuilder(
+    column: $table.startAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endAt => $composableBuilder(
+    column: $table.endAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourcePlatform => $composableBuilder(
+    column: $table.sourcePlatform,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceName => $composableBuilder(
+    column: $table.sourceName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HealthRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $HealthRecordsTable> {
+  $$HealthRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerScope => $composableBuilder(
+    column: $table.ownerScope,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dataType => $composableBuilder(
+    column: $table.dataType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startAt => $composableBuilder(
+    column: $table.startAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endAt => $composableBuilder(
+    column: $table.endAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourcePlatform => $composableBuilder(
+    column: $table.sourcePlatform,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceName => $composableBuilder(
+    column: $table.sourceName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HealthRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HealthRecordsTable> {
+  $$HealthRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get ownerScope => $composableBuilder(
+    column: $table.ownerScope,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dataType =>
+      $composableBuilder(column: $table.dataType, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<String> get startAt =>
+      $composableBuilder(column: $table.startAt, builder: (column) => column);
+
+  GeneratedColumn<String> get endAt =>
+      $composableBuilder(column: $table.endAt, builder: (column) => column);
+
+  GeneratedColumn<String> get sourcePlatform => $composableBuilder(
+    column: $table.sourcePlatform,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceId =>
+      $composableBuilder(column: $table.sourceId, builder: (column) => column);
+
+  GeneratedColumn<String> get sourceName => $composableBuilder(
+    column: $table.sourceName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$HealthRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HealthRecordsTable,
+          HealthRecord,
+          $$HealthRecordsTableFilterComposer,
+          $$HealthRecordsTableOrderingComposer,
+          $$HealthRecordsTableAnnotationComposer,
+          $$HealthRecordsTableCreateCompanionBuilder,
+          $$HealthRecordsTableUpdateCompanionBuilder,
+          (
+            HealthRecord,
+            BaseReferences<_$AppDatabase, $HealthRecordsTable, HealthRecord>,
+          ),
+          HealthRecord,
+          PrefetchHooks Function()
+        > {
+  $$HealthRecordsTableTableManager(_$AppDatabase db, $HealthRecordsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HealthRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HealthRecordsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HealthRecordsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> ownerScope = const Value.absent(),
+                Value<String> dataType = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<String> unit = const Value.absent(),
+                Value<String> startAt = const Value.absent(),
+                Value<String> endAt = const Value.absent(),
+                Value<String> sourcePlatform = const Value.absent(),
+                Value<String> sourceId = const Value.absent(),
+                Value<String> sourceName = const Value.absent(),
+                Value<String> importedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HealthRecordsCompanion(
+                id: id,
+                ownerScope: ownerScope,
+                dataType: dataType,
+                value: value,
+                unit: unit,
+                startAt: startAt,
+                endAt: endAt,
+                sourcePlatform: sourcePlatform,
+                sourceId: sourceId,
+                sourceName: sourceName,
+                importedAt: importedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String ownerScope,
+                required String dataType,
+                required String value,
+                required String unit,
+                required String startAt,
+                required String endAt,
+                required String sourcePlatform,
+                required String sourceId,
+                required String sourceName,
+                required String importedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => HealthRecordsCompanion.insert(
+                id: id,
+                ownerScope: ownerScope,
+                dataType: dataType,
+                value: value,
+                unit: unit,
+                startAt: startAt,
+                endAt: endAt,
+                sourcePlatform: sourcePlatform,
+                sourceId: sourceId,
+                sourceName: sourceName,
+                importedAt: importedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$HealthRecordsTable, HealthRecord>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $HealthRecordsTable,
+                    HealthRecord
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HealthRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HealthRecordsTable,
+      HealthRecord,
+      $$HealthRecordsTableFilterComposer,
+      $$HealthRecordsTableOrderingComposer,
+      $$HealthRecordsTableAnnotationComposer,
+      $$HealthRecordsTableCreateCompanionBuilder,
+      $$HealthRecordsTableUpdateCompanionBuilder,
+      (
+        HealthRecord,
+        BaseReferences<_$AppDatabase, $HealthRecordsTable, HealthRecord>,
+      ),
+      HealthRecord,
+      PrefetchHooks Function()
+    >;
+typedef $$HealthConnectionSettingsTableCreateCompanionBuilder =
+    HealthConnectionSettingsCompanion Function({
+      required String ownerScope,
+      Value<String> enabledTypesJson,
+      Value<String?> lastImportAt,
+      Value<int> rowid,
+    });
+typedef $$HealthConnectionSettingsTableUpdateCompanionBuilder =
+    HealthConnectionSettingsCompanion Function({
+      Value<String> ownerScope,
+      Value<String> enabledTypesJson,
+      Value<String?> lastImportAt,
+      Value<int> rowid,
+    });
+
+class $$HealthConnectionSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $HealthConnectionSettingsTable> {
+  $$HealthConnectionSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get ownerScope => $composableBuilder(
+    column: $table.ownerScope,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get enabledTypesJson => $composableBuilder(
+    column: $table.enabledTypesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastImportAt => $composableBuilder(
+    column: $table.lastImportAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HealthConnectionSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $HealthConnectionSettingsTable> {
+  $$HealthConnectionSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get ownerScope => $composableBuilder(
+    column: $table.ownerScope,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get enabledTypesJson => $composableBuilder(
+    column: $table.enabledTypesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastImportAt => $composableBuilder(
+    column: $table.lastImportAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HealthConnectionSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HealthConnectionSettingsTable> {
+  $$HealthConnectionSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get ownerScope => $composableBuilder(
+    column: $table.ownerScope,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get enabledTypesJson => $composableBuilder(
+    column: $table.enabledTypesJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastImportAt => $composableBuilder(
+    column: $table.lastImportAt,
+    builder: (column) => column,
+  );
+}
+
+class $$HealthConnectionSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HealthConnectionSettingsTable,
+          HealthConnectionSetting,
+          $$HealthConnectionSettingsTableFilterComposer,
+          $$HealthConnectionSettingsTableOrderingComposer,
+          $$HealthConnectionSettingsTableAnnotationComposer,
+          $$HealthConnectionSettingsTableCreateCompanionBuilder,
+          $$HealthConnectionSettingsTableUpdateCompanionBuilder,
+          (
+            HealthConnectionSetting,
+            BaseReferences<
+              _$AppDatabase,
+              $HealthConnectionSettingsTable,
+              HealthConnectionSetting
+            >,
+          ),
+          HealthConnectionSetting,
+          PrefetchHooks Function()
+        > {
+  $$HealthConnectionSettingsTableTableManager(
+    _$AppDatabase db,
+    $HealthConnectionSettingsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HealthConnectionSettingsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$HealthConnectionSettingsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$HealthConnectionSettingsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> ownerScope = const Value.absent(),
+                Value<String> enabledTypesJson = const Value.absent(),
+                Value<String?> lastImportAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HealthConnectionSettingsCompanion(
+                ownerScope: ownerScope,
+                enabledTypesJson: enabledTypesJson,
+                lastImportAt: lastImportAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String ownerScope,
+                Value<String> enabledTypesJson = const Value.absent(),
+                Value<String?> lastImportAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HealthConnectionSettingsCompanion.insert(
+                ownerScope: ownerScope,
+                enabledTypesJson: enabledTypesJson,
+                lastImportAt: lastImportAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $HealthConnectionSettingsTable,
+                    HealthConnectionSetting
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $HealthConnectionSettingsTable,
+                    HealthConnectionSetting
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HealthConnectionSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HealthConnectionSettingsTable,
+      HealthConnectionSetting,
+      $$HealthConnectionSettingsTableFilterComposer,
+      $$HealthConnectionSettingsTableOrderingComposer,
+      $$HealthConnectionSettingsTableAnnotationComposer,
+      $$HealthConnectionSettingsTableCreateCompanionBuilder,
+      $$HealthConnectionSettingsTableUpdateCompanionBuilder,
+      (
+        HealthConnectionSetting,
+        BaseReferences<
+          _$AppDatabase,
+          $HealthConnectionSettingsTable,
+          HealthConnectionSetting
+        >,
+      ),
+      HealthConnectionSetting,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10013,4 +11510,11 @@ class $AppDatabaseManager {
       $$NutritionProfilesTableTableManager(_db, _db.nutritionProfiles);
   $$NutritionMealLogsTableTableManager get nutritionMealLogs =>
       $$NutritionMealLogsTableTableManager(_db, _db.nutritionMealLogs);
+  $$HealthRecordsTableTableManager get healthRecords =>
+      $$HealthRecordsTableTableManager(_db, _db.healthRecords);
+  $$HealthConnectionSettingsTableTableManager get healthConnectionSettings =>
+      $$HealthConnectionSettingsTableTableManager(
+        _db,
+        _db.healthConnectionSettings,
+      );
 }

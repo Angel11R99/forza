@@ -24,6 +24,7 @@ import '../../features/home/views/home_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
 import '../../features/profile/models/profile_settings.dart';
 import '../../features/profile/views/profile_view.dart';
+import '../../../data/repositories/health_connection_repository.dart';
 import '../../features/nutrition/views/nutrition_home_page.dart';
 import '../../features/profile/views/backup_restore_page.dart';
 import '../../features/progress/views/progress_view.dart';
@@ -612,6 +613,10 @@ class _AppScaffoldState extends State<AppScaffold>
                       themeMode: widget.appearance.mode,
                       onThemeModeChanged: widget.appearance.setMode,
                       localeController: widget.localeController,
+                      createHealthConnectionRepository: () =>
+                          HealthConnectionRepository(
+                            database: AppDatabase.instance,
+                          ),
                       onManageBackups: _openBackupRestore,
                       onTrainingSettingsChanged: (settings) =>
                           _updateTrainingSettings(settings),

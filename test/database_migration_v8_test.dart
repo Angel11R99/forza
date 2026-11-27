@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/database/app_database.dart';
 
 void main() {
-  test('migration v11 retains old workout data and creates nutrition tables', () async {
+  test('migration v13 retains workout data and creates nutrition and health tables', () async {
     final database = AppDatabase(
       NativeDatabase.memory(
         setup: (database) {
@@ -66,7 +66,7 @@ void main() {
     final version = await database
         .customSelect('PRAGMA user_version')
         .getSingle();
-    expect(version.read<int>('user_version'), 11);
+    expect(version.read<int>('user_version'), 13);
     final planColumns = await database
         .customSelect('PRAGMA table_info(training_plans)')
         .get();
@@ -117,6 +117,26 @@ void main() {
       'nutrition_meal_logs',
     );
     expect(nutritionLogColumns, containsAll(['id', 'logged_at', 'entry_json']));
+    final healthRecordColumns = await _columnNames(database, 'health_records');
+    expect(
+      healthRecordColumns,
+      containsAll([
+        'owner_scope',
+        'data_type',
+        'source_platform',
+        'source_id',
+        'start_at',
+        'end_at',
+      ]),
+    );
+    final healthSettingsColumns = await _columnNames(
+      database,
+      'health_connection_settings',
+    );
+    expect(
+      healthSettingsColumns,
+      containsAll(['owner_scope', 'enabled_types_json', 'last_import_at']),
+    );
     await database.close();
   });
 }
