@@ -29,7 +29,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          issue=$(python -c 'import os,re; m=re.search(r"(?im)^\s*(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)\b",os.environ.get("PR_BODY") or ""); print(m.group(1) if m else "")')
+          issue=$(python -c 'import os,re; m=re.search(r"(?im)^\s*(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?|refs?)\s+#(\d+)\b",os.environ.get("PR_BODY") or ""); print(m.group(1) if m else "")')
           if [ -n "$issue" ]; then
             gh issue edit "$issue" --repo "$GH_REPO" --remove-label status:approved --remove-label status:in-progress --add-label status:in-review
           fi

@@ -11,7 +11,7 @@
 
 ## Contratos y dependencias
 
-`NutritionProfile` contiene preferencias mínimas propias de nutrición y versiona cambios. Datos que pertenecen al perfil/entrenamiento existentes se consultan desde sus repositorios; las medidas se leen de `BodyMeasurementRepository`. `Food` y `Recipe` son catálogo curado y versionado; su acceso regional (`FoodAccess`) admite desconocido, confianza, procedencia y versión. El menú guarda las versiones del perfil, catálogo y objetivos que usó. `MealEntry` permite registrar alimento o receta sin exigir un menú.
+`NutritionProfile` contiene preferencias mínimas propias de nutrición y versiona cambios. Datos que pertenecen al perfil/entrenamiento existentes se consultan desde sus repositorios; las medidas se leen de `BodyMeasurementRepository`. `NutritionCatalogFood` y `NutritionCatalogRecipe` son catálogo versionado con fuentes, IDs y campos por 100 g; su acceso regional (`FoodAccess`) admite desconocido, confianza, procedencia y versión. El menú guarda las versiones del perfil, catálogo y objetivos que usó. `MealEntry` permite registrar alimento o receta sin exigir un menú. Fuentes, permisos y límites de la primera selección están en [catalog-sources.md](catalog-sources.md).
 
 País de compra es una preferencia confirmada manualmente y distinta del idioma, unidades y zona horaria. La región es texto opcional y amplio. Si no hay país confirmado o cobertura, se resuelve catálogo general y se informa cobertura; nunca se solicitan coordenadas ni se interpreta locale como residencia.
 
