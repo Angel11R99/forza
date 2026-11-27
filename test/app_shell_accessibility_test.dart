@@ -60,8 +60,8 @@ void main() {
             ...GlobalMaterialLocalizations.delegates,
           ],
           home: MediaQuery(
-            data: const MediaQueryData(
-              textScaler: TextScaler.linear(2),
+            data: MediaQueryData.fromView(tester.view).copyWith(
+              textScaler: const TextScaler.linear(2),
               disableAnimations: true,
             ),
             child: AppScaffold(
