@@ -100,6 +100,7 @@ flutter:
 
   assets:
     - assets/data/exercises.json
+    - assets/data/nutrition_catalog.json
     - assets/exercise_animations/
     - assets/licenses/flow-exercise-dataset/
     - assets/licenses/open-exercise-illustrations/

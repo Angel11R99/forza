@@ -1,0 +1,1939 @@
+{
+  "schemaVersion": 1,
+  "version": "forza-food-catalog-2026.10.1",
+  "generatedAt": "2026-11-27T00:00:00Z",
+  "unitsPer100g": {
+    "energyKcal": "kcal",
+    "proteinG": "g",
+    "fatG": "g",
+    "carbohydrateG": "g",
+    "fiberG": "g",
+    "sugarsG": "g",
+    "sodiumMg": "mg",
+    "calciumMg": "mg",
+    "ironMg": "mg",
+    "potassiumMg": "mg",
+    "vitaminCMg": "mg",
+    "vitaminARaeUg": "µg",
+    "vitaminB12Ug": "µg"
+  },
+  "sources": [
+    {
+      "id": "usda-foundation-foods",
+      "name": "USDA FoodData Central Foundation Foods",
+      "version": "October 2026 (release 2026-10-29)",
+      "license": "CC0 1.0",
+      "url": "https://fdc.nal.usda.gov/download-datasets/",
+      "accessedAt": "2026-11-27T00:00:00Z",
+      "citation": "U.S. Department of Agriculture, Agricultural Research Service. FoodData Central. Foundation Foods, October 2026."
+    },
+    {
+      "id": "usda-fsis-food-safety",
+      "name": "USDA Food Safety and Inspection Service",
+      "version": "Current guidance accessed 2026-11-27",
+      "license": "Official guidance; linked, not redistributed",
+      "url": "https://ask.fsis.usda.gov/article/What-is-a-safe-internal-temperature-for-cooking-meat-and-poultry",
+      "accessedAt": "2026-11-27T00:00:00Z",
+      "citation": "Cook poultry to 165 F (73.9 C) measured with a food thermometer."
+    }
+  ],
+  "scope": {
+    "nutrition": "USDA source composition; not a country-specific table",
+    "regionalAccess": "unknown until independently reviewed",
+    "price": "not collected",
+    "offline": true
+  },
+  "foods": [
+    {
+      "id": "usda-foundation:748967",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 748967,
+      "name": "Eggs, Grade A, Large, egg whole",
+      "nameEs": "Huevo entero",
+      "aliases": [
+        "huevo",
+        "huevos"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2019-12-16",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 148.0,
+        "proteinG": 12.4,
+        "fatG": 9.96,
+        "carbohydrateG": 0.96,
+        "fiberG": 0.0,
+        "sugarsG": null,
+        "sodiumMg": 129.0,
+        "calciumMg": 48.0,
+        "ironMg": 1.67,
+        "potassiumMg": 132.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": 180.0,
+        "vitaminB12Ug": 1.02
+      },
+      "nutrientDataPoints": {
+        "vitaminB12Ug": 24,
+        "ironMg": 22,
+        "sodiumMg": 22,
+        "calciumMg": 22,
+        "potassiumMg": 22,
+        "fatG": 24,
+        "fiberG": 3
+      },
+      "portions": [
+        {
+          "label": "1 egg whole without shell",
+          "grams": 50.3
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2346396",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2346396,
+      "name": "Oats, whole grain, rolled, old fashioned",
+      "nameEs": "Avena en hojuelas",
+      "aliases": [
+        "avena",
+        "hojuelas de avena"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2022-10-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 13.5,
+        "fatG": 5.89,
+        "carbohydrateG": 68.7,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 0.668,
+        "calciumMg": 45.5,
+        "ironMg": 4.34,
+        "potassiumMg": 350.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2346397",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2346397,
+      "name": "Oats, whole grain, steel cut",
+      "nameEs": "Avena cortada",
+      "aliases": [
+        "avena steel cut"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2022-10-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 12.5,
+        "fatG": 5.8,
+        "carbohydrateG": 69.8,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 0.311,
+        "calciumMg": 51.3,
+        "ironMg": 3.8,
+        "potassiumMg": 376.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2512380",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2512380,
+      "name": "Rice, brown, long grain, unenriched, raw",
+      "nameEs": "Arroz integral de grano largo",
+      "aliases": [
+        "arroz integral"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2023-04-20",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 7.25,
+        "fatG": 3.31,
+        "carbohydrateG": 76.7,
+        "fiberG": 3.02,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 8.06,
+        "ironMg": 1.24,
+        "potassiumMg": 250.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2512381",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2512381,
+      "name": "Rice, white, long grain, unenriched, raw",
+      "nameEs": "Arroz blanco de grano largo",
+      "aliases": [
+        "arroz blanco"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2023-04-20",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 7.04,
+        "fatG": 1.03,
+        "carbohydrateG": 80.3,
+        "fiberG": 0.149,
+        "sugarsG": null,
+        "sodiumMg": 0.462,
+        "calciumMg": 4.46,
+        "ironMg": 0.14,
+        "potassiumMg": 82.3,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:747444",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 747444,
+      "name": "Beans, Dry, Black (0% moisture)",
+      "nameEs": "Frijoles negros secos",
+      "aliases": [
+        "frijoles negros",
+        "habichuelas negras",
+        "caraotas negras"
+      ],
+      "preparationState": "dry",
+      "sourcePublicationDate": "2019-12-16",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 24.4,
+        "fatG": 1.45,
+        "carbohydrateG": null,
+        "fiberG": 4.2,
+        "sugarsG": null,
+        "sodiumMg": null,
+        "calciumMg": 191.0,
+        "ironMg": 5.34,
+        "potassiumMg": 1540.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "proteinG": 126,
+        "fatG": 126,
+        "fiberG": 126,
+        "calciumMg": 126,
+        "ironMg": 126,
+        "potassiumMg": 126
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2644285",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2644285,
+      "name": "Beans, black, canned, sodium added, drained and rinsed",
+      "nameEs": "Frijoles negros enlatados, escurridos y enjuagados",
+      "aliases": [
+        "frijoles negros",
+        "habichuelas negras",
+        "caraotas negras"
+      ],
+      "preparationState": "canned_drained_rinsed",
+      "sourcePublicationDate": "2023-10-26",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 6.91,
+        "fatG": 1.27,
+        "carbohydrateG": 19.8,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 218.0,
+        "calciumMg": 43.3,
+        "ironMg": 1.69,
+        "potassiumMg": 253.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2644288",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2644288,
+      "name": "Chickpeas (garbanzo beans, bengal gram), canned, sodium added, drained and rinsed",
+      "nameEs": "Garbanzos enlatados, escurridos y enjuagados",
+      "aliases": [
+        "garbanzos",
+        "chícharos"
+      ],
+      "preparationState": "canned_drained_rinsed",
+      "sourcePublicationDate": "2023-10-26",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 7.02,
+        "fatG": 3.1,
+        "carbohydrateG": 20.3,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 202.0,
+        "calciumMg": 40.5,
+        "ironMg": 1.04,
+        "potassiumMg": 137.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2644283",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2644283,
+      "name": "Lentils, dry",
+      "nameEs": "Lentejas secas",
+      "aliases": [
+        "lentejas",
+        "lenteja seca"
+      ],
+      "preparationState": "dry",
+      "sourcePublicationDate": "2023-10-26",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 23.6,
+        "fatG": 1.92,
+        "carbohydrateG": 62.2,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 61.8,
+        "ironMg": 7.16,
+        "potassiumMg": 949.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2646170",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2646170,
+      "name": "Chicken, breast, boneless, skinless, raw",
+      "nameEs": "Pechuga de pollo cruda, sin piel ni hueso",
+      "aliases": [
+        "pollo",
+        "pechuga de pollo"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2023-10-26",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 22.5,
+        "fatG": 1.93,
+        "carbohydrateG": 0.0,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 65.8,
+        "calciumMg": 3.94,
+        "ironMg": 0.354,
+        "potassiumMg": 330.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2710817",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2710817,
+      "name": "Plantains, ripe, raw",
+      "nameEs": "Plátano maduro crudo",
+      "aliases": [
+        "plátano maduro",
+        "plátano",
+        "banana de cocinar"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2024-10-31",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 1.16,
+        "fatG": 0.893,
+        "carbohydrateG": 31.0,
+        "fiberG": 2.12,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 3.82,
+        "ironMg": 0.319,
+        "potassiumMg": 396.0,
+        "vitaminCMg": 20.1,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 6,
+        "potassiumMg": 6,
+        "sodiumMg": 6,
+        "vitaminCMg": 6,
+        "fatG": 6,
+        "fiberG": 6,
+        "calciumMg": 6
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2710818",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2710818,
+      "name": "Plantains, underripe, raw",
+      "nameEs": "Plátano verde crudo",
+      "aliases": [
+        "plátano verde",
+        "plátano para cocinar"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2024-10-31",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 1.23,
+        "fatG": 0.685,
+        "carbohydrateG": 33.6,
+        "fiberG": 2.53,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 4.83,
+        "ironMg": 0.334,
+        "potassiumMg": 406.0,
+        "vitaminCMg": 18.5,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 6,
+        "potassiumMg": 6,
+        "sodiumMg": 6,
+        "vitaminCMg": 6,
+        "fatG": 6,
+        "fiberG": 6,
+        "calciumMg": 6
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2710824",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2710824,
+      "name": "Avocado, Hass, peeled, raw",
+      "nameEs": "Aguacate Hass, pulpa",
+      "aliases": [
+        "aguacate",
+        "palta"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2024-10-31",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 1.81,
+        "fatG": 20.3,
+        "carbohydrateG": 8.32,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 14.5,
+        "ironMg": 0.613,
+        "potassiumMg": 576.0,
+        "vitaminCMg": 0.0,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2710826",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2710826,
+      "name": "Corn, sweet, yellow and white kernels,  fresh, raw",
+      "nameEs": "Maíz dulce fresco",
+      "aliases": [
+        "maíz dulce",
+        "elote",
+        "choclo"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2024-10-31",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 2.79,
+        "fatG": 1.63,
+        "carbohydrateG": 14.7,
+        "fiberG": 2.43,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 0.656,
+        "ironMg": 0.388,
+        "potassiumMg": 237.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2346404",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2346404,
+      "name": "Sweet potatoes, orange flesh, without skin, raw",
+      "nameEs": "Batata o camote",
+      "aliases": [
+        "batata",
+        "camote",
+        "boniato"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2022-10-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 1.58,
+        "fatG": 0.375,
+        "carbohydrateG": 17.3,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 22.3,
+        "ironMg": 0.398,
+        "potassiumMg": 486.0,
+        "vitaminCMg": 14.8,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 7,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2346403",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2346403,
+      "name": "Potatoes, gold, without skin, raw",
+      "nameEs": "Papa amarilla, sin piel",
+      "aliases": [
+        "papa",
+        "patata"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2022-10-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 1.81,
+        "fatG": 0.264,
+        "carbohydrateG": 16.0,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 2.24,
+        "calciumMg": 5.94,
+        "ironMg": 0.373,
+        "potassiumMg": 446.0,
+        "vitaminCMg": 23.3,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:790646",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 790646,
+      "name": "Onions, yellow, raw",
+      "nameEs": "Cebolla amarilla cruda",
+      "aliases": [
+        "cebolla"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2020-04-01",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 38.0,
+        "proteinG": 0.83,
+        "fatG": 0.05,
+        "carbohydrateG": 8.61,
+        "fiberG": 1.9,
+        "sugarsG": null,
+        "sodiumMg": 1.0,
+        "calciumMg": 15.0,
+        "ironMg": 0.28,
+        "potassiumMg": 182.0,
+        "vitaminCMg": 8.2,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "fiberG": 6,
+        "potassiumMg": 6,
+        "calciumMg": 6,
+        "ironMg": 6,
+        "sodiumMg": 6,
+        "proteinG": 6,
+        "fatG": 6,
+        "vitaminCMg": 6
+      },
+      "portions": [
+        {
+          "label": "1 Onion Edible",
+          "grams": 143.0
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:1999634",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 1999634,
+      "name": "Tomato, roma",
+      "nameEs": "Tomate Roma",
+      "aliases": [
+        "tomate",
+        "jitomate"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2021-10-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 0.696,
+        "fatG": 0.425,
+        "carbohydrateG": 3.84,
+        "fiberG": 0.971,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 9.96,
+        "ironMg": 0.103,
+        "potassiumMg": 193.0,
+        "vitaminCMg": 17.8,
+        "vitaminARaeUg": 23.9,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2258586",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2258586,
+      "name": "Carrots, mature, raw",
+      "nameEs": "Zanahoria cruda",
+      "aliases": [
+        "zanahoria",
+        "zanahorias"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2022-04-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 0.941,
+        "fatG": 0.351,
+        "carbohydrateG": 10.3,
+        "fiberG": 3.1,
+        "sugarsG": null,
+        "sodiumMg": 86.6,
+        "calciumMg": 30.5,
+        "ironMg": 0.15,
+        "potassiumMg": 280.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:747447",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 747447,
+      "name": "Broccoli, raw",
+      "nameEs": "Brócoli crudo",
+      "aliases": [
+        "brócoli"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2019-12-16",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 31.0,
+        "proteinG": 2.57,
+        "fatG": 0.34,
+        "carbohydrateG": 6.27,
+        "fiberG": 2.4,
+        "sugarsG": null,
+        "sodiumMg": 36.0,
+        "calciumMg": 46.0,
+        "ironMg": 0.69,
+        "potassiumMg": 303.0,
+        "vitaminCMg": 91.3,
+        "vitaminARaeUg": 8.0,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "fatG": 8,
+        "calciumMg": 8,
+        "potassiumMg": 8,
+        "fiberG": 4,
+        "ironMg": 8,
+        "sodiumMg": 7,
+        "vitaminCMg": 5
+      },
+      "portions": [
+        {
+          "label": "1 cup chopped",
+          "grams": 76.0
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:746771",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 746771,
+      "name": "Oranges, raw, navels",
+      "nameEs": "Naranja Navel",
+      "aliases": [
+        "naranja"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2019-12-16",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 47.0,
+        "proteinG": 0.91,
+        "fatG": 0.15,
+        "carbohydrateG": 11.8,
+        "fiberG": 2.0,
+        "sugarsG": null,
+        "sodiumMg": 9.0,
+        "calciumMg": 43.0,
+        "ironMg": 0.33,
+        "potassiumMg": 166.0,
+        "vitaminCMg": 59.1,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "fiberG": 4,
+        "ironMg": 8,
+        "sodiumMg": 8,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "calciumMg": 8,
+        "potassiumMg": 8
+      },
+      "portions": [
+        {
+          "label": "1 cup sections no membranes",
+          "grams": 165.0
+        },
+        {
+          "label": "1 each  2-7/8\" dia",
+          "grams": 140.0
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:1105314",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 1105314,
+      "name": "Bananas, ripe and slightly ripe, raw",
+      "nameEs": "Banano o guineo",
+      "aliases": [
+        "banano",
+        "guineo",
+        "banana"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2020-04-01",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 97.0,
+        "proteinG": 0.74,
+        "fatG": 0.29,
+        "carbohydrateG": 23.0,
+        "fiberG": 1.7,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 5.0,
+        "ironMg": 0.0,
+        "potassiumMg": 326.0,
+        "vitaminCMg": 12.3,
+        "vitaminARaeUg": 1.0,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "vitaminCMg": 12,
+        "fiberG": 10,
+        "ironMg": 6,
+        "sodiumMg": 6,
+        "calciumMg": 6,
+        "potassiumMg": 6,
+        "fatG": 12
+      },
+      "portions": [
+        {
+          "label": "1 Banana Peeled",
+          "grams": 115.0
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:1750340",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 1750340,
+      "name": "Apples, fuji, with skin, raw",
+      "nameEs": "Manzana Fuji",
+      "aliases": [
+        "manzana"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2020-10-30",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 0.148,
+        "fatG": 0.162,
+        "carbohydrateG": 15.7,
+        "fiberG": 2.08,
+        "sugarsG": 13.3,
+        "sodiumMg": 1.01,
+        "calciumMg": 5.98,
+        "ironMg": 0.015,
+        "potassiumMg": 104.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "sugarsG": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2515376",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2515376,
+      "name": "Peanuts, raw",
+      "nameEs": "Maní crudo",
+      "aliases": [
+        "maní",
+        "cacahuate"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2023-04-20",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 23.2,
+        "fatG": 43.3,
+        "carbohydrateG": 26.5,
+        "fiberG": 8.01,
+        "sugarsG": null,
+        "sodiumMg": 1.49,
+        "calciumMg": 49.1,
+        "ironMg": 1.55,
+        "potassiumMg": 636.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2262072",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2262072,
+      "name": "Peanut butter, creamy",
+      "nameEs": "Mantequilla de maní cremosa",
+      "aliases": [
+        "mantequilla de maní",
+        "crema de cacahuate"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2022-04-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 24.0,
+        "fatG": 49.4,
+        "carbohydrateG": 22.7,
+        "fiberG": 6.32,
+        "sugarsG": null,
+        "sodiumMg": 221.0,
+        "calciumMg": 49.8,
+        "ironMg": 1.85,
+        "potassiumMg": 654.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "fiberG": 8,
+        "calciumMg": 8,
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2259793",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2259793,
+      "name": "Yogurt, plain, whole milk",
+      "nameEs": "Yogur natural entero",
+      "aliases": [
+        "yogur natural",
+        "yogurt natural"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2022-04-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 3.82,
+        "fatG": 4.48,
+        "carbohydrateG": 5.57,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 41.8,
+        "calciumMg": 127.0,
+        "ironMg": 0.0,
+        "potassiumMg": 164.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:746782",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 746782,
+      "name": "Milk, whole, 3.25% milkfat, with added vitamin D",
+      "nameEs": "Leche entera",
+      "aliases": [
+        "leche"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2019-12-16",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 60.0,
+        "proteinG": 3.27,
+        "fatG": 3.2,
+        "carbohydrateG": 4.63,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 38.0,
+        "calciumMg": 123.0,
+        "ironMg": 0.0,
+        "potassiumMg": 150.0,
+        "vitaminCMg": null,
+        "vitaminARaeUg": 32.0,
+        "vitaminB12Ug": 0.54
+      },
+      "nutrientDataPoints": {
+        "fatG": 24,
+        "ironMg": 11,
+        "sodiumMg": 11,
+        "vitaminB12Ug": 12,
+        "calciumMg": 11,
+        "potassiumMg": 11
+      },
+      "portions": [
+        {
+          "label": "1 cup",
+          "grams": 249.0
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:748608",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 748608,
+      "name": "Oil, olive, extra virgin",
+      "nameEs": "Aceite de oliva extra virgen",
+      "aliases": [
+        "aceite de oliva"
+      ],
+      "preparationState": "as_described_by_source",
+      "sourcePublicationDate": "2019-12-16",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": null,
+        "fatG": null,
+        "carbohydrateG": null,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": null,
+        "calciumMg": null,
+        "ironMg": null,
+        "potassiumMg": null,
+        "vitaminCMg": null,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {},
+      "portions": [
+        {
+          "label": "100 milliliter",
+          "grams": 90.7
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2346402",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2346402,
+      "name": "Potatoes, red, without skin, raw",
+      "nameEs": "Papa roja, sin piel",
+      "aliases": [
+        "papa roja",
+        "patata roja"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2022-10-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 2.06,
+        "fatG": 0.248,
+        "carbohydrateG": 16.3,
+        "fiberG": null,
+        "sugarsG": null,
+        "sodiumMg": 2.86,
+        "calciumMg": 5.13,
+        "ironMg": 0.391,
+        "potassiumMg": 472.0,
+        "vitaminCMg": 21.3,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:321360",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 321360,
+      "name": "Tomatoes, grape, raw",
+      "nameEs": "Tomate uva crudo",
+      "aliases": [
+        "tomate pequeño",
+        "tomate uva"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2019-04-01",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": 27.0,
+        "proteinG": 0.83,
+        "fatG": 0.63,
+        "carbohydrateG": 5.51,
+        "fiberG": 2.1,
+        "sugarsG": null,
+        "sodiumMg": 6.0,
+        "calciumMg": 11.0,
+        "ironMg": 0.33,
+        "potassiumMg": 260.0,
+        "vitaminCMg": 27.2,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "vitaminCMg": 12,
+        "fatG": 6,
+        "calciumMg": 6,
+        "ironMg": 6,
+        "potassiumMg": 6,
+        "sodiumMg": 6,
+        "fiberG": 3
+      },
+      "portions": [
+        {
+          "label": "5 tomatoes",
+          "grams": 49.7
+        },
+        {
+          "label": "1 cup",
+          "grams": 152.0
+        }
+      ],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    },
+    {
+      "id": "usda-foundation:2258588",
+      "sourceId": "usda-foundation-foods",
+      "sourceRecordId": 2258588,
+      "name": "Peppers, bell, green, raw",
+      "nameEs": "Pimiento verde crudo",
+      "aliases": [
+        "pimiento verde",
+        "ají dulce"
+      ],
+      "preparationState": "raw",
+      "sourcePublicationDate": "2022-04-28",
+      "nutrientBasis": "100 g edible portion",
+      "nutrientsPer100g": {
+        "energyKcal": null,
+        "proteinG": 0.715,
+        "fatG": 0.106,
+        "carbohydrateG": 4.78,
+        "fiberG": 0.942,
+        "sugarsG": null,
+        "sodiumMg": 0.0,
+        "calciumMg": 7.5,
+        "ironMg": 0.186,
+        "potassiumMg": 163.0,
+        "vitaminCMg": 99.5,
+        "vitaminARaeUg": null,
+        "vitaminB12Ug": null
+      },
+      "nutrientDataPoints": {
+        "ironMg": 8,
+        "potassiumMg": 8,
+        "sodiumMg": 8,
+        "vitaminCMg": 8,
+        "fatG": 8,
+        "fiberG": 8,
+        "calciumMg": 8
+      },
+      "portions": [],
+      "allergenKnowledge": "unknown",
+      "allergens": [],
+      "allergenNotice": "Allergen status is unknown. This record is not evidence that the food is safe; check product labels and cross-contamination risk.",
+      "access": {
+        "availability": "unknown",
+        "relativeCost": "unknown",
+        "season": null,
+        "provenance": null
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "forza-oats-banana",
+      "version": 1,
+      "titleEn": "Oats with banana",
+      "titleEs": "Avena con banano",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2346396",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:1105314",
+          "grams": 115
+        },
+        {
+          "foodId": "usda-foundation:746782",
+          "grams": 200
+        }
+      ],
+      "stepsEn": [
+        "Cook the oats with the milk, following the package directions.",
+        "Top with sliced banana."
+      ],
+      "stepsEs": [
+        "Cocina la avena con la leche siguiendo las instrucciones del empaque.",
+        "Sirve con el banano en rodajas."
+      ],
+      "servings": 1
+    },
+    {
+      "id": "forza-lentils-rice",
+      "version": 1,
+      "titleEn": "Lentils with rice",
+      "titleEs": "Lentejas con arroz",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2644283",
+          "grams": 70
+        },
+        {
+          "foodId": "usda-foundation:2512381",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 25
+        },
+        {
+          "foodId": "usda-foundation:1999634",
+          "grams": 80
+        },
+        {
+          "foodId": "usda-foundation:748608",
+          "grams": 5
+        }
+      ],
+      "stepsEn": [
+        "Rinse and cook the lentils fully in water; discard the cooking water if preferred.",
+        "Cook the rice separately.",
+        "Cook the onion and tomato until soft, combine with the lentils, and serve with rice."
+      ],
+      "stepsEs": [
+        "Enjuaga y cocina bien las lentejas en agua; puedes desechar el agua de cocción.",
+        "Cocina el arroz por separado.",
+        "Cocina la cebolla y el tomate hasta que estén suaves, mézclalos con las lentejas y sirve con el arroz."
+      ],
+      "servings": 1
+    },
+    {
+      "id": "forza-chicken-rice-bowl",
+      "version": 1,
+      "titleEn": "Chicken, rice and vegetables",
+      "titleEs": "Pollo con arroz y vegetales",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2646170",
+          "grams": 120
+        },
+        {
+          "foodId": "usda-foundation:2512381",
+          "grams": 60
+        },
+        {
+          "foodId": "usda-foundation:2710826",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:1999634",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 20
+        },
+        {
+          "foodId": "usda-foundation:748608",
+          "grams": 5
+        }
+      ],
+      "stepsEn": [
+        "Cook the rice separately.",
+        "Cook the chicken to 165 °F (73.9 °C) internal temperature, measured with a food thermometer.",
+        "Cook the onion, tomato and corn until tender; serve with the chicken and rice."
+      ],
+      "stepsEs": [
+        "Cocina el arroz por separado.",
+        "Cocina el pollo hasta alcanzar 165 °F (73.9 °C) en el centro y mídelo con un termómetro para alimentos.",
+        "Cocina la cebolla, el tomate y el maíz hasta que estén suaves; sirve con el pollo y el arroz."
+      ],
+      "servings": 1
+    },
+    {
+      "id": "forza-black-bean-avocado-rice",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Black beans, rice and avocado",
+      "titleEs": "Frijoles negros con arroz y aguacate",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2644285",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-foundation:2512381",
+          "grams": 60
+        },
+        {
+          "foodId": "usda-foundation:2710824",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:1999634",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 20
+        }
+      ],
+      "stepsEn": [
+        "Cook the rice according to its package directions.",
+        "Drain and rinse the canned beans. Chop the avocado, tomato and onion.",
+        "Serve the beans and vegetables over the rice."
+      ],
+      "stepsEs": [
+        "Cocina el arroz según las instrucciones del empaque.",
+        "Escurre y enjuaga los frijoles enlatados. Pica el aguacate, el tomate y la cebolla.",
+        "Sirve los frijoles y vegetales sobre el arroz."
+      ]
+    },
+    {
+      "id": "forza-chickpea-sweet-potato",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Chickpeas with sweet potato",
+      "titleEs": "Garbanzos con batata",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2644288",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-foundation:2346404",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 25
+        },
+        {
+          "foodId": "usda-foundation:748608",
+          "grams": 5
+        }
+      ],
+      "stepsEn": [
+        "Cook the sweet potato until tender.",
+        "Drain and rinse the canned chickpeas.",
+        "Cook the onion until soft, add the chickpeas and heat through. Serve with the sweet potato."
+      ],
+      "stepsEs": [
+        "Cocina la batata hasta que esté tierna.",
+        "Escurre y enjuaga los garbanzos enlatados.",
+        "Cocina la cebolla hasta que esté suave, añade los garbanzos y calienta bien. Sirve con la batata."
+      ]
+    },
+    {
+      "id": "forza-yogurt-oats-orange",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Yogurt with oats and orange",
+      "titleEs": "Yogur con avena y naranja",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2259793",
+          "grams": 170
+        },
+        {
+          "foodId": "usda-foundation:2346396",
+          "grams": 40
+        },
+        {
+          "foodId": "usda-foundation:746771",
+          "grams": 100
+        }
+      ],
+      "stepsEn": [
+        "Peel and cut the orange.",
+        "Combine the yogurt and oats; serve with the orange."
+      ],
+      "stepsEs": [
+        "Pela y corta la naranja.",
+        "Mezcla el yogur con la avena y sirve con la naranja."
+      ]
+    },
+    {
+      "id": "forza-corn-egg-scramble",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Eggs with corn and tomato",
+      "titleEs": "Huevos con maíz y tomate",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:748967",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-foundation:2710826",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:1999634",
+          "grams": 60
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 20
+        }
+      ],
+      "stepsEn": [
+        "Cook the onion, tomato and corn until tender.",
+        "Add the egg and cook until the white and yolk are firm."
+      ],
+      "stepsEs": [
+        "Cocina la cebolla, el tomate y el maíz hasta que estén tiernos.",
+        "Añade el huevo y cocínalo hasta que la clara y la yema estén firmes."
+      ]
+    },
+    {
+      "id": "forza-chicken-broccoli-rice",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Chicken with broccoli and rice",
+      "titleEs": "Pollo con brócoli y arroz",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2646170",
+          "grams": 120
+        },
+        {
+          "foodId": "usda-foundation:2512380",
+          "grams": 60
+        },
+        {
+          "foodId": "usda-foundation:747447",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-foundation:2258586",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:748608",
+          "grams": 5
+        }
+      ],
+      "stepsEn": [
+        "Cook the rice according to its package directions.",
+        "Cook the chicken to 165 °F (73.9 °C) internal temperature, measured with a food thermometer.",
+        "Cook the broccoli and carrot until tender; serve with the chicken and rice."
+      ],
+      "stepsEs": [
+        "Cocina el arroz según las instrucciones del empaque.",
+        "Cocina el pollo hasta alcanzar 165 °F (73.9 °C) en el centro y mídelo con un termómetro para alimentos.",
+        "Cocina el brócoli y la zanahoria hasta que estén tiernos; sirve con el pollo y el arroz."
+      ]
+    },
+    {
+      "id": "forza-tomato-lentil-soup",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Lentil and tomato soup",
+      "titleEs": "Sopa de lentejas y tomate",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2644283",
+          "grams": 70
+        },
+        {
+          "foodId": "usda-foundation:1999634",
+          "grams": 80
+        },
+        {
+          "foodId": "usda-foundation:2258586",
+          "grams": 50
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 25
+        },
+        {
+          "foodId": "usda-foundation:748608",
+          "grams": 5
+        }
+      ],
+      "stepsEn": [
+        "Rinse the lentils and simmer them fully in water.",
+        "Add the chopped tomato, carrot and onion; cook until tender.",
+        "Finish with the olive oil and serve hot."
+      ],
+      "stepsEs": [
+        "Enjuaga las lentejas y hiérvelas bien en agua.",
+        "Añade el tomate, la zanahoria y la cebolla picados; cocina hasta que estén tiernos.",
+        "Termina con el aceite de oliva y sirve caliente."
+      ]
+    },
+    {
+      "id": "forza-peanut-banana-yogurt",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Yogurt with banana and peanut butter",
+      "titleEs": "Yogur con banano y mantequilla de maní",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2259793",
+          "grams": 170
+        },
+        {
+          "foodId": "usda-foundation:1105314",
+          "grams": 115
+        },
+        {
+          "foodId": "usda-foundation:2262072",
+          "grams": 15
+        }
+      ],
+      "stepsEn": [
+        "Slice the banana.",
+        "Serve with the yogurt and peanut butter."
+      ],
+      "stepsEs": [
+        "Corta el banano en rodajas.",
+        "Sírvelo con el yogur y la mantequilla de maní."
+      ]
+    },
+    {
+      "id": "forza-potato-egg-skillet",
+      "version": 1,
+      "servings": 1,
+      "titleEn": "Potato and egg skillet",
+      "titleEs": "Salteado de papa y huevo",
+      "ingredients": [
+        {
+          "foodId": "usda-foundation:2346403",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-foundation:748967",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-foundation:790646",
+          "grams": 25
+        },
+        {
+          "foodId": "usda-foundation:748608",
+          "grams": 5
+        }
+      ],
+      "stepsEn": [
+        "Cut the potato into small cubes and cook until tender.",
+        "Add the onion and cook until soft.",
+        "Add the egg and cook until the white and yolk are firm."
+      ],
+      "stepsEs": [
+        "Corta la papa en cubos pequeños y cocínala hasta que esté tierna.",
+        "Añade la cebolla y cocina hasta que esté suave.",
+        "Añade el huevo y cocínalo hasta que la clara y la yema estén firmes."
+      ]
+    }
+  ]
+}
