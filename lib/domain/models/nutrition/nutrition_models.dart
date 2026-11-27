@@ -30,6 +30,7 @@ class NutritionProfile {
     this.heightCm,
     this.bodyType = BodyType.unknown,
     this.countryCode,
+    this.region,
     this.mealsPerDay,
     this.dietaryPattern = DietaryPattern.unrestricted,
     this.restrictions = const [],
@@ -46,6 +47,7 @@ class NutritionProfile {
   final double? heightCm;
   final BodyType bodyType;
   final String? countryCode;
+  final String? region;
   final int? mealsPerDay;
   final DietaryPattern dietaryPattern;
   final List<FoodRestriction> restrictions;
@@ -61,7 +63,9 @@ class NutritionProfile {
       (heightCm == null ||
           (heightCm!.isFinite && heightCm! >= 100 && heightCm! <= 250)) &&
       (kitchenMinutes == null || kitchenMinutes! >= 0) &&
-      (countryCode == null || RegExp(r'^[A-Za-z]{2}$').hasMatch(countryCode!));
+      (countryCode == null ||
+          RegExp(r'^[A-Za-z]{2}$').hasMatch(countryCode!)) &&
+      (region == null || region!.trim().length <= 100);
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -72,6 +76,7 @@ class NutritionProfile {
     'heightCm': heightCm,
     'bodyType': bodyType.name,
     'countryCode': countryCode,
+    'region': region,
     'mealsPerDay': mealsPerDay,
     'dietaryPattern': dietaryPattern.name,
     'restrictions': restrictions
@@ -113,6 +118,7 @@ class NutritionProfile {
     final date = DateTime.tryParse(updatedAt);
     final id = json['id'];
     final version = json['version'];
+    final region = json['region'];
     final height = json['heightCm'];
     final age = json['ageYears'];
     final meals = json['mealsPerDay'];
@@ -130,6 +136,7 @@ class NutritionProfile {
       bodyType:
           enumValue(BodyType.values, json['bodyType']) ?? BodyType.unknown,
       countryCode: json['countryCode'] as String?,
+      region: region is String ? region : null,
       mealsPerDay: meals is int ? meals : null,
       dietaryPattern:
           enumValue(DietaryPattern.values, json['dietaryPattern']) ??

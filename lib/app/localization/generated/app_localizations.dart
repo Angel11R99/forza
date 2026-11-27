@@ -1772,6 +1772,72 @@ abstract class AppLocalizations {
   /// **'Enter a two-letter country code or leave it blank.'**
   String get nutritionProfileCountryError;
 
+  /// No description provided for @nutritionProfileRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Region or area (optional)'**
+  String get nutritionProfileRegion;
+
+  /// No description provided for @nutritionProfileRegionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Used only to improve regional suggestions; no precise location is collected'**
+  String get nutritionProfileRegionHint;
+
+  /// No description provided for @nutritionCountrySearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search country'**
+  String get nutritionCountrySearch;
+
+  /// No description provided for @nutritionCountryGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General catalog'**
+  String get nutritionCountryGeneral;
+
+  /// No description provided for @nutritionCountryGeneralHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use broad suggestions when your country is not listed'**
+  String get nutritionCountryGeneralHint;
+
+  /// No description provided for @nutritionCountryNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No countries found'**
+  String get nutritionCountryNoResults;
+
+  /// No description provided for @nutritionCountryArgentina.
+  ///
+  /// In en, this message translates to:
+  /// **'Argentina'**
+  String get nutritionCountryArgentina;
+
+  /// No description provided for @nutritionCountryColombia.
+  ///
+  /// In en, this message translates to:
+  /// **'Colombia'**
+  String get nutritionCountryColombia;
+
+  /// No description provided for @nutritionCountryDominicanRepublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Dominican Republic'**
+  String get nutritionCountryDominicanRepublic;
+
+  /// No description provided for @nutritionCountrySpain.
+  ///
+  /// In en, this message translates to:
+  /// **'Spain'**
+  String get nutritionCountrySpain;
+
+  /// No description provided for @nutritionCountryMexico.
+  ///
+  /// In en, this message translates to:
+  /// **'Mexico'**
+  String get nutritionCountryMexico;
+
   /// No description provided for @nutritionProfileRestrictionsSection.
   ///
   /// In en, this message translates to:

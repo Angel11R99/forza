@@ -1007,6 +1007,41 @@ class AppLocalizationsEs extends AppLocalizations {
       'Indica un código de dos letras o déjalo vacío.';
 
   @override
+  String get nutritionProfileRegion => 'Región o zona (opcional)';
+
+  @override
+  String get nutritionProfileRegionHint =>
+      'Solo mejora sugerencias regionales; no se recopila ubicación precisa';
+
+  @override
+  String get nutritionCountrySearch => 'Buscar país';
+
+  @override
+  String get nutritionCountryGeneral => 'Catálogo general';
+
+  @override
+  String get nutritionCountryGeneralHint =>
+      'Usa sugerencias generales si tu país no aparece';
+
+  @override
+  String get nutritionCountryNoResults => 'No se encontraron países';
+
+  @override
+  String get nutritionCountryArgentina => 'Argentina';
+
+  @override
+  String get nutritionCountryColombia => 'Colombia';
+
+  @override
+  String get nutritionCountryDominicanRepublic => 'República Dominicana';
+
+  @override
+  String get nutritionCountrySpain => 'España';
+
+  @override
+  String get nutritionCountryMexico => 'México';
+
+  @override
   String get nutritionProfileRestrictionsSection => 'Seguridad y exclusiones';
 
   @override

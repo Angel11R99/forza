@@ -1003,6 +1003,41 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a two-letter country code or leave it blank.';
 
   @override
+  String get nutritionProfileRegion => 'Region or area (optional)';
+
+  @override
+  String get nutritionProfileRegionHint =>
+      'Used only to improve regional suggestions; no precise location is collected';
+
+  @override
+  String get nutritionCountrySearch => 'Search country';
+
+  @override
+  String get nutritionCountryGeneral => 'General catalog';
+
+  @override
+  String get nutritionCountryGeneralHint =>
+      'Use broad suggestions when your country is not listed';
+
+  @override
+  String get nutritionCountryNoResults => 'No countries found';
+
+  @override
+  String get nutritionCountryArgentina => 'Argentina';
+
+  @override
+  String get nutritionCountryColombia => 'Colombia';
+
+  @override
+  String get nutritionCountryDominicanRepublic => 'Dominican Republic';
+
+  @override
+  String get nutritionCountrySpain => 'Spain';
+
+  @override
+  String get nutritionCountryMexico => 'Mexico';
+
+  @override
   String get nutritionProfileRestrictionsSection => 'Safety and exclusions';
 
   @override
