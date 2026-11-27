@@ -20,7 +20,8 @@ pr_number = int(os.environ["PR_NUMBER"])
 branch = os.environ["HEAD_REF"]
 body = os.environ.get("PR_BODY") or ""
 pr = gh(f"repos/{repo}/pulls/{pr_number}")
-references = re.findall(r"(?im)^\s*(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)\b", body)
+issue_reference = r"(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?|refs?)"
+references = re.findall(rf"(?im)^\s*{issue_reference}\s+#(\d+)\b", body)
 if len(set(references)) != 1:
     sys.exit("PR must reference exactly one issue using 'Closes #N'.")
 issue_number = int(references[0])
@@ -41,6 +42,6 @@ for other in open_prs:
     if other["number"] == pr_number:
         continue
     other_body = other.get("body") or ""
-    if str(issue_number) in re.findall(r"(?im)^\s*(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s+#(\d+)\b", other_body):
+    if str(issue_number) in re.findall(rf"(?im)^\s*{issue_reference}\s+#(\d+)\b", other_body):
         sys.exit(f"Another open PR #{other['number']} already targets issue #{issue_number}.")
 print(f"PR #{pr_number} satisfies the contribution policy for issue #{issue_number}.")
