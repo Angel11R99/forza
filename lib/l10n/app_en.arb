@@ -408,6 +408,13 @@
   "nutritionCountrySpain": "Spain",
   "nutritionCountryMexico": "Mexico",
   "nutritionProfileRestrictionsSection": "Safety and exclusions",
+  "nutritionAllergyWarningTitle": "Review this recipe's safety",
+  "nutritionPrivateRecipeRestrictionConflict": "One or more ingredients match a restriction in your profile. Confirm the recipe before logging it.",
+  "nutritionPrivateRecipeRestrictionUnknown": "Allergen information could not be confirmed for every ingredient. Review the recipe before logging it.",
+  "nutritionPrivateRecipeLogAnyway": "Continue anyway",
+  "nutritionPrivateRecipeCannotPinTitle": "This recipe can't be pinned",
+  "nutritionPrivateRecipeCannotPinBody": "The recipe does not meet your profile restrictions or safety data. Review its ingredients or your preferences before pinning it.",
+  "nutritionPrivateRecipeSaveError": "Your recipe library couldn't be saved. Please try again.",
   "nutritionProfileAllergies": "Allergies",
   "nutritionProfileIntolerances": "Intolerances",
   "nutritionProfileExcluded": "Ingredients to avoid",
@@ -1302,11 +1309,32 @@
   "hydrationWater": "Water",
   "hydrationOtherBeverage": "Other beverage",
   "hydrationTodayTotal": "Logged today: {amount}",
-  "@hydrationTodayTotal": {"placeholders": {"amount": {"type": "String"}}},
+  "@hydrationTodayTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "hydrationProgress": "Recorded {amount} of personal goal {goal}",
-  "@hydrationProgress": {"placeholders": {"amount": {"type": "String"}, "goal": {"type": "String"}}},
+  "@hydrationProgress": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
   "hydrationAdded": "Added {amount}",
-  "@hydrationAdded": {"placeholders": {"amount": {"type": "String"}}},
+  "@hydrationAdded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "hydrationDeleted": "Water record deleted",
   "hydrationHistory": "Water history",
   "hydrationEmpty": "No drinks recorded for this day.",
@@ -1343,7 +1371,13 @@
   "nutritionReviewAdjust": "Preview preference changes",
   "nutritionReviewPreviewTitle": "Plan preview",
   "nutritionReviewPreviewBody": "The preview changes {count} meals in the coming week.",
-  "@nutritionReviewPreviewBody": {"placeholders": {"count": {"type": "int"}}},
+  "@nutritionReviewPreviewBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "nutritionReviewPreviewSafety": "This is a menu proposal, not a nutrition prescription. Your current plan and history stay unchanged until you accept.",
   "nutritionReviewUnsafePreview": "Those preferences don’t produce a safe menu with the available catalog. Your current plan is unchanged.",
   "nutritionReviewSaveError": "Couldn’t save this review. Try again.",

@@ -1844,6 +1844,48 @@ abstract class AppLocalizations {
   /// **'Safety and exclusions'**
   String get nutritionProfileRestrictionsSection;
 
+  /// No description provided for @nutritionAllergyWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this recipe\'s safety'**
+  String get nutritionAllergyWarningTitle;
+
+  /// No description provided for @nutritionPrivateRecipeRestrictionConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'One or more ingredients match a restriction in your profile. Confirm the recipe before logging it.'**
+  String get nutritionPrivateRecipeRestrictionConflict;
+
+  /// No description provided for @nutritionPrivateRecipeRestrictionUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergen information could not be confirmed for every ingredient. Review the recipe before logging it.'**
+  String get nutritionPrivateRecipeRestrictionUnknown;
+
+  /// No description provided for @nutritionPrivateRecipeLogAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue anyway'**
+  String get nutritionPrivateRecipeLogAnyway;
+
+  /// No description provided for @nutritionPrivateRecipeCannotPinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This recipe can\'t be pinned'**
+  String get nutritionPrivateRecipeCannotPinTitle;
+
+  /// No description provided for @nutritionPrivateRecipeCannotPinBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The recipe does not meet your profile restrictions or safety data. Review its ingredients or your preferences before pinning it.'**
+  String get nutritionPrivateRecipeCannotPinBody;
+
+  /// No description provided for @nutritionPrivateRecipeSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recipe library couldn\'t be saved. Please try again.'**
+  String get nutritionPrivateRecipeSaveError;
+
   /// No description provided for @nutritionProfileAllergies.
   ///
   /// In en, this message translates to:

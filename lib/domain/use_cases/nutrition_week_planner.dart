@@ -215,6 +215,7 @@ class NutritionWeekPlanner {
     required DateTime createdAt,
     required String planId,
     required Set<int> trainingWeekdays,
+    List<NutritionCatalogRecipe> pinnedRecipes = const [],
     int? mealsPerDay,
   }) {
     final count = mealsPerDay ?? profile.mealsPerDay ?? 3;
@@ -229,11 +230,30 @@ class NutritionWeekPlanner {
       );
     }
 
-    final candidates =
-        catalog.recipes
-            .where((recipe) => _recipeAllowed(recipe, catalog, profile))
+    final safePinned =
+        pinnedRecipes
+            .where(
+              (recipe) => isRecipeAllowedForProfile(
+                recipe: recipe,
+                catalog: catalog,
+                profile: profile,
+              ),
+            )
             .toList()
           ..sort((a, b) => a.id.compareTo(b.id));
+    final pinnedIds = safePinned.map((recipe) => recipe.id).toSet();
+    final candidates =
+        catalog.recipes
+            .where(
+              (recipe) =>
+                  !pinnedIds.contains(recipe.id) &&
+                  _recipeAllowed(recipe, catalog, profile),
+            )
+            .toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
+    if (candidates.isEmpty && safePinned.isNotEmpty) {
+      candidates.addAll(safePinned);
+    }
     if (candidates.isEmpty) {
       return const MealPlanGenerationResult(
         MealPlanGenerationStatus.noSafeRecipes,
@@ -248,8 +268,9 @@ class NutritionWeekPlanner {
       for (var slot = 0; slot < count; slot++) {
         // Rotate through sorted candidates. Repeats occur only when the
         // compatible recipe set is smaller than the requested meal count.
-        final recipe =
-            candidates[(dayIndex * count + slot) % candidates.length];
+        final recipe = slot == 0 && safePinned.isNotEmpty
+            ? safePinned[dayIndex % safePinned.length]
+            : candidates[(dayIndex * count + slot) % candidates.length];
         final ingredients = recipe.ingredients
             .map(
               (ingredient) => PlannedIngredient(
@@ -341,6 +362,20 @@ class NutritionWeekPlanner {
     }
     return !foods.any((food) => profile.unavailableFoodIds.contains(food.id));
   }
+
+  /// Exposes the planner's conservative eligibility check to recipe pinning.
+  bool isRecipeAllowedForProfile({
+    required NutritionCatalogRecipe recipe,
+    required NutritionCatalog catalog,
+    required NutritionProfile profile,
+  }) =>
+      catalog.isValid &&
+      profile.isValid &&
+      recipe.ingredients.every(
+        (ingredient) =>
+            catalog.foods.any((food) => food.id == ingredient.foodId),
+      ) &&
+      _recipeAllowed(recipe, catalog, profile);
 
   bool _foodAllowed(NutritionCatalogFood food, NutritionProfile profile) {
     if (profile.dietaryPattern != DietaryPattern.unrestricted &&

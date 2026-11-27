@@ -1,4 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:forza/app/localization/generated/app_localizations.dart';
 import 'package:forza/app/theme/app_theme.dart';
@@ -7,12 +10,116 @@ import 'package:forza/data/repositories/nutrition_catalog_repository.dart';
 import 'package:forza/data/repositories/nutrition_meal_log_repository.dart';
 import 'package:forza/data/repositories/hydration_repository.dart';
 import 'package:forza/data/repositories/nutrition_review_repository.dart';
+import 'package:forza/data/repositories/private_nutrition_recipe_repository.dart';
 import 'package:forza/domain/models/nutrition/nutrition_models.dart';
+import 'package:forza/domain/models/nutrition/private_nutrition_recipe.dart';
 import 'package:forza/domain/models/nutrition/hydration_models.dart';
 import 'package:forza/ui/features/nutrition/views/nutrition_home_page.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.withData({});
+  });
+
+  testWidgets('creates, favorites and quick logs a private recipe snapshot', (
+    tester,
+  ) async {
+    final profileRepository = ProfileSettingsRepository(
+      storage: _MemoryStorage(),
+    );
+    await profileRepository.saveNutritionProfile(
+      NutritionProfile(
+        id: 'private-recipe-profile',
+        version: 1,
+        updatedAt: DateTime.now(),
+        mealsPerDay: 3,
+      ),
+    );
+    final mealLog = NutritionMealLogRepository(
+      storage: _MealLogMemoryStorage(),
+    );
+    final favorites = PrivateNutritionRecipeRepository(
+      preferences: SharedPreferencesAsync(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        theme: AppTheme.light,
+        localizationsDelegates: [
+          ...AppLocalizations.localizationsDelegates,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: NutritionHomePage(
+          profileRepository: profileRepository,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
+          trainingSettings: const TrainingSettings(),
+          catalogRepository: NutritionCatalogRepository(
+            loadAsset: () async => _catalogJson,
+          ),
+          mealLogRepository: mealLog,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Recipes'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Create recipe'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(0), 'Banana snack');
+    await tester.tap(find.byType(DropdownButtonFormField<String>).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Banana').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).at(1), '120');
+    await tester.enterText(find.byType(TextField).at(2), '2');
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+
+    expect((await favorites.loadAll()).single.title, 'Banana snack');
+    expect((await favorites.loadAll()).single.ingredients.single.unit, 'g');
+    expect(find.text('Banana snack'), findsOneWidget);
+    await tester.tap(find.byTooltip('Favorite'));
+    await tester.pumpAndSettle();
+    expect((await favorites.loadAll()).single.isFavorite, isTrue);
+    await tester.tap(find.text('Log meal').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+    final entry = (await mealLog.loadAll()).single;
+    expect(entry.notes, 'Banana snack');
+    expect(entry.recipeId, startsWith('private:'));
+    expect(entry.nutrientEstimates['energyKcal'], 54);
+    await tester.tap(find.byTooltip('Pin to plan'));
+    await tester.pumpAndSettle();
+    expect((await favorites.loadAll()).single.isPinned, isTrue);
+    await tester.drag(find.byType(ListView).last, const Offset(0, -500));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Add to favorites').first);
+    await tester.tap(find.byTooltip('Add to favorites').first);
+    await tester.pumpAndSettle();
+    expect(await favorites.loadCatalogFavorites(), {'recipe-1'});
+    await tester.ensureVisible(find.text('Log meal').last);
+    await tester.tap(find.text('Log meal').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+    final entries = await mealLog.loadAll();
+    expect(entries, hasLength(2));
+    expect(
+      entries.where((entry) => entry.nutrientEstimates['energyKcal'] == 54),
+      hasLength(2),
+    );
+    await tester.tap(find.text('Week'));
+    await tester.pumpAndSettle();
+    expect(find.text('Banana snack'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'review answers keep the existing plan until a proposal is accepted',
     (tester) async {
@@ -187,6 +294,21 @@ void main() {
               mealsPerDay: 3,
             ),
           );
+          await PrivateNutritionRecipeRepository(
+            preferences: SharedPreferencesAsync(),
+          ).save(
+            PrivateNutritionRecipe(
+              id: 'responsive-private-recipe',
+              title: 'A very long personal banana breakfast recipe',
+              ingredients: const [
+                PrivateRecipeIngredient(foodId: 'food-1', grams: 100),
+              ],
+              servings: 1,
+              updatedAt: DateTime.now(),
+              instructions: const ['Mix the ingredients and serve when ready.'],
+              isFavorite: true,
+            ),
+          );
           await tester.pumpWidget(
             MaterialApp(
               locale: locale,
@@ -219,12 +341,17 @@ void main() {
                 hydrationRepository: HydrationRepository(
                   storage: _HydrationMemoryStorage(),
                 ),
+                initialTab: 2,
               ),
             ),
           );
           await tester.pumpAndSettle();
 
           expect(tester.takeException(), isNull);
+          final todayTab = locale.languageCode == 'es' ? 'Hoy' : 'Today';
+          await tester.ensureVisible(find.text(todayTab));
+          await tester.tap(find.text(todayTab));
+          await tester.pumpAndSettle();
           final hydrationTitle = locale.languageCode == 'es'
               ? 'Agua y bebidas'
               : 'Water and drinks';
