@@ -7,9 +7,14 @@ import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../domain/models/nutrition/nutrition_models.dart';
 
 class NutritionProfilePage extends StatefulWidget {
-  const NutritionProfilePage({super.key, required this.repository});
+  const NutritionProfilePage({
+    super.key,
+    required this.repository,
+    this.commitOnSave = true,
+  });
 
   final ProfileSettingsRepository repository;
+  final bool commitOnSave;
 
   @override
   State<NutritionProfilePage> createState() => _NutritionProfilePageState();
@@ -112,7 +117,9 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
       unavailableFoodIds: previous?.unavailableFoodIds ?? const [],
     );
     try {
-      await widget.repository.saveNutritionProfile(profile);
+      if (widget.commitOnSave) {
+        await widget.repository.saveNutritionProfile(profile);
+      }
       if (!mounted) return;
       Navigator.of(context).pop(profile);
     } on Object {

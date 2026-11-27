@@ -6189,6 +6189,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn’t load water records. Retry.'**
   String get hydrationLoadError;
+
+  /// No description provided for @nutritionReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your plan'**
+  String get nutritionReviewTitle;
+
+  /// No description provided for @nutritionReviewDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to review how this plan is working for you?'**
+  String get nutritionReviewDue;
+
+  /// No description provided for @nutritionReviewLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get nutritionReviewLater;
+
+  /// No description provided for @nutritionReviewIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'This optional check-in helps you decide whether to keep your current plan or preview preference changes. Your answers never change the plan by themselves.'**
+  String get nutritionReviewIntro;
+
+  /// No description provided for @nutritionReviewProfessionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This check-in is not medical advice. For persistent concerns about nutrition, recovery, or health, talk with a qualified professional.'**
+  String get nutritionReviewProfessionalNote;
+
+  /// No description provided for @nutritionReviewEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'How has your energy felt?'**
+  String get nutritionReviewEnergy;
+
+  /// No description provided for @nutritionReviewAppetite.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable have meals felt?'**
+  String get nutritionReviewAppetite;
+
+  /// No description provided for @nutritionReviewRecipes.
+  ///
+  /// In en, this message translates to:
+  /// **'How manageable are the recipes?'**
+  String get nutritionReviewRecipes;
+
+  /// No description provided for @nutritionReviewAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Can you find the foods you need?'**
+  String get nutritionReviewAccess;
+
+  /// No description provided for @nutritionReviewRecovery.
+  ///
+  /// In en, this message translates to:
+  /// **'How has your recovery felt?'**
+  String get nutritionReviewRecovery;
+
+  /// No description provided for @nutritionReviewPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'How has your training performance felt?'**
+  String get nutritionReviewPerformance;
+
+  /// No description provided for @nutritionReviewGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get nutritionReviewGood;
+
+  /// No description provided for @nutritionReviewMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'It varies'**
+  String get nutritionReviewMixed;
+
+  /// No description provided for @nutritionReviewLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Could be better'**
+  String get nutritionReviewLow;
+
+  /// No description provided for @nutritionReviewComfortable.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable'**
+  String get nutritionReviewComfortable;
+
+  /// No description provided for @nutritionReviewVaries.
+  ///
+  /// In en, this message translates to:
+  /// **'It varies'**
+  String get nutritionReviewVaries;
+
+  /// No description provided for @nutritionReviewDifficult.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficult'**
+  String get nutritionReviewDifficult;
+
+  /// No description provided for @nutritionReviewEasy.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get nutritionReviewEasy;
+
+  /// No description provided for @nutritionReviewMostly.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly manageable'**
+  String get nutritionReviewMostly;
+
+  /// No description provided for @nutritionReviewAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, mostly'**
+  String get nutritionReviewAvailable;
+
+  /// No description provided for @nutritionReviewSomeMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Some items are hard to find'**
+  String get nutritionReviewSomeMissing;
+
+  /// No description provided for @nutritionReviewHardToFind.
+  ///
+  /// In en, this message translates to:
+  /// **'Many items are hard to find'**
+  String get nutritionReviewHardToFind;
+
+  /// No description provided for @nutritionReviewSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get nutritionReviewSkip;
+
+  /// No description provided for @nutritionReviewAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview preference changes'**
+  String get nutritionReviewAdjust;
+
+  /// No description provided for @nutritionReviewPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan preview'**
+  String get nutritionReviewPreviewTitle;
+
+  /// No description provided for @nutritionReviewPreviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The preview changes {count} meals in the coming week.'**
+  String nutritionReviewPreviewBody(int count);
+
+  /// No description provided for @nutritionReviewPreviewSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a menu proposal, not a nutrition prescription. Your current plan and history stay unchanged until you accept.'**
+  String get nutritionReviewPreviewSafety;
+
+  /// No description provided for @nutritionReviewUnsafePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Those preferences don’t produce a safe menu with the available catalog. Your current plan is unchanged.'**
+  String get nutritionReviewUnsafePreview;
+
+  /// No description provided for @nutritionReviewSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t save this review. Try again.'**
+  String get nutritionReviewSaveError;
+
+  /// No description provided for @nutritionReviewApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept preview'**
+  String get nutritionReviewApply;
+
+  /// No description provided for @nutritionReviewDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard preview'**
+  String get nutritionReviewDiscard;
+
+  /// No description provided for @nutritionReviewKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep current plan'**
+  String get nutritionReviewKeep;
+
+  /// No description provided for @nutritionReviewOpenFromProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Review nutrition plan'**
+  String get nutritionReviewOpenFromProgress;
+
+  /// No description provided for @nutritionReviewCadence.
+  ///
+  /// In en, this message translates to:
+  /// **'Review reminder frequency'**
+  String get nutritionReviewCadence;
+
+  /// No description provided for @nutritionReviewEveryTwoWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Every two weeks'**
+  String get nutritionReviewEveryTwoWeeks;
+
+  /// No description provided for @nutritionReviewEveryFourWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Every four weeks'**
+  String get nutritionReviewEveryFourWeeks;
+
+  /// No description provided for @nutritionReviewCadenceOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off reminders'**
+  String get nutritionReviewCadenceOff;
 }
 
 class _AppLocalizationsDelegate

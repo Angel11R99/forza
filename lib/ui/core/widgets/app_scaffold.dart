@@ -592,6 +592,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     ProgressView(
                       records: _viewModel.workoutRecords,
                       onShowActivity: () => _selectDestination(1),
+                      onShowNutrition: _openNutrition,
                       goals: _viewModel.personalGoals,
                       measurements: _viewModel.bodyMeasurements,
                       onSaveGoal: _viewModel.savePersonalGoal,

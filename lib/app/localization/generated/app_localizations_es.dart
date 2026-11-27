@@ -3555,4 +3555,124 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get hydrationLoadError =>
       'No se pudieron cargar los registros. Reintentar.';
+
+  @override
+  String get nutritionReviewTitle => 'Revisar tu plan';
+
+  @override
+  String get nutritionReviewDue =>
+      '¿Quieres revisar cómo te está funcionando este plan?';
+
+  @override
+  String get nutritionReviewLater => 'Después';
+
+  @override
+  String get nutritionReviewIntro =>
+      'Este repaso opcional te ayuda a decidir si mantienes el plan o previsualizas cambios de preferencias. Tus respuestas no cambian el plan por sí solas.';
+
+  @override
+  String get nutritionReviewProfessionalNote =>
+      'Este repaso no es consejo médico. Si tienes inquietudes persistentes sobre nutrición, recuperación o salud, consulta a un profesional cualificado.';
+
+  @override
+  String get nutritionReviewEnergy => '¿Cómo ha estado tu energía?';
+
+  @override
+  String get nutritionReviewAppetite => '¿Cómo te han resultado las comidas?';
+
+  @override
+  String get nutritionReviewRecipes => '¿Qué tan prácticas son las recetas?';
+
+  @override
+  String get nutritionReviewAccess => '¿Consigues los alimentos que necesitas?';
+
+  @override
+  String get nutritionReviewRecovery => '¿Cómo ha estado tu recuperación?';
+
+  @override
+  String get nutritionReviewPerformance =>
+      '¿Cómo ha estado tu rendimiento al entrenar?';
+
+  @override
+  String get nutritionReviewGood => 'Bien';
+
+  @override
+  String get nutritionReviewMixed => 'Varía';
+
+  @override
+  String get nutritionReviewLow => 'Podría mejorar';
+
+  @override
+  String get nutritionReviewComfortable => 'Cómodas';
+
+  @override
+  String get nutritionReviewVaries => 'Varía';
+
+  @override
+  String get nutritionReviewDifficult => 'Difíciles';
+
+  @override
+  String get nutritionReviewEasy => 'Fáciles';
+
+  @override
+  String get nutritionReviewMostly => 'Mayormente prácticas';
+
+  @override
+  String get nutritionReviewAvailable => 'Sí, casi todos';
+
+  @override
+  String get nutritionReviewSomeMissing => 'Cuesta conseguir algunos';
+
+  @override
+  String get nutritionReviewHardToFind => 'Cuesta conseguir muchos';
+
+  @override
+  String get nutritionReviewSkip => 'Omitir';
+
+  @override
+  String get nutritionReviewAdjust => 'Previsualizar cambios de preferencias';
+
+  @override
+  String get nutritionReviewPreviewTitle => 'Vista previa del plan';
+
+  @override
+  String nutritionReviewPreviewBody(int count) {
+    return 'La vista previa cambia $count comidas de la próxima semana.';
+  }
+
+  @override
+  String get nutritionReviewPreviewSafety =>
+      'Esta es una propuesta de menú, no una prescripción nutricional. El plan actual y tu historial siguen intactos hasta que aceptes.';
+
+  @override
+  String get nutritionReviewUnsafePreview =>
+      'Esas preferencias no generan un menú seguro con el catálogo disponible. Tu plan actual no cambió.';
+
+  @override
+  String get nutritionReviewSaveError =>
+      'No se pudo guardar este repaso. Inténtalo de nuevo.';
+
+  @override
+  String get nutritionReviewApply => 'Aceptar vista previa';
+
+  @override
+  String get nutritionReviewDiscard => 'Descartar vista previa';
+
+  @override
+  String get nutritionReviewKeep => 'Mantener el plan actual';
+
+  @override
+  String get nutritionReviewOpenFromProgress => 'Revisar plan de nutrición';
+
+  @override
+  String get nutritionReviewCadence => 'Frecuencia de repaso';
+
+  @override
+  String get nutritionReviewEveryTwoWeeks => 'Cada dos semanas';
+
+  @override
+  String get nutritionReviewEveryFourWeeks => 'Cada cuatro semanas';
+
+  @override
+  String get nutritionReviewCadenceOff => 'Desactivar recordatorios';
 }

@@ -23,6 +23,7 @@ class ProgressView extends StatefulWidget {
     super.key,
     required this.records,
     required this.onShowActivity,
+    this.onShowNutrition,
     this.goals = const [],
     required this.onSaveGoal,
     required this.onDeleteGoal,
@@ -34,6 +35,7 @@ class ProgressView extends StatefulWidget {
 
   final List<WorkoutRecord> records;
   final VoidCallback onShowActivity;
+  final VoidCallback? onShowNutrition;
   final List<PersonalGoal> goals;
   final Future<void> Function(PersonalGoal) onSaveGoal;
   final Future<void> Function(String) onDeleteGoal;
@@ -116,6 +118,14 @@ class _ProgressViewState extends State<ProgressView> {
                   context.l10n.progressSubtitle,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                if (widget.onShowNutrition != null) ...[
+                  const SizedBox(height: AppSpacing.x2),
+                  TextButton.icon(
+                    onPressed: widget.onShowNutrition,
+                    icon: const Icon(Icons.restaurant_menu_outlined),
+                    label: Text(context.l10n.nutritionReviewOpenFromProgress),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.x8),
                 AppSurfaceCard(
                   padding: const EdgeInsets.all(AppSpacing.x6),
