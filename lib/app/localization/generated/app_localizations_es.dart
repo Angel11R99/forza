@@ -3340,4 +3340,138 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get nutritionTabHistory => 'Historial';
+
+  @override
+  String get healthConnectionsSection => 'Conexiones';
+
+  @override
+  String get healthConnectionsTitle => 'Conexiones de salud';
+
+  @override
+  String get healthConnectionsSubtitle =>
+      'Importa actividad y bienestar desde tu dispositivo';
+
+  @override
+  String get healthConnectionsDescription =>
+      'Elige qué datos de salud quieres importar a FORZA. La conexión es opcional y puedes seguir usando la app sin configurarla.';
+
+  @override
+  String get healthLocalOnlyTitle => 'Tus datos se quedan en este dispositivo';
+
+  @override
+  String get healthLocalOnlyDescription =>
+      'Los datos importados se guardan localmente. FORZA no los envía a Firestore ni a otros servicios.';
+
+  @override
+  String get healthStatusUnavailable => 'No se pudo consultar el estado';
+
+  @override
+  String get healthTryAgain => 'Revisa la conexión y vuelve a intentarlo.';
+
+  @override
+  String get healthDeviceUnsupported =>
+      'Conexión no disponible en este dispositivo';
+
+  @override
+  String get healthDeviceUnsupportedDescription =>
+      'Puedes seguir usando FORZA sin conectar una plataforma de salud.';
+
+  @override
+  String get healthIosPendingTitle => 'Apple Salud aún no está habilitado';
+
+  @override
+  String get healthIosPendingDescription =>
+      'La conexión requiere configuración y validación de HealthKit. FORZA sigue funcionando sin ella.';
+
+  @override
+  String get healthChooseData => 'Elige qué importar';
+
+  @override
+  String get healthSteps => 'Pasos';
+
+  @override
+  String get healthWeight => 'Peso';
+
+  @override
+  String get healthSleep => 'Sueño';
+
+  @override
+  String get healthWorkouts => 'Entrenamientos';
+
+  @override
+  String get healthStepsReason => 'Para contextualizar tu actividad diaria.';
+
+  @override
+  String get healthWeightReason =>
+      'Para consultar medidas que registraste en la plataforma de salud.';
+
+  @override
+  String get healthSleepReason =>
+      'Para consultar sesiones de sueño; no modifica tu plan.';
+
+  @override
+  String get healthWorkoutReason =>
+      'Para consultar sesiones registradas; no se suman calorías ni pasos del entrenamiento.';
+
+  @override
+  String get healthPermissionTitle => 'Autorizar lectura de datos';
+
+  @override
+  String get healthPermissionExplanation =>
+      'FORZA solicitará acceso de solo lectura a las categorías seleccionadas. La plataforma de salud permite aceptar o rechazar cada permiso.';
+
+  @override
+  String get healthContinue => 'Continuar';
+
+  @override
+  String get healthSelectAtLeastOne => 'Selecciona al menos un tipo de dato.';
+
+  @override
+  String get healthPermissionUnverifiable =>
+      'iOS no informa si autorizaste la lectura.';
+
+  @override
+  String get healthPermissionGranted => 'Permiso concedido';
+
+  @override
+  String get healthPermissionNotGranted => 'Permiso no concedido';
+
+  @override
+  String get healthIosPermissionCaveat =>
+      'Apple Health no revela si se denegó la lectura. Si no aparecen datos, revisa los permisos de FORZA en Salud.';
+
+  @override
+  String get healthImporting => 'Importando…';
+
+  @override
+  String get healthImportNow => 'Importar ahora';
+
+  @override
+  String get healthConnect => 'Conectar y permitir lectura';
+
+  @override
+  String get healthImportComplete => 'Importación completada.';
+
+  @override
+  String get healthImportFailed =>
+      'No se pudo importar. Comprueba los permisos y vuelve a intentarlo.';
+
+  @override
+  String get healthLastImport => 'Última importación:';
+
+  @override
+  String get healthImportedRecordCount => 'Registros importados:';
+
+  @override
+  String get healthRecentData => 'Datos recientes y procedencia';
+
+  @override
+  String get healthDisconnectTitle => 'Desconectar datos de salud';
+
+  @override
+  String get healthDisconnectExplanation =>
+      'Se borrarán de FORZA los datos importados en este dispositivo. Android revoca los permisos de Health Connect y aplica el cambio al reiniciar FORZA. En Apple Salud, los permisos se administran desde la app Salud.';
+
+  @override
+  String get healthDisconnect => 'Desconectar y borrar datos';
 }

@@ -17,6 +17,8 @@ import '../models/profile_settings.dart';
 import 'cloud_sync_settings_page.dart';
 import 'profile_settings_pages.dart';
 import 'nutrition_profile_page.dart';
+import 'health_connections_page.dart';
+import '../../../../data/repositories/health_connection_repository.dart';
 import '../../../../domain/models/nutrition/nutrition_models.dart';
 import '../../../../app/localization/locale_controller.dart';
 import '../../../../app/localization/localization_extensions.dart';
@@ -37,6 +39,8 @@ class ProfileView extends StatefulWidget {
     required this.onThemeModeChanged,
     required this.onManageBackups,
     required this.localeController,
+    this.healthConnectionRepository,
+    this.createHealthConnectionRepository,
   });
 
   final TrainingSettings trainingSettings;
@@ -45,6 +49,8 @@ class ProfileView extends StatefulWidget {
   final Future<void> Function(ThemeMode) onThemeModeChanged;
   final VoidCallback onManageBackups;
   final LocaleController localeController;
+  final HealthConnectionRepository? healthConnectionRepository;
+  final HealthConnectionRepository Function()? createHealthConnectionRepository;
   final ProfileSettingsRepository profileSettingsRepository;
   final AppPreferences preferences;
   final ValueChanged<AppPreferences>? onPreferencesChanged;
@@ -308,6 +314,18 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppSpacing.x6),
                 _ProfileSection(
+                  title: context.l10n.healthConnectionsSection,
+                  options: [
+                    _ProfileOption(
+                      icon: Icons.health_and_safety_outlined,
+                      title: context.l10n.healthConnectionsTitle,
+                      subtitle: context.l10n.healthConnectionsSubtitle,
+                      onTap: _openHealthConnections,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x6),
+                _ProfileSection(
                   title: context.l10n.profilePreferences,
                   options: [
                     _ProfileOption(
@@ -366,6 +384,22 @@ class _ProfileViewState extends State<ProfileView> {
       MaterialPageRoute<void>(
         builder: (_) => AccountWelcomePage(
           accountAuthViewModel: widget.accountAuthViewModel,
+        ),
+      ),
+    );
+  }
+
+  void _openHealthConnections() {
+    final repository = widget.createHealthConnectionRepository?.call() ??
+        widget.healthConnectionRepository;
+    if (repository == null) return;
+    final ownerScope = widget.accountAuthViewModel.account?.providerUserId ??
+        'guest';
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => HealthConnectionsPage(
+          repository: repository,
+          ownerScope: ownerScope,
         ),
       ),
     );

@@ -197,6 +197,34 @@ class NutritionMealLogs extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+@TableIndex(name: 'health_records_owner_type_idx', columns: {#ownerScope, #dataType})
+@TableIndex(name: 'health_records_owner_start_idx', columns: {#ownerScope, #startAt})
+class HealthRecords extends Table {
+  TextColumn get id => text()();
+  TextColumn get ownerScope => text()();
+  TextColumn get dataType => text()();
+  TextColumn get value => text()();
+  TextColumn get unit => text()();
+  TextColumn get startAt => text()();
+  TextColumn get endAt => text()();
+  TextColumn get sourcePlatform => text()();
+  TextColumn get sourceId => text()();
+  TextColumn get sourceName => text()();
+  TextColumn get importedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class HealthConnectionSettings extends Table {
+  TextColumn get ownerScope => text()();
+  TextColumn get enabledTypesJson => text().withDefault(const Constant('[]'))();
+  TextColumn get lastImportAt => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {ownerScope};
+}
+
 @DriftDatabase(
   tables: [
     TrainingPlans,
@@ -213,6 +241,8 @@ class NutritionMealLogs extends Table {
     CloudSyncBaselines,
     NutritionProfiles,
     NutritionMealLogs,
+    HealthRecords,
+    HealthConnectionSettings,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -233,7 +263,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -280,6 +310,8 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(nutritionProfiles);
         await migrator.createTable(nutritionMealLogs);
       }
+      if (from < 12) await migrator.createTable(healthRecords);
+      if (from < 13) await migrator.createTable(healthConnectionSettings);
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

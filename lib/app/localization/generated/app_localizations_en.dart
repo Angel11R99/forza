@@ -3325,4 +3325,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nutritionTabHistory => 'History';
+
+  @override
+  String get healthConnectionsSection => 'Connections';
+
+  @override
+  String get healthConnectionsTitle => 'Health connections';
+
+  @override
+  String get healthConnectionsSubtitle =>
+      'Import activity and wellbeing from your device';
+
+  @override
+  String get healthConnectionsDescription =>
+      'Choose which health data to import into FORZA. Connecting is optional and you can keep using the app without it.';
+
+  @override
+  String get healthLocalOnlyTitle => 'Your data stays on this device';
+
+  @override
+  String get healthLocalOnlyDescription =>
+      'Imported data is stored locally. FORZA does not send it to Firestore or other services.';
+
+  @override
+  String get healthStatusUnavailable => 'Couldn’t check availability';
+
+  @override
+  String get healthTryAgain => 'Check your connection and try again.';
+
+  @override
+  String get healthDeviceUnsupported =>
+      'Health connections aren’t available on this device';
+
+  @override
+  String get healthDeviceUnsupportedDescription =>
+      'You can keep using FORZA without connecting a health platform.';
+
+  @override
+  String get healthIosPendingTitle => 'Apple Health isn’t enabled yet';
+
+  @override
+  String get healthIosPendingDescription =>
+      'This connection needs HealthKit setup and validation. FORZA still works without it.';
+
+  @override
+  String get healthChooseData => 'Choose what to import';
+
+  @override
+  String get healthSteps => 'Steps';
+
+  @override
+  String get healthWeight => 'Weight';
+
+  @override
+  String get healthSleep => 'Sleep';
+
+  @override
+  String get healthWorkouts => 'Workouts';
+
+  @override
+  String get healthStepsReason => 'To give context to your daily activity.';
+
+  @override
+  String get healthWeightReason =>
+      'To view measurements recorded in your health platform.';
+
+  @override
+  String get healthSleepReason =>
+      'To view sleep sessions; this won’t change your plan.';
+
+  @override
+  String get healthWorkoutReason =>
+      'To view recorded sessions; workout calories and steps aren’t added to totals.';
+
+  @override
+  String get healthPermissionTitle => 'Allow data access';
+
+  @override
+  String get healthPermissionExplanation =>
+      'FORZA will request read-only access to the selected categories. Your health platform lets you accept or deny each permission.';
+
+  @override
+  String get healthContinue => 'Continue';
+
+  @override
+  String get healthSelectAtLeastOne => 'Select at least one data type.';
+
+  @override
+  String get healthPermissionUnverifiable =>
+      'iOS doesn’t disclose whether read access was granted.';
+
+  @override
+  String get healthPermissionGranted => 'Permission granted';
+
+  @override
+  String get healthPermissionNotGranted => 'Permission not granted';
+
+  @override
+  String get healthIosPermissionCaveat =>
+      'Apple Health doesn’t reveal when read access is denied. If no data appears, check FORZA’s permissions in the Health app.';
+
+  @override
+  String get healthImporting => 'Importing…';
+
+  @override
+  String get healthImportNow => 'Import now';
+
+  @override
+  String get healthConnect => 'Connect and allow read access';
+
+  @override
+  String get healthImportComplete => 'Import complete.';
+
+  @override
+  String get healthImportFailed =>
+      'Couldn’t import. Check your permissions and try again.';
+
+  @override
+  String get healthLastImport => 'Last import:';
+
+  @override
+  String get healthImportedRecordCount => 'Imported records:';
+
+  @override
+  String get healthRecentData => 'Recent data and source';
+
+  @override
+  String get healthDisconnectTitle => 'Disconnect health data';
+
+  @override
+  String get healthDisconnectExplanation =>
+      'Data imported by FORZA on this device will be deleted. Android revokes Health Connect permissions and applies the change after FORZA restarts. Apple Health permissions are managed in the Health app.';
+
+  @override
+  String get healthDisconnect => 'Disconnect and delete data';
 }
