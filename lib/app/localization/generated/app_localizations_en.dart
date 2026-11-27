@@ -1041,6 +1041,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutritionProfileRestrictionsSection => 'Safety and exclusions';
 
   @override
+  String get nutritionAllergyWarningTitle => 'Review this recipe\'s safety';
+
+  @override
+  String get nutritionPrivateRecipeRestrictionConflict =>
+      'One or more ingredients match a restriction in your profile. Confirm the recipe before logging it.';
+
+  @override
+  String get nutritionPrivateRecipeRestrictionUnknown =>
+      'Allergen information could not be confirmed for every ingredient. Review the recipe before logging it.';
+
+  @override
+  String get nutritionPrivateRecipeLogAnyway => 'Continue anyway';
+
+  @override
+  String get nutritionPrivateRecipeCannotPinTitle =>
+      'This recipe can\'t be pinned';
+
+  @override
+  String get nutritionPrivateRecipeCannotPinBody =>
+      'The recipe does not meet your profile restrictions or safety data. Review its ingredients or your preferences before pinning it.';
+
+  @override
+  String get nutritionPrivateRecipeSaveError =>
+      'Your recipe library couldn\'t be saved. Please try again.';
+
+  @override
+  String get nutritionRecipeSearchEmpty => 'No recipes match your search.';
+
+  @override
   String get nutritionProfileAllergies => 'Allergies';
 
   @override

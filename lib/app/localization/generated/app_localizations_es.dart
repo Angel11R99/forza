@@ -1045,6 +1045,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String get nutritionProfileRestrictionsSection => 'Seguridad y exclusiones';
 
   @override
+  String get nutritionAllergyWarningTitle =>
+      'Revisa la seguridad de esta receta';
+
+  @override
+  String get nutritionPrivateRecipeRestrictionConflict =>
+      'Uno o más ingredientes coinciden con una restricción de tu perfil. Confirma la receta antes de registrarla.';
+
+  @override
+  String get nutritionPrivateRecipeRestrictionUnknown =>
+      'No se pudo confirmar la información de alérgenos de todos los ingredientes. Revisa la receta antes de registrarla.';
+
+  @override
+  String get nutritionPrivateRecipeLogAnyway => 'Continuar de todos modos';
+
+  @override
+  String get nutritionPrivateRecipeCannotPinTitle =>
+      'No se puede fijar esta receta';
+
+  @override
+  String get nutritionPrivateRecipeCannotPinBody =>
+      'La receta no cumple las restricciones o los datos de seguridad de tu perfil. Revisa los ingredientes o tus preferencias antes de fijarla.';
+
+  @override
+  String get nutritionPrivateRecipeSaveError =>
+      'No se pudo guardar tu biblioteca de recetas. Inténtalo de nuevo.';
+
+  @override
+  String get nutritionRecipeSearchEmpty =>
+      'No hay recetas que coincidan con la búsqueda.';
+
+  @override
   String get nutritionProfileAllergies => 'Alergias';
 
   @override

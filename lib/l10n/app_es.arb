@@ -408,6 +408,14 @@
   "nutritionCountrySpain": "España",
   "nutritionCountryMexico": "México",
   "nutritionProfileRestrictionsSection": "Seguridad y exclusiones",
+  "nutritionAllergyWarningTitle": "Revisa la seguridad de esta receta",
+  "nutritionPrivateRecipeRestrictionConflict": "Uno o más ingredientes coinciden con una restricción de tu perfil. Confirma la receta antes de registrarla.",
+  "nutritionPrivateRecipeRestrictionUnknown": "No se pudo confirmar la información de alérgenos de todos los ingredientes. Revisa la receta antes de registrarla.",
+  "nutritionPrivateRecipeLogAnyway": "Continuar de todos modos",
+  "nutritionPrivateRecipeCannotPinTitle": "No se puede fijar esta receta",
+  "nutritionPrivateRecipeCannotPinBody": "La receta no cumple las restricciones o los datos de seguridad de tu perfil. Revisa los ingredientes o tus preferencias antes de fijarla.",
+  "nutritionPrivateRecipeSaveError": "No se pudo guardar tu biblioteca de recetas. Inténtalo de nuevo.",
+  "nutritionRecipeSearchEmpty": "No hay recetas que coincidan con la búsqueda.",
   "nutritionProfileAllergies": "Alergias",
   "nutritionProfileIntolerances": "Intolerancias",
   "nutritionProfileExcluded": "Ingredientes que quieres evitar",
@@ -1302,11 +1310,32 @@
   "hydrationWater": "Agua",
   "hydrationOtherBeverage": "Otra bebida",
   "hydrationTodayTotal": "Registrado hoy: {amount}",
-  "@hydrationTodayTotal": {"placeholders": {"amount": {"type": "String"}}},
+  "@hydrationTodayTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "hydrationProgress": "Registrado {amount} de tu meta personal de {goal}",
-  "@hydrationProgress": {"placeholders": {"amount": {"type": "String"}, "goal": {"type": "String"}}},
+  "@hydrationProgress": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
   "hydrationAdded": "Se añadió {amount}",
-  "@hydrationAdded": {"placeholders": {"amount": {"type": "String"}}},
+  "@hydrationAdded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "hydrationDeleted": "Registro de agua eliminado",
   "hydrationHistory": "Historial de agua",
   "hydrationEmpty": "No hay bebidas registradas para este día.",
@@ -1343,7 +1372,13 @@
   "nutritionReviewAdjust": "Previsualizar cambios de preferencias",
   "nutritionReviewPreviewTitle": "Vista previa del plan",
   "nutritionReviewPreviewBody": "La vista previa cambia {count} comidas de la próxima semana.",
-  "@nutritionReviewPreviewBody": {"placeholders": {"count": {"type": "int"}}},
+  "@nutritionReviewPreviewBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "nutritionReviewPreviewSafety": "Esta es una propuesta de menú, no una prescripción nutricional. El plan actual y tu historial siguen intactos hasta que aceptes.",
   "nutritionReviewUnsafePreview": "Esas preferencias no generan un menú seguro con el catálogo disponible. Tu plan actual no cambió.",
   "nutritionReviewSaveError": "No se pudo guardar este repaso. Inténtalo de nuevo.",

@@ -76,6 +76,69 @@ void main() {
     },
   );
 
+  test(
+    'reserves each day first slot for compatible pinned recipes only',
+    () async {
+      final catalog = await loadCatalog();
+      final source = catalog.recipes.first;
+      final pinned = NutritionCatalogRecipe(
+        id: 'private:pinned-test',
+        version: 1,
+        titleEn: 'Pinned meal',
+        titleEs: 'Comida fijada',
+        servings: source.servings,
+        ingredients: source.ingredients,
+        stepsEn: const [],
+        stepsEs: const [],
+        dietaryPatterns: source.dietaryPatterns,
+      );
+      final safe = planner
+          .generate(
+            catalog: catalog,
+            profile: profile(meals: 2),
+            weekStart: start,
+            createdAt: DateTime.utc(2026, 11, 27),
+            planId: 'pinned-safe',
+            trainingWeekdays: const {},
+            pinnedRecipes: [pinned],
+          )
+          .plan!;
+      expect(
+        safe.days.every((day) => day.meals.first.recipeId == pinned.id),
+        isTrue,
+      );
+
+      final unsafe = planner
+          .generate(
+            catalog: catalog,
+            profile: profile(
+              meals: 2,
+              unavailable: [source.ingredients.first.foodId],
+            ),
+            weekStart: start,
+            createdAt: DateTime.utc(2026, 11, 27),
+            planId: 'pinned-unsafe',
+            trainingWeekdays: const {},
+            pinnedRecipes: [pinned],
+          )
+          .plan;
+      expect(
+        unsafe?.days
+            .expand((day) => day.meals)
+            .any((meal) => meal.recipeId == pinned.id),
+        isNot(true),
+      );
+      expect(
+        planner.isRecipeAllowedForProfile(
+          recipe: pinned,
+          catalog: catalog,
+          profile: profile(unavailable: [source.ingredients.first.foodId]),
+        ),
+        isFalse,
+      );
+    },
+  );
+
   test('reports no safe plan when allergen data is unknown', () async {
     final result = planner.generate(
       catalog: await loadCatalog(),
