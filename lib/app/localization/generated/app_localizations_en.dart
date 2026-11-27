@@ -3459,4 +3459,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get healthDisconnect => 'Disconnect and delete data';
+
+  @override
+  String get commonUndo => 'Undo';
+
+  @override
+  String get commonEdit => 'Edit';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get hydrationTitle => 'Water and drinks';
+
+  @override
+  String get hydrationGlass => 'Glass';
+
+  @override
+  String get hydrationBottle => 'Bottle';
+
+  @override
+  String get hydrationManual => 'Custom amount';
+
+  @override
+  String get hydrationAmount => 'Amount';
+
+  @override
+  String get hydrationDrinkType => 'Drink';
+
+  @override
+  String get hydrationWater => 'Water';
+
+  @override
+  String get hydrationOtherBeverage => 'Other beverage';
+
+  @override
+  String hydrationTodayTotal(String amount) {
+    return 'Logged today: $amount';
+  }
+
+  @override
+  String hydrationProgress(String amount, String goal) {
+    return 'Recorded $amount of personal goal $goal';
+  }
+
+  @override
+  String hydrationAdded(String amount) {
+    return 'Added $amount';
+  }
+
+  @override
+  String get hydrationDeleted => 'Water record deleted';
+
+  @override
+  String get hydrationHistory => 'Water history';
+
+  @override
+  String get hydrationEmpty => 'No drinks recorded for this day.';
+
+  @override
+  String get hydrationEdit => 'Edit water record';
+
+  @override
+  String get hydrationPreferences => 'Water preferences';
+
+  @override
+  String get hydrationGoalOptional => 'Personal daily goal (optional)';
+
+  @override
+  String get hydrationShowIndicator => 'Show progress toward my goal';
+
+  @override
+  String get hydrationInvalidAmount => 'Enter an amount from 1 to 10,000 ml.';
+
+  @override
+  String get hydrationSaveError => 'Couldn’t save the water record. Try again.';
+
+  @override
+  String get hydrationLoadError => 'Couldn’t load water records. Retry.';
 }

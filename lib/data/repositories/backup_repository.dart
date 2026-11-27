@@ -7,6 +7,7 @@ import '../../domain/models/body_measurement.dart';
 import '../../domain/models/scheduled_training_session.dart';
 import '../../domain/models/workout_record.dart';
 import '../../domain/models/nutrition/nutrition_models.dart';
+import '../../domain/models/nutrition/hydration_models.dart';
 import '../../domain/use_cases/training_plan_builder.dart';
 import '../../ui/features/profile/models/profile_settings.dart';
 import '../database/app_database.dart' as db;
@@ -17,6 +18,7 @@ import 'training_settings_repository.dart';
 import 'workout_log_repository.dart';
 import 'profile_settings_repository.dart';
 import 'nutrition_meal_log_repository.dart';
+import 'hydration_repository.dart';
 
 class ValidatedForzaBackup {
   const ValidatedForzaBackup({
@@ -36,6 +38,8 @@ class ValidatedForzaBackup {
     this.nutritionProfile,
     this.nutritionMealEntries = const [],
     this.nutritionSnapshotIncluded = false,
+    this.hydrationEntries = const [],
+    this.hydrationPreferences = const HydrationPreferences(),
   });
 
   final DateTime exportedAt;
@@ -54,6 +58,8 @@ class ValidatedForzaBackup {
   final NutritionProfile? nutritionProfile;
   final List<MealEntry> nutritionMealEntries;
   final bool nutritionSnapshotIncluded;
+  final List<HydrationEntry> hydrationEntries;
+  final HydrationPreferences hydrationPreferences;
 }
 
 class BackupRepository {
@@ -66,6 +72,7 @@ class BackupRepository {
     BodyMeasurementRepository? bodyMeasurementRepository,
     ProfileSettingsRepository? profileSettingsRepository,
     NutritionMealLogRepository? nutritionMealLogRepository,
+    HydrationRepository? hydrationRepository,
     this.readLanguageCode,
     this.writeLanguageCode,
   }) : bodyMeasurementRepository =
@@ -78,7 +85,8 @@ class BackupRepository {
            nutritionMealLogRepository ??
            NutritionMealLogRepository(
              storage: DriftNutritionMealLogStorage(database: database),
-           );
+           ),
+       hydrationRepository = hydrationRepository ?? HydrationRepository();
 
   static const formatName = 'FORZA_BACKUP';
   static const version = 1;
@@ -92,6 +100,7 @@ class BackupRepository {
   final BodyMeasurementRepository bodyMeasurementRepository;
   final ProfileSettingsRepository profileSettingsRepository;
   final NutritionMealLogRepository nutritionMealLogRepository;
+  final HydrationRepository hydrationRepository;
   final String? Function()? readLanguageCode;
   final Future<void> Function(String?)? writeLanguageCode;
 
@@ -139,6 +148,7 @@ class BackupRepository {
           for (final entry in await nutritionMealLogRepository.loadAll())
             entry.toJson(),
         ],
+        'hydration': await _hydrationToJson(),
       },
     });
   }
@@ -150,6 +160,7 @@ class BackupRepository {
     final root = _map(jsonDecode(source), 'respaldo');
     root.remove('nutritionProfile');
     root.remove('nutritionMealEntries');
+    root.remove('hydration');
     root.remove('nutritionPlans');
     return jsonEncode(root);
   }
@@ -161,7 +172,11 @@ class BackupRepository {
     validate(existingRemote);
     final next = _map(jsonDecode(outgoing), 'respaldo');
     final previous = _map(jsonDecode(existingRemote), 'respaldo');
-    for (final key in const ['nutritionProfile', 'nutritionMealEntries']) {
+    for (final key in const [
+      'nutritionProfile',
+      'nutritionMealEntries',
+      'hydration',
+    ]) {
       if (previous.containsKey(key)) next[key] = previous[key];
     }
     return jsonEncode(next);
@@ -191,6 +206,10 @@ class BackupRepository {
           'privacySettings': _privacySettingsToJson(const PrivacySettings()),
           'nutritionProfile': null,
           'nutritionMealEntries': const <Object?>[],
+          'hydration': {
+            'entries': const <Object?>[],
+            'preferences': const HydrationPreferences().toJson(),
+          },
         }),
       ),
     );
@@ -237,6 +256,22 @@ class BackupRepository {
       baseline?.nutritionMealEntries.map((entry) => entry.toJson()),
       (entry) => entry['id'] as String,
     );
+    final mergedHydrationEntries = _mergeKeyedLists(
+      local.hydrationEntries.map((entry) => entry.toJson()),
+      cloud.hydrationEntries.map((entry) => entry.toJson()),
+      baseline?.hydrationEntries.map((entry) => entry.toJson()),
+      (entry) => entry['id'] as String,
+    );
+    final hydrationPreferences = baseline == null
+        ? (_hasCustomHydrationPreferences(local.hydrationPreferences)
+              ? local.hydrationPreferences
+              : cloud.hydrationPreferences)
+        : _chooseThreeWay(
+            local.hydrationPreferences.toJson(),
+            cloud.hydrationPreferences.toJson(),
+            baseline.hydrationPreferences.toJson(),
+            hasBaseline: true,
+          );
 
     final localSettings = _settingsToJson(local.settings);
     final remoteSettings = _settingsToJson(cloud.settings);
@@ -281,6 +316,10 @@ class BackupRepository {
               hasBaseline: true,
             ),
       'nutritionMealEntries': nutritionMealEntries,
+      'hydration': {
+        'entries': mergedHydrationEntries,
+        'preferences': hydrationPreferences,
+      },
       'appearanceMode': _chooseThreeWay(
         local.appearanceMode,
         cloud.appearanceMode,
@@ -448,6 +487,7 @@ class BackupRepository {
           'El respaldo contiene comidas nutricionales duplicadas.',
         );
       }
+      final hydration = _parseHydration(root['hydration']);
       final activeWorkout = root['activeWorkout'] == null
           ? null
           : _activeDraft(root['activeWorkout']);
@@ -477,7 +517,10 @@ class BackupRepository {
         nutritionMealEntries: nutritionEntries,
         nutritionSnapshotIncluded:
             root.containsKey('nutritionProfile') ||
-            root.containsKey('nutritionMealEntries'),
+            root.containsKey('nutritionMealEntries') ||
+            _hasHydrationSnapshot(hydration),
+        hydrationEntries: hydration.entries,
+        hydrationPreferences: hydration.preferences,
       );
     } on FormatException {
       rethrow;
@@ -665,6 +708,10 @@ class BackupRepository {
         );
       }
       await nutritionMealLogRepository.replaceAll(backup.nutritionMealEntries);
+      await hydrationRepository.replaceAll(
+        backup.hydrationEntries,
+        backup.hydrationPreferences,
+      );
     }
   }
 
@@ -687,6 +734,49 @@ class BackupRepository {
       );
     }
     return entry;
+  }
+
+  Future<Map<String, Object?>> _hydrationToJson() async {
+    final data = await hydrationRepository.load();
+    return {
+      'entries': [for (final entry in data.entries) entry.toJson()],
+      'preferences': data.preferences.toJson(),
+    };
+  }
+
+  static ({List<HydrationEntry> entries, HydrationPreferences preferences})
+  _parseHydration(Object? value) {
+    if (value == null) {
+      return (entries: const [], preferences: const HydrationPreferences());
+    }
+    final map = _map(value, 'hydration');
+    final entries = _list(map['entries'], 'hydration.entries')
+        .map((item) => HydrationEntry.fromJson(_map(item, 'hydration.entry')))
+        .toList(growable: false);
+    final preferences = HydrationPreferences.fromJson(
+      _map(map['preferences'], 'hydration.preferences'),
+    );
+    if (entries.any((entry) => !entry.isValid) ||
+        entries.map((entry) => entry.id).toSet().length != entries.length ||
+        !preferences.isValid) {
+      throw const FormatException('El respaldo de hidratación no es válido.');
+    }
+    return (entries: entries, preferences: preferences);
+  }
+
+  static bool _hasHydrationSnapshot(
+    ({List<HydrationEntry> entries, HydrationPreferences preferences}) data,
+  ) {
+    return data.entries.isNotEmpty ||
+        _hasCustomHydrationPreferences(data.preferences);
+  }
+
+  static bool _hasCustomHydrationPreferences(HydrationPreferences preferences) {
+    const defaults = HydrationPreferences();
+    return preferences.glassMl != defaults.glassMl ||
+        preferences.bottleMl != defaults.bottleMl ||
+        preferences.dailyGoalMl != defaults.dailyGoalMl ||
+        preferences.showIndicator != defaults.showIndicator;
   }
 
   static WorkoutRecord _record(Object? value) {
