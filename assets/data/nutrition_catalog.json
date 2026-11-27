@@ -95,7 +95,11 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
+      ]
     },
     {
       "id": "usda-foundation:2346396",
@@ -141,7 +145,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2346397",
@@ -186,7 +195,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2512380",
@@ -232,7 +246,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2512381",
@@ -278,7 +297,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:747444",
@@ -326,7 +350,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2644285",
@@ -373,7 +402,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2644288",
@@ -419,7 +453,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2644283",
@@ -465,7 +504,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2646170",
@@ -511,7 +555,11 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
+      ]
     },
     {
       "id": "usda-foundation:2710817",
@@ -560,7 +608,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2710818",
@@ -608,7 +661,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2710824",
@@ -655,7 +713,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2710826",
@@ -703,7 +766,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2346404",
@@ -751,7 +819,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2346403",
@@ -798,7 +871,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:790646",
@@ -851,7 +929,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:1999634",
@@ -899,7 +982,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2258586",
@@ -946,7 +1034,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:747447",
@@ -998,7 +1091,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:746771",
@@ -1054,7 +1152,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:1105314",
@@ -1108,7 +1211,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:1750340",
@@ -1155,7 +1263,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2515376",
@@ -1202,7 +1315,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2262072",
@@ -1249,7 +1367,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2259793",
@@ -1295,7 +1418,11 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
+      ]
     },
     {
       "id": "usda-foundation:746782",
@@ -1346,7 +1473,11 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
+      ]
     },
     {
       "id": "usda-foundation:748608",
@@ -1390,7 +1521,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2346402",
@@ -1437,7 +1573,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:321360",
@@ -1494,7 +1635,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "usda-foundation:2258588",
@@ -1542,7 +1688,12 @@
         "relativeCost": "unknown",
         "season": null,
         "provenance": null
-      }
+      },
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     }
   ],
   "recipes": [
@@ -1573,7 +1724,11 @@
         "Cocina la avena con la leche siguiendo las instrucciones del empaque.",
         "Sirve con el banano en rodajas."
       ],
-      "servings": 1
+      "servings": 1,
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
+      ]
     },
     {
       "id": "forza-lentils-rice",
@@ -1612,7 +1767,12 @@
         "Cocina el arroz por separado.",
         "Cocina la cebolla y el tomate hasta que estén suaves, mézclalos con las lentejas y sirve con el arroz."
       ],
-      "servings": 1
+      "servings": 1,
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
+      ]
     },
     {
       "id": "forza-chicken-rice-bowl",
@@ -1655,7 +1815,8 @@
         "Cocina el pollo hasta alcanzar 165 °F (73.9 °C) en el centro y mídelo con un termómetro para alimentos.",
         "Cocina la cebolla, el tomate y el maíz hasta que estén suaves; sirve con el pollo y el arroz."
       ],
-      "servings": 1
+      "servings": 1,
+      "dietaryPatterns": []
     },
     {
       "id": "forza-black-bean-avocado-rice",
@@ -1694,6 +1855,11 @@
         "Cocina el arroz según las instrucciones del empaque.",
         "Escurre y enjuaga los frijoles enlatados. Pica el aguacate, el tomate y la cebolla.",
         "Sirve los frijoles y vegetales sobre el arroz."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
       ]
     },
     {
@@ -1729,6 +1895,11 @@
         "Cocina la batata hasta que esté tierna.",
         "Escurre y enjuaga los garbanzos enlatados.",
         "Cocina la cebolla hasta que esté suave, añade los garbanzos y calienta bien. Sirve con la batata."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
       ]
     },
     {
@@ -1758,6 +1929,10 @@
       "stepsEs": [
         "Pela y corta la naranja.",
         "Mezcla el yogur con la avena y sirve con la naranja."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
       ]
     },
     {
@@ -1791,6 +1966,10 @@
       "stepsEs": [
         "Cocina la cebolla, el tomate y el maíz hasta que estén tiernos.",
         "Añade el huevo y cocínalo hasta que la clara y la yema estén firmes."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
       ]
     },
     {
@@ -1830,7 +2009,8 @@
         "Cocina el arroz según las instrucciones del empaque.",
         "Cocina el pollo hasta alcanzar 165 °F (73.9 °C) en el centro y mídelo con un termómetro para alimentos.",
         "Cocina el brócoli y la zanahoria hasta que estén tiernos; sirve con el pollo y el arroz."
-      ]
+      ],
+      "dietaryPatterns": []
     },
     {
       "id": "forza-tomato-lentil-soup",
@@ -1869,6 +2049,11 @@
         "Enjuaga las lentejas y hiérvelas bien en agua.",
         "Añade el tomate, la zanahoria y la cebolla picados; cocina hasta que estén tiernos.",
         "Termina con el aceite de oliva y sirve caliente."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian",
+        "vegan"
       ]
     },
     {
@@ -1898,6 +2083,10 @@
       "stepsEs": [
         "Corta el banano en rodajas.",
         "Sírvelo con el yogur y la mantequilla de maní."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
       ]
     },
     {
@@ -1933,6 +2122,10 @@
         "Corta la papa en cubos pequeños y cocínala hasta que esté tierna.",
         "Añade la cebolla y cocina hasta que esté suave.",
         "Añade el huevo y cocínalo hasta que la clara y la yema estén firmes."
+      ],
+      "dietaryPatterns": [
+        "vegetarian",
+        "pescatarian"
       ]
     }
   ]
