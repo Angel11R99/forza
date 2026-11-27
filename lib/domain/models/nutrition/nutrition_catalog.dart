@@ -69,6 +69,7 @@ class NutritionCatalogFood {
     required this.allergenKnowledge,
     required this.allergens,
     required this.access,
+    this.dietaryPatterns = const {},
     this.portions = const [],
   });
 
@@ -86,6 +87,7 @@ class NutritionCatalogFood {
   final List<String> aliases;
   final AllergenKnowledge allergenKnowledge;
   final List<String> allergens;
+  final Set<DietaryPattern> dietaryPatterns;
   final List<NutritionCatalogPortion> portions;
   final FoodAccess access;
 
@@ -153,6 +155,7 @@ class NutritionCatalogRecipe {
     required this.ingredients,
     required this.stepsEn,
     required this.stepsEs,
+    this.dietaryPatterns = const {},
   });
 
   final String id;
@@ -163,6 +166,7 @@ class NutritionCatalogRecipe {
   final List<NutritionCatalogRecipeIngredient> ingredients;
   final List<String> stepsEn;
   final List<String> stepsEs;
+  final Set<DietaryPattern> dietaryPatterns;
 
   bool get isValid =>
       id.trim().isNotEmpty &&
@@ -317,6 +321,7 @@ class NutritionCatalog {
               allergens: rawAllergens.whereType<String>().toList(
                 growable: false,
               ),
+              dietaryPatterns: _dietaryPatterns(map['dietaryPatterns']),
               portions: rawPortions
                   .map((portion) {
                     final portionMap = _objectMap(portion);
@@ -371,6 +376,7 @@ class NutritionCatalog {
                   .toList(growable: false),
               stepsEn: rawStepsEn.whereType<String>().toList(growable: false),
               stepsEs: rawStepsEs.whereType<String>().toList(growable: false),
+              dietaryPatterns: _dietaryPatterns(map['dietaryPatterns']),
             );
           })
           .toList(growable: false),
@@ -410,6 +416,23 @@ class NutritionCatalog {
 
   List<NutritionCatalogFood> search(String query) =>
       List.unmodifiable(foods.where((food) => food.matches(query)));
+}
+
+Set<DietaryPattern> _dietaryPatterns(Object? value) {
+  if (value == null) return const {};
+  if (value is! List || value.any((item) => item is! String)) {
+    throw const FormatException('Los patrones de la receta no son válidos.');
+  }
+  return Set.unmodifiable(
+    value.map(
+      (name) => DietaryPattern.values.firstWhere(
+        (pattern) => pattern.name == name,
+        orElse: () => throw const FormatException(
+          'Un patrón de la receta no es compatible.',
+        ),
+      ),
+    ),
+  );
 }
 
 String _normalize(String value) => value
