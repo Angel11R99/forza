@@ -1087,7 +1087,9 @@ class _SessionMetric extends StatelessWidget {
     children: [
       Icon(icon, size: 18),
       const SizedBox(width: AppSpacing.x2),
-      Text(label, style: Theme.of(context).textTheme.bodyMedium),
+      Flexible(
+        child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+      ),
     ],
   );
 }
