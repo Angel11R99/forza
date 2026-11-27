@@ -26,6 +26,12 @@ Flujo de casos de uso: perfil/agenda/medidas canónicos → validación de datos
 - Minimizar datos sensibles, guardarlos localmente, permitir omisión/borrado y no requerir cuenta. Los casos clínicos o poblaciones especiales requieren orientación profesional, sin solicitar diagnósticos detallados como condición de uso.
 - El coste solo ordena opciones después de seguridad y adecuación; no reemplaza esas reglas.
 
+### Estado del motor de objetivos (#138)
+
+`NutritionTargetReadiness` es una barrera preventiva pura de dominio, no una fórmula. Enumera los datos críticos ausentes y bloquea objetivos automatizados para menores, embarazo/lactancia, riesgo de trastorno alimentario y condiciones que requieren supervisión. La edad se usa solo como dato ya disponible en `NutritionProfile`; las señales clínicas se pasan de forma efímera y no se persisten como diagnóstico. El peso debe venir de las medidas ya almacenadas; actividad cotidiana y meta deben conocerse, no inferirse. La agenda conserva días/minutos y distingue día de entrenamiento o descanso como contexto: no estima calorías por sesión ni suma actividad dos veces.
+
+Actualmente siempre se incluye `professionalReviewRequired` y `targets` permanece nulo: revisar artículos o tener tests no equivale a validación profesional para esta población y producto. Por tanto no hay números de calorías/macros ni dietas generados automáticamente. Para habilitar un motor cuantitativo hace falta una regla versionada con población, entradas/unidades, fuentes y revisión profesional identificable; hasta entonces la interfaz debe ofrecer educación general/orientación profesional y dejar usar el entrenamiento normalmente. Las recomendaciones deportivas deben individualizarse por deporte, fase y contexto, como señalan el [consenso SEÑ 2025 (PMID 41470807)](https://pubmed.ncbi.nlm.nih.gov/41470807/) y la [posición conjunta ACSM/ADA/Canada (PMID 19225360)](https://pubmed.ncbi.nlm.nih.gov/19225360/).
+
 ## Navegación y responsabilidades previstas
 
 - Perfil → Perfil nutricional: datos y preferencias opcionales, editables en una sola fuente de verdad.
