@@ -694,6 +694,7 @@ class _AppScaffoldState extends State<AppScaffold>
                   destination: _destinations[index],
                   label: _destinationLabel(context, index),
                   selected: index == _selectedIndex,
+                  showLabel: _preferences.showNavigationLabels,
                   onTap: () => _selectDestination(index),
                 ),
               ),
@@ -736,12 +737,14 @@ class _BottomNavigationDestination extends StatefulWidget {
     required this.destination,
     required this.label,
     required this.selected,
+    required this.showLabel,
     required this.onTap,
   });
 
   final _AppDestination destination;
   final String label;
   final bool selected;
+  final bool showLabel;
   final VoidCallback onTap;
 
   @override
@@ -757,68 +760,69 @@ class _BottomNavigationDestinationState
   Widget build(BuildContext context) {
     final colors = context.appColors;
     final labelStyle = Theme.of(context).textTheme.labelSmall;
+    final destination = InkWell(
+      onTap: widget.onTap,
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MouseRegion(
+              onEnter: (_) => setState(() => _hovered = true),
+              onExit: (_) => setState(() => _hovered = false),
+              child: AnimatedContainer(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 120),
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: _hovered ? colors.accentSoft : Colors.transparent,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  widget.selected
+                      ? widget.destination.selectedIcon
+                      : widget.destination.icon,
+                  color: widget.selected ? colors.accent : colors.textSecondary,
+                  size: 22,
+                ),
+              ),
+            ),
+            if (widget.showLabel)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x1),
+                child: Text(
+                  widget.label,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: labelStyle?.copyWith(
+                    color: widget.selected
+                        ? colors.accent
+                        : colors.textSecondary,
+                    fontWeight: widget.selected
+                        ? FontWeight.w600
+                        : FontWeight.w500,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+
     return Semantics(
       button: true,
       selected: widget.selected,
       label: widget.label,
       onTap: widget.onTap,
       child: ExcludeSemantics(
-        child: InkWell(
-          onTap: widget.onTap,
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.x1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                MouseRegion(
-                  onEnter: (_) => setState(() => _hovered = true),
-                  onExit: (_) => setState(() => _hovered = false),
-                  child: AnimatedContainer(
-                    duration: MediaQuery.disableAnimationsOf(context)
-                        ? Duration.zero
-                        : const Duration(milliseconds: 120),
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: _hovered ? colors.accentSoft : Colors.transparent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      widget.selected
-                          ? widget.destination.selectedIcon
-                          : widget.destination.icon,
-                      color: widget.selected
-                          ? colors.accent
-                          : colors.textSecondary,
-                      size: 22,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.x1,
-                  ),
-                  child: Text(
-                    widget.label,
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                    style: labelStyle?.copyWith(
-                      color: widget.selected
-                          ? colors.accent
-                          : colors.textSecondary,
-                      fontWeight: widget.selected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: widget.showLabel
+            ? destination
+            : Tooltip(message: widget.label, child: destination),
       ),
     );
   }

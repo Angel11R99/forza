@@ -409,9 +409,27 @@ class _ProfileViewState extends State<ProfileView> {
         builder: (_) => AppAppearancePage(
           themeMode: widget.themeMode,
           onThemeModeChanged: widget.onThemeModeChanged,
+          showNavigationLabels: _preferences.showNavigationLabels,
+          onShowNavigationLabelsChanged: _saveNavigationLabels,
         ),
       ),
     );
+  }
+
+  Future<void> _saveNavigationLabels(bool show) async {
+    if (!await _ensureProfileSettingsLoaded()) {
+      throw StateError('Application preferences are unavailable.');
+    }
+    final updated = AppPreferences(
+      weightUnit: _preferences.weightUnit,
+      weekStartsOn: _preferences.weekStartsOn,
+      hapticsEnabled: _preferences.hapticsEnabled,
+      showNavigationLabels: show,
+    );
+    await widget.profileSettingsRepository.saveAppPreferences(updated);
+    if (!mounted) return;
+    setState(() => _preferences = updated);
+    widget.onPreferencesChanged?.call(updated);
   }
 
   void _editLanguage() {

@@ -3314,6 +3314,18 @@ abstract class AppLocalizations {
   /// **'This display name is saved on this device only.'**
   String get profileNameLocalNote;
 
+  /// No description provided for @profileShowNavigationLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Show navigation labels'**
+  String get profileShowNavigationLabels;
+
+  /// No description provided for @profileShowNavigationLabelsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show each section name below its icon.'**
+  String get profileShowNavigationLabelsHint;
+
   /// No description provided for @profileEmailInvalid.
   ///
   /// In en, this message translates to:

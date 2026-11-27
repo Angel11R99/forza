@@ -210,10 +210,14 @@ class AppAppearancePage extends StatefulWidget {
     super.key,
     required this.themeMode,
     required this.onThemeModeChanged,
+    required this.showNavigationLabels,
+    required this.onShowNavigationLabelsChanged,
   });
 
   final ThemeMode themeMode;
   final Future<void> Function(ThemeMode) onThemeModeChanged;
+  final bool showNavigationLabels;
+  final Future<void> Function(bool) onShowNavigationLabelsChanged;
 
   @override
   State<AppAppearancePage> createState() => _AppAppearancePageState();
@@ -221,6 +225,8 @@ class AppAppearancePage extends StatefulWidget {
 
 class _AppAppearancePageState extends State<AppAppearancePage> {
   late ThemeMode _themeMode = widget.themeMode;
+  late bool _showNavigationLabels = widget.showNavigationLabels;
+  bool _savingNavigationLabels = false;
 
   Future<void> _selectMode(ThemeMode mode) async {
     try {
@@ -231,6 +237,21 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.profileSettingsSaveFailed)),
       );
+    }
+  }
+
+  Future<void> _setNavigationLabels(bool value) async {
+    setState(() => _savingNavigationLabels = true);
+    try {
+      await widget.onShowNavigationLabelsChanged(value);
+      if (mounted) setState(() => _showNavigationLabels = value);
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.profileSettingsSaveFailed)),
+      );
+    } finally {
+      if (mounted) setState(() => _savingNavigationLabels = false);
     }
   }
 
@@ -289,6 +310,18 @@ class _AppAppearancePageState extends State<AppAppearancePage> {
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.x4),
+            AppSurfaceCard(
+              padding: EdgeInsets.zero,
+              child: SwitchListTile(
+                value: _showNavigationLabels,
+                onChanged: _savingNavigationLabels
+                    ? null
+                    : _setNavigationLabels,
+                title: Text(context.l10n.profileShowNavigationLabels),
+                subtitle: Text(context.l10n.profileShowNavigationLabelsHint),
+              ),
+            ),
           ],
         ),
       ),
@@ -329,6 +362,7 @@ class _AppPreferencesOptionsState extends State<AppPreferencesOptions> {
       weightUnit: _weightUnit,
       weekStartsOn: _weekStartsOn,
       hapticsEnabled: _hapticsEnabled,
+      showNavigationLabels: widget.preferences.showNavigationLabels,
     ),
   );
 
@@ -398,6 +432,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
   late String _weightUnit = widget.preferences.weightUnit;
   late String _weekStartsOn = widget.preferences.weekStartsOn;
   late bool _hapticsEnabled = widget.preferences.hapticsEnabled;
+  late bool _showNavigationLabels = widget.preferences.showNavigationLabels;
 
   @override
   Widget build(BuildContext context) {
@@ -430,6 +465,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
                 _weightUnit = preferences.weightUnit;
                 _weekStartsOn = preferences.weekStartsOn;
                 _hapticsEnabled = preferences.hapticsEnabled;
+                _showNavigationLabels = preferences.showNavigationLabels;
               }),
             ),
           ],
@@ -442,6 +478,7 @@ class _AppPreferencesPageState extends State<AppPreferencesPage> {
             weightUnit: _weightUnit,
             weekStartsOn: _weekStartsOn,
             hapticsEnabled: _hapticsEnabled,
+            showNavigationLabels: _showNavigationLabels,
           ),
         ),
       ),

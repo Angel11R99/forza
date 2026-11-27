@@ -784,9 +784,11 @@ class BackupRepository {
     final unit = json['weightUnit'];
     final weekStartsOn = json['weekStartsOn'];
     final hapticsEnabled = json['hapticsEnabled'];
+    final showNavigationLabels = json['showNavigationLabels'];
     if (!const {'kg', 'lb'}.contains(unit) ||
         !const {'Lunes', 'Domingo'}.contains(weekStartsOn) ||
-        hapticsEnabled is! bool) {
+        hapticsEnabled is! bool ||
+        (showNavigationLabels != null && showNavigationLabels is! bool)) {
       throw const FormatException(
         'Las preferencias de la aplicación no son válidas.',
       );
@@ -795,6 +797,7 @@ class BackupRepository {
       weightUnit: unit as String,
       weekStartsOn: weekStartsOn as String,
       hapticsEnabled: hapticsEnabled,
+      showNavigationLabels: showNavigationLabels as bool? ?? true,
     );
   }
 
@@ -842,6 +845,7 @@ class BackupRepository {
     'weightUnit': preferences.weightUnit,
     'weekStartsOn': preferences.weekStartsOn,
     'hapticsEnabled': preferences.hapticsEnabled,
+    'showNavigationLabels': preferences.showNavigationLabels,
   };
 
   static Map<String, Object?> _notificationSettingsToJson(
