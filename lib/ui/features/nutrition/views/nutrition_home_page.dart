@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../app/localization/localization_extensions.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../data/repositories/nutrition_catalog_repository.dart';
+import '../../../../data/repositories/nutrition_meal_log_repository.dart';
 import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../domain/models/nutrition/nutrition_catalog.dart';
 import '../../../../domain/models/nutrition/nutrition_models.dart';
@@ -17,12 +18,14 @@ class NutritionHomePage extends StatefulWidget {
     required this.profileRepository,
     required this.trainingSettings,
     this.catalogRepository,
+    this.mealLogRepository,
     this.initialTab = 0,
   });
 
   final ProfileSettingsRepository profileRepository;
   final TrainingSettings trainingSettings;
   final NutritionCatalogRepository? catalogRepository;
+  final NutritionMealLogRepository? mealLogRepository;
   final int initialTab;
 
   @override
@@ -32,11 +35,15 @@ class NutritionHomePage extends StatefulWidget {
 class _NutritionHomePageState extends State<NutritionHomePage> {
   late final _catalogRepository =
       widget.catalogRepository ?? NutritionCatalogRepository();
+  late final _mealLogRepository =
+      widget.mealLogRepository ?? NutritionMealLogRepository();
   NutritionProfile? _profile;
   NutritionCatalog? _catalog;
   NutritionWeekPlan? _plan;
+  List<MealEntry> _entries = const [];
   bool _loading = true;
   bool _failed = false;
+  bool _showingHistory = false;
 
   @override
   void initState() {
@@ -54,6 +61,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     try {
       final profile = await widget.profileRepository.loadNutritionProfile();
       final catalog = await _catalogRepository.load();
+      final entries = await _mealLogRepository.loadAll();
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final weekStart = today.subtract(Duration(days: today.weekday - 1));
@@ -72,6 +80,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
         _profile = profile;
         _catalog = catalog;
         _plan = generated?.plan;
+        _entries = entries;
         _failed =
             generated?.status == MealPlanGenerationStatus.invalidConfiguration;
         _loading = false;
@@ -95,6 +104,148 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     if (profile != null) await _load();
   }
 
+  Future<void> _togglePlannedMeal(PlannedMeal meal, bool consumed) async {
+    try {
+      final entryId = 'consumed:${meal.id}';
+      final entry = consumed
+          ? null
+          : MealEntry(
+              id: entryId,
+              dateTime: DateTime.now(),
+              recipeId: meal.recipeId,
+              type: MealEntryType.consumedPlanned,
+              plannedMealId: meal.id,
+              quantityGrams: meal.ingredients.fold<double>(
+                0,
+                (sum, ingredient) => sum + ingredient.grams,
+              ),
+              nutrientEstimates: meal.nutrients,
+              catalogVersion: _catalog?.version,
+            );
+      if (consumed) {
+        await _mealLogRepository.delete(entryId);
+      } else {
+        await _mealLogRepository.save(entry!);
+      }
+      if (!mounted) return;
+      setState(() {
+        _entries = [
+          ..._entries.where((entry) => entry.id != entryId),
+          ...?(entry == null ? null : [entry]),
+        ];
+      });
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.nutritionLogSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _addFood() async {
+    final catalog = _catalog;
+    if (catalog == null) return;
+    final foodId = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _FoodPickerSheet(foods: catalog.foods),
+    );
+    if (foodId == null || !mounted) return;
+    final grams = await showDialog<double>(
+      context: context,
+      builder: (_) => const _FoodAmountDialog(),
+    );
+    if (grams == null || !mounted) return;
+    final food = catalog.foods.firstWhere((item) => item.id == foodId);
+    final nutrients = <String, double?>{
+      for (final code in nutritionNutrientCodes.keys)
+        code: food.nutrient(code) == null
+            ? null
+            : food.nutrient(code)! * grams / 100,
+    };
+    final now = DateTime.now();
+    final entry = MealEntry(
+      id: 'manual:${now.microsecondsSinceEpoch}',
+      dateTime: now,
+      foodId: food.id,
+      type: MealEntryType.manual,
+      quantityGrams: grams,
+      nutrientEstimates: Map.unmodifiable(nutrients),
+      catalogVersion: catalog.version,
+    );
+    try {
+      await _mealLogRepository.save(entry);
+      if (mounted) setState(() => _entries = [entry, ..._entries]);
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.nutritionLogSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteEntry(MealEntry entry) async {
+    try {
+      await _mealLogRepository.delete(entry.id);
+      if (mounted) {
+        setState(() {
+          _entries = _entries.where((item) => item.id != entry.id).toList();
+        });
+      }
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.nutritionLogSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _adjustEntry(MealEntry entry) async {
+    final servings = await showDialog<double>(
+      context: context,
+      builder: (_) => _ServingAmountDialog(initialValue: entry.servings),
+    );
+    if (servings == null || !mounted) return;
+    final ratio = servings / entry.servings;
+    final updated = MealEntry(
+      id: entry.id,
+      dateTime: entry.dateTime,
+      recipeId: entry.recipeId,
+      foodId: entry.foodId,
+      servings: servings,
+      notes: entry.notes,
+      type: entry.type,
+      plannedMealId: entry.plannedMealId,
+      quantityGrams: entry.quantityGrams == null
+          ? null
+          : entry.quantityGrams! * ratio,
+      nutrientEstimates: Map.unmodifiable({
+        for (final item in entry.nutrientEstimates.entries)
+          item.key: item.value == null ? null : item.value! * ratio,
+      }),
+      catalogVersion: entry.catalogVersion,
+    );
+    try {
+      await _mealLogRepository.save(updated);
+      if (mounted) {
+        setState(() {
+          _entries = _entries
+              .map((item) => item.id == updated.id ? updated : item)
+              .toList();
+        });
+      }
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.nutritionLogSaveError)),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -110,12 +261,37 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
         ],
       ),
       body: SafeArea(
-        child: _loading
+        child: _showingHistory
+            ? Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () => setState(() => _showingHistory = false),
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      label: Text(l10n.nutritionBackToPlan),
+                    ),
+                  ),
+                  Expanded(
+                    child: _HistoryTab(
+                      entries: _entries,
+                      catalog: _catalog,
+                      onAdjust: _adjustEntry,
+                      onDelete: _deleteEntry,
+                    ),
+                  ),
+                ],
+              )
+            : _loading
             ? const Center(child: CircularProgressIndicator())
             : _failed
             ? _ErrorState(onRetry: _load)
             : _profile == null
-            ? _WelcomeState(onConfigure: _editProfile)
+            ? _WelcomeState(
+                onConfigure: _editProfile,
+                onAddFood: _addFood,
+                onHistory: () => setState(() => _showingHistory = true),
+              )
             : _buildPlan(context),
       ),
     );
@@ -125,9 +301,13 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     final l10n = context.l10n;
     final plan = _plan;
     if (plan == null) {
-      return _NoSafePlan(onEdit: _editProfile);
+      return _NoSafePlan(
+        onEdit: _editProfile,
+        onAddFood: _addFood,
+        onHistory: () => setState(() => _showingHistory = true),
+      );
     }
-    final tabIndex = widget.initialTab.clamp(0, 3).toInt();
+    final tabIndex = widget.initialTab.clamp(0, 4).toInt();
     final today = DateTime.now();
     final day = plan.days.firstWhere(
       (item) =>
@@ -137,7 +317,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       orElse: () => plan.days.first,
     );
     return DefaultTabController(
-      length: 4,
+      length: 5,
       initialIndex: tabIndex,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,15 +358,30 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
               Tab(text: l10n.nutritionTabWeek),
               Tab(text: l10n.nutritionTabRecipes),
               Tab(text: l10n.nutritionTabShopping),
+              Tab(text: l10n.nutritionTabHistory),
             ],
           ),
           Expanded(
             child: TabBarView(
               children: [
-                _TodayTab(day: day, catalog: _catalog!),
+                _TodayTab(
+                  day: day,
+                  catalog: _catalog!,
+                  entries: _entries,
+                  onToggleConsumed: _togglePlannedMeal,
+                  onAdjustEntry: _adjustEntry,
+                  onDeleteEntry: _deleteEntry,
+                  onAddFood: _addFood,
+                ),
                 _WeekTab(plan: plan, catalog: _catalog!),
                 _RecipesTab(plan: plan, catalog: _catalog!),
                 _ShoppingTab(plan: plan, catalog: _catalog!),
+                _HistoryTab(
+                  entries: _entries,
+                  catalog: _catalog!,
+                  onAdjust: _adjustEntry,
+                  onDelete: _deleteEntry,
+                ),
               ],
             ),
           ),
@@ -197,9 +392,15 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
 }
 
 class _WelcomeState extends StatelessWidget {
-  const _WelcomeState({required this.onConfigure});
+  const _WelcomeState({
+    required this.onConfigure,
+    required this.onAddFood,
+    required this.onHistory,
+  });
 
   final VoidCallback onConfigure;
+  final VoidCallback onAddFood;
+  final VoidCallback onHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -227,6 +428,16 @@ class _WelcomeState extends StatelessWidget {
             FilledButton(
               onPressed: onConfigure,
               child: Text(l10n.nutritionConfigureProfile),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            OutlinedButton.icon(
+              onPressed: onAddFood,
+              icon: const Icon(Icons.add_rounded),
+              label: Text(l10n.nutritionLogAddFood),
+            ),
+            TextButton(
+              onPressed: onHistory,
+              child: Text(l10n.nutritionTabHistory),
             ),
           ],
         ),
@@ -260,9 +471,15 @@ class _ErrorState extends StatelessWidget {
 }
 
 class _NoSafePlan extends StatelessWidget {
-  const _NoSafePlan({required this.onEdit});
+  const _NoSafePlan({
+    required this.onEdit,
+    required this.onAddFood,
+    required this.onHistory,
+  });
 
   final VoidCallback onEdit;
+  final VoidCallback onAddFood;
+  final VoidCallback onHistory;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -288,6 +505,16 @@ class _NoSafePlan extends StatelessWidget {
             onPressed: onEdit,
             child: Text(context.l10n.nutritionEditPreferences),
           ),
+          const SizedBox(height: AppSpacing.x2),
+          OutlinedButton.icon(
+            onPressed: onAddFood,
+            icon: const Icon(Icons.add_rounded),
+            label: Text(context.l10n.nutritionLogAddFood),
+          ),
+          TextButton(
+            onPressed: onHistory,
+            child: Text(context.l10n.nutritionTabHistory),
+          ),
         ],
       ),
     ),
@@ -295,30 +522,104 @@ class _NoSafePlan extends StatelessWidget {
 }
 
 class _TodayTab extends StatelessWidget {
-  const _TodayTab({required this.day, required this.catalog});
+  const _TodayTab({
+    required this.day,
+    required this.catalog,
+    required this.entries,
+    required this.onToggleConsumed,
+    required this.onAdjustEntry,
+    required this.onDeleteEntry,
+    required this.onAddFood,
+  });
 
   final MealPlanDay day;
   final NutritionCatalog catalog;
+  final List<MealEntry> entries;
+  final Future<void> Function(PlannedMeal meal, bool consumed) onToggleConsumed;
+  final ValueChanged<MealEntry> onAdjustEntry;
+  final ValueChanged<MealEntry> onDeleteEntry;
+  final VoidCallback onAddFood;
 
   @override
   Widget build(BuildContext context) {
-    if (day.meals.isEmpty) {
-      return Center(child: Text(context.l10n.nutritionNoMealsToday));
-    }
+    final today = DateTime.now();
+    final manualEntries = entries.where((entry) {
+      final local = entry.dateTime.toLocal();
+      return entry.type != MealEntryType.consumedPlanned &&
+          local.year == today.year &&
+          local.month == today.month &&
+          local.day == today.day;
+    }).toList();
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.x4),
       children: [
-        Text(
-          day.isTrainingDay
-              ? context.l10n.nutritionTrainingDay
-              : context.l10n.nutritionRestDay,
-          style: Theme.of(context).textTheme.titleSmall,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: onAddFood,
+            icon: const Icon(Icons.add_rounded),
+            label: Text(context.l10n.nutritionLogAddFood),
+          ),
         ),
-        const SizedBox(height: AppSpacing.x2),
+        const SizedBox(height: AppSpacing.x3),
+        if (day.meals.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.x2),
+            child: Text(context.l10n.nutritionNoMealsToday),
+          ),
+        if (day.meals.isNotEmpty)
+          Text(
+            day.isTrainingDay
+                ? context.l10n.nutritionTrainingDay
+                : context.l10n.nutritionRestDay,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        if (day.meals.isNotEmpty) const SizedBox(height: AppSpacing.x2),
         for (var index = 0; index < day.meals.length; index++) ...[
-          _MealCard(meal: day.meals[index], catalog: catalog),
+          _MealCard(
+            meal: day.meals[index],
+            catalog: catalog,
+            consumed: entries.any(
+              (entry) =>
+                  entry.type == MealEntryType.consumedPlanned &&
+                  entry.plannedMealId == day.meals[index].id,
+            ),
+            onConsumedChanged: (value) =>
+                onToggleConsumed(day.meals[index], value),
+            onAdjust:
+                entries
+                        .where(
+                          (entry) =>
+                              entry.type == MealEntryType.consumedPlanned &&
+                              entry.plannedMealId == day.meals[index].id,
+                        )
+                        .firstOrNull ==
+                    null
+                ? null
+                : () => onAdjustEntry(
+                    entries.firstWhere(
+                      (entry) =>
+                          entry.type == MealEntryType.consumedPlanned &&
+                          entry.plannedMealId == day.meals[index].id,
+                    ),
+                  ),
+          ),
           if (index != day.meals.length - 1)
             const SizedBox(height: AppSpacing.x2),
+        ],
+        if (manualEntries.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.x4),
+          Text(
+            context.l10n.nutritionLoggedItems,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          for (final entry in manualEntries)
+            _EntryTile(
+              entry: entry,
+              catalog: catalog,
+              onAdjust: () => onAdjustEntry(entry),
+              onDelete: () => onDeleteEntry(entry),
+            ),
         ],
       ],
     );
@@ -401,6 +702,138 @@ class _RecipesTab extends StatelessWidget {
   }
 }
 
+class _HistoryTab extends StatelessWidget {
+  const _HistoryTab({
+    required this.entries,
+    required this.catalog,
+    required this.onAdjust,
+    required this.onDelete,
+  });
+
+  final List<MealEntry> entries;
+  final NutritionCatalog? catalog;
+  final ValueChanged<MealEntry> onAdjust;
+  final ValueChanged<MealEntry> onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    if (entries.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.x4),
+          child: Text(
+            context.l10n.nutritionHistoryEmpty,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    final grouped = <DateTime, List<MealEntry>>{};
+    for (final entry in entries) {
+      final date = entry.dateTime.toLocal();
+      grouped
+          .putIfAbsent(DateTime(date.year, date.month, date.day), () => [])
+          .add(entry);
+    }
+    final dates = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.x4),
+      children: [
+        for (final date in dates) ...[
+          Text(
+            MaterialLocalizations.of(context).formatMediumDate(date),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          for (final entry in grouped[date]!)
+            _EntryTile(
+              entry: entry,
+              catalog: catalog,
+              onAdjust: () => onAdjust(entry),
+              onDelete: () => onDelete(entry),
+            ),
+          const SizedBox(height: AppSpacing.x3),
+        ],
+      ],
+    );
+  }
+}
+
+class _EntryTile extends StatelessWidget {
+  const _EntryTile({
+    required this.entry,
+    required this.catalog,
+    required this.onAdjust,
+    required this.onDelete,
+  });
+
+  final MealEntry entry;
+  final NutritionCatalog? catalog;
+  final VoidCallback onAdjust;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final time = MaterialLocalizations.of(context)
+        .formatTimeOfDay(TimeOfDay.fromDateTime(entry.dateTime.toLocal()));
+    final quantity = entry.quantityGrams == null
+        ? null
+        : '${_formatGrams(entry.quantityGrams!)} g';
+    return ListTile(
+      minTileHeight: 64,
+      contentPadding: EdgeInsets.zero,
+      title: Text(_entryName(context, entry, catalog)),
+      subtitle: Text(
+        [
+          time,
+          ...?(quantity == null ? null : [quantity]),
+          if (entry.type == MealEntryType.consumedPlanned)
+            context.l10n.nutritionLoggedFromPlan
+          else
+            context.l10n.nutritionLoggedManually,
+        ].join(' · '),
+      ),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            tooltip: context.l10n.nutritionLogAdjust,
+            onPressed: onAdjust,
+            icon: const Icon(Icons.edit_outlined),
+          ),
+          IconButton(
+            tooltip: context.l10n.nutritionLogDelete,
+            onPressed: onDelete,
+            icon: const Icon(Icons.delete_outline_rounded),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _entryName(
+  BuildContext context,
+  MealEntry entry,
+  NutritionCatalog? catalog,
+) {
+  final language = Localizations.localeOf(context).languageCode;
+  if (entry.foodId != null && catalog != null) {
+    final food = catalog.foods
+        .where((item) => item.id == entry.foodId)
+        .firstOrNull;
+    if (food != null) return language == 'es' ? food.nameEs : food.name;
+  }
+  if (entry.recipeId != null && catalog != null) {
+    final recipe = catalog.recipes
+        .where((item) => item.id == entry.recipeId)
+        .firstOrNull;
+    if (recipe != null) {
+      return language == 'es' ? recipe.titleEs : recipe.titleEn;
+    }
+  }
+  return entry.foodId ?? entry.recipeId ?? entry.id;
+}
+
 class _ShoppingTab extends StatelessWidget {
   const _ShoppingTab({required this.plan, required this.catalog});
 
@@ -428,10 +861,19 @@ class _ShoppingTab extends StatelessWidget {
 }
 
 class _MealCard extends StatelessWidget {
-  const _MealCard({required this.meal, required this.catalog});
+  const _MealCard({
+    required this.meal,
+    required this.catalog,
+    this.consumed = false,
+    this.onConsumedChanged,
+    this.onAdjust,
+  });
 
   final PlannedMeal meal;
   final NutritionCatalog catalog;
+  final bool consumed;
+  final ValueChanged<bool>? onConsumedChanged;
+  final VoidCallback? onAdjust;
 
   @override
   Widget build(BuildContext context) {
@@ -460,10 +902,237 @@ class _MealCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
+          if (onConsumedChanged != null) ...[
+            const SizedBox(height: AppSpacing.x2),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              minTileHeight: 48,
+              value: consumed,
+              onChanged: (value) => onConsumedChanged!(value ?? false),
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Text(
+                consumed
+                    ? context.l10n.nutritionLogUndo
+                    : context.l10n.nutritionLogMarkConsumed,
+              ),
+            ),
+            if (consumed && onAdjust != null)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onAdjust,
+                  icon: const Icon(Icons.edit_outlined),
+                  label: Text(context.l10n.nutritionLogAdjust),
+                ),
+              ),
+          ],
         ],
       ),
     );
   }
+}
+
+class _FoodPickerSheet extends StatefulWidget {
+  const _FoodPickerSheet({required this.foods});
+
+  final List<NutritionCatalogFood> foods;
+
+  @override
+  State<_FoodPickerSheet> createState() => _FoodPickerSheetState();
+}
+
+class _FoodPickerSheetState extends State<_FoodPickerSheet> {
+  final _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _search.text.trim().toLowerCase();
+    final foods = widget.foods
+        .where((food) {
+          if (query.isEmpty) return true;
+          return [
+            food.name,
+            food.nameEs,
+            ...food.aliases,
+          ].any((name) => name.toLowerCase().contains(query));
+        })
+        .toList(growable: false);
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.x4,
+          AppSpacing.x3,
+          AppSpacing.x4,
+          MediaQuery.viewInsetsOf(context).bottom + AppSpacing.x4,
+        ),
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height * 0.72,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.nutritionLogAddFood,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: AppSpacing.x2),
+              TextField(
+                controller: _search,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  labelText: context.l10n.nutritionFoodSearchLabel,
+                  prefixIcon: const Icon(Icons.search_rounded),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.x2),
+              Expanded(
+                child: foods.isEmpty
+                    ? Center(child: Text(context.l10n.nutritionFoodSearchEmpty))
+                    : ListView.builder(
+                        itemCount: foods.length,
+                        itemBuilder: (context, index) {
+                          final food = foods[index];
+                          final spanish =
+                              Localizations.localeOf(context).languageCode ==
+                              'es';
+                          return ListTile(
+                            minTileHeight: 52,
+                            title: Text(spanish ? food.nameEs : food.name),
+                            onTap: () => Navigator.of(context).pop(food.id),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FoodAmountDialog extends StatefulWidget {
+  const _FoodAmountDialog();
+
+  @override
+  State<_FoodAmountDialog> createState() => _FoodAmountDialogState();
+}
+
+class _FoodAmountDialogState extends State<_FoodAmountDialog> {
+  final _amount = TextEditingController();
+  bool _invalid = false;
+
+  @override
+  void dispose() {
+    _amount.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l10n.nutritionLogAddFood),
+    content: TextField(
+      controller: _amount,
+      autofocus: true,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: context.l10n.nutritionLogGrams,
+        suffixText: 'g',
+        errorText: _invalid ? context.l10n.nutritionLogInvalidGrams : null,
+      ),
+      onChanged: (_) {
+        if (_invalid) setState(() => _invalid = false);
+      },
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: Text(context.l10n.commonCancel),
+      ),
+      FilledButton(
+        onPressed: () {
+          final amount = double.tryParse(
+            _amount.text.trim().replaceAll(',', '.'),
+          );
+          if (amount == null ||
+              !amount.isFinite ||
+              amount <= 0 ||
+              amount > 10000) {
+            setState(() => _invalid = true);
+            return;
+          }
+          Navigator.of(context).pop(amount);
+        },
+        child: Text(context.l10n.commonSave),
+      ),
+    ],
+  );
+}
+
+class _ServingAmountDialog extends StatefulWidget {
+  const _ServingAmountDialog({required this.initialValue});
+
+  final double initialValue;
+
+  @override
+  State<_ServingAmountDialog> createState() => _ServingAmountDialogState();
+}
+
+class _ServingAmountDialogState extends State<_ServingAmountDialog> {
+  late final _amount = TextEditingController(
+    text: _formatGrams(widget.initialValue),
+  );
+  bool _invalid = false;
+
+  @override
+  void dispose() {
+    _amount.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l10n.nutritionLogAdjust),
+    content: TextField(
+      controller: _amount,
+      autofocus: true,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: context.l10n.nutritionLogPortions,
+        errorText: _invalid ? context.l10n.nutritionLogInvalidPortions : null,
+      ),
+      onChanged: (_) {
+        if (_invalid) setState(() => _invalid = false);
+      },
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: Text(context.l10n.commonCancel),
+      ),
+      FilledButton(
+        onPressed: () {
+          final amount = double.tryParse(
+            _amount.text.trim().replaceAll(',', '.'),
+          );
+          if (amount == null ||
+              !amount.isFinite ||
+              amount <= 0 ||
+              amount > 10) {
+            setState(() => _invalid = true);
+            return;
+          }
+          Navigator.of(context).pop(amount);
+        },
+        child: Text(context.l10n.commonSave),
+      ),
+    ],
+  );
 }
 
 String _localizedRecipe(BuildContext context, PlannedMeal meal) =>

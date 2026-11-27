@@ -343,6 +343,11 @@ class MealEntry {
     this.foodId,
     this.servings = 1,
     this.notes,
+    this.type = MealEntryType.manual,
+    this.plannedMealId,
+    this.quantityGrams,
+    this.nutrientEstimates = const {},
+    this.catalogVersion,
   });
 
   final String id;
@@ -351,14 +356,94 @@ class MealEntry {
   final String? foodId;
   final double servings;
   final String? notes;
+  final MealEntryType type;
+  final String? plannedMealId;
+  final double? quantityGrams;
+  final Map<String, double?> nutrientEstimates;
+  final String? catalogVersion;
+
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'dateTime': dateTime.toIso8601String(),
+    'recipeId': recipeId,
+    'foodId': foodId,
+    'servings': servings,
+    'notes': notes,
+    'type': type.name,
+    'plannedMealId': plannedMealId,
+    'quantityGrams': quantityGrams,
+    'nutrientEstimates': nutrientEstimates,
+    'catalogVersion': catalogVersion,
+  };
+
+  factory MealEntry.fromJson(Map<String, Object?> json) {
+    final dateText = json['dateTime'];
+    final date = dateText is String ? DateTime.tryParse(dateText) : null;
+    final id = json['id'];
+    final typeText = json['type'];
+    final type = typeText == null
+        ? MealEntryType.manual
+        : MealEntryType.values
+              .where((value) => value.name == typeText)
+              .firstOrNull;
+    final nutrients = json['nutrientEstimates'];
+    if (id is! String ||
+        date == null ||
+        type == null ||
+        (nutrients != null && nutrients is! Map)) {
+      throw const FormatException('El registro de comida no es válido.');
+    }
+    final estimates = <String, double?>{};
+    if (nutrients is Map) {
+      for (final entry in nutrients.entries) {
+        final value = entry.value;
+        if (entry.key is! String || (value != null && value is! num)) {
+          throw const FormatException(
+            'La estimación del registro no es válida.',
+          );
+        }
+        estimates[entry.key as String] = (value as num?)?.toDouble();
+      }
+    }
+    final servings = json['servings'];
+    final quantity = json['quantityGrams'];
+    final item = MealEntry(
+      id: id,
+      dateTime: date,
+      recipeId: json['recipeId'] as String?,
+      foodId: json['foodId'] as String?,
+      servings: servings is num ? servings.toDouble() : 1,
+      notes: json['notes'] as String?,
+      type: type,
+      plannedMealId: json['plannedMealId'] as String?,
+      quantityGrams: quantity is num ? quantity.toDouble() : null,
+      nutrientEstimates: Map.unmodifiable(estimates),
+      catalogVersion: json['catalogVersion'] as String?,
+    );
+    if (!item.isValid) {
+      throw const FormatException('El registro de comida no es válido.');
+    }
+    return item;
+  }
 
   bool get isValid =>
       id.trim().isNotEmpty &&
       (recipeId?.trim().isNotEmpty == true ||
           foodId?.trim().isNotEmpty == true) &&
       servings.isFinite &&
-      servings > 0;
+      servings > 0 &&
+      (plannedMealId == null || plannedMealId!.trim().isNotEmpty) &&
+      (quantityGrams == null ||
+          (quantityGrams!.isFinite && quantityGrams! > 0)) &&
+      (type != MealEntryType.consumedPlanned ||
+          (plannedMealId?.trim().isNotEmpty == true &&
+              recipeId?.trim().isNotEmpty == true)) &&
+      nutrientEstimates.values.every(
+        (value) => value == null || (value.isFinite && value >= 0),
+      );
 }
+
+enum MealEntryType { planned, consumedPlanned, manual, imported }
 
 class FoodRestriction {
   const FoodRestriction({required this.type, required this.value});

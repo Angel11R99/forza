@@ -4,6 +4,7 @@ import 'package:forza/app/localization/generated/app_localizations.dart';
 import 'package:forza/app/theme/app_theme.dart';
 import 'package:forza/data/repositories/profile_settings_repository.dart';
 import 'package:forza/data/repositories/nutrition_catalog_repository.dart';
+import 'package:forza/data/repositories/nutrition_meal_log_repository.dart';
 import 'package:forza/domain/models/nutrition/nutrition_models.dart';
 import 'package:forza/ui/features/nutrition/views/nutrition_home_page.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
@@ -50,6 +51,9 @@ void main() {
               home: NutritionHomePage(
                 profileRepository: repository,
                 trainingSettings: const TrainingSettings(),
+                mealLogRepository: NutritionMealLogRepository(
+                  storage: _MealLogMemoryStorage(),
+                ),
                 catalogRepository: NutritionCatalogRepository(
                   loadAsset: () async => catalogJson,
                 ),
@@ -87,6 +91,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('en'),
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
         localizationsDelegates: [
           ...AppLocalizations.localizationsDelegates,
           ...GlobalMaterialLocalizations.delegates,
@@ -95,6 +101,9 @@ void main() {
         home: NutritionHomePage(
           profileRepository: repository,
           trainingSettings: const TrainingSettings(),
+          mealLogRepository: NutritionMealLogRepository(
+            storage: _MealLogMemoryStorage(),
+          ),
           catalogRepository: NutritionCatalogRepository(
             loadAsset: () async => catalogJson,
           ),
@@ -126,6 +135,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('en'),
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
         localizationsDelegates: [
           ...AppLocalizations.localizationsDelegates,
           ...GlobalMaterialLocalizations.delegates,
@@ -134,6 +145,9 @@ void main() {
         home: NutritionHomePage(
           profileRepository: repository,
           trainingSettings: const TrainingSettings(),
+          mealLogRepository: NutritionMealLogRepository(
+            storage: _MealLogMemoryStorage(),
+          ),
           catalogRepository: NutritionCatalogRepository(
             loadAsset: () async => _catalogJson,
           ),
@@ -151,9 +165,73 @@ void main() {
     expect(find.text('Banana bowl'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('logs an unplanned food and shows it in history', (tester) async {
+    final repository = ProfileSettingsRepository(storage: _MemoryStorage());
+    final historyStorage = _MealLogMemoryStorage();
+    final mealLogRepository = NutritionMealLogRepository(
+      storage: historyStorage,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        localizationsDelegates: [
+          ...AppLocalizations.localizationsDelegates,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: NutritionHomePage(
+          profileRepository: repository,
+          trainingSettings: const TrainingSettings(),
+          catalogRepository: NutritionCatalogRepository(
+            loadAsset: () async => _catalogJson,
+          ),
+          mealLogRepository: mealLogRepository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Log another food'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'Banana');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Banana').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, '150');
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
+
+    final entries = await mealLogRepository.loadAll();
+    expect(entries, hasLength(1));
+    expect(
+      entries.any(
+        (entry) =>
+            entry.type == MealEntryType.manual && entry.quantityGrams == 150,
+      ),
+      isTrue,
+    );
+    await tester.ensureVisible(find.text('History'));
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+    expect(find.text('Banana'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _MemoryStorage implements ProfilePreferencesStorage {
+  final values = <String, String>{};
+
+  @override
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async => values[key] = value;
+}
+
+class _MealLogMemoryStorage implements NutritionMealLogStorage {
   final values = <String, String>{};
 
   @override

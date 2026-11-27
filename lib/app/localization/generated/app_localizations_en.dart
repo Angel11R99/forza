@@ -3219,4 +3219,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nutritionMyPlanAction => 'View nutrition plan';
+
+  @override
+  String get nutritionBackToPlan => 'Back to plan';
+
+  @override
+  String get nutritionLogAddFood => 'Log another food';
+
+  @override
+  String get nutritionLoggedItems => 'Foods logged today';
+
+  @override
+  String get nutritionLogMarkConsumed => 'Mark as eaten';
+
+  @override
+  String get nutritionLogUndo => 'Undo log';
+
+  @override
+  String get nutritionLogAdjust => 'Adjust serving';
+
+  @override
+  String get nutritionLogDelete => 'Delete log';
+
+  @override
+  String get nutritionLoggedFromPlan => 'From plan';
+
+  @override
+  String get nutritionLoggedManually => 'Manual entry';
+
+  @override
+  String get nutritionFoodSearchLabel => 'Search foods';
+
+  @override
+  String get nutritionFoodSearchEmpty => 'No foods match your search.';
+
+  @override
+  String get nutritionLogGrams => 'Amount in grams';
+
+  @override
+  String get nutritionLogPortions => 'Servings';
+
+  @override
+  String get nutritionLogInvalidGrams =>
+      'Enter an amount greater than zero grams.';
+
+  @override
+  String get nutritionLogInvalidPortions =>
+      'Enter a serving amount greater than zero.';
+
+  @override
+  String get nutritionLogSaveError => 'We couldn’t save this entry. Try again.';
+
+  @override
+  String get nutritionHistoryEmpty =>
+      'You haven’t logged meals yet. You can add a meal even if it was not in your plan.';
+
+  @override
+  String get nutritionTabHistory => 'History';
 }

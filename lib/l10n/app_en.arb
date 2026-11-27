@@ -1218,5 +1218,23 @@
         "type": "int"
       }
     }
-  }
+  },
+  "nutritionBackToPlan": "Back to plan",
+  "nutritionLogAddFood": "Log another food",
+  "nutritionLoggedItems": "Foods logged today",
+  "nutritionLogMarkConsumed": "Mark as eaten",
+  "nutritionLogUndo": "Undo log",
+  "nutritionLogAdjust": "Adjust serving",
+  "nutritionLogDelete": "Delete log",
+  "nutritionLoggedFromPlan": "From plan",
+  "nutritionLoggedManually": "Manual entry",
+  "nutritionFoodSearchLabel": "Search foods",
+  "nutritionFoodSearchEmpty": "No foods match your search.",
+  "nutritionLogGrams": "Amount in grams",
+  "nutritionLogPortions": "Servings",
+  "nutritionLogInvalidGrams": "Enter an amount greater than zero grams.",
+  "nutritionLogInvalidPortions": "Enter a serving amount greater than zero.",
+  "nutritionLogSaveError": "We couldn’t save this entry. Try again.",
+  "nutritionHistoryEmpty": "You haven’t logged meals yet. You can add a meal even if it was not in your plan.",
+  "nutritionTabHistory": "History"
 }

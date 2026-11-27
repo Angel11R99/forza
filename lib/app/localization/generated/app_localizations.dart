@@ -5619,6 +5619,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View nutrition plan'**
   String get nutritionMyPlanAction;
+
+  /// No description provided for @nutritionBackToPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to plan'**
+  String get nutritionBackToPlan;
+
+  /// No description provided for @nutritionLogAddFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Log another food'**
+  String get nutritionLogAddFood;
+
+  /// No description provided for @nutritionLoggedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods logged today'**
+  String get nutritionLoggedItems;
+
+  /// No description provided for @nutritionLogMarkConsumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as eaten'**
+  String get nutritionLogMarkConsumed;
+
+  /// No description provided for @nutritionLogUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo log'**
+  String get nutritionLogUndo;
+
+  /// No description provided for @nutritionLogAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust serving'**
+  String get nutritionLogAdjust;
+
+  /// No description provided for @nutritionLogDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete log'**
+  String get nutritionLogDelete;
+
+  /// No description provided for @nutritionLoggedFromPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'From plan'**
+  String get nutritionLoggedFromPlan;
+
+  /// No description provided for @nutritionLoggedManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual entry'**
+  String get nutritionLoggedManually;
+
+  /// No description provided for @nutritionFoodSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods'**
+  String get nutritionFoodSearchLabel;
+
+  /// No description provided for @nutritionFoodSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No foods match your search.'**
+  String get nutritionFoodSearchEmpty;
+
+  /// No description provided for @nutritionLogGrams.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount in grams'**
+  String get nutritionLogGrams;
+
+  /// No description provided for @nutritionLogPortions.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get nutritionLogPortions;
+
+  /// No description provided for @nutritionLogInvalidGrams.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero grams.'**
+  String get nutritionLogInvalidGrams;
+
+  /// No description provided for @nutritionLogInvalidPortions.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a serving amount greater than zero.'**
+  String get nutritionLogInvalidPortions;
+
+  /// No description provided for @nutritionLogSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t save this entry. Try again.'**
+  String get nutritionLogSaveError;
+
+  /// No description provided for @nutritionHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven’t logged meals yet. You can add a meal even if it was not in your plan.'**
+  String get nutritionHistoryEmpty;
+
+  /// No description provided for @nutritionTabHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get nutritionTabHistory;
 }
 
 class _AppLocalizationsDelegate
