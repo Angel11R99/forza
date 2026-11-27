@@ -5469,6 +5469,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Incline side plank'**
   String get trainingNameSidePlank;
+
+  /// No description provided for @nutritionHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get nutritionHubTitle;
+
+  /// No description provided for @nutritionOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get nutritionOpen;
+
+  /// No description provided for @homeNutritionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this week’s menu and shopping list.'**
+  String get homeNutritionSummary;
+
+  /// No description provided for @nutritionMyPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My nutrition plan'**
+  String get nutritionMyPlanTitle;
+
+  /// No description provided for @nutritionMyPlanSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly menu and shopping list'**
+  String get nutritionMyPlanSubtitle;
+
+  /// No description provided for @nutritionWeekSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested weekly plan'**
+  String get nutritionWeekSummary;
+
+  /// No description provided for @nutritionEstimatesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts are recipe estimates, not a nutrition prescription.'**
+  String get nutritionEstimatesNote;
+
+  /// No description provided for @nutritionGeneralCatalogNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing general options; local availability is not confirmed.'**
+  String get nutritionGeneralCatalogNote;
+
+  /// No description provided for @nutritionTabToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get nutritionTabToday;
+
+  /// No description provided for @nutritionTabWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get nutritionTabWeek;
+
+  /// No description provided for @nutritionTabRecipes.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipes'**
+  String get nutritionTabRecipes;
+
+  /// No description provided for @nutritionTabShopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get nutritionTabShopping;
+
+  /// No description provided for @nutritionWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan meals around your preferences'**
+  String get nutritionWelcomeTitle;
+
+  /// No description provided for @nutritionWelcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your preferences to see a simple weekly menu. Nutrition is optional.'**
+  String get nutritionWelcomeDescription;
+
+  /// No description provided for @nutritionConfigureProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Set preferences'**
+  String get nutritionConfigureProfile;
+
+  /// No description provided for @nutritionEditPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit preferences'**
+  String get nutritionEditPreferences;
+
+  /// No description provided for @nutritionNoSafeRecipes.
+  ///
+  /// In en, this message translates to:
+  /// **'We can’t build a menu that meets your restrictions with the available data.'**
+  String get nutritionNoSafeRecipes;
+
+  /// No description provided for @nutritionAllergenUnknownNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The catalog does not yet have verified allergen information for every recipe. We will not remove your filters to fill the menu.'**
+  String get nutritionAllergenUnknownNote;
+
+  /// No description provided for @nutritionNoMealsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no meals to show today.'**
+  String get nutritionNoMealsToday;
+
+  /// No description provided for @nutritionTrainingDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Training day'**
+  String get nutritionTrainingDay;
+
+  /// No description provided for @nutritionRestDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest day'**
+  String get nutritionRestDay;
+
+  /// No description provided for @nutritionShoppingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shopping list is empty.'**
+  String get nutritionShoppingEmpty;
+
+  /// No description provided for @nutritionLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load the meal catalog. Check local storage and try again.'**
+  String get nutritionLoadError;
+
+  /// No description provided for @nutritionRecipeEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated {kcal} kcal per recipe'**
+  String nutritionRecipeEstimate(int kcal);
+
+  /// No description provided for @nutritionMyPlanAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View nutrition plan'**
+  String get nutritionMyPlanAction;
 }
 
 class _AppLocalizationsDelegate

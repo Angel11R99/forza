@@ -3148,4 +3148,89 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trainingNameSidePlank => 'Plancha lateral inclinada';
+
+  @override
+  String get nutritionHubTitle => 'Nutrición';
+
+  @override
+  String get nutritionOpen => 'Abrir';
+
+  @override
+  String get homeNutritionSummary =>
+      'Revisa el menú de la semana y la lista de compras.';
+
+  @override
+  String get nutritionMyPlanTitle => 'Mi plan nutricional';
+
+  @override
+  String get nutritionMyPlanSubtitle => 'Menú semanal y lista de compras';
+
+  @override
+  String get nutritionWeekSummary => 'Plan semanal orientativo';
+
+  @override
+  String get nutritionEstimatesNote =>
+      'Las cantidades son estimaciones por receta, no una prescripción nutricional.';
+
+  @override
+  String get nutritionGeneralCatalogNote =>
+      'Se muestran opciones generales; la disponibilidad en tu zona no está confirmada.';
+
+  @override
+  String get nutritionTabToday => 'Hoy';
+
+  @override
+  String get nutritionTabWeek => 'Semana';
+
+  @override
+  String get nutritionTabRecipes => 'Recetas';
+
+  @override
+  String get nutritionTabShopping => 'Compras';
+
+  @override
+  String get nutritionWelcomeTitle =>
+      'Organiza tus comidas con tus preferencias';
+
+  @override
+  String get nutritionWelcomeDescription =>
+      'Configura tus preferencias para ver un menú semanal sencillo. Usar Nutrición es opcional.';
+
+  @override
+  String get nutritionConfigureProfile => 'Configurar preferencias';
+
+  @override
+  String get nutritionEditPreferences => 'Editar preferencias';
+
+  @override
+  String get nutritionNoSafeRecipes =>
+      'No podemos preparar un menú que respete tus restricciones con los datos disponibles.';
+
+  @override
+  String get nutritionAllergenUnknownNote =>
+      'El catálogo todavía no tiene alérgenos verificados para todas las recetas. No quitaremos tus filtros para completar el menú.';
+
+  @override
+  String get nutritionNoMealsToday => 'No hay comidas para mostrar hoy.';
+
+  @override
+  String get nutritionTrainingDay => 'Día de entrenamiento';
+
+  @override
+  String get nutritionRestDay => 'Día de descanso';
+
+  @override
+  String get nutritionShoppingEmpty => 'La lista de compras está vacía.';
+
+  @override
+  String get nutritionLoadError =>
+      'No pudimos cargar el catálogo de comidas. Comprueba el almacenamiento local e inténtalo otra vez.';
+
+  @override
+  String nutritionRecipeEstimate(int kcal) {
+    return '$kcal kcal estimadas por receta';
+  }
+
+  @override
+  String get nutritionMyPlanAction => 'Ver plan nutricional';
 }

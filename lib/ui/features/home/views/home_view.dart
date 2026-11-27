@@ -19,6 +19,7 @@ class HomeView extends StatelessWidget {
     super.key,
     required this.onShowActivity,
     required this.onShowProfile,
+    this.onShowNutrition,
     required this.settings,
     required this.onStartWorkout,
     required this.onEditPlan,
@@ -34,6 +35,7 @@ class HomeView extends StatelessWidget {
 
   final VoidCallback onShowActivity;
   final VoidCallback onShowProfile;
+  final VoidCallback? onShowNutrition;
   final TrainingSettings settings;
   final ValueChanged<DateTime> onStartWorkout;
   final VoidCallback onEditPlan;
@@ -214,6 +216,30 @@ class HomeView extends StatelessWidget {
                   scheduledSessions: scheduledSessions,
                   onTap: onShowActivity,
                 ),
+                if (onShowNutrition != null) ...[
+                  const SizedBox(height: AppSpacing.x8),
+                  SectionHeading(
+                    title: context.l10n.nutritionHubTitle,
+                    actionLabel: context.l10n.nutritionOpen,
+                    onAction: onShowNutrition,
+                  ),
+                  AppSurfaceCard(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.restaurant_menu_outlined),
+                        const SizedBox(width: AppSpacing.x3),
+                        Expanded(
+                          child: Text(context.l10n.homeNutritionSummary),
+                        ),
+                        IconButton(
+                          tooltip: context.l10n.nutritionOpen,
+                          onPressed: onShowNutrition,
+                          icon: const Icon(Icons.arrow_forward_rounded),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

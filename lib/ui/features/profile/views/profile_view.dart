@@ -29,6 +29,7 @@ class ProfileView extends StatefulWidget {
     required this.profileSettingsRepository,
     this.preferences = const AppPreferences(),
     this.onPreferencesChanged,
+    this.onOpenNutritionPlan,
     required this.accountAuthViewModel,
     this.cloudSyncService,
     this.onNotificationsChanged,
@@ -47,6 +48,7 @@ class ProfileView extends StatefulWidget {
   final ProfileSettingsRepository profileSettingsRepository;
   final AppPreferences preferences;
   final ValueChanged<AppPreferences>? onPreferencesChanged;
+  final VoidCallback? onOpenNutritionPlan;
   final AccountAuthViewModel accountAuthViewModel;
   final FirestoreBackupSyncService? cloudSyncService;
   final Future<bool> Function(
@@ -295,6 +297,13 @@ class _ProfileViewState extends State<ProfileView> {
                             ),
                       onTap: _editNutritionProfile,
                     ),
+                    if (widget.onOpenNutritionPlan != null)
+                      _ProfileOption(
+                        icon: Icons.calendar_view_week_outlined,
+                        title: context.l10n.nutritionMyPlanTitle,
+                        subtitle: context.l10n.nutritionMyPlanSubtitle,
+                        onTap: widget.onOpenNutritionPlan!,
+                      ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.x6),

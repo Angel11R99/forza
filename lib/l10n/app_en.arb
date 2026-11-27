@@ -286,7 +286,6 @@
   "homeStatusSkipped": "skipped",
   "homeStatusPending": "pending",
   "homeStatusRest": "rest",
-  "homeStatusSkipped": "skipped",
   "homeStatusRescheduled": "rescheduled",
   "homeRescheduledExplanation": "Rescheduled workouts may appear on another day or outside this week.",
   "activityTitle": "Activity",
@@ -1187,5 +1186,37 @@
   "trainingNameBandReverseFly": "Band reverse fly",
   "trainingNamePikeToCobra": "Pike-to-cobra push-up",
   "trainingNameJumpSquat": "Jump squat",
-  "trainingNameSidePlank": "Incline side plank"
+  "trainingNameSidePlank": "Incline side plank",
+  "nutritionHubTitle": "Nutrition",
+  "nutritionOpen": "Open",
+  "homeNutritionSummary": "Review this week’s menu and shopping list.",
+  "nutritionMyPlanTitle": "My nutrition plan",
+  "nutritionMyPlanSubtitle": "Weekly menu and shopping list",
+  "nutritionWeekSummary": "Suggested weekly plan",
+  "nutritionEstimatesNote": "Amounts are recipe estimates, not a nutrition prescription.",
+  "nutritionGeneralCatalogNote": "Showing general options; local availability is not confirmed.",
+  "nutritionTabToday": "Today",
+  "nutritionTabWeek": "Week",
+  "nutritionTabRecipes": "Recipes",
+  "nutritionTabShopping": "Shopping",
+  "nutritionWelcomeTitle": "Plan meals around your preferences",
+  "nutritionWelcomeDescription": "Set your preferences to see a simple weekly menu. Nutrition is optional.",
+  "nutritionConfigureProfile": "Set preferences",
+  "nutritionEditPreferences": "Edit preferences",
+  "nutritionNoSafeRecipes": "We can’t build a menu that meets your restrictions with the available data.",
+  "nutritionAllergenUnknownNote": "The catalog does not yet have verified allergen information for every recipe. We will not remove your filters to fill the menu.",
+  "nutritionNoMealsToday": "There are no meals to show today.",
+  "nutritionTrainingDay": "Training day",
+  "nutritionRestDay": "Rest day",
+  "nutritionShoppingEmpty": "Your shopping list is empty.",
+  "nutritionLoadError": "We couldn’t load the meal catalog. Check local storage and try again.",
+  "nutritionRecipeEstimate": "Estimated {kcal} kcal per recipe",
+  "nutritionMyPlanAction": "View nutrition plan",
+  "@nutritionRecipeEstimate": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  }
 }
