@@ -3233,4 +3233,62 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get nutritionMyPlanAction => 'Ver plan nutricional';
+
+  @override
+  String get nutritionBackToPlan => 'Volver al plan';
+
+  @override
+  String get nutritionLogAddFood => 'Registrar otro alimento';
+
+  @override
+  String get nutritionLoggedItems => 'Alimentos registrados hoy';
+
+  @override
+  String get nutritionLogMarkConsumed => 'Registrar como consumida';
+
+  @override
+  String get nutritionLogUndo => 'Deshacer registro';
+
+  @override
+  String get nutritionLogAdjust => 'Ajustar porción';
+
+  @override
+  String get nutritionLogDelete => 'Eliminar registro';
+
+  @override
+  String get nutritionLoggedFromPlan => 'Del plan';
+
+  @override
+  String get nutritionLoggedManually => 'Registro manual';
+
+  @override
+  String get nutritionFoodSearchLabel => 'Buscar alimento';
+
+  @override
+  String get nutritionFoodSearchEmpty => 'No hay alimentos que coincidan.';
+
+  @override
+  String get nutritionLogGrams => 'Cantidad en gramos';
+
+  @override
+  String get nutritionLogPortions => 'Porciones';
+
+  @override
+  String get nutritionLogInvalidGrams =>
+      'Ingresa una cantidad de gramos mayor que cero.';
+
+  @override
+  String get nutritionLogInvalidPortions =>
+      'Ingresa una porción mayor que cero.';
+
+  @override
+  String get nutritionLogSaveError =>
+      'No pudimos guardar el registro. Inténtalo de nuevo.';
+
+  @override
+  String get nutritionHistoryEmpty =>
+      'Todavía no hay comidas registradas. Puedes añadir una comida aunque no estuviera en el plan.';
+
+  @override
+  String get nutritionTabHistory => 'Historial';
 }

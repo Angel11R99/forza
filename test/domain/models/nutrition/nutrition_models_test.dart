@@ -133,4 +133,42 @@ void main() {
     expect(plan.isValid, isTrue);
     expect(MealEntry(id: 'bad', dateTime: DateTime.utc(2026)).isValid, isFalse);
   });
+
+  test(
+    'meal entries preserve source, grams and unknown nutrient estimates',
+    () {
+      final entry = MealEntry(
+        id: 'consumed:meal-1',
+        dateTime: DateTime(2026, 11, 27, 8),
+        recipeId: 'porridge',
+        servings: 1,
+        type: MealEntryType.consumedPlanned,
+        plannedMealId: 'meal-1',
+        quantityGrams: 245,
+        nutrientEstimates: const {'energyKcal': 0, 'proteinG': null},
+        catalogVersion: '2026.1',
+      );
+
+      final restored = MealEntry.fromJson(entry.toJson());
+
+      expect(restored.isValid, isTrue);
+      expect(restored.type, MealEntryType.consumedPlanned);
+      expect(restored.plannedMealId, 'meal-1');
+      expect(restored.quantityGrams, 245);
+      expect(restored.nutrientEstimates['energyKcal'], 0);
+      expect(restored.nutrientEstimates['proteinG'], isNull);
+    },
+  );
+
+  test('planned consumption requires its source plan item', () {
+    expect(
+      MealEntry(
+        id: 'bad',
+        dateTime: DateTime.utc(2026),
+        recipeId: 'porridge',
+        type: MealEntryType.consumedPlanned,
+      ).isValid,
+      isFalse,
+    );
+  });
 }

@@ -1218,5 +1218,23 @@
         "type": "int"
       }
     }
-  }
+  },
+  "nutritionBackToPlan": "Volver al plan",
+  "nutritionLogAddFood": "Registrar otro alimento",
+  "nutritionLoggedItems": "Alimentos registrados hoy",
+  "nutritionLogMarkConsumed": "Registrar como consumida",
+  "nutritionLogUndo": "Deshacer registro",
+  "nutritionLogAdjust": "Ajustar porción",
+  "nutritionLogDelete": "Eliminar registro",
+  "nutritionLoggedFromPlan": "Del plan",
+  "nutritionLoggedManually": "Registro manual",
+  "nutritionFoodSearchLabel": "Buscar alimento",
+  "nutritionFoodSearchEmpty": "No hay alimentos que coincidan.",
+  "nutritionLogGrams": "Cantidad en gramos",
+  "nutritionLogPortions": "Porciones",
+  "nutritionLogInvalidGrams": "Ingresa una cantidad de gramos mayor que cero.",
+  "nutritionLogInvalidPortions": "Ingresa una porción mayor que cero.",
+  "nutritionLogSaveError": "No pudimos guardar el registro. Inténtalo de nuevo.",
+  "nutritionHistoryEmpty": "Todavía no hay comidas registradas. Puedes añadir una comida aunque no estuviera en el plan.",
+  "nutritionTabHistory": "Historial"
 }
