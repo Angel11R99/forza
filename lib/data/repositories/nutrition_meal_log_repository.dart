@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../database/app_database.dart';
 import '../../domain/models/nutrition/nutrition_models.dart';
 
 abstract interface class NutritionMealLogStorage {
@@ -24,11 +25,117 @@ class SharedNutritionMealLogStorage implements NutritionMealLogStorage {
       _preferences.setString(key, value);
 }
 
+/// Stores each meal entry as a separate SQLite row and imports the previous
+/// SharedPreferences snapshot once, without deleting that source until the
+/// new database snapshot has been committed.
+class DriftNutritionMealLogStorage implements NutritionMealLogStorage {
+  DriftNutritionMealLogStorage({
+    AppDatabase? database,
+    SharedPreferencesAsync? legacyPreferences,
+  }) : _database = database ?? AppDatabase.instance,
+       _legacyPreferences = legacyPreferences ?? SharedPreferencesAsync();
+
+  static const _migrationKey = 'migration_nutrition_meal_log_v1';
+  final AppDatabase _database;
+  final SharedPreferencesAsync _legacyPreferences;
+
+  @override
+  Future<String?> read(String key) async {
+    if (key != NutritionMealLogRepository.storageKey) return null;
+    await _migrateLegacySnapshot();
+    final rows = await _database.select(_database.nutritionMealLogs).get();
+    final entries = rows.map((row) => jsonDecode(row.entryJson)).toList();
+    return jsonEncode({'version': 1, 'entries': entries});
+  }
+
+  @override
+  Future<void> write(String key, String value) async {
+    if (key != NutritionMealLogRepository.storageKey) return;
+    final entries = _decodeSnapshot(value);
+    await _database.transaction(() async {
+      await _database.delete(_database.nutritionMealLogs).go();
+      if (entries.isNotEmpty) {
+        await _database.batch((batch) {
+          batch.insertAll(
+            _database.nutritionMealLogs,
+            entries.map(
+              (entry) => NutritionMealLogsCompanion.insert(
+                id: entry.id,
+                loggedAt: entry.dateTime.toIso8601String(),
+                entryJson: jsonEncode(entry.toJson()),
+              ),
+            ),
+          );
+        });
+      }
+      await _database
+          .into(_database.appMetadata)
+          .insertOnConflictUpdate(
+            AppMetadataCompanion.insert(key: _migrationKey, value: 'true'),
+          );
+    });
+  }
+
+  Future<void> _migrateLegacySnapshot() async {
+    final marker = await (_database.select(
+      _database.appMetadata,
+    )..where((row) => row.key.equals(_migrationKey))).getSingleOrNull();
+    if (marker?.value == 'true') return;
+    final legacyJson = await _legacyPreferences.getString(
+      NutritionMealLogRepository.storageKey,
+    );
+    final legacyEntries = legacyJson == null || legacyJson.isEmpty
+        ? const <MealEntry>[]
+        : _decodeSnapshot(legacyJson);
+    await _database.transaction(() async {
+      final existing = await _database
+          .select(_database.nutritionMealLogs)
+          .get();
+      if (existing.isEmpty && legacyEntries.isNotEmpty) {
+        await _database.batch((batch) {
+          batch.insertAll(
+            _database.nutritionMealLogs,
+            legacyEntries.map(
+              (entry) => NutritionMealLogsCompanion.insert(
+                id: entry.id,
+                loggedAt: entry.dateTime.toIso8601String(),
+                entryJson: jsonEncode(entry.toJson()),
+              ),
+            ),
+          );
+        });
+      }
+      await _database
+          .into(_database.appMetadata)
+          .insertOnConflictUpdate(
+            AppMetadataCompanion.insert(key: _migrationKey, value: 'true'),
+          );
+    });
+  }
+
+  List<MealEntry> _decodeSnapshot(String value) {
+    try {
+      final root = jsonDecode(value);
+      if (root is! Map || root['version'] != 1 || root['entries'] is! List) {
+        throw const FormatException();
+      }
+      return (root['entries'] as List)
+          .map((raw) {
+            if (raw is! Map) throw const FormatException();
+            return MealEntry.fromJson(Map<String, Object?>.from(raw));
+          })
+          .toList(growable: false);
+    } on Object {
+      throw const FormatException('El historial de comidas no es válido.');
+    }
+  }
+}
+
 /// Device-local, offline meal history. Writes are serialized to avoid lost
 /// updates when a quick log and a plan action happen close together.
 class NutritionMealLogRepository {
   NutritionMealLogRepository({NutritionMealLogStorage? storage})
-    : _storage = storage ?? SharedNutritionMealLogStorage();
+    : _storage = storage ?? DriftNutritionMealLogStorage();
 
   static const storageKey = 'nutrition_meal_log_v1';
   final NutritionMealLogStorage _storage;
@@ -84,7 +191,20 @@ class NutritionMealLogRepository {
   });
 
   Future<void> clear() => _serialized(() async {
-    await _storage.write(storageKey, '');
+    await _storage.write(
+      storageKey,
+      jsonEncode({'version': 1, 'entries': const <Object?>[]}),
+    );
+    if (!_changes.isClosed) _changes.add(null);
+  });
+
+  Future<void> replaceAll(Iterable<MealEntry> entries) => _serialized(() async {
+    final validated = entries.toList(growable: false);
+    if (validated.any((entry) => !entry.isValid) ||
+        validated.map((entry) => entry.id).toSet().length != validated.length) {
+      throw const FormatException('El historial de comidas no es válido.');
+    }
+    await _writeEntries(validated);
     if (!_changes.isClosed) _changes.add(null);
   });
 

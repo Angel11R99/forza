@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ui/features/profile/models/profile_settings.dart';
 import '../../domain/models/nutrition/nutrition_models.dart';
+import '../database/app_database.dart' hide NutritionProfile;
 
 enum CloudSyncFrequency { onChange, daily, weekly, monthly, manual }
 
@@ -28,8 +29,12 @@ class SharedProfilePreferencesStorage implements ProfilePreferencesStorage {
 }
 
 class ProfileSettingsRepository {
-  ProfileSettingsRepository({ProfilePreferencesStorage? storage})
-    : _storage = storage ?? SharedProfilePreferencesStorage();
+  ProfileSettingsRepository({
+    ProfilePreferencesStorage? storage,
+    AppDatabase? database,
+  }) : _storage = storage ?? SharedProfilePreferencesStorage(),
+       _nutritionDatabase =
+           database ?? (storage == null ? AppDatabase.instance : null);
 
   static const _appPreferencesKey = 'profile_app_preferences_v1';
   static const _notificationSettingsKey = 'profile_notifications_v1';
@@ -40,14 +45,33 @@ class ProfileSettingsRepository {
   static const _syncEnabledKeyPrefix = 'profile_cloud_sync_enabled_';
   static const _pendingSyncKeyPrefix = 'profile_cloud_sync_pending_';
   static const _syncFrequencyKeyPrefix = 'profile_cloud_sync_frequency_';
+  static const _nutritionSyncConsentKeyPrefix =
+      'profile_cloud_sync_nutrition_consent_';
   static const _displayNameKeyPrefix = 'profile_display_name_';
 
   final ProfilePreferencesStorage _storage;
+  final AppDatabase? _nutritionDatabase;
   final StreamController<void> _changes = StreamController<void>.broadcast();
 
   Stream<void> get changes => _changes.stream;
 
   Future<NutritionProfile?> loadNutritionProfile() async {
+    final database = _nutritionDatabase;
+    if (database != null) {
+      final saved = await (database.select(
+        database.nutritionProfiles,
+      )..where((row) => row.id.equals('local'))).getSingleOrNull();
+      if (saved != null) {
+        return NutritionProfile.fromJson(
+          Map<String, Object?>.from(jsonDecode(saved.profileJson) as Map),
+        );
+      }
+      final legacy = await _read(_nutritionProfileKey);
+      if (legacy == null) return null;
+      final profile = NutritionProfile.fromJson(legacy);
+      await _writeNutritionProfile(database, profile);
+      return profile;
+    }
     final json = await _read(_nutritionProfileKey);
     return json == null ? null : NutritionProfile.fromJson(json);
   }
@@ -56,14 +80,40 @@ class ProfileSettingsRepository {
     if (!profile.isValid) {
       throw const FormatException('El perfil nutricional no es válido.');
     }
-    await _storage.write(_nutritionProfileKey, jsonEncode(profile.toJson()));
+    final database = _nutritionDatabase;
+    if (database == null) {
+      await _storage.write(_nutritionProfileKey, jsonEncode(profile.toJson()));
+    } else {
+      await _writeNutritionProfile(database, profile);
+      await _storage.write(_nutritionProfileKey, '');
+    }
     if (!_changes.isClosed) _changes.add(null);
   }
 
   Future<void> clearNutritionProfile() async {
+    final database = _nutritionDatabase;
+    if (database != null) {
+      await (database.delete(
+        database.nutritionProfiles,
+      )..where((row) => row.id.equals('local'))).go();
+    }
     await _storage.write(_nutritionProfileKey, '');
     if (!_changes.isClosed) _changes.add(null);
   }
+
+  Future<void> _writeNutritionProfile(
+    AppDatabase database,
+    NutritionProfile profile,
+  ) => database
+      .into(database.nutritionProfiles)
+      .insertOnConflictUpdate(
+        NutritionProfilesCompanion.insert(
+          id: 'local',
+          profileVersion: profile.version,
+          profileJson: jsonEncode(profile.toJson()),
+          updatedAt: profile.updatedAt.toIso8601String(),
+        ),
+      );
 
   Future<String?> loadProfileDisplayName(String uid) async {
     final value = (await _storage.read(_uidKey(_displayNameKeyPrefix, uid)))
@@ -86,6 +136,20 @@ class ProfileSettingsRepository {
 
   Future<void> setCloudSyncEnabled(String uid, bool enabled) async {
     await _storage.write(_uidKey(_syncEnabledKeyPrefix, uid), '$enabled');
+    if (!_changes.isClosed) _changes.add(null);
+  }
+
+  /// Separate from the app-wide cloud backup consent. Nutrition remains local
+  /// unless this account-specific consent is explicitly enabled.
+  Future<bool> isNutritionCloudSyncEnabled(String uid) async =>
+      (await _storage.read(_uidKey(_nutritionSyncConsentKeyPrefix, uid))) ==
+      'true';
+
+  Future<void> setNutritionCloudSyncEnabled(String uid, bool enabled) async {
+    await _storage.write(
+      _uidKey(_nutritionSyncConsentKeyPrefix, uid),
+      '$enabled',
+    );
     if (!_changes.isClosed) _changes.add(null);
   }
 

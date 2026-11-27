@@ -2250,6 +2250,55 @@ class AppLocalizationsEs extends AppLocalizations {
       'Plan y días de entrenamiento, agenda, historial y series, objetivos, medidas guardadas, sesión activa, apariencia, idioma y preferencias, recordatorios y privacidad. La exportación e importación de archivos locales siguen disponibles por separado en Respaldo.';
 
   @override
+  String get cloudSyncNutritionTitle => 'Sincronizar datos de nutrición';
+
+  @override
+  String get cloudSyncNutritionDescription =>
+      'Desactivada por defecto. Si la activas, tus preferencias nutricionales y el historial de comidas se copian a tu cuenta privada de Firestore. Al desactivarla se detiene la sincronización; tus datos locales permanecen en este dispositivo. Puedes borrar abajo una copia existente cuando quieras eliminarla.';
+
+  @override
+  String get cloudSyncNutritionConsentTitle => '¿Sincronizar nutrición?';
+
+  @override
+  String get cloudSyncNutritionConsentDescription =>
+      'Esto envía tus preferencias alimentarias, exclusiones y comidas registradas al respaldo privado de Firestore de esta cuenta. Estos datos no se envían a analítica. Puedes retirar este consentimiento después.';
+
+  @override
+  String get cloudSyncNutritionConsentAccept => 'Permitir sincronización';
+
+  @override
+  String get cloudSyncNutritionSaveFailed =>
+      'No pudimos actualizar el consentimiento de sincronización nutricional.';
+
+  @override
+  String get cloudSyncNutritionDeleteButton =>
+      'Borrar copia de nutrición en la nube';
+
+  @override
+  String get cloudSyncNutritionDeleteHint =>
+      'Esto solo borra la copia de nutrición de Firestore. Se conservan los demás datos sincronizados y tu perfil e historial locales.';
+
+  @override
+  String get cloudSyncNutritionDeleteConfirmTitle =>
+      '¿Borrar los datos nutricionales en la nube?';
+
+  @override
+  String get cloudSyncNutritionDeleteConfirmDescription =>
+      'Esto elimina los datos nutricionales del respaldo de Firestore de esta cuenta. El perfil y el historial de este dispositivo se conservan.';
+
+  @override
+  String get cloudSyncNutritionDeleted =>
+      'Se eliminaron los datos nutricionales del respaldo en la nube.';
+
+  @override
+  String get cloudSyncNutritionNoRemoteData =>
+      'El respaldo en la nube no contenía datos nutricionales.';
+
+  @override
+  String get cloudSyncNutritionDeleteFailed =>
+      'No pudimos borrar los datos nutricionales de la nube. Revisa la conexión e inténtalo de nuevo.';
+
+  @override
   String get cloudSyncLastSync => 'Última sincronización';
 
   @override

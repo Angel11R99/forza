@@ -177,6 +177,26 @@ class CloudSyncBaselines extends Table {
   Set<Column<Object>> get primaryKey => {uid};
 }
 
+class NutritionProfiles extends Table {
+  TextColumn get id => text()();
+  IntColumn get profileVersion => integer()();
+  TextColumn get profileJson => text()();
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@TableIndex(name: 'nutrition_meal_logs_logged_at_idx', columns: {#loggedAt})
+class NutritionMealLogs extends Table {
+  TextColumn get id => text()();
+  TextColumn get loggedAt => text()();
+  TextColumn get entryJson => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     TrainingPlans,
@@ -191,6 +211,8 @@ class CloudSyncBaselines extends Table {
     AppMetadata,
     LocalAccountBackups,
     CloudSyncBaselines,
+    NutritionProfiles,
+    NutritionMealLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -211,7 +233,7 @@ class AppDatabase extends _$AppDatabase {
   static final instance = AppDatabase();
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -254,6 +276,10 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 9) await migrator.createTable(localAccountBackups);
       if (from < 10) await migrator.createTable(cloudSyncBaselines);
+      if (from < 11) {
+        await migrator.createTable(nutritionProfiles);
+        await migrator.createTable(nutritionMealLogs);
+      }
     },
     beforeOpen: (_) async {
       await customStatement('PRAGMA foreign_keys = ON');

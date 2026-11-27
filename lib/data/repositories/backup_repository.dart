@@ -6,6 +6,7 @@ import '../../domain/models/personal_goal.dart';
 import '../../domain/models/body_measurement.dart';
 import '../../domain/models/scheduled_training_session.dart';
 import '../../domain/models/workout_record.dart';
+import '../../domain/models/nutrition/nutrition_models.dart';
 import '../../domain/use_cases/training_plan_builder.dart';
 import '../../ui/features/profile/models/profile_settings.dart';
 import '../database/app_database.dart' as db;
@@ -15,6 +16,7 @@ import 'training_schedule_repository.dart';
 import 'training_settings_repository.dart';
 import 'workout_log_repository.dart';
 import 'profile_settings_repository.dart';
+import 'nutrition_meal_log_repository.dart';
 
 class ValidatedForzaBackup {
   const ValidatedForzaBackup({
@@ -31,6 +33,9 @@ class ValidatedForzaBackup {
     this.notificationSettings = const NotificationSettings(),
     this.privacySettings = const PrivacySettings(),
     this.languageCode,
+    this.nutritionProfile,
+    this.nutritionMealEntries = const [],
+    this.nutritionSnapshotIncluded = false,
   });
 
   final DateTime exportedAt;
@@ -46,6 +51,9 @@ class ValidatedForzaBackup {
   final NotificationSettings notificationSettings;
   final PrivacySettings privacySettings;
   final String? languageCode;
+  final NutritionProfile? nutritionProfile;
+  final List<MealEntry> nutritionMealEntries;
+  final bool nutritionSnapshotIncluded;
 }
 
 class BackupRepository {
@@ -57,13 +65,20 @@ class BackupRepository {
     required this.goalRepository,
     BodyMeasurementRepository? bodyMeasurementRepository,
     ProfileSettingsRepository? profileSettingsRepository,
+    NutritionMealLogRepository? nutritionMealLogRepository,
     this.readLanguageCode,
     this.writeLanguageCode,
   }) : bodyMeasurementRepository =
            bodyMeasurementRepository ??
            BodyMeasurementRepository(database: database),
        profileSettingsRepository =
-           profileSettingsRepository ?? ProfileSettingsRepository();
+           profileSettingsRepository ??
+           ProfileSettingsRepository(database: database),
+       nutritionMealLogRepository =
+           nutritionMealLogRepository ??
+           NutritionMealLogRepository(
+             storage: DriftNutritionMealLogStorage(database: database),
+           );
 
   static const formatName = 'FORZA_BACKUP';
   static const version = 1;
@@ -76,10 +91,14 @@ class BackupRepository {
   final PersonalGoalRepository goalRepository;
   final BodyMeasurementRepository bodyMeasurementRepository;
   final ProfileSettingsRepository profileSettingsRepository;
+  final NutritionMealLogRepository nutritionMealLogRepository;
   final String? Function()? readLanguageCode;
   final Future<void> Function(String?)? writeLanguageCode;
 
-  Future<String> exportJson({required String appearanceMode}) async {
+  Future<String> exportJson({
+    required String appearanceMode,
+    bool includeNutrition = true,
+  }) async {
     final activeDraft = await workoutLogRepository.loadActiveWorkout();
     return const JsonEncoder.withIndent('  ').convert({
       'format': formatName,
@@ -113,7 +132,39 @@ class BackupRepository {
       'privacySettings': _privacySettingsToJson(
         await profileSettingsRepository.loadPrivacy(),
       ),
+      if (includeNutrition) ...{
+        'nutritionProfile':
+            (await profileSettingsRepository.loadNutritionProfile())?.toJson(),
+        'nutritionMealEntries': [
+          for (final entry in await nutritionMealLogRepository.loadAll())
+            entry.toJson(),
+        ],
+      },
     });
+  }
+
+  /// Removes private nutrition fields from a validated backup snapshot before
+  /// it is considered for cloud sync without nutrition-specific consent.
+  String withoutNutrition(String source) {
+    validate(source);
+    final root = _map(jsonDecode(source), 'respaldo');
+    root.remove('nutritionProfile');
+    root.remove('nutritionMealEntries');
+    root.remove('nutritionPlans');
+    return jsonEncode(root);
+  }
+
+  /// Keeps an existing remote nutrition snapshot untouched in a new upload
+  /// when consent has been revoked but the user has not requested deletion.
+  String retainRemoteNutrition(String outgoing, String existingRemote) {
+    validate(outgoing);
+    validate(existingRemote);
+    final next = _map(jsonDecode(outgoing), 'respaldo');
+    final previous = _map(jsonDecode(existingRemote), 'respaldo');
+    for (final key in const ['nutritionProfile', 'nutritionMealEntries']) {
+      if (previous.containsKey(key)) next[key] = previous[key];
+    }
+    return jsonEncode(next);
   }
 
   Future<void> clearLocalData() async {
@@ -138,6 +189,8 @@ class BackupRepository {
             const NotificationSettings(),
           ),
           'privacySettings': _privacySettingsToJson(const PrivacySettings()),
+          'nutritionProfile': null,
+          'nutritionMealEntries': const <Object?>[],
         }),
       ),
     );
@@ -178,6 +231,12 @@ class BackupRepository {
       baseline?.bodyMeasurements.map((item) => item.toJson()),
       (item) => item['date'] as String,
     );
+    final nutritionMealEntries = _mergeKeyedLists(
+      local.nutritionMealEntries.map((entry) => entry.toJson()),
+      cloud.nutritionMealEntries.map((entry) => entry.toJson()),
+      baseline?.nutritionMealEntries.map((entry) => entry.toJson()),
+      (entry) => entry['id'] as String,
+    );
 
     final localSettings = _settingsToJson(local.settings);
     final remoteSettings = _settingsToJson(cloud.settings);
@@ -213,6 +272,15 @@ class BackupRepository {
       'scheduledSessions': schedule,
       'personalGoals': goals,
       'bodyMeasurements': measurements,
+      'nutritionProfile': baseline == null
+          ? local.nutritionProfile?.toJson() ?? cloud.nutritionProfile?.toJson()
+          : _chooseThreeWay(
+              local.nutritionProfile?.toJson(),
+              cloud.nutritionProfile?.toJson(),
+              baseline.nutritionProfile?.toJson(),
+              hasBaseline: true,
+            ),
+      'nutritionMealEntries': nutritionMealEntries,
       'appearanceMode': _chooseThreeWay(
         local.appearanceMode,
         cloud.appearanceMode,
@@ -367,6 +435,19 @@ class BackupRepository {
           'El respaldo contiene medidas corporales duplicadas.',
         );
       }
+      final nutritionProfile = _nutritionProfile(root['nutritionProfile']);
+      final nutritionEntries =
+          (root['nutritionMealEntries'] == null
+                  ? const <Object?>[]
+                  : _list(root['nutritionMealEntries'], 'nutritionMealEntries'))
+              .map(_nutritionMealEntry)
+              .toList(growable: false);
+      if (nutritionEntries.map((entry) => entry.id).toSet().length !=
+          nutritionEntries.length) {
+        throw const FormatException(
+          'El respaldo contiene comidas nutricionales duplicadas.',
+        );
+      }
       final activeWorkout = root['activeWorkout'] == null
           ? null
           : _activeDraft(root['activeWorkout']);
@@ -392,6 +473,11 @@ class BackupRepository {
           root['notificationSettings'],
         ),
         privacySettings: _privacySettings(root['privacySettings']),
+        nutritionProfile: nutritionProfile,
+        nutritionMealEntries: nutritionEntries,
+        nutritionSnapshotIncluded:
+            root.containsKey('nutritionProfile') ||
+            root.containsKey('nutritionMealEntries'),
       );
     } on FormatException {
       rethrow;
@@ -402,7 +488,10 @@ class BackupRepository {
     }
   }
 
-  Future<void> restore(ValidatedForzaBackup backup) async {
+  Future<void> restore(
+    ValidatedForzaBackup backup, {
+    bool restoreNutrition = true,
+  }) async {
     final now = DateTime.now().toIso8601String();
     await database.transaction(() async {
       await database.delete(database.workoutSessions).go();
@@ -567,6 +656,37 @@ class BackupRepository {
             );
       }
     });
+    if (restoreNutrition && backup.nutritionSnapshotIncluded) {
+      if (backup.nutritionProfile == null) {
+        await profileSettingsRepository.clearNutritionProfile();
+      } else {
+        await profileSettingsRepository.saveNutritionProfile(
+          backup.nutritionProfile!,
+        );
+      }
+      await nutritionMealLogRepository.replaceAll(backup.nutritionMealEntries);
+    }
+  }
+
+  static NutritionProfile? _nutritionProfile(Object? value) {
+    if (value == null) return null;
+    final profile = NutritionProfile.fromJson(_map(value, 'nutritionProfile'));
+    if (!profile.isValid) {
+      throw const FormatException(
+        'El perfil nutricional del respaldo no es válido.',
+      );
+    }
+    return profile;
+  }
+
+  static MealEntry _nutritionMealEntry(Object? value) {
+    final entry = MealEntry.fromJson(_map(value, 'nutritionMealEntry'));
+    if (!entry.isValid) {
+      throw const FormatException(
+        'Una comida nutricional del respaldo no es válida.',
+      );
+    }
+    return entry;
   }
 
   static WorkoutRecord _record(Object? value) {

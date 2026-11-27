@@ -4971,6 +4971,597 @@ class CloudSyncBaselinesCompanion extends UpdateCompanion<CloudSyncBaseline> {
   }
 }
 
+class $NutritionProfilesTable extends NutritionProfiles
+    with TableInfo<$NutritionProfilesTable, NutritionProfile> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NutritionProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _profileVersionMeta = const VerificationMeta(
+    'profileVersion',
+  );
+  @override
+  late final GeneratedColumn<int> profileVersion = GeneratedColumn<int>(
+    'profile_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _profileJsonMeta = const VerificationMeta(
+    'profileJson',
+  );
+  @override
+  late final GeneratedColumn<String> profileJson = GeneratedColumn<String>(
+    'profile_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    profileVersion,
+    profileJson,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'nutrition_profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NutritionProfile> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('profile_version')) {
+      context.handle(
+        _profileVersionMeta,
+        profileVersion.isAcceptableOrUnknown(
+          data['profile_version']!,
+          _profileVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_profileVersionMeta);
+    }
+    if (data.containsKey('profile_json')) {
+      context.handle(
+        _profileJsonMeta,
+        profileJson.isAcceptableOrUnknown(
+          data['profile_json']!,
+          _profileJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_profileJsonMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NutritionProfile map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NutritionProfile(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      profileVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile_version'],
+      )!,
+      profileJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_json'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $NutritionProfilesTable createAlias(String alias) {
+    return $NutritionProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class NutritionProfile extends DataClass
+    implements Insertable<NutritionProfile> {
+  final String id;
+  final int profileVersion;
+  final String profileJson;
+  final String updatedAt;
+  const NutritionProfile({
+    required this.id,
+    required this.profileVersion,
+    required this.profileJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['profile_version'] = Variable<int>(profileVersion);
+    map['profile_json'] = Variable<String>(profileJson);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  NutritionProfilesCompanion toCompanion(bool nullToAbsent) {
+    return NutritionProfilesCompanion(
+      id: Value(id),
+      profileVersion: Value(profileVersion),
+      profileJson: Value(profileJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory NutritionProfile.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NutritionProfile(
+      id: serializer.fromJson<String>(json['id']),
+      profileVersion: serializer.fromJson<int>(json['profileVersion']),
+      profileJson: serializer.fromJson<String>(json['profileJson']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'profileVersion': serializer.toJson<int>(profileVersion),
+      'profileJson': serializer.toJson<String>(profileJson),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  NutritionProfile copyWith({
+    String? id,
+    int? profileVersion,
+    String? profileJson,
+    String? updatedAt,
+  }) => NutritionProfile(
+    id: id ?? this.id,
+    profileVersion: profileVersion ?? this.profileVersion,
+    profileJson: profileJson ?? this.profileJson,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  NutritionProfile copyWithCompanion(NutritionProfilesCompanion data) {
+    return NutritionProfile(
+      id: data.id.present ? data.id.value : this.id,
+      profileVersion: data.profileVersion.present
+          ? data.profileVersion.value
+          : this.profileVersion,
+      profileJson: data.profileJson.present
+          ? data.profileJson.value
+          : this.profileJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NutritionProfile(')
+          ..write('id: $id, ')
+          ..write('profileVersion: $profileVersion, ')
+          ..write('profileJson: $profileJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, profileVersion, profileJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NutritionProfile &&
+          other.id == this.id &&
+          other.profileVersion == this.profileVersion &&
+          other.profileJson == this.profileJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class NutritionProfilesCompanion extends UpdateCompanion<NutritionProfile> {
+  final Value<String> id;
+  final Value<int> profileVersion;
+  final Value<String> profileJson;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const NutritionProfilesCompanion({
+    this.id = const Value.absent(),
+    this.profileVersion = const Value.absent(),
+    this.profileJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NutritionProfilesCompanion.insert({
+    required String id,
+    required int profileVersion,
+    required String profileJson,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       profileVersion = Value(profileVersion),
+       profileJson = Value(profileJson),
+       updatedAt = Value(updatedAt);
+  static Insertable<NutritionProfile> custom({
+    Expression<String>? id,
+    Expression<int>? profileVersion,
+    Expression<String>? profileJson,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (profileVersion != null) 'profile_version': profileVersion,
+      if (profileJson != null) 'profile_json': profileJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NutritionProfilesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? profileVersion,
+    Value<String>? profileJson,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return NutritionProfilesCompanion(
+      id: id ?? this.id,
+      profileVersion: profileVersion ?? this.profileVersion,
+      profileJson: profileJson ?? this.profileJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (profileVersion.present) {
+      map['profile_version'] = Variable<int>(profileVersion.value);
+    }
+    if (profileJson.present) {
+      map['profile_json'] = Variable<String>(profileJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NutritionProfilesCompanion(')
+          ..write('id: $id, ')
+          ..write('profileVersion: $profileVersion, ')
+          ..write('profileJson: $profileJson, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NutritionMealLogsTable extends NutritionMealLogs
+    with TableInfo<$NutritionMealLogsTable, NutritionMealLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NutritionMealLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _loggedAtMeta = const VerificationMeta(
+    'loggedAt',
+  );
+  @override
+  late final GeneratedColumn<String> loggedAt = GeneratedColumn<String>(
+    'logged_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entryJsonMeta = const VerificationMeta(
+    'entryJson',
+  );
+  @override
+  late final GeneratedColumn<String> entryJson = GeneratedColumn<String>(
+    'entry_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, loggedAt, entryJson];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'nutrition_meal_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NutritionMealLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('logged_at')) {
+      context.handle(
+        _loggedAtMeta,
+        loggedAt.isAcceptableOrUnknown(data['logged_at']!, _loggedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_loggedAtMeta);
+    }
+    if (data.containsKey('entry_json')) {
+      context.handle(
+        _entryJsonMeta,
+        entryJson.isAcceptableOrUnknown(data['entry_json']!, _entryJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NutritionMealLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NutritionMealLog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      loggedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}logged_at'],
+      )!,
+      entryJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entry_json'],
+      )!,
+    );
+  }
+
+  @override
+  $NutritionMealLogsTable createAlias(String alias) {
+    return $NutritionMealLogsTable(attachedDatabase, alias);
+  }
+}
+
+class NutritionMealLog extends DataClass
+    implements Insertable<NutritionMealLog> {
+  final String id;
+  final String loggedAt;
+  final String entryJson;
+  const NutritionMealLog({
+    required this.id,
+    required this.loggedAt,
+    required this.entryJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['logged_at'] = Variable<String>(loggedAt);
+    map['entry_json'] = Variable<String>(entryJson);
+    return map;
+  }
+
+  NutritionMealLogsCompanion toCompanion(bool nullToAbsent) {
+    return NutritionMealLogsCompanion(
+      id: Value(id),
+      loggedAt: Value(loggedAt),
+      entryJson: Value(entryJson),
+    );
+  }
+
+  factory NutritionMealLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NutritionMealLog(
+      id: serializer.fromJson<String>(json['id']),
+      loggedAt: serializer.fromJson<String>(json['loggedAt']),
+      entryJson: serializer.fromJson<String>(json['entryJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'loggedAt': serializer.toJson<String>(loggedAt),
+      'entryJson': serializer.toJson<String>(entryJson),
+    };
+  }
+
+  NutritionMealLog copyWith({
+    String? id,
+    String? loggedAt,
+    String? entryJson,
+  }) => NutritionMealLog(
+    id: id ?? this.id,
+    loggedAt: loggedAt ?? this.loggedAt,
+    entryJson: entryJson ?? this.entryJson,
+  );
+  NutritionMealLog copyWithCompanion(NutritionMealLogsCompanion data) {
+    return NutritionMealLog(
+      id: data.id.present ? data.id.value : this.id,
+      loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
+      entryJson: data.entryJson.present ? data.entryJson.value : this.entryJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NutritionMealLog(')
+          ..write('id: $id, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('entryJson: $entryJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, loggedAt, entryJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NutritionMealLog &&
+          other.id == this.id &&
+          other.loggedAt == this.loggedAt &&
+          other.entryJson == this.entryJson);
+}
+
+class NutritionMealLogsCompanion extends UpdateCompanion<NutritionMealLog> {
+  final Value<String> id;
+  final Value<String> loggedAt;
+  final Value<String> entryJson;
+  final Value<int> rowid;
+  const NutritionMealLogsCompanion({
+    this.id = const Value.absent(),
+    this.loggedAt = const Value.absent(),
+    this.entryJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NutritionMealLogsCompanion.insert({
+    required String id,
+    required String loggedAt,
+    required String entryJson,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       loggedAt = Value(loggedAt),
+       entryJson = Value(entryJson);
+  static Insertable<NutritionMealLog> custom({
+    Expression<String>? id,
+    Expression<String>? loggedAt,
+    Expression<String>? entryJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (loggedAt != null) 'logged_at': loggedAt,
+      if (entryJson != null) 'entry_json': entryJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NutritionMealLogsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? loggedAt,
+    Value<String>? entryJson,
+    Value<int>? rowid,
+  }) {
+    return NutritionMealLogsCompanion(
+      id: id ?? this.id,
+      loggedAt: loggedAt ?? this.loggedAt,
+      entryJson: entryJson ?? this.entryJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (loggedAt.present) {
+      map['logged_at'] = Variable<String>(loggedAt.value);
+    }
+    if (entryJson.present) {
+      map['entry_json'] = Variable<String>(entryJson.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NutritionMealLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('entryJson: $entryJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4998,6 +5589,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $LocalAccountBackupsTable(this);
   late final $CloudSyncBaselinesTable cloudSyncBaselines =
       $CloudSyncBaselinesTable(this);
+  late final $NutritionProfilesTable nutritionProfiles =
+      $NutritionProfilesTable(this);
+  late final $NutritionMealLogsTable nutritionMealLogs =
+      $NutritionMealLogsTable(this);
   late final Index workoutSessionsScheduledDateIdx = Index(
     'workout_sessions_scheduled_date_idx',
     'CREATE INDEX workout_sessions_scheduled_date_idx ON workout_sessions (scheduled_date)',
@@ -5013,6 +5608,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index bodyMeasurementsDateIdx = Index(
     'body_measurements_date_idx',
     'CREATE UNIQUE INDEX body_measurements_date_idx ON body_measurements (measurement_date)',
+  );
+  late final Index nutritionMealLogsLoggedAtIdx = Index(
+    'nutrition_meal_logs_logged_at_idx',
+    'CREATE INDEX nutrition_meal_logs_logged_at_idx ON nutrition_meal_logs (logged_at)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -5031,10 +5630,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appMetadata,
     localAccountBackups,
     cloudSyncBaselines,
+    nutritionProfiles,
+    nutritionMealLogs,
     workoutSessionsScheduledDateIdx,
     workoutSessionsCompletedAtIdx,
     scheduledTrainingSessionsDateIdx,
     bodyMeasurementsDateIdx,
+    nutritionMealLogsLoggedAtIdx,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -8982,6 +9584,397 @@ typedef $$CloudSyncBaselinesTableProcessedTableManager =
       CloudSyncBaseline,
       PrefetchHooks Function()
     >;
+typedef $$NutritionProfilesTableCreateCompanionBuilder =
+    NutritionProfilesCompanion Function({
+      required String id,
+      required int profileVersion,
+      required String profileJson,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$NutritionProfilesTableUpdateCompanionBuilder =
+    NutritionProfilesCompanion Function({
+      Value<String> id,
+      Value<int> profileVersion,
+      Value<String> profileJson,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$NutritionProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $NutritionProfilesTable> {
+  $$NutritionProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get profileVersion => $composableBuilder(
+    column: $table.profileVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileJson => $composableBuilder(
+    column: $table.profileJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NutritionProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $NutritionProfilesTable> {
+  $$NutritionProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get profileVersion => $composableBuilder(
+    column: $table.profileVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileJson => $composableBuilder(
+    column: $table.profileJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NutritionProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NutritionProfilesTable> {
+  $$NutritionProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get profileVersion => $composableBuilder(
+    column: $table.profileVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get profileJson => $composableBuilder(
+    column: $table.profileJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$NutritionProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NutritionProfilesTable,
+          NutritionProfile,
+          $$NutritionProfilesTableFilterComposer,
+          $$NutritionProfilesTableOrderingComposer,
+          $$NutritionProfilesTableAnnotationComposer,
+          $$NutritionProfilesTableCreateCompanionBuilder,
+          $$NutritionProfilesTableUpdateCompanionBuilder,
+          (
+            NutritionProfile,
+            BaseReferences<
+              _$AppDatabase,
+              $NutritionProfilesTable,
+              NutritionProfile
+            >,
+          ),
+          NutritionProfile,
+          PrefetchHooks Function()
+        > {
+  $$NutritionProfilesTableTableManager(
+    _$AppDatabase db,
+    $NutritionProfilesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NutritionProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NutritionProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NutritionProfilesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> profileVersion = const Value.absent(),
+                Value<String> profileJson = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NutritionProfilesCompanion(
+                id: id,
+                profileVersion: profileVersion,
+                profileJson: profileJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int profileVersion,
+                required String profileJson,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => NutritionProfilesCompanion.insert(
+                id: id,
+                profileVersion: profileVersion,
+                profileJson: profileJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$NutritionProfilesTable, NutritionProfile>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $NutritionProfilesTable,
+                    NutritionProfile
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NutritionProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NutritionProfilesTable,
+      NutritionProfile,
+      $$NutritionProfilesTableFilterComposer,
+      $$NutritionProfilesTableOrderingComposer,
+      $$NutritionProfilesTableAnnotationComposer,
+      $$NutritionProfilesTableCreateCompanionBuilder,
+      $$NutritionProfilesTableUpdateCompanionBuilder,
+      (
+        NutritionProfile,
+        BaseReferences<
+          _$AppDatabase,
+          $NutritionProfilesTable,
+          NutritionProfile
+        >,
+      ),
+      NutritionProfile,
+      PrefetchHooks Function()
+    >;
+typedef $$NutritionMealLogsTableCreateCompanionBuilder =
+    NutritionMealLogsCompanion Function({
+      required String id,
+      required String loggedAt,
+      required String entryJson,
+      Value<int> rowid,
+    });
+typedef $$NutritionMealLogsTableUpdateCompanionBuilder =
+    NutritionMealLogsCompanion Function({
+      Value<String> id,
+      Value<String> loggedAt,
+      Value<String> entryJson,
+      Value<int> rowid,
+    });
+
+class $$NutritionMealLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $NutritionMealLogsTable> {
+  $$NutritionMealLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entryJson => $composableBuilder(
+    column: $table.entryJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NutritionMealLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $NutritionMealLogsTable> {
+  $$NutritionMealLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entryJson => $composableBuilder(
+    column: $table.entryJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NutritionMealLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NutritionMealLogsTable> {
+  $$NutritionMealLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get entryJson =>
+      $composableBuilder(column: $table.entryJson, builder: (column) => column);
+}
+
+class $$NutritionMealLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NutritionMealLogsTable,
+          NutritionMealLog,
+          $$NutritionMealLogsTableFilterComposer,
+          $$NutritionMealLogsTableOrderingComposer,
+          $$NutritionMealLogsTableAnnotationComposer,
+          $$NutritionMealLogsTableCreateCompanionBuilder,
+          $$NutritionMealLogsTableUpdateCompanionBuilder,
+          (
+            NutritionMealLog,
+            BaseReferences<
+              _$AppDatabase,
+              $NutritionMealLogsTable,
+              NutritionMealLog
+            >,
+          ),
+          NutritionMealLog,
+          PrefetchHooks Function()
+        > {
+  $$NutritionMealLogsTableTableManager(
+    _$AppDatabase db,
+    $NutritionMealLogsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NutritionMealLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NutritionMealLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NutritionMealLogsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> loggedAt = const Value.absent(),
+                Value<String> entryJson = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NutritionMealLogsCompanion(
+                id: id,
+                loggedAt: loggedAt,
+                entryJson: entryJson,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String loggedAt,
+                required String entryJson,
+                Value<int> rowid = const Value.absent(),
+              }) => NutritionMealLogsCompanion.insert(
+                id: id,
+                loggedAt: loggedAt,
+                entryJson: entryJson,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$NutritionMealLogsTable, NutritionMealLog>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $NutritionMealLogsTable,
+                    NutritionMealLog
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NutritionMealLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NutritionMealLogsTable,
+      NutritionMealLog,
+      $$NutritionMealLogsTableFilterComposer,
+      $$NutritionMealLogsTableOrderingComposer,
+      $$NutritionMealLogsTableAnnotationComposer,
+      $$NutritionMealLogsTableCreateCompanionBuilder,
+      $$NutritionMealLogsTableUpdateCompanionBuilder,
+      (
+        NutritionMealLog,
+        BaseReferences<
+          _$AppDatabase,
+          $NutritionMealLogsTable,
+          NutritionMealLog
+        >,
+      ),
+      NutritionMealLog,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9016,4 +10009,8 @@ class $AppDatabaseManager {
       $$LocalAccountBackupsTableTableManager(_db, _db.localAccountBackups);
   $$CloudSyncBaselinesTableTableManager get cloudSyncBaselines =>
       $$CloudSyncBaselinesTableTableManager(_db, _db.cloudSyncBaselines);
+  $$NutritionProfilesTableTableManager get nutritionProfiles =>
+      $$NutritionProfilesTableTableManager(_db, _db.nutritionProfiles);
+  $$NutritionMealLogsTableTableManager get nutritionMealLogs =>
+      $$NutritionMealLogsTableTableManager(_db, _db.nutritionMealLogs);
 }
