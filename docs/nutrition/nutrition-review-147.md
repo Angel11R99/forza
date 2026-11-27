@@ -13,7 +13,7 @@
 - `flutter analyze --no-pub`: limpio.
 - `flutter test`: suite completa aprobada.
 - `flutter build apk --debug`: APK generado.
-- Emulador Android 16: navegación Progreso → Nutrición → repaso en español y menú de frecuencia revisados visualmente. Captura: `evidence-147-review-cadence-android.png`.
+- Emulador Android 16: navegación Progreso → Nutrición → repaso en español y menú de frecuencia revisados visualmente. Capturas: `evidence-147-review-android.png` y `evidence-147-review-cadence-android.png`.
 - Widget tests: ancho 320 dp, escala de texto 2×, español/inglés y temas claro/oscuro para Nutrición; persistencia del repaso, aplazamiento, intervalos configurables y mantenimiento del plan actual.
 
 ## Pendiente

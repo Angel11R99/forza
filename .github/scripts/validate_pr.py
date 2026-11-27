@@ -28,8 +28,18 @@ issue_number = int(references[0])
 issue = gh(f"repos/{repo}/issues/{issue_number}")
 if "pull_request" in issue:
     sys.exit("The referenced item is a pull request, not an issue.")
+open_prs = gh_paginated(f"repos/{repo}/pulls?state=open&per_page=100")
 labels = {item["name"] for item in issue["labels"]}
-if "status:approved" not in labels:
+same_pr_is_in_review = "status:in-review" in labels and any(
+    other["number"] == pr_number
+    and str(issue_number)
+    in re.findall(
+        rf"(?im)^\s*{issue_reference}\s+#(\d+)\b",
+        other.get("body") or "",
+    )
+    for other in open_prs
+)
+if "status:approved" not in labels and not same_pr_is_in_review:
     sys.exit(f"Issue #{issue_number} is not approved (missing status:approved).")
 if {"status:rejected", "status:duplicate"} & labels:
     sys.exit("Rejected or duplicate issues cannot be used for a contribution.")
@@ -37,7 +47,6 @@ if not re.fullmatch(rf"issue/{issue_number}-[a-z0-9]+(?:-[a-z0-9]+)*", branch):
     sys.exit(f"Branch must match issue/{issue_number}-short-description (lowercase ASCII).")
 if pr["base"]["ref"] != "main":
     sys.exit("Contribution PRs must target main.")
-open_prs = gh_paginated(f"repos/{repo}/pulls?state=open&per_page=100")
 for other in open_prs:
     if other["number"] == pr_number:
         continue
