@@ -314,6 +314,20 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     }
   }
 
+  void _showMealLogUndo(MealEntry entry) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.nutritionLoggedManually),
+          action: SnackBarAction(
+            label: context.l10n.commonUndo,
+            onPressed: () => _deleteEntry(entry),
+          ),
+        ),
+      );
+  }
+
   Future<void> _adjustEntry(MealEntry entry) async {
     final servings = await showDialog<double>(
       context: context,
@@ -418,7 +432,10 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       );
       try {
         await _mealLogRepository.save(entry);
-        if (mounted) setState(() => _entries = [entry, ..._entries]);
+        if (mounted) {
+          setState(() => _entries = [entry, ..._entries]);
+          _showMealLogUndo(entry);
+        }
       } on Object {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -521,7 +538,10 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     );
     try {
       await _mealLogRepository.save(entry);
-      if (mounted) setState(() => _entries = [entry, ..._entries]);
+      if (mounted) {
+        setState(() => _entries = [entry, ..._entries]);
+        _showMealLogUndo(entry);
+      }
     } on Object {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

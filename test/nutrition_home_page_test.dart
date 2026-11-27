@@ -121,6 +121,14 @@ void main() {
     expect(entry.notes, 'Banana snack');
     expect(entry.recipeId, startsWith('private:'));
     expect(entry.nutrientEstimates['energyKcal'], 54);
+    expect(find.text('Undo'), findsOneWidget);
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+    expect(await mealLog.loadAll(), isEmpty);
+    await tester.tap(find.text('Log meal').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Pin to plan'));
     await tester.pumpAndSettle();
     expect((await favorites.loadAll()).single.isPinned, isTrue);
