@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ui/features/profile/models/profile_settings.dart';
 
+enum CloudSyncFrequency { onChange, daily, weekly, monthly, manual }
+
 abstract interface class ProfilePreferencesStorage {
   Future<String?> read(String key);
   Future<void> write(String key, String value);
@@ -35,6 +37,7 @@ class ProfileSettingsRepository {
   static const _lastSyncKeyPrefix = 'profile_cloud_sync_last_';
   static const _syncEnabledKeyPrefix = 'profile_cloud_sync_enabled_';
   static const _pendingSyncKeyPrefix = 'profile_cloud_sync_pending_';
+  static const _syncFrequencyKeyPrefix = 'profile_cloud_sync_frequency_';
   static const _displayNameKeyPrefix = 'profile_display_name_';
 
   final ProfilePreferencesStorage _storage;
@@ -81,6 +84,22 @@ class ProfileSettingsRepository {
 
   Future<void> setPendingCloudSync(String uid, bool pending) async {
     await _storage.write(_uidKey(_pendingSyncKeyPrefix, uid), '$pending');
+  }
+
+  Future<CloudSyncFrequency> cloudSyncFrequency(String uid) async {
+    final value = await _storage.read(_uidKey(_syncFrequencyKeyPrefix, uid));
+    return CloudSyncFrequency.values.firstWhere(
+      (frequency) => frequency.name == value,
+      orElse: () => CloudSyncFrequency.onChange,
+    );
+  }
+
+  Future<void> setCloudSyncFrequency(
+    String uid,
+    CloudSyncFrequency frequency,
+  ) async {
+    await _storage.write(_uidKey(_syncFrequencyKeyPrefix, uid), frequency.name);
+    if (!_changes.isClosed) _changes.add(null);
   }
 
   Future<DateTime?> lastCloudSync(String uid) async {

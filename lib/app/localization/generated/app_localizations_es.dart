@@ -1116,7 +1116,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get backupDescription =>
-      'El archivo incluye tu plan, historial con series, agenda, objetivos, sesión activa y apariencia. Se guarda como JSON en la ubicación que elijas.';
+      'El archivo incluye tu plan, historial con series, agenda, objetivos, medidas guardadas, sesión activa, apariencia y preferencias. Se guarda como JSON en la ubicación que elijas. Como invitado, tus datos siguen en este dispositivo; inicia sesión con Google desde Perfil para activar la sincronización en la nube. El archivo es independiente de esa sincronización.';
 
   @override
   String get backupExport => 'Exportar';
@@ -2012,6 +2012,49 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get cloudSyncStatusFailed =>
       'No se pudo sincronizar. Puedes reintentar.';
+
+  @override
+  String get cloudSyncAccount => 'Cuenta conectada';
+
+  @override
+  String get cloudSyncStatusOffline =>
+      'Sin conexión. Los cambios quedan pendientes para reintentar.';
+
+  @override
+  String get cloudSyncFrequency => 'Frecuencia de sincronización';
+
+  @override
+  String get cloudSyncFrequencyChanges => 'Al detectar cambios';
+
+  @override
+  String get cloudSyncFrequencyDaily => 'Diaria';
+
+  @override
+  String get cloudSyncFrequencyWeekly => 'Semanal';
+
+  @override
+  String get cloudSyncFrequencyMonthly => 'Mensual';
+
+  @override
+  String get cloudSyncFrequencyManual => 'Solo manual';
+
+  @override
+  String get cloudSyncFrequencyNote =>
+      'Las frecuencias automáticas son objetivos mientras la app puede ejecutarse y hay conexión. El sistema puede pausarla; no se garantiza sincronización con la app cerrada. Solo manual no sube cambios automáticamente.';
+
+  @override
+  String get cloudSyncFrequencySaveFailed =>
+      'No se pudo guardar la frecuencia. Inténtalo de nuevo.';
+
+  @override
+  String get cloudSyncNow => 'Sincronizar ahora';
+
+  @override
+  String get cloudSyncIncludedHeading => 'Datos incluidos';
+
+  @override
+  String get cloudSyncIncludedDescription =>
+      'Plan y días de entrenamiento, agenda, historial y series, objetivos, medidas guardadas, sesión activa, apariencia, idioma y preferencias, recordatorios y privacidad. La exportación e importación de archivos locales siguen disponibles por separado en Respaldo.';
 
   @override
   String get cloudSyncLastSync => 'Última sincronización';

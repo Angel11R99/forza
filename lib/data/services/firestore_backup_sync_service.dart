@@ -15,6 +15,7 @@ enum CloudSyncPhase {
   syncing,
   synced,
   pending,
+  offline,
   failed,
 }
 
@@ -136,10 +137,29 @@ class FirestoreBackupSyncService extends ChangeNotifier {
         );
         return;
       }
-      await _syncInitial(user.uid);
+      final frequency = await profileSettingsRepository.cloudSyncFrequency(
+        user.uid,
+      );
+      final allowUpload = switch (frequency) {
+        CloudSyncFrequency.onChange => true,
+        CloudSyncFrequency.manual => false,
+        CloudSyncFrequency.daily => await _isDueForSync(
+          user.uid,
+          const Duration(days: 1),
+        ),
+        CloudSyncFrequency.weekly => await _isDueForSync(
+          user.uid,
+          const Duration(days: 7),
+        ),
+        CloudSyncFrequency.monthly => await _isDueForSync(
+          user.uid,
+          const Duration(days: 30),
+        ),
+      };
+      await _syncInitial(user.uid, allowUpload: allowUpload);
     } on Object catch (error, stackTrace) {
       debugPrint('FORZA Firestore sync could not start: $error\n$stackTrace');
-      await _markFailed(user.uid);
+      await _markFailed(user.uid, error);
     }
   }
 
@@ -222,7 +242,7 @@ class FirestoreBackupSyncService extends ChangeNotifier {
     await _syncInitial(uid);
   }
 
-  Future<void> _syncInitial(String uid) async {
+  Future<void> _syncInitial(String uid, {bool allowUpload = true}) async {
     if (_isSyncing || _isDisposed || _auth.currentUser?.uid != uid) return;
     _isSyncing = true;
     _setStatus(
@@ -234,14 +254,24 @@ class FirestoreBackupSyncService extends ChangeNotifier {
 
     try {
       final manifest = _manifest(uid);
-      final cloudDocument = await manifest.get();
+      final cloudDocument = await manifest.get(
+        const GetOptions(source: Source.server),
+      );
       final localJson = await _exportLocal();
+      var completed = allowUpload;
       if (!cloudDocument.exists) {
-        await _upload(uid, localJson);
-        await _saveBaseline(uid, localJson);
+        if (allowUpload) {
+          await _upload(uid, localJson);
+          await _saveBaseline(uid, localJson);
+        }
       } else {
         final cloudJson = await _download(uid, cloudDocument.data()!);
-        await _mergeCloudIntoLocal(uid, localJson, cloudJson);
+        completed = await _mergeCloudIntoLocal(
+          uid,
+          localJson,
+          cloudJson,
+          allowUpload: allowUpload,
+        );
       }
 
       if (_isDisposed || _auth.currentUser?.uid != uid) return;
@@ -251,10 +281,16 @@ class FirestoreBackupSyncService extends ChangeNotifier {
           unawaited(_handleRemoteSnapshot(uid, data));
         }
       });
-      await _markCompleted(uid);
+      final hasRemoteOrUploadedCopy = allowUpload || cloudDocument.exists;
+      if (hasRemoteOrUploadedCopy && completed) {
+        await _markCompleted(uid);
+      } else {
+        await _markPending(uid);
+        await _scheduleUploadIfAllowed();
+      }
     } on Object catch (error, stackTrace) {
       debugPrint('FORZA Firestore sync could not start: $error\n$stackTrace');
-      await _markFailed(uid);
+      await _markFailed(uid, error);
     } finally {
       _finishSync();
     }
@@ -298,26 +334,35 @@ class FirestoreBackupSyncService extends ChangeNotifier {
           _isApplyingCloud = false;
         }
       }
-      if (!_equivalent(mergedJson, cloudJson)) {
+      final allowUpload =
+          await profileSettingsRepository.cloudSyncFrequency(uid) !=
+          CloudSyncFrequency.manual;
+      if (allowUpload && !_equivalent(mergedJson, cloudJson)) {
         await _upload(uid, mergedJson);
       }
-      await _saveBaseline(uid, mergedJson);
-      await _markCompleted(uid);
+      final complete = allowUpload || _equivalent(mergedJson, cloudJson);
+      await _saveBaseline(uid, complete ? mergedJson : cloudJson);
+      if (complete) {
+        await _markCompleted(uid);
+      } else {
+        await _markPending(uid);
+      }
     } on Object catch (error, stackTrace) {
       debugPrint(
         'FORZA Firestore sync could not apply remote data: $error\n$stackTrace',
       );
-      await _markFailed(uid);
+      await _markFailed(uid, error);
     } finally {
       _finishSync();
     }
   }
 
-  Future<void> _mergeCloudIntoLocal(
+  Future<bool> _mergeCloudIntoLocal(
     String uid,
     String localJson,
-    String cloudJson,
-  ) async {
+    String cloudJson, {
+    bool allowUpload = true,
+  }) async {
     final baseline = await _readBaseline(uid);
     final mergedJson = backupRepository.mergeJson(
       localJson,
@@ -335,10 +380,16 @@ class FirestoreBackupSyncService extends ChangeNotifier {
         _isApplyingCloud = false;
       }
     }
-    if (!_equivalent(mergedJson, cloudJson)) {
+    if (allowUpload && !_equivalent(mergedJson, cloudJson)) {
       await _upload(uid, mergedJson);
     }
-    await _saveBaseline(uid, mergedJson);
+    await _saveBaseline(
+      uid,
+      allowUpload || _equivalent(mergedJson, cloudJson)
+          ? mergedJson
+          : cloudJson,
+    );
+    return allowUpload || _equivalent(mergedJson, cloudJson);
   }
 
   void _scheduleUpload() {
@@ -346,7 +397,7 @@ class FirestoreBackupSyncService extends ChangeNotifier {
   }
 
   Future<void> _scheduleUploadIfAllowed() async {
-    if (_isApplyingCloud || _isDisposed) return;
+    if (_isApplyingCloud || _isSwitchingLocalAccount || _isDisposed) return;
     if (_isSyncing) {
       _rescheduleAfterSync = true;
       return;
@@ -356,6 +407,9 @@ class FirestoreBackupSyncService extends ChangeNotifier {
         !await profileSettingsRepository.isCloudSyncEnabled(user.uid)) {
       return;
     }
+    final frequency = await profileSettingsRepository.cloudSyncFrequency(
+      user.uid,
+    );
     await profileSettingsRepository.setPendingCloudSync(user.uid, true);
     _setStatus(
       CloudSyncStatus(
@@ -364,10 +418,38 @@ class FirestoreBackupSyncService extends ChangeNotifier {
       ),
     );
     _uploadTimer?.cancel();
-    _uploadTimer = Timer(const Duration(seconds: 2), () {
+    final Duration? delay = switch (frequency) {
+      CloudSyncFrequency.onChange => const Duration(seconds: 2),
+      CloudSyncFrequency.daily => await _untilNextSync(
+        user.uid,
+        const Duration(days: 1),
+      ),
+      CloudSyncFrequency.weekly => await _untilNextSync(
+        user.uid,
+        const Duration(days: 7),
+      ),
+      CloudSyncFrequency.monthly => await _untilNextSync(
+        user.uid,
+        const Duration(days: 30),
+      ),
+      CloudSyncFrequency.manual => null,
+    };
+    if (delay == null) return;
+    _uploadTimer = Timer(delay, () {
       unawaited(_uploadLocal());
     });
   }
+
+  Future<Duration> _untilNextSync(String uid, Duration interval) async {
+    final lastSync = await profileSettingsRepository.lastCloudSync(uid);
+    if (lastSync == null) return const Duration(seconds: 2);
+    final dueAt = lastSync.add(interval);
+    final remaining = dueAt.difference(DateTime.now().toUtc());
+    return remaining.isNegative ? const Duration(seconds: 2) : remaining;
+  }
+
+  Future<bool> _isDueForSync(String uid, Duration interval) async =>
+      await _untilNextSync(uid, interval) <= const Duration(seconds: 2);
 
   Future<void> _uploadLocal() async {
     final user = _auth.currentUser;
@@ -382,7 +464,9 @@ class FirestoreBackupSyncService extends ChangeNotifier {
     try {
       if (!await profileSettingsRepository.isCloudSyncEnabled(user.uid)) return;
       final manifest = _manifest(user.uid);
-      final cloudDocument = await manifest.get();
+      final cloudDocument = await manifest.get(
+        const GetOptions(source: Source.server),
+      );
       final localJson = await _exportLocal();
       final baseline = await _readBaseline(user.uid);
       String mergedJson;
@@ -417,7 +501,7 @@ class FirestoreBackupSyncService extends ChangeNotifier {
       debugPrint(
         'FORZA Firestore sync could not upload local data: $error\n$stackTrace',
       );
-      await _markFailed(user.uid);
+      await _markFailed(user.uid, error);
     } finally {
       _finishSync();
     }
@@ -439,14 +523,14 @@ class FirestoreBackupSyncService extends ChangeNotifier {
     await _manifestChanges?.cancel();
     _manifestChanges = null;
     final manifest = _manifest(uid);
-    final current = await manifest.get();
+    final current = await manifest.get(const GetOptions(source: Source.server));
     final snapshotId = current.data()?['snapshotId'];
     if (snapshotId is String) {
       final chunks = await manifest
           .collection('snapshots')
           .doc(snapshotId)
           .collection('chunks')
-          .get();
+          .get(const GetOptions(source: Source.server));
       for (var offset = 0; offset < chunks.docs.length; offset += 400) {
         final batch = _firestore.batch();
         for (final chunk in chunks.docs.skip(offset).take(400)) {
@@ -492,15 +576,30 @@ class FirestoreBackupSyncService extends ChangeNotifier {
     _setStatus(CloudSyncStatus(CloudSyncPhase.synced, lastSyncedAt: timestamp));
   }
 
-  Future<void> _markFailed(String uid) async {
+  Future<void> _markPending(String uid) async {
     await profileSettingsRepository.setPendingCloudSync(uid, true);
     _setStatus(
       CloudSyncStatus(
-        CloudSyncPhase.failed,
+        CloudSyncPhase.pending,
         lastSyncedAt: await profileSettingsRepository.lastCloudSync(uid),
       ),
     );
-    if (_isDisposed || _auth.currentUser?.uid != uid) return;
+  }
+
+  Future<void> _markFailed(String uid, Object error) async {
+    await profileSettingsRepository.setPendingCloudSync(uid, true);
+    _setStatus(
+      CloudSyncStatus(
+        _isOfflineError(error) ? CloudSyncPhase.offline : CloudSyncPhase.failed,
+        lastSyncedAt: await profileSettingsRepository.lastCloudSync(uid),
+      ),
+    );
+    if (_isDisposed ||
+        _auth.currentUser?.uid != uid ||
+        await profileSettingsRepository.cloudSyncFrequency(uid) ==
+            CloudSyncFrequency.manual) {
+      return;
+    }
     final delaySeconds = (1 << _retryAttempt.clamp(0, 8)).clamp(2, 300);
     _retryAttempt++;
     final delay = Duration(seconds: delaySeconds);
@@ -519,6 +618,14 @@ class FirestoreBackupSyncService extends ChangeNotifier {
     _status = next;
     if (!_isDisposed) notifyListeners();
   }
+
+  bool _isOfflineError(Object error) =>
+      error is FirebaseException &&
+      const {
+        'unavailable',
+        'deadline-exceeded',
+        'network-request-failed',
+      }.contains(error.code);
 
   Future<String> _exportLocal() =>
       backupRepository.exportJson(appearanceMode: appearanceMode());
@@ -544,7 +651,7 @@ class FirestoreBackupSyncService extends ChangeNotifier {
         .collection('snapshots')
         .doc(snapshotId)
         .collection('chunks')
-        .get();
+        .get(const GetOptions(source: Source.server));
     final ordered = chunks.docs.toList()
       ..sort(
         (a, b) =>
@@ -576,7 +683,9 @@ class FirestoreBackupSyncService extends ChangeNotifier {
     }
 
     final manifest = _manifest(uid);
-    final oldManifest = await manifest.get();
+    final oldManifest = await manifest.get(
+      const GetOptions(source: Source.server),
+    );
     final snapshotId =
         '${_writerId}_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
     final chunks = manifest
@@ -612,7 +721,7 @@ class FirestoreBackupSyncService extends ChangeNotifier {
           .collection('snapshots')
           .doc(oldSnapshotId)
           .collection('chunks')
-          .get();
+          .get(const GetOptions(source: Source.server));
       for (var offset = 0; offset < oldChunks.docs.length; offset += 400) {
         final batch = _firestore.batch();
         for (final chunk in oldChunks.docs.skip(offset).take(400)) {

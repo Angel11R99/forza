@@ -1112,7 +1112,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupDescription =>
-      'The file includes your plan, workout history and sets, schedule, goals, active workout, and appearance. It is saved as JSON wherever you choose.';
+      'The file includes your plan, workout history and sets, schedule, goals, saved measurements, active workout, appearance, and preferences. It is saved as JSON wherever you choose. As a guest, your data stays on this device; sign in with Google from Profile to enable cloud sync. The file is independent of that sync.';
 
   @override
   String get backupExport => 'Export';
@@ -2002,6 +2002,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloudSyncStatusFailed => 'Sync failed. You can try again.';
+
+  @override
+  String get cloudSyncAccount => 'Connected account';
+
+  @override
+  String get cloudSyncStatusOffline =>
+      'Offline. Changes are pending until the connection returns.';
+
+  @override
+  String get cloudSyncFrequency => 'Sync frequency';
+
+  @override
+  String get cloudSyncFrequencyChanges => 'When changes are detected';
+
+  @override
+  String get cloudSyncFrequencyDaily => 'Daily';
+
+  @override
+  String get cloudSyncFrequencyWeekly => 'Weekly';
+
+  @override
+  String get cloudSyncFrequencyMonthly => 'Monthly';
+
+  @override
+  String get cloudSyncFrequencyManual => 'Manual only';
+
+  @override
+  String get cloudSyncFrequencyNote =>
+      'Automatic intervals are targets while the app can run and a connection is available. The OS may pause it; sync is not guaranteed while the app is closed. Manual only never uploads changes automatically.';
+
+  @override
+  String get cloudSyncFrequencySaveFailed =>
+      'Could not save the frequency. Try again.';
+
+  @override
+  String get cloudSyncNow => 'Sync now';
+
+  @override
+  String get cloudSyncIncludedHeading => 'Included data';
+
+  @override
+  String get cloudSyncIncludedDescription =>
+      'Training plan and days, schedule, workout and set history, goals, saved measurements, active session, appearance, language and preferences, reminders, and privacy settings. Local file export and import remain available separately under Backup.';
 
   @override
   String get cloudSyncLastSync => 'Last sync';
