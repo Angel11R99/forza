@@ -3914,6 +3914,84 @@ abstract class AppLocalizations {
   /// **'Training plan and days, schedule, workout and set history, goals, saved measurements, active session, appearance, language and preferences, reminders, and privacy settings. Local file export and import remain available separately under Backup.'**
   String get cloudSyncIncludedDescription;
 
+  /// No description provided for @cloudSyncNutritionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync nutrition data'**
+  String get cloudSyncNutritionTitle;
+
+  /// No description provided for @cloudSyncNutritionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. If enabled, your nutrition profile preferences and meal history are copied to your private Firestore account. Turning this off stops future sync; your local data stays on this device. Delete an existing cloud copy below when you want it removed.'**
+  String get cloudSyncNutritionDescription;
+
+  /// No description provided for @cloudSyncNutritionConsentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync nutrition data?'**
+  String get cloudSyncNutritionConsentTitle;
+
+  /// No description provided for @cloudSyncNutritionConsentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This sends your food preferences, exclusions, and recorded meals to the private Firestore backup for this account. These data are not sent to analytics. You can revoke this choice later.'**
+  String get cloudSyncNutritionConsentDescription;
+
+  /// No description provided for @cloudSyncNutritionConsentAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow nutrition sync'**
+  String get cloudSyncNutritionConsentAccept;
+
+  /// No description provided for @cloudSyncNutritionSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update nutrition sync consent.'**
+  String get cloudSyncNutritionSaveFailed;
+
+  /// No description provided for @cloudSyncNutritionDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete nutrition copy from cloud'**
+  String get cloudSyncNutritionDeleteButton;
+
+  /// No description provided for @cloudSyncNutritionDeleteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This only deletes the nutrition copy from Firestore. Other synced data and your local profile and history are kept.'**
+  String get cloudSyncNutritionDeleteHint;
+
+  /// No description provided for @cloudSyncNutritionDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cloud nutrition data?'**
+  String get cloudSyncNutritionDeleteConfirmTitle;
+
+  /// No description provided for @cloudSyncNutritionDeleteConfirmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes nutrition data from this account\'s Firestore backup. Your on-device profile and meal history remain.'**
+  String get cloudSyncNutritionDeleteConfirmDescription;
+
+  /// No description provided for @cloudSyncNutritionDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition data was removed from the cloud backup.'**
+  String get cloudSyncNutritionDeleted;
+
+  /// No description provided for @cloudSyncNutritionNoRemoteData.
+  ///
+  /// In en, this message translates to:
+  /// **'No nutrition data was present in the cloud backup.'**
+  String get cloudSyncNutritionNoRemoteData;
+
+  /// No description provided for @cloudSyncNutritionDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not remove nutrition data from the cloud. Check your connection and try again.'**
+  String get cloudSyncNutritionDeleteFailed;
+
   /// No description provided for @cloudSyncLastSync.
   ///
   /// In en, this message translates to:

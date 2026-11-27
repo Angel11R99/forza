@@ -18,7 +18,7 @@ class CloudSyncSettingsPage extends StatefulWidget {
     required this.account,
   });
 
-  final FirestoreBackupSyncService service;
+  final CloudSyncSettingsController service;
   final ProfileSettingsRepository settingsRepository;
   final String uid;
   final AccountIdentity account;
@@ -29,6 +29,7 @@ class CloudSyncSettingsPage extends StatefulWidget {
 
 class _CloudSyncSettingsPageState extends State<CloudSyncSettingsPage> {
   bool _enabled = false;
+  bool _nutritionSyncEnabled = false;
   bool _busy = false;
   CloudSyncFrequency _frequency = CloudSyncFrequency.onChange;
 
@@ -42,11 +43,13 @@ class _CloudSyncSettingsPageState extends State<CloudSyncSettingsPage> {
     final values = await Future.wait<Object>([
       widget.settingsRepository.isCloudSyncEnabled(widget.uid),
       widget.settingsRepository.cloudSyncFrequency(widget.uid),
+      widget.settingsRepository.isNutritionCloudSyncEnabled(widget.uid),
     ]);
     if (mounted) {
       setState(() {
         _enabled = values[0] as bool;
         _frequency = values[1] as CloudSyncFrequency;
+        _nutritionSyncEnabled = values[2] as bool;
       });
     }
   }
@@ -119,6 +122,25 @@ class _CloudSyncSettingsPageState extends State<CloudSyncSettingsPage> {
                 ),
               ),
               if (_enabled) ...[
+                const SizedBox(height: AppSpacing.x3),
+                AppSurfaceCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      Semantics(
+                        label: context.l10n.cloudSyncNutritionTitle,
+                        child: SwitchListTile(
+                          value: _nutritionSyncEnabled,
+                          onChanged: _busy ? null : _changeNutritionSync,
+                          title: Text(context.l10n.cloudSyncNutritionTitle),
+                          subtitle: Text(
+                            context.l10n.cloudSyncNutritionDescription,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.x3),
                 AppSurfaceCard(
                   child: Column(
@@ -195,6 +217,21 @@ class _CloudSyncSettingsPageState extends State<CloudSyncSettingsPage> {
                   ),
                 ),
               ],
+              const SizedBox(height: AppSpacing.x3),
+              AppSurfaceCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(context.l10n.cloudSyncNutritionDeleteHint),
+                    const SizedBox(height: AppSpacing.x2),
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _deleteRemoteNutritionData,
+                      icon: const Icon(Icons.delete_outline_rounded),
+                      label: Text(context.l10n.cloudSyncNutritionDeleteButton),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: AppSpacing.x8),
               Text(
                 context.l10n.cloudSyncDeleteSection,
@@ -270,8 +307,17 @@ class _CloudSyncSettingsPageState extends State<CloudSyncSettingsPage> {
         ),
       );
       if (confirmed != true) return;
+      await widget.settingsRepository.setNutritionCloudSyncEnabled(
+        widget.uid,
+        false,
+      );
       await widget.settingsRepository.setCloudSyncEnabled(widget.uid, false);
-      if (mounted) setState(() => _enabled = false);
+      if (mounted) {
+        setState(() {
+          _enabled = false;
+          _nutritionSyncEnabled = false;
+        });
+      }
       return;
     }
 
@@ -299,6 +345,100 @@ class _CloudSyncSettingsPageState extends State<CloudSyncSettingsPage> {
       if (mounted) setState(() => _enabled = true);
     } on Object {
       if (mounted) _showFailure(context.l10n.cloudSyncEnableFailed);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _changeNutritionSync(bool enabled) async {
+    if (!enabled) {
+      setState(() => _busy = true);
+      try {
+        await widget.settingsRepository.setNutritionCloudSyncEnabled(
+          widget.uid,
+          false,
+        );
+        if (mounted) setState(() => _nutritionSyncEnabled = false);
+      } on Object {
+        if (mounted) _showFailure(context.l10n.cloudSyncNutritionSaveFailed);
+      } finally {
+        if (mounted) setState(() => _busy = false);
+      }
+      return;
+    }
+
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.cloudSyncNutritionConsentTitle),
+        content: Text(context.l10n.cloudSyncNutritionConsentDescription),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.cloudSyncNutritionConsentAccept),
+          ),
+        ],
+      ),
+    );
+    if (accepted != true) return;
+    setState(() => _busy = true);
+    try {
+      await widget.settingsRepository.setNutritionCloudSyncEnabled(
+        widget.uid,
+        true,
+      );
+      if (mounted) setState(() => _nutritionSyncEnabled = true);
+    } on Object {
+      if (mounted) _showFailure(context.l10n.cloudSyncNutritionSaveFailed);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _deleteRemoteNutritionData() async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.cloudSyncNutritionDeleteConfirmTitle),
+        content: Text(context.l10n.cloudSyncNutritionDeleteConfirmDescription),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.cloudSyncNutritionDeleteButton),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    setState(() => _busy = true);
+    try {
+      final removed = await widget.service.deleteRemoteNutritionData();
+      if (mounted) {
+        setState(() => _nutritionSyncEnabled = false);
+        _showFailure(
+          removed
+              ? l10n.cloudSyncNutritionDeleted
+              : l10n.cloudSyncNutritionNoRemoteData,
+        );
+      }
+    } on Object {
+      if (mounted) {
+        final consentStillEnabled = await widget.settingsRepository
+            .isNutritionCloudSyncEnabled(widget.uid);
+        if (mounted) {
+          setState(() => _nutritionSyncEnabled = consentStillEnabled);
+        }
+        _showFailure(l10n.cloudSyncNutritionDeleteFailed);
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }

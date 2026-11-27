@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/database/app_database.dart';
 
 void main() {
-  test('migration v8 adds exercise identities without losing existing goals', () async {
+  test('migration v11 retains old workout data and creates nutrition tables', () async {
     final database = AppDatabase(
       NativeDatabase.memory(
         setup: (database) {
@@ -66,7 +66,7 @@ void main() {
     final version = await database
         .customSelect('PRAGMA user_version')
         .getSingle();
-    expect(version.read<int>('user_version'), 10);
+    expect(version.read<int>('user_version'), 11);
     final planColumns = await database
         .customSelect('PRAGMA table_info(training_plans)')
         .get();
@@ -104,6 +104,24 @@ void main() {
       existingLegacyGoal.readNullable<String>('exercise_catalog_id'),
       isNull,
     );
+    final nutritionProfileColumns = await _columnNames(
+      database,
+      'nutrition_profiles',
+    );
+    expect(
+      nutritionProfileColumns,
+      containsAll(['id', 'profile_version', 'profile_json', 'updated_at']),
+    );
+    final nutritionLogColumns = await _columnNames(
+      database,
+      'nutrition_meal_logs',
+    );
+    expect(nutritionLogColumns, containsAll(['id', 'logged_at', 'entry_json']));
     await database.close();
   });
+}
+
+Future<Set<String>> _columnNames(AppDatabase database, String table) async {
+  final rows = await database.customSelect('PRAGMA table_info($table)').get();
+  return rows.map((row) => row.read<String>('name')).toSet();
 }

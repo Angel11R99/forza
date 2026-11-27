@@ -2240,6 +2240,55 @@ class AppLocalizationsEn extends AppLocalizations {
       'Training plan and days, schedule, workout and set history, goals, saved measurements, active session, appearance, language and preferences, reminders, and privacy settings. Local file export and import remain available separately under Backup.';
 
   @override
+  String get cloudSyncNutritionTitle => 'Sync nutrition data';
+
+  @override
+  String get cloudSyncNutritionDescription =>
+      'Off by default. If enabled, your nutrition profile preferences and meal history are copied to your private Firestore account. Turning this off stops future sync; your local data stays on this device. Delete an existing cloud copy below when you want it removed.';
+
+  @override
+  String get cloudSyncNutritionConsentTitle => 'Sync nutrition data?';
+
+  @override
+  String get cloudSyncNutritionConsentDescription =>
+      'This sends your food preferences, exclusions, and recorded meals to the private Firestore backup for this account. These data are not sent to analytics. You can revoke this choice later.';
+
+  @override
+  String get cloudSyncNutritionConsentAccept => 'Allow nutrition sync';
+
+  @override
+  String get cloudSyncNutritionSaveFailed =>
+      'Could not update nutrition sync consent.';
+
+  @override
+  String get cloudSyncNutritionDeleteButton =>
+      'Delete nutrition copy from cloud';
+
+  @override
+  String get cloudSyncNutritionDeleteHint =>
+      'This only deletes the nutrition copy from Firestore. Other synced data and your local profile and history are kept.';
+
+  @override
+  String get cloudSyncNutritionDeleteConfirmTitle =>
+      'Delete cloud nutrition data?';
+
+  @override
+  String get cloudSyncNutritionDeleteConfirmDescription =>
+      'This removes nutrition data from this account\'s Firestore backup. Your on-device profile and meal history remain.';
+
+  @override
+  String get cloudSyncNutritionDeleted =>
+      'Nutrition data was removed from the cloud backup.';
+
+  @override
+  String get cloudSyncNutritionNoRemoteData =>
+      'No nutrition data was present in the cloud backup.';
+
+  @override
+  String get cloudSyncNutritionDeleteFailed =>
+      'Could not remove nutrition data from the cloud. Check your connection and try again.';
+
+  @override
   String get cloudSyncLastSync => 'Last sync';
 
   @override

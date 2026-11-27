@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:drift/native.dart';
+import 'package:forza/data/database/app_database.dart' hide NutritionProfile;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forza/data/repositories/profile_settings_repository.dart';
 import 'package:forza/domain/models/nutrition/nutrition_models.dart';
@@ -29,6 +33,34 @@ void main() {
       expect(await repository.loadNutritionProfile(), isNull);
     },
   );
+
+  test('imports the legacy nutrition profile into the Drift table', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    final storage = _MemoryProfilePreferencesStorage();
+    final legacyProfile = NutritionProfile(
+      id: 'legacy-profile',
+      version: 2,
+      updatedAt: DateTime.utc(2026, 11, 27),
+      dietaryPattern: DietaryPattern.vegan,
+    );
+    storage.values['nutrition_profile_v1'] = jsonEncode(legacyProfile.toJson());
+    final repository = ProfileSettingsRepository(
+      database: database,
+      storage: storage,
+    );
+
+    expect(
+      (await repository.loadNutritionProfile())?.dietaryPattern,
+      DietaryPattern.vegan,
+    );
+    expect(
+      await database.select(database.nutritionProfiles).get(),
+      hasLength(1),
+    );
+    await repository.clearNutritionProfile();
+    expect(await repository.loadNutritionProfile(), isNull);
+    await database.close();
+  });
 
   test(
     'saves and restores every profile preference without writing defaults',
@@ -148,9 +180,14 @@ void main() {
     final repository = ProfileSettingsRepository(storage: storage);
 
     expect(await repository.isCloudSyncEnabled('uid-a'), isFalse);
+    expect(await repository.isNutritionCloudSyncEnabled('uid-a'), isFalse);
+    expect(await repository.isNutritionCloudSyncEnabled('uid-b'), isFalse);
     await repository.setCloudSyncEnabled('uid-a', true);
+    await repository.setNutritionCloudSyncEnabled('uid-a', true);
     expect(await repository.isCloudSyncEnabled('uid-a'), isTrue);
     expect(await repository.isCloudSyncEnabled('uid-b'), isFalse);
+    expect(await repository.isNutritionCloudSyncEnabled('uid-a'), isTrue);
+    expect(await repository.isNutritionCloudSyncEnabled('uid-b'), isFalse);
 
     await repository.setPendingCloudSync('uid-a', true);
     expect(await repository.hasPendingCloudSync('uid-a'), isTrue);

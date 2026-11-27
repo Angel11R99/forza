@@ -1,5 +1,12 @@
+import 'dart:convert';
+
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:forza/data/repositories/nutrition_meal_log_repository.dart';
+import 'package:forza/data/database/app_database.dart';
 import 'package:forza/domain/models/nutrition/nutrition_models.dart';
 
 void main() {
@@ -69,6 +76,39 @@ void main() {
     final entries = await repository.loadForDay(DateTime(2026, 11, 27, 23));
     expect(entries.map((entry) => entry.id), ['just-after-midnight']);
   });
+
+  test(
+    'moves the previous preference snapshot into individual Drift rows',
+    () async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      final oldEntry = _manual('legacy', DateTime(2026, 11, 27, 8));
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.withData({
+            NutritionMealLogRepository.storageKey: jsonEncode({
+              'version': 1,
+              'entries': [oldEntry.toJson()],
+            }),
+          });
+      final database = AppDatabase(NativeDatabase.memory());
+      final repository = NutritionMealLogRepository(
+        storage: DriftNutritionMealLogStorage(
+          database: database,
+          legacyPreferences: SharedPreferencesAsync(),
+        ),
+      );
+
+      final migrated = await repository.loadAll();
+      expect(migrated.single.id, 'legacy');
+      expect(
+        await database.select(database.nutritionMealLogs).get(),
+        hasLength(1),
+      );
+      await repository.clear();
+      expect(await repository.loadAll(), isEmpty);
+      expect(await database.select(database.nutritionMealLogs).get(), isEmpty);
+      await database.close();
+    },
+  );
 }
 
 MealEntry _manual(String id, DateTime date) => MealEntry(
