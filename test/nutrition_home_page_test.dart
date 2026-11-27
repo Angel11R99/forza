@@ -6,12 +6,165 @@ import 'package:forza/data/repositories/profile_settings_repository.dart';
 import 'package:forza/data/repositories/nutrition_catalog_repository.dart';
 import 'package:forza/data/repositories/nutrition_meal_log_repository.dart';
 import 'package:forza/data/repositories/hydration_repository.dart';
+import 'package:forza/data/repositories/nutrition_review_repository.dart';
 import 'package:forza/domain/models/nutrition/nutrition_models.dart';
 import 'package:forza/domain/models/nutrition/hydration_models.dart';
 import 'package:forza/ui/features/nutrition/views/nutrition_home_page.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
 
 void main() {
+  testWidgets(
+    'review answers keep the existing plan until a proposal is accepted',
+    (tester) async {
+      final profileStorage = _MemoryStorage();
+      final repository = ProfileSettingsRepository(storage: profileStorage);
+      await repository.saveNutritionProfile(
+        NutritionProfile(
+          id: 'review-profile',
+          version: 1,
+          updatedAt: DateTime.now(),
+          mealsPerDay: 3,
+        ),
+      );
+      final reviewRepository = NutritionReviewRepository(
+        storage: _MemoryStorage(),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          theme: AppTheme.light,
+          localizationsDelegates: [
+            ...AppLocalizations.localizationsDelegates,
+            ...GlobalMaterialLocalizations.delegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: NutritionHomePage(
+            profileRepository: repository,
+            reviewRepository: reviewRepository,
+            trainingSettings: const TrainingSettings(),
+            catalogRepository: NutritionCatalogRepository(
+              loadAsset: () async => _catalogJson,
+            ),
+            mealLogRepository: NutritionMealLogRepository(
+              storage: _MealLogMemoryStorage(),
+            ),
+            hydrationRepository: HydrationRepository(
+              storage: _HydrationMemoryStorage(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Review your plan'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How has your energy felt?'), findsOneWidget);
+      await tester.drag(find.byType(ListView).last, const Offset(0, -2000));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Keep current plan'));
+      await tester.pumpAndSettle();
+
+      expect((await repository.loadNutritionProfile())?.version, 1);
+      expect((await reviewRepository.load()).feedback['energy'], 'skip');
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('preference draft is applied only after accepting its preview', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = ProfileSettingsRepository(storage: _MemoryStorage());
+    await repository.saveNutritionProfile(
+      NutritionProfile(
+        id: 'review-preview-profile',
+        version: 1,
+        updatedAt: DateTime.now(),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        theme: AppTheme.light,
+        localizationsDelegates: [
+          ...AppLocalizations.localizationsDelegates,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: NutritionHomePage(
+          profileRepository: repository,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
+          trainingSettings: const TrainingSettings(),
+          catalogRepository: NutritionCatalogRepository(
+            loadAsset: () async => _catalogJson,
+          ),
+          mealLogRepository: NutritionMealLogRepository(
+            storage: _MealLogMemoryStorage(),
+          ),
+          hydrationRepository: HydrationRepository(
+            storage: _HydrationMemoryStorage(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Review your plan'));
+    await tester.pumpAndSettle();
+    final reviewScroll = find
+        .ancestor(
+          of: find.byType(DropdownButtonFormField<String>).first,
+          matching: find.byType(Scrollable),
+        )
+        .last;
+    await tester.scrollUntilVisible(
+      find.text('Preview preference changes'),
+      300,
+      scrollable: reviewScroll,
+    );
+    await tester.tap(find.text('Preview preference changes'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).first, '35');
+    final profileScroll = find
+        .ancestor(
+          of: find.byType(TextFormField).first,
+          matching: find.byType(Scrollable),
+        )
+        .last;
+    await tester.scrollUntilVisible(
+      find.text('Save'),
+      400,
+      scrollable: profileScroll,
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect((await repository.loadNutritionProfile())?.version, 1);
+    await tester.scrollUntilVisible(
+      find.text('Plan preview'),
+      300,
+      scrollable: reviewScroll,
+    );
+    expect(find.text('Plan preview'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Accept preview'),
+      300,
+      scrollable: reviewScroll,
+    );
+    await tester.tap(find.text('Accept preview'));
+    await tester.pumpAndSettle();
+
+    final saved = await repository.loadNutritionProfile();
+    expect(saved?.version, 2);
+    expect(saved?.ageYears, 35);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'nutrition tabs fit 320 dp at 2x text in both locales and themes',
     (tester) async {
@@ -30,7 +183,7 @@ void main() {
             NutritionProfile(
               id: 'test-profile',
               version: 1,
-              updatedAt: DateTime.utc(2026, 11, 27),
+              updatedAt: DateTime.now().subtract(const Duration(days: 15)),
               mealsPerDay: 3,
             ),
           );
@@ -53,6 +206,9 @@ void main() {
               home: NutritionHomePage(
                 key: ValueKey('$locale-$dark'),
                 profileRepository: repository,
+                reviewRepository: NutritionReviewRepository(
+                  storage: _MemoryStorage(),
+                ),
                 trainingSettings: const TrainingSettings(),
                 mealLogRepository: NutritionMealLogRepository(
                   storage: _MealLogMemoryStorage(),
@@ -69,14 +225,16 @@ void main() {
           await tester.pumpAndSettle();
 
           expect(tester.takeException(), isNull);
-          expect(
-            find.text(
-              locale.languageCode == 'es'
-                  ? 'Agua y bebidas'
-                  : 'Water and drinks',
-            ),
-            findsOneWidget,
+          final hydrationTitle = locale.languageCode == 'es'
+              ? 'Agua y bebidas'
+              : 'Water and drinks';
+          await tester.scrollUntilVisible(
+            find.text(hydrationTitle),
+            240,
+            scrollable: find.byType(Scrollable).last,
           );
+          await tester.pumpAndSettle();
+          expect(find.text(hydrationTitle), findsOneWidget);
           expect(
             find.text(
               locale.languageCode == 'es'
@@ -115,6 +273,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: NutritionHomePage(
           profileRepository: repository,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
           trainingSettings: const TrainingSettings(),
           mealLogRepository: NutritionMealLogRepository(
             storage: _MealLogMemoryStorage(),
@@ -161,6 +322,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: NutritionHomePage(
           profileRepository: profile,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
           trainingSettings: const TrainingSettings(),
           catalogRepository: NutritionCatalogRepository(
             loadAsset: () async => _catalogJson,
@@ -227,6 +391,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: NutritionHomePage(
           profileRepository: repository,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
           trainingSettings: const TrainingSettings(),
           hydrationRepository: HydrationRepository(
             storage: _HydrationMemoryStorage(),
@@ -270,6 +437,9 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: NutritionHomePage(
           profileRepository: repository,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
           trainingSettings: const TrainingSettings(),
           hydrationRepository: HydrationRepository(
             storage: _HydrationMemoryStorage(),

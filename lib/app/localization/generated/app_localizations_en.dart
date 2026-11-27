@@ -3537,4 +3537,124 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hydrationLoadError => 'Couldn’t load water records. Retry.';
+
+  @override
+  String get nutritionReviewTitle => 'Review your plan';
+
+  @override
+  String get nutritionReviewDue =>
+      'Would you like to review how this plan is working for you?';
+
+  @override
+  String get nutritionReviewLater => 'Later';
+
+  @override
+  String get nutritionReviewIntro =>
+      'This optional check-in helps you decide whether to keep your current plan or preview preference changes. Your answers never change the plan by themselves.';
+
+  @override
+  String get nutritionReviewProfessionalNote =>
+      'This check-in is not medical advice. For persistent concerns about nutrition, recovery, or health, talk with a qualified professional.';
+
+  @override
+  String get nutritionReviewEnergy => 'How has your energy felt?';
+
+  @override
+  String get nutritionReviewAppetite => 'How comfortable have meals felt?';
+
+  @override
+  String get nutritionReviewRecipes => 'How manageable are the recipes?';
+
+  @override
+  String get nutritionReviewAccess => 'Can you find the foods you need?';
+
+  @override
+  String get nutritionReviewRecovery => 'How has your recovery felt?';
+
+  @override
+  String get nutritionReviewPerformance =>
+      'How has your training performance felt?';
+
+  @override
+  String get nutritionReviewGood => 'Good';
+
+  @override
+  String get nutritionReviewMixed => 'It varies';
+
+  @override
+  String get nutritionReviewLow => 'Could be better';
+
+  @override
+  String get nutritionReviewComfortable => 'Comfortable';
+
+  @override
+  String get nutritionReviewVaries => 'It varies';
+
+  @override
+  String get nutritionReviewDifficult => 'Difficult';
+
+  @override
+  String get nutritionReviewEasy => 'Easy';
+
+  @override
+  String get nutritionReviewMostly => 'Mostly manageable';
+
+  @override
+  String get nutritionReviewAvailable => 'Yes, mostly';
+
+  @override
+  String get nutritionReviewSomeMissing => 'Some items are hard to find';
+
+  @override
+  String get nutritionReviewHardToFind => 'Many items are hard to find';
+
+  @override
+  String get nutritionReviewSkip => 'Skip';
+
+  @override
+  String get nutritionReviewAdjust => 'Preview preference changes';
+
+  @override
+  String get nutritionReviewPreviewTitle => 'Plan preview';
+
+  @override
+  String nutritionReviewPreviewBody(int count) {
+    return 'The preview changes $count meals in the coming week.';
+  }
+
+  @override
+  String get nutritionReviewPreviewSafety =>
+      'This is a menu proposal, not a nutrition prescription. Your current plan and history stay unchanged until you accept.';
+
+  @override
+  String get nutritionReviewUnsafePreview =>
+      'Those preferences don’t produce a safe menu with the available catalog. Your current plan is unchanged.';
+
+  @override
+  String get nutritionReviewSaveError =>
+      'Couldn’t save this review. Try again.';
+
+  @override
+  String get nutritionReviewApply => 'Accept preview';
+
+  @override
+  String get nutritionReviewDiscard => 'Discard preview';
+
+  @override
+  String get nutritionReviewKeep => 'Keep current plan';
+
+  @override
+  String get nutritionReviewOpenFromProgress => 'Review nutrition plan';
+
+  @override
+  String get nutritionReviewCadence => 'Review reminder frequency';
+
+  @override
+  String get nutritionReviewEveryTwoWeeks => 'Every two weeks';
+
+  @override
+  String get nutritionReviewEveryFourWeeks => 'Every four weeks';
+
+  @override
+  String get nutritionReviewCadenceOff => 'Turn off reminders';
 }

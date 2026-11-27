@@ -5,6 +5,7 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../../data/repositories/nutrition_catalog_repository.dart';
 import '../../../../data/repositories/nutrition_meal_log_repository.dart';
 import '../../../../data/repositories/hydration_repository.dart';
+import '../../../../data/repositories/nutrition_review_repository.dart';
 import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../domain/models/nutrition/nutrition_catalog.dart';
 import '../../../../domain/models/nutrition/nutrition_models.dart';
@@ -13,6 +14,7 @@ import '../../../../domain/use_cases/nutrition_week_planner.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../profile/models/profile_settings.dart';
 import '../../profile/views/nutrition_profile_page.dart';
+import 'nutrition_review_page.dart';
 
 class NutritionHomePage extends StatefulWidget {
   const NutritionHomePage({
@@ -22,6 +24,7 @@ class NutritionHomePage extends StatefulWidget {
     this.catalogRepository,
     this.mealLogRepository,
     this.hydrationRepository,
+    this.reviewRepository,
     this.initialTab = 0,
   });
 
@@ -30,6 +33,7 @@ class NutritionHomePage extends StatefulWidget {
   final NutritionCatalogRepository? catalogRepository;
   final NutritionMealLogRepository? mealLogRepository;
   final HydrationRepository? hydrationRepository;
+  final NutritionReviewRepository? reviewRepository;
   final int initialTab;
 
   @override
@@ -43,6 +47,8 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       widget.mealLogRepository ?? NutritionMealLogRepository();
   late final _hydrationRepository =
       widget.hydrationRepository ?? HydrationRepository();
+  late final _reviewRepository =
+      widget.reviewRepository ?? NutritionReviewRepository();
   NutritionProfile? _profile;
   NutritionCatalog? _catalog;
   NutritionWeekPlan? _plan;
@@ -50,6 +56,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
   bool _loading = true;
   bool _failed = false;
   bool _showingHistory = false;
+  bool _reviewDue = false;
 
   @override
   void initState() {
@@ -68,6 +75,9 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       final profile = await widget.profileRepository.loadNutritionProfile();
       final catalog = await _catalogRepository.load();
       final entries = await _mealLogRepository.loadAll();
+      final reviewDue = profile == null
+          ? false
+          : await _reviewRepository.isDue(profile, now: DateTime.now());
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final weekStart = today.subtract(Duration(days: today.weekday - 1));
@@ -78,7 +88,8 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
               profile: profile,
               weekStart: weekStart,
               createdAt: now,
-              planId: 'nutrition-${profile.id}-${_dateKey(weekStart)}',
+              planId:
+                  'nutrition-${profile.id}-v${profile.version}-${_dateKey(weekStart)}',
               trainingWeekdays: widget.trainingSettings.trainingDays,
             );
       if (!mounted) return;
@@ -87,6 +98,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
         _catalog = catalog;
         _plan = generated?.plan;
         _entries = entries;
+        _reviewDue = reviewDue;
         _failed =
             generated?.status == MealPlanGenerationStatus.invalidConfiguration;
         _loading = false;
@@ -108,6 +120,39 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       ),
     );
     if (profile != null) await _load();
+  }
+
+  Future<void> _openReview() async {
+    final profile = _profile;
+    final catalog = _catalog;
+    final plan = _plan;
+    if (profile == null || catalog == null || plan == null) return;
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => NutritionReviewPage(
+          repository: widget.profileRepository,
+          reviewRepository: _reviewRepository,
+          profile: profile,
+          catalog: catalog,
+          currentPlan: plan,
+          trainingSettings: widget.trainingSettings,
+        ),
+      ),
+    );
+    await _load();
+  }
+
+  Future<void> _deferReview() async {
+    try {
+      await _reviewRepository.defer();
+      if (mounted) setState(() => _reviewDue = false);
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.nutritionReviewSaveError)),
+        );
+      }
+    }
   }
 
   Future<void> _togglePlannedMeal(PlannedMeal meal, bool consumed) async {
@@ -259,6 +304,12 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       appBar: AppBar(
         title: Text(l10n.nutritionHubTitle),
         actions: [
+          if (_profile != null && _plan != null)
+            IconButton(
+              tooltip: l10n.nutritionReviewTitle,
+              onPressed: _openReview,
+              icon: const Icon(Icons.event_note_outlined),
+            ),
           IconButton(
             tooltip: l10n.nutritionEditPreferences,
             onPressed: _editProfile,
@@ -381,6 +432,9 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
                   onDeleteEntry: _deleteEntry,
                   onAddFood: _addFood,
                   hydrationRepository: _hydrationRepository,
+                  showReviewPrompt: _reviewDue,
+                  onReview: _openReview,
+                  onDeferReview: _deferReview,
                 ),
                 _WeekTab(plan: plan, catalog: _catalog!),
                 _RecipesTab(plan: plan, catalog: _catalog!),
@@ -548,6 +602,9 @@ class _TodayTab extends StatelessWidget {
     required this.onDeleteEntry,
     required this.onAddFood,
     required this.hydrationRepository,
+    required this.showReviewPrompt,
+    required this.onReview,
+    required this.onDeferReview,
   });
 
   final MealPlanDay day;
@@ -558,6 +615,9 @@ class _TodayTab extends StatelessWidget {
   final ValueChanged<MealEntry> onDeleteEntry;
   final VoidCallback onAddFood;
   final HydrationRepository hydrationRepository;
+  final bool showReviewPrompt;
+  final VoidCallback onReview;
+  final VoidCallback onDeferReview;
 
   @override
   Widget build(BuildContext context) {
@@ -572,6 +632,38 @@ class _TodayTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.x4),
       children: [
+        if (showReviewPrompt)
+          AppSurfaceCard(
+            padding: const EdgeInsets.all(AppSpacing.x2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.event_note_outlined),
+                    const SizedBox(width: AppSpacing.x2),
+                    Expanded(child: Text(context.l10n.nutritionReviewDue)),
+                  ],
+                ),
+                Wrap(
+                  spacing: AppSpacing.x2,
+                  children: [
+                    TextButton(
+                      onPressed: onDeferReview,
+                      child: Text(context.l10n.nutritionReviewLater),
+                    ),
+                    TextButton.icon(
+                      onPressed: onReview,
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: Text(context.l10n.nutritionReviewTitle),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        if (showReviewPrompt) const SizedBox(height: AppSpacing.x3),
         _HydrationPanel(repository: hydrationRepository),
         const SizedBox(height: AppSpacing.x3),
         Align(
