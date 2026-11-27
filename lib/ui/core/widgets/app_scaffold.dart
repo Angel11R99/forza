@@ -24,6 +24,7 @@ import '../../features/home/views/home_view.dart';
 import '../../features/onboarding/views/onboarding_view.dart';
 import '../../features/profile/models/profile_settings.dart';
 import '../../features/profile/views/profile_view.dart';
+import '../../features/nutrition/views/nutrition_home_page.dart';
 import '../../features/profile/views/backup_restore_page.dart';
 import '../../features/progress/views/progress_view.dart';
 import '../../features/onboarding/views/training_session_flow.dart';
@@ -559,6 +560,7 @@ class _AppScaffoldState extends State<AppScaffold>
                     HomeView(
                       onShowActivity: () => _selectDestination(1),
                       onShowProfile: () => _selectDestination(4),
+                      onShowNutrition: _openNutrition,
                       settings: _viewModel.trainingSettings,
                       onEditPlan: _editPlan,
                       onStartWorkout: _startHomeWorkout,
@@ -603,6 +605,7 @@ class _AppScaffoldState extends State<AppScaffold>
                       accountAuthViewModel: _accountAuthViewModel,
                       cloudSyncService: _cloudSyncService,
                       profileSettingsRepository: _profileSettingsRepository,
+                      onOpenNutritionPlan: () => _openNutrition(initialTab: 1),
                       onPreferencesChanged: (preferences) =>
                           setState(() => _preferences = preferences),
                       onNotificationsChanged: _saveNotificationSettings,
@@ -651,6 +654,18 @@ class _AppScaffoldState extends State<AppScaffold>
       return;
     }
     await _synchronizeWorkoutRemindersSafely();
+  }
+
+  Future<void> _openNutrition({int initialTab = 0}) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => NutritionHomePage(
+          profileRepository: _profileSettingsRepository,
+          trainingSettings: _viewModel.trainingSettings,
+          initialTab: initialTab,
+        ),
+      ),
+    );
   }
 
   void _updateTrainingSettings(TrainingSettings settings) {

@@ -3135,4 +3135,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingNameSidePlank => 'Incline side plank';
+
+  @override
+  String get nutritionHubTitle => 'Nutrition';
+
+  @override
+  String get nutritionOpen => 'Open';
+
+  @override
+  String get homeNutritionSummary =>
+      'Review this week’s menu and shopping list.';
+
+  @override
+  String get nutritionMyPlanTitle => 'My nutrition plan';
+
+  @override
+  String get nutritionMyPlanSubtitle => 'Weekly menu and shopping list';
+
+  @override
+  String get nutritionWeekSummary => 'Suggested weekly plan';
+
+  @override
+  String get nutritionEstimatesNote =>
+      'Amounts are recipe estimates, not a nutrition prescription.';
+
+  @override
+  String get nutritionGeneralCatalogNote =>
+      'Showing general options; local availability is not confirmed.';
+
+  @override
+  String get nutritionTabToday => 'Today';
+
+  @override
+  String get nutritionTabWeek => 'Week';
+
+  @override
+  String get nutritionTabRecipes => 'Recipes';
+
+  @override
+  String get nutritionTabShopping => 'Shopping';
+
+  @override
+  String get nutritionWelcomeTitle => 'Plan meals around your preferences';
+
+  @override
+  String get nutritionWelcomeDescription =>
+      'Set your preferences to see a simple weekly menu. Nutrition is optional.';
+
+  @override
+  String get nutritionConfigureProfile => 'Set preferences';
+
+  @override
+  String get nutritionEditPreferences => 'Edit preferences';
+
+  @override
+  String get nutritionNoSafeRecipes =>
+      'We can’t build a menu that meets your restrictions with the available data.';
+
+  @override
+  String get nutritionAllergenUnknownNote =>
+      'The catalog does not yet have verified allergen information for every recipe. We will not remove your filters to fill the menu.';
+
+  @override
+  String get nutritionNoMealsToday => 'There are no meals to show today.';
+
+  @override
+  String get nutritionTrainingDay => 'Training day';
+
+  @override
+  String get nutritionRestDay => 'Rest day';
+
+  @override
+  String get nutritionShoppingEmpty => 'Your shopping list is empty.';
+
+  @override
+  String get nutritionLoadError =>
+      'We couldn’t load the meal catalog. Check local storage and try again.';
+
+  @override
+  String nutritionRecipeEstimate(int kcal) {
+    return 'Estimated $kcal kcal per recipe';
+  }
+
+  @override
+  String get nutritionMyPlanAction => 'View nutrition plan';
 }

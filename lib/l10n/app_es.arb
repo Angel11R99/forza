@@ -286,7 +286,6 @@
   "homeStatusSkipped": "omitida",
   "homeStatusPending": "pendiente",
   "homeStatusRest": "descanso",
-  "homeStatusSkipped": "omitida",
   "homeStatusRescheduled": "reprogramada",
   "homeRescheduledExplanation": "Las sesiones reprogramadas pueden aparecer en otro día o fuera de esta semana.",
   "activityTitle": "Actividad",
@@ -1187,5 +1186,37 @@
   "trainingNameBandReverseFly": "Apertura inversa con banda",
   "trainingNamePikeToCobra": "Flexiones de pica a cobra",
   "trainingNameJumpSquat": "Sentadilla con salto",
-  "trainingNameSidePlank": "Plancha lateral inclinada"
+  "trainingNameSidePlank": "Plancha lateral inclinada",
+  "nutritionHubTitle": "Nutrición",
+  "nutritionOpen": "Abrir",
+  "homeNutritionSummary": "Revisa el menú de la semana y la lista de compras.",
+  "nutritionMyPlanTitle": "Mi plan nutricional",
+  "nutritionMyPlanSubtitle": "Menú semanal y lista de compras",
+  "nutritionWeekSummary": "Plan semanal orientativo",
+  "nutritionEstimatesNote": "Las cantidades son estimaciones por receta, no una prescripción nutricional.",
+  "nutritionGeneralCatalogNote": "Se muestran opciones generales; la disponibilidad en tu zona no está confirmada.",
+  "nutritionTabToday": "Hoy",
+  "nutritionTabWeek": "Semana",
+  "nutritionTabRecipes": "Recetas",
+  "nutritionTabShopping": "Compras",
+  "nutritionWelcomeTitle": "Organiza tus comidas con tus preferencias",
+  "nutritionWelcomeDescription": "Configura tus preferencias para ver un menú semanal sencillo. Usar Nutrición es opcional.",
+  "nutritionConfigureProfile": "Configurar preferencias",
+  "nutritionEditPreferences": "Editar preferencias",
+  "nutritionNoSafeRecipes": "No podemos preparar un menú que respete tus restricciones con los datos disponibles.",
+  "nutritionAllergenUnknownNote": "El catálogo todavía no tiene alérgenos verificados para todas las recetas. No quitaremos tus filtros para completar el menú.",
+  "nutritionNoMealsToday": "No hay comidas para mostrar hoy.",
+  "nutritionTrainingDay": "Día de entrenamiento",
+  "nutritionRestDay": "Día de descanso",
+  "nutritionShoppingEmpty": "La lista de compras está vacía.",
+  "nutritionLoadError": "No pudimos cargar el catálogo de comidas. Comprueba el almacenamiento local e inténtalo otra vez.",
+  "nutritionRecipeEstimate": "{kcal} kcal estimadas por receta",
+  "nutritionMyPlanAction": "Ver plan nutricional",
+  "@nutritionRecipeEstimate": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  }
 }
