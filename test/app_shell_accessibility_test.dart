@@ -121,7 +121,14 @@ void main() {
         activitySemantics.evaluate().single.flagsCollection.isSelected,
         Tristate.isTrue,
       );
-      expect(tester.takeException(), isNull);
+      final layoutException = tester.takeException();
+      expect(
+        layoutException,
+        isNull,
+        reason: layoutException is FlutterError
+            ? layoutException.toStringDeep()
+            : null,
+      );
 
       tester.view.physicalSize = const Size(800, 320);
       await tester.pump();
