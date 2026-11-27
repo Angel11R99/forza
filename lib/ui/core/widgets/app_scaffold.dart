@@ -679,6 +679,12 @@ class _AppScaffoldState extends State<AppScaffold>
   }
 
   Widget _buildBottomNavigationBar() {
+    final width = MediaQuery.sizeOf(context).width;
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final showLabels =
+        _preferences.showNavigationLabels &&
+        (width >= 420 || textScale <= 1.3);
+
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.surface,
@@ -694,7 +700,7 @@ class _AppScaffoldState extends State<AppScaffold>
                   destination: _destinations[index],
                   label: _destinationLabel(context, index),
                   selected: index == _selectedIndex,
-                  showLabel: _preferences.showNavigationLabels,
+                  showLabel: showLabels,
                   onTap: () => _selectDestination(index),
                 ),
               ),
