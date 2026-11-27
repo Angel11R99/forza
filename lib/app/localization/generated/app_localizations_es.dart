@@ -3474,4 +3474,85 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get healthDisconnect => 'Desconectar y borrar datos';
+
+  @override
+  String get commonUndo => 'Deshacer';
+
+  @override
+  String get commonEdit => 'Editar';
+
+  @override
+  String get commonDelete => 'Eliminar';
+
+  @override
+  String get hydrationTitle => 'Agua y bebidas';
+
+  @override
+  String get hydrationGlass => 'Vaso';
+
+  @override
+  String get hydrationBottle => 'Botella';
+
+  @override
+  String get hydrationManual => 'Cantidad personalizada';
+
+  @override
+  String get hydrationAmount => 'Cantidad';
+
+  @override
+  String get hydrationDrinkType => 'Bebida';
+
+  @override
+  String get hydrationWater => 'Agua';
+
+  @override
+  String get hydrationOtherBeverage => 'Otra bebida';
+
+  @override
+  String hydrationTodayTotal(String amount) {
+    return 'Registrado hoy: $amount';
+  }
+
+  @override
+  String hydrationProgress(String amount, String goal) {
+    return 'Registrado $amount de tu meta personal de $goal';
+  }
+
+  @override
+  String hydrationAdded(String amount) {
+    return 'Se añadió $amount';
+  }
+
+  @override
+  String get hydrationDeleted => 'Registro de agua eliminado';
+
+  @override
+  String get hydrationHistory => 'Historial de agua';
+
+  @override
+  String get hydrationEmpty => 'No hay bebidas registradas para este día.';
+
+  @override
+  String get hydrationEdit => 'Editar registro de agua';
+
+  @override
+  String get hydrationPreferences => 'Preferencias de agua';
+
+  @override
+  String get hydrationGoalOptional => 'Meta diaria personal (opcional)';
+
+  @override
+  String get hydrationShowIndicator => 'Mostrar el progreso hacia mi meta';
+
+  @override
+  String get hydrationInvalidAmount =>
+      'Introduce una cantidad entre 1 y 10.000 ml.';
+
+  @override
+  String get hydrationSaveError =>
+      'No se pudo guardar el registro. Inténtalo de nuevo.';
+
+  @override
+  String get hydrationLoadError =>
+      'No se pudieron cargar los registros. Reintentar.';
 }

@@ -4,9 +4,11 @@ import '../../../../app/localization/localization_extensions.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../data/repositories/nutrition_catalog_repository.dart';
 import '../../../../data/repositories/nutrition_meal_log_repository.dart';
+import '../../../../data/repositories/hydration_repository.dart';
 import '../../../../data/repositories/profile_settings_repository.dart';
 import '../../../../domain/models/nutrition/nutrition_catalog.dart';
 import '../../../../domain/models/nutrition/nutrition_models.dart';
+import '../../../../domain/models/nutrition/hydration_models.dart';
 import '../../../../domain/use_cases/nutrition_week_planner.dart';
 import '../../../core/widgets/app_surface_card.dart';
 import '../../profile/models/profile_settings.dart';
@@ -19,6 +21,7 @@ class NutritionHomePage extends StatefulWidget {
     required this.trainingSettings,
     this.catalogRepository,
     this.mealLogRepository,
+    this.hydrationRepository,
     this.initialTab = 0,
   });
 
@@ -26,6 +29,7 @@ class NutritionHomePage extends StatefulWidget {
   final TrainingSettings trainingSettings;
   final NutritionCatalogRepository? catalogRepository;
   final NutritionMealLogRepository? mealLogRepository;
+  final HydrationRepository? hydrationRepository;
   final int initialTab;
 
   @override
@@ -37,6 +41,8 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
       widget.catalogRepository ?? NutritionCatalogRepository();
   late final _mealLogRepository =
       widget.mealLogRepository ?? NutritionMealLogRepository();
+  late final _hydrationRepository =
+      widget.hydrationRepository ?? HydrationRepository();
   NutritionProfile? _profile;
   NutritionCatalog? _catalog;
   NutritionWeekPlan? _plan;
@@ -291,6 +297,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
                 onConfigure: _editProfile,
                 onAddFood: _addFood,
                 onHistory: () => setState(() => _showingHistory = true),
+                hydrationRepository: _hydrationRepository,
               )
             : _buildPlan(context),
       ),
@@ -305,6 +312,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
         onEdit: _editProfile,
         onAddFood: _addFood,
         onHistory: () => setState(() => _showingHistory = true),
+        hydrationRepository: _hydrationRepository,
       );
     }
     final tabIndex = widget.initialTab.clamp(0, 4).toInt();
@@ -372,6 +380,7 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
                   onAdjustEntry: _adjustEntry,
                   onDeleteEntry: _deleteEntry,
                   onAddFood: _addFood,
+                  hydrationRepository: _hydrationRepository,
                 ),
                 _WeekTab(plan: plan, catalog: _catalog!),
                 _RecipesTab(plan: plan, catalog: _catalog!),
@@ -396,11 +405,13 @@ class _WelcomeState extends StatelessWidget {
     required this.onConfigure,
     required this.onAddFood,
     required this.onHistory,
+    required this.hydrationRepository,
   });
 
   final VoidCallback onConfigure;
   final VoidCallback onAddFood;
   final VoidCallback onHistory;
+  final HydrationRepository hydrationRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -424,6 +435,8 @@ class _WelcomeState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            const SizedBox(height: AppSpacing.x3),
+            _HydrationPanel(repository: hydrationRepository),
             const SizedBox(height: AppSpacing.x4),
             FilledButton(
               onPressed: onConfigure,
@@ -475,11 +488,13 @@ class _NoSafePlan extends StatelessWidget {
     required this.onEdit,
     required this.onAddFood,
     required this.onHistory,
+    required this.hydrationRepository,
   });
 
   final VoidCallback onEdit;
   final VoidCallback onAddFood;
   final VoidCallback onHistory;
+  final HydrationRepository hydrationRepository;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -500,6 +515,8 @@ class _NoSafePlan extends StatelessWidget {
             context.l10n.nutritionAllergenUnknownNote,
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: AppSpacing.x3),
+          _HydrationPanel(repository: hydrationRepository),
           const SizedBox(height: AppSpacing.x3),
           OutlinedButton(
             onPressed: onEdit,
@@ -530,6 +547,7 @@ class _TodayTab extends StatelessWidget {
     required this.onAdjustEntry,
     required this.onDeleteEntry,
     required this.onAddFood,
+    required this.hydrationRepository,
   });
 
   final MealPlanDay day;
@@ -539,6 +557,7 @@ class _TodayTab extends StatelessWidget {
   final ValueChanged<MealEntry> onAdjustEntry;
   final ValueChanged<MealEntry> onDeleteEntry;
   final VoidCallback onAddFood;
+  final HydrationRepository hydrationRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -553,6 +572,8 @@ class _TodayTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.x4),
       children: [
+        _HydrationPanel(repository: hydrationRepository),
+        const SizedBox(height: AppSpacing.x3),
         Align(
           alignment: Alignment.centerLeft,
           child: OutlinedButton.icon(
@@ -624,6 +645,677 @@ class _TodayTab extends StatelessWidget {
       ],
     );
   }
+}
+
+class _HydrationPanel extends StatefulWidget {
+  const _HydrationPanel({required this.repository});
+  final HydrationRepository repository;
+  @override
+  State<_HydrationPanel> createState() => _HydrationPanelState();
+}
+
+class _HydrationPanelState extends State<_HydrationPanel> {
+  List<HydrationEntry> _entries = const [];
+  HydrationPreferences _preferences = const HydrationPreferences();
+  bool _loading = true;
+  bool _busy = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final data = await widget.repository.load();
+      if (!mounted) return;
+      setState(() {
+        _entries = data.entries;
+        _preferences = data.preferences;
+        _loading = false;
+        _failed = false;
+      });
+    } on Object {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _failed = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _add(
+    int amount, {
+    HydrationDrinkType drinkType = HydrationDrinkType.water,
+  }) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    final now = DateTime.now();
+    final entry = HydrationEntry(
+      id: 'water:${now.microsecondsSinceEpoch}',
+      loggedAt: now,
+      amountMl: amount,
+      drinkType: drinkType,
+    );
+    try {
+      await widget.repository.save(entry);
+      if (!mounted) return;
+      setState(() {
+        _entries = [entry, ..._entries];
+        _busy = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.hydrationAdded(
+              _formatWater(
+                amount,
+                Localizations.localeOf(context).languageCode,
+              ),
+            ),
+          ),
+          action: SnackBarAction(
+            label: context.l10n.commonUndo,
+            onPressed: () async {
+              await widget.repository.delete(entry.id);
+              if (mounted) {
+                setState(
+                  () => _entries = _entries
+                      .where((item) => item.id != entry.id)
+                      .toList(),
+                );
+              }
+            },
+          ),
+        ),
+      );
+    } on Object {
+      if (mounted) {
+        setState(() => _busy = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.hydrationSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _manual() async {
+    final value =
+        await showDialog<({int amountMl, HydrationDrinkType drinkType})>(
+          context: context,
+          builder: (_) => const _HydrationAmountDialog(),
+        );
+    if (value != null && mounted) {
+      await _add(value.amountMl, drinkType: value.drinkType);
+    }
+  }
+
+  Future<void> _edit(HydrationEntry entry) async {
+    final updated = await showDialog<HydrationEntry>(
+      context: context,
+      builder: (_) => _HydrationEditDialog(entry: entry),
+    );
+    if (updated == null || !mounted) return;
+    try {
+      await widget.repository.save(updated);
+      if (mounted) {
+        setState(() {
+          _entries =
+              _entries
+                  .map((item) => item.id == entry.id ? updated : item)
+                  .toList()
+                ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
+        });
+      }
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.hydrationSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _delete(HydrationEntry entry) async {
+    try {
+      await widget.repository.delete(entry.id);
+      if (!mounted) return;
+      setState(
+        () => _entries = _entries.where((item) => item.id != entry.id).toList(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.hydrationDeleted),
+          action: SnackBarAction(
+            label: context.l10n.commonUndo,
+            onPressed: () async {
+              await widget.repository.save(entry);
+              if (mounted) {
+                setState(
+                  () =>
+                      _entries = [entry, ..._entries]
+                        ..sort((a, b) => b.loggedAt.compareTo(a.loggedAt)),
+                );
+              }
+            },
+          ),
+        ),
+      );
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.hydrationSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _editPreferences() async {
+    final value = await showDialog<HydrationPreferences>(
+      context: context,
+      builder: (_) => _HydrationPreferencesDialog(initial: _preferences),
+    );
+    if (value == null || !mounted) return;
+    try {
+      await widget.repository.savePreferences(value);
+      if (mounted) setState(() => _preferences = value);
+    } on Object {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.hydrationSaveError)),
+        );
+      }
+    }
+  }
+
+  Future<void> _history() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.x4),
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * .72,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  context.l10n.hydrationHistory,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: AppSpacing.x2),
+                Expanded(
+                  child: _entries.isEmpty
+                      ? Center(child: Text(context.l10n.hydrationEmpty))
+                      : ListView.builder(
+                          itemCount: _entries.length,
+                          itemBuilder: (context, index) {
+                            final entry = _entries[index];
+                            final date = MaterialLocalizations.of(context)
+                                .formatMediumDate(entry.loggedAt.toLocal());
+                            final time = MaterialLocalizations.of(context)
+                                .formatTimeOfDay(
+                                  TimeOfDay.fromDateTime(
+                                    entry.loggedAt.toLocal(),
+                                  ),
+                                );
+                            final drinkName =
+                                entry.drinkType == HydrationDrinkType.water
+                                ? context.l10n.hydrationWater
+                                : context.l10n.hydrationOtherBeverage;
+                            return ListTile(
+                              title: Text(
+                                _formatWater(
+                                  entry.amountMl,
+                                  Localizations.localeOf(context).languageCode,
+                                ),
+                              ),
+                              subtitle: Text('$drinkName · $date · $time'),
+                              trailing: Wrap(
+                                spacing: 0,
+                                children: [
+                                  IconButton(
+                                    tooltip: context.l10n.commonEdit,
+                                    onPressed: () {
+                                      Navigator.pop(sheetContext);
+                                      _edit(entry);
+                                    },
+                                    icon: const Icon(Icons.edit_outlined),
+                                  ),
+                                  IconButton(
+                                    tooltip: context.l10n.commonDelete,
+                                    onPressed: () {
+                                      Navigator.pop(sheetContext);
+                                      _delete(entry);
+                                    },
+                                    icon: const Icon(Icons.delete_outline),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) return const LinearProgressIndicator();
+    if (_failed) {
+      return OutlinedButton.icon(
+        onPressed: _load,
+        icon: const Icon(Icons.refresh),
+        label: Text(context.l10n.hydrationLoadError),
+      );
+    }
+    final today = DateTime.now();
+    final todayEntries = _entries.where((entry) {
+      final date = entry.loggedAt.toLocal();
+      return date.year == today.year &&
+          date.month == today.month &&
+          date.day == today.day;
+    }).toList();
+    final total = todayEntries.fold<int>(
+      0,
+      (sum, entry) => sum + entry.amountMl,
+    );
+    final goal = _preferences.dailyGoalMl;
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.x3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.water_drop_outlined),
+                const SizedBox(width: AppSpacing.x2),
+                Expanded(
+                  child: Text(
+                    context.l10n.hydrationTitle,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+                IconButton(
+                  tooltip: context.l10n.hydrationPreferences,
+                  onPressed: _editPreferences,
+                  icon: const Icon(Icons.tune_rounded),
+                ),
+                IconButton(
+                  tooltip: context.l10n.hydrationHistory,
+                  onPressed: _history,
+                  icon: const Icon(Icons.history_rounded),
+                ),
+              ],
+            ),
+            if (todayEntries.isEmpty)
+              Text(
+                context.l10n.hydrationEmpty,
+                style: theme.textTheme.bodySmall,
+              )
+            else
+              Text(
+                context.l10n.hydrationTodayTotal(
+                  _formatWater(
+                    total,
+                    Localizations.localeOf(context).languageCode,
+                  ),
+                ),
+                style: theme.textTheme.bodyMedium,
+              ),
+            if (goal != null && _preferences.showIndicator) ...[
+              const SizedBox(height: AppSpacing.x2),
+              Semantics(
+                label: context.l10n.hydrationProgress(
+                  _formatWater(
+                    total,
+                    Localizations.localeOf(context).languageCode,
+                  ),
+                  _formatWater(
+                    goal,
+                    Localizations.localeOf(context).languageCode,
+                  ),
+                ),
+                child: LinearProgressIndicator(
+                  value: (total / goal).clamp(0, 1),
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.x2),
+            Wrap(
+              spacing: AppSpacing.x2,
+              runSpacing: AppSpacing.x1,
+              children: [
+                OutlinedButton(
+                  onPressed: _busy ? null : () => _add(_preferences.glassMl),
+                  child: Text(
+                    '${context.l10n.hydrationGlass} · ${_formatWater(_preferences.glassMl, Localizations.localeOf(context).languageCode)}',
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed: _busy ? null : () => _add(_preferences.bottleMl),
+                  child: Text(
+                    '${context.l10n.hydrationBottle} · ${_formatWater(_preferences.bottleMl, Localizations.localeOf(context).languageCode)}',
+                  ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _busy ? null : _manual,
+                  icon: const Icon(Icons.add_rounded),
+                  label: Text(context.l10n.hydrationManual),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HydrationAmountDialog extends StatefulWidget {
+  const _HydrationAmountDialog();
+  @override
+  State<_HydrationAmountDialog> createState() => _HydrationAmountDialogState();
+}
+
+class _HydrationAmountDialogState extends State<_HydrationAmountDialog> {
+  final _controller = TextEditingController();
+  HydrationDrinkType _drinkType = HydrationDrinkType.water;
+  bool _invalid = false;
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l10n.hydrationManual),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButtonFormField<HydrationDrinkType>(
+            initialValue: _drinkType,
+            decoration: InputDecoration(
+              labelText: context.l10n.hydrationDrinkType,
+            ),
+            items: [
+              DropdownMenuItem(
+                value: HydrationDrinkType.water,
+                child: Text(context.l10n.hydrationWater),
+              ),
+              DropdownMenuItem(
+                value: HydrationDrinkType.otherBeverage,
+                child: Text(context.l10n.hydrationOtherBeverage),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) setState(() => _drinkType = value);
+            },
+          ),
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: context.l10n.hydrationAmount,
+              suffixText: 'ml',
+              errorText: _invalid ? context.l10n.hydrationInvalidAmount : null,
+            ),
+            onChanged: (_) {
+              if (_invalid) setState(() => _invalid = false);
+            },
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(context.l10n.commonCancel),
+      ),
+      FilledButton(
+        onPressed: () {
+          final value = int.tryParse(_controller.text.trim());
+          if (value == null || value < 1 || value > 10000) {
+            setState(() => _invalid = true);
+            return;
+          }
+          Navigator.pop(context, (amountMl: value, drinkType: _drinkType));
+        },
+        child: Text(context.l10n.commonSave),
+      ),
+    ],
+  );
+}
+
+class _HydrationEditDialog extends StatefulWidget {
+  const _HydrationEditDialog({required this.entry});
+  final HydrationEntry entry;
+  @override
+  State<_HydrationEditDialog> createState() => _HydrationEditDialogState();
+}
+
+class _HydrationEditDialogState extends State<_HydrationEditDialog> {
+  late final _controller = TextEditingController(
+    text: widget.entry.amountMl.toString(),
+  );
+  late DateTime _date = widget.entry.loggedAt.toLocal();
+  late HydrationDrinkType _drinkType = widget.entry.drinkType;
+  bool _invalid = false;
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l10n.hydrationEdit),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DropdownButtonFormField<HydrationDrinkType>(
+            initialValue: _drinkType,
+            decoration: InputDecoration(
+              labelText: context.l10n.hydrationDrinkType,
+            ),
+            items: [
+              DropdownMenuItem(
+                value: HydrationDrinkType.water,
+                child: Text(context.l10n.hydrationWater),
+              ),
+              DropdownMenuItem(
+                value: HydrationDrinkType.otherBeverage,
+                child: Text(context.l10n.hydrationOtherBeverage),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) setState(() => _drinkType = value);
+            },
+          ),
+          TextField(
+            controller: _controller,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: context.l10n.hydrationAmount,
+              suffixText: 'ml',
+              errorText: _invalid ? context.l10n.hydrationInvalidAmount : null,
+            ),
+            onChanged: (_) {
+              if (_invalid) setState(() => _invalid = false);
+            },
+          ),
+          TextButton.icon(
+            onPressed: () async {
+              final chosen = await showDatePicker(
+                context: context,
+                initialDate: _date,
+                firstDate: DateTime(2000),
+                lastDate: DateTime.now().add(const Duration(days: 1)),
+              );
+              if (chosen != null) {
+                setState(
+                  () => _date = DateTime(
+                    chosen.year,
+                    chosen.month,
+                    chosen.day,
+                    _date.hour,
+                    _date.minute,
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.calendar_today_outlined),
+            label: Text(
+              MaterialLocalizations.of(context).formatMediumDate(_date),
+            ),
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(context.l10n.commonCancel),
+      ),
+      FilledButton(
+        onPressed: () {
+          final value = int.tryParse(_controller.text.trim());
+          if (value == null || value < 1 || value > 10000) {
+            setState(() => _invalid = true);
+            return;
+          }
+          Navigator.pop(
+            context,
+            HydrationEntry(
+              id: widget.entry.id,
+              loggedAt: _date,
+              amountMl: value,
+              drinkType: _drinkType,
+            ),
+          );
+        },
+        child: Text(context.l10n.commonSave),
+      ),
+    ],
+  );
+}
+
+class _HydrationPreferencesDialog extends StatefulWidget {
+  const _HydrationPreferencesDialog({required this.initial});
+  final HydrationPreferences initial;
+  @override
+  State<_HydrationPreferencesDialog> createState() =>
+      _HydrationPreferencesDialogState();
+}
+
+class _HydrationPreferencesDialogState
+    extends State<_HydrationPreferencesDialog> {
+  late final _glass = TextEditingController(
+    text: widget.initial.glassMl.toString(),
+  );
+  late final _bottle = TextEditingController(
+    text: widget.initial.bottleMl.toString(),
+  );
+  late final _goal = TextEditingController(
+    text: widget.initial.dailyGoalMl?.toString() ?? '',
+  );
+  late bool _show = widget.initial.showIndicator;
+  bool _invalid = false;
+  @override
+  void dispose() {
+    _glass.dispose();
+    _bottle.dispose();
+    _goal.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(context.l10n.hydrationPreferences),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final item in [
+            (context.l10n.hydrationGlass, _glass),
+            (context.l10n.hydrationBottle, _bottle),
+            (context.l10n.hydrationGoalOptional, _goal),
+          ])
+            TextField(
+              controller: item.$2,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: item.$1,
+                suffixText: 'ml',
+                errorText: _invalid
+                    ? context.l10n.hydrationInvalidAmount
+                    : null,
+              ),
+            ),
+          CheckboxListTile(
+            value: _show,
+            onChanged: (value) => setState(() => _show = value ?? true),
+            title: Text(context.l10n.hydrationShowIndicator),
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Text(context.l10n.commonCancel),
+      ),
+      FilledButton(
+        onPressed: () {
+          final glass = int.tryParse(_glass.text);
+          final bottle = int.tryParse(_bottle.text);
+          final goalText = _goal.text.trim();
+          final goal = goalText.isEmpty ? null : int.tryParse(goalText);
+          final prefs = HydrationPreferences(
+            glassMl: glass ?? 0,
+            bottleMl: bottle ?? 0,
+            dailyGoalMl: goal,
+            showIndicator: _show,
+          );
+          if ((goalText.isNotEmpty && goal == null) || !prefs.isValid) {
+            setState(() => _invalid = true);
+            return;
+          }
+          Navigator.pop(context, prefs);
+        },
+        child: Text(context.l10n.commonSave),
+      ),
+    ],
+  );
+}
+
+String _formatWater(int ml, String locale) {
+  if (ml < 1000) return '$ml ml';
+  final liters = ml / 1000;
+  var value = liters == liters.roundToDouble()
+      ? liters.toStringAsFixed(0)
+      : liters
+            .toStringAsFixed(2)
+            .replaceFirst(RegExp(r'0+$'), '')
+            .replaceFirst(RegExp(r'\.$'), '');
+  if (locale == 'es') value = value.replaceFirst('.', ',');
+  return '$value L';
 }
 
 class _WeekTab extends StatelessWidget {

@@ -6045,6 +6045,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disconnect and delete data'**
   String get healthDisconnect;
+
+  /// No description provided for @commonUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get commonUndo;
+
+  /// No description provided for @commonEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get commonEdit;
+
+  /// No description provided for @commonDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commonDelete;
+
+  /// No description provided for @hydrationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Water and drinks'**
+  String get hydrationTitle;
+
+  /// No description provided for @hydrationGlass.
+  ///
+  /// In en, this message translates to:
+  /// **'Glass'**
+  String get hydrationGlass;
+
+  /// No description provided for @hydrationBottle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottle'**
+  String get hydrationBottle;
+
+  /// No description provided for @hydrationManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom amount'**
+  String get hydrationManual;
+
+  /// No description provided for @hydrationAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get hydrationAmount;
+
+  /// No description provided for @hydrationDrinkType.
+  ///
+  /// In en, this message translates to:
+  /// **'Drink'**
+  String get hydrationDrinkType;
+
+  /// No description provided for @hydrationWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Water'**
+  String get hydrationWater;
+
+  /// No description provided for @hydrationOtherBeverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Other beverage'**
+  String get hydrationOtherBeverage;
+
+  /// No description provided for @hydrationTodayTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged today: {amount}'**
+  String hydrationTodayTotal(String amount);
+
+  /// No description provided for @hydrationProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded {amount} of personal goal {goal}'**
+  String hydrationProgress(String amount, String goal);
+
+  /// No description provided for @hydrationAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {amount}'**
+  String hydrationAdded(String amount);
+
+  /// No description provided for @hydrationDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Water record deleted'**
+  String get hydrationDeleted;
+
+  /// No description provided for @hydrationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Water history'**
+  String get hydrationHistory;
+
+  /// No description provided for @hydrationEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No drinks recorded for this day.'**
+  String get hydrationEmpty;
+
+  /// No description provided for @hydrationEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit water record'**
+  String get hydrationEdit;
+
+  /// No description provided for @hydrationPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Water preferences'**
+  String get hydrationPreferences;
+
+  /// No description provided for @hydrationGoalOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal daily goal (optional)'**
+  String get hydrationGoalOptional;
+
+  /// No description provided for @hydrationShowIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Show progress toward my goal'**
+  String get hydrationShowIndicator;
+
+  /// No description provided for @hydrationInvalidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount from 1 to 10,000 ml.'**
+  String get hydrationInvalidAmount;
+
+  /// No description provided for @hydrationSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t save the water record. Try again.'**
+  String get hydrationSaveError;
+
+  /// No description provided for @hydrationLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t load water records. Retry.'**
+  String get hydrationLoadError;
 }
 
 class _AppLocalizationsDelegate
