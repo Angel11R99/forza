@@ -22,6 +22,7 @@ void main() {
       version: 2,
       updatedAt: DateTime.utc(2026),
       countryCode: 'VE',
+      region: 'Miranda',
       mealsPerDay: 3,
     );
 
@@ -44,6 +45,7 @@ void main() {
       ageYears: 30,
       heightCm: 170,
       countryCode: 'VE',
+      region: 'Miranda',
       mealsPerDay: 4,
       restrictions: const [
         FoodRestriction(type: FoodRestrictionType.allergy, value: 'peanut'),
@@ -55,6 +57,7 @@ void main() {
     expect(restored.isValid, isTrue);
     expect(restored.ageYears, 30);
     expect(restored.heightCm, 170);
+    expect(restored.region, 'Miranda');
     expect(restored.restrictions.single.type, FoodRestrictionType.allergy);
     expect(restored.restrictions.single.value, 'peanut');
   });

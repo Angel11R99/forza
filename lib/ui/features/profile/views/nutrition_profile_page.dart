@@ -19,7 +19,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _age = TextEditingController();
   final _height = TextEditingController();
-  final _country = TextEditingController();
+  final _region = TextEditingController();
   final _allergies = TextEditingController();
   final _intolerances = TextEditingController();
   final _excluded = TextEditingController();
@@ -30,6 +30,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
   DietaryPattern _diet = DietaryPattern.unrestricted;
   BodyType _bodyType = BodyType.unknown;
   NutritionGoal? _goal;
+  String? _countryCode;
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
   void dispose() {
     _age.dispose();
     _height.dispose();
-    _country.dispose();
+    _region.dispose();
     _allergies.dispose();
     _intolerances.dispose();
     _excluded.dispose();
@@ -56,7 +57,8 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
         _profile = profile;
         _age.text = profile?.ageYears?.toString() ?? '';
         _height.text = profile?.heightCm?.toString() ?? '';
-        _country.text = profile?.countryCode ?? '';
+        _countryCode = profile?.countryCode;
+        _region.text = profile?.region ?? '';
         _budget = profile?.budget ?? RelativeFoodCost.moderate;
         _diet = profile?.dietaryPattern ?? DietaryPattern.unrestricted;
         _bodyType = profile?.bodyType ?? BodyType.unknown;
@@ -92,9 +94,8 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
       heightCm: double.tryParse(_height.text.replaceAll(',', '.')),
       bodyType: _bodyType,
       goal: _goal,
-      countryCode: _country.text.trim().isEmpty
-          ? null
-          : _country.text.trim().toUpperCase(),
+      countryCode: _countryCode,
+      region: _region.text.trim().isEmpty ? null : _region.text.trim(),
       budget: _budget,
       dietaryPattern: _diet,
       restrictions: [
@@ -187,6 +188,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
                     ),
                     DropdownButtonFormField<NutritionGoal?>(
                       initialValue: _goal,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: l10n.nutritionProfileGoal,
                       ),
@@ -206,6 +208,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
                     ),
                     DropdownButtonFormField<DietaryPattern>(
                       initialValue: _diet,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: l10n.nutritionProfileDiet,
                       ),
@@ -222,6 +225,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
                     ),
                     DropdownButtonFormField<BodyType>(
                       initialValue: _bodyType,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: l10n.nutritionProfileBodyType,
                       ),
@@ -242,6 +246,7 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
                     ),
                     DropdownButtonFormField<RelativeFoodCost>(
                       initialValue: _budget,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: l10n.nutritionProfileBudget,
                       ),
@@ -261,21 +266,22 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
                       onChanged: (value) =>
                           setState(() => _budget = value ?? _budget),
                     ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(l10n.nutritionProfileCountry),
+                      subtitle: Text(_countryName(l10n, _countryCode)),
+                      trailing: const Icon(Icons.search),
+                      onTap: _chooseCountry,
+                    ),
                     TextFormField(
-                      controller: _country,
-                      textCapitalization: TextCapitalization.characters,
-                      maxLength: 2,
+                      key: const ValueKey('nutrition-profile-region'),
+                      controller: _region,
+                      enabled: _countryCode != null,
+                      maxLength: 100,
                       decoration: InputDecoration(
-                        labelText: l10n.nutritionProfileCountry,
-                        helperText: l10n.nutritionProfileCountryHint,
+                        labelText: l10n.nutritionProfileRegion,
+                        helperText: l10n.nutritionProfileRegionHint,
                       ),
-                      validator: (value) {
-                        final text = value?.trim() ?? '';
-                        return text.isEmpty ||
-                                RegExp(r'^[A-Za-z]{2}$').hasMatch(text)
-                            ? null
-                            : l10n.nutritionProfileCountryError;
-                      },
                     ),
                     const SizedBox(height: AppSpacing.x4),
                     Text(
@@ -320,6 +326,43 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
               ),
             ),
     );
+  }
+
+  String _countryName(AppLocalizations l10n, String? code) => switch (code) {
+    'AR' => l10n.nutritionCountryArgentina,
+    'CO' => l10n.nutritionCountryColombia,
+    'DO' => l10n.nutritionCountryDominicanRepublic,
+    'ES' => l10n.nutritionCountrySpain,
+    'MX' => l10n.nutritionCountryMexico,
+    null => l10n.nutritionCountryGeneral,
+    _ => code,
+  };
+
+  Future<void> _chooseCountry() async {
+    final l10n = context.l10n;
+    final options = [
+      _CountryChoice('AR', l10n.nutritionCountryArgentina),
+      _CountryChoice('CO', l10n.nutritionCountryColombia),
+      _CountryChoice('DO', l10n.nutritionCountryDominicanRepublic),
+      _CountryChoice('ES', l10n.nutritionCountrySpain),
+      _CountryChoice('MX', l10n.nutritionCountryMexico),
+    ];
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _CountrySearchSheet(
+        countries: options,
+        generalLabel: l10n.nutritionCountryGeneral,
+        generalHint: l10n.nutritionCountryGeneralHint,
+        searchLabel: l10n.nutritionCountrySearch,
+        noResultsLabel: l10n.nutritionCountryNoResults,
+      ),
+    );
+    if (selected == null || !mounted) return;
+    setState(() {
+      _countryCode = selected.isEmpty ? null : selected;
+      if (_countryCode == null) _region.clear();
+    });
   }
 
   String _dietLabel(AppLocalizations l10n, DietaryPattern value) =>
@@ -374,4 +417,100 @@ class _NutritionProfilePageState extends State<NutritionProfilePage> {
         RelativeFoodCost.moderate => l10n.nutritionProfileBudgetBalanced,
         _ => l10n.nutritionProfileBudgetAny,
       };
+}
+
+class _CountryChoice {
+  const _CountryChoice(this.code, this.label);
+
+  final String code;
+  final String label;
+}
+
+class _CountrySearchSheet extends StatefulWidget {
+  const _CountrySearchSheet({
+    required this.countries,
+    required this.generalLabel,
+    required this.generalHint,
+    required this.searchLabel,
+    required this.noResultsLabel,
+  });
+
+  final List<_CountryChoice> countries;
+  final String generalLabel;
+  final String generalHint;
+  final String searchLabel;
+  final String noResultsLabel;
+
+  @override
+  State<_CountrySearchSheet> createState() => _CountrySearchSheetState();
+}
+
+class _CountrySearchSheetState extends State<_CountrySearchSheet> {
+  final _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _search.text.trim().toLowerCase();
+    final filtered = widget.countries
+        .where(
+          (country) =>
+              country.label.toLowerCase().contains(query) ||
+              country.code.toLowerCase().contains(query),
+        )
+        .toList();
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.x4,
+          AppSpacing.x4,
+          AppSpacing.x4,
+          MediaQuery.viewInsetsOf(context).bottom + AppSpacing.x4,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              key: const ValueKey('nutrition-country-search'),
+              controller: _search,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: widget.searchLabel,
+                prefixIcon: const Icon(Icons.search),
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * .55,
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  ListTile(
+                    title: Text(widget.generalLabel),
+                    subtitle: Text(widget.generalHint),
+                    onTap: () => Navigator.pop(context, ''),
+                  ),
+                  for (final country in filtered)
+                    ListTile(
+                      title: Text(country.label),
+                      subtitle: Text(country.code),
+                      onTap: () => Navigator.pop(context, country.code),
+                    ),
+                  if (filtered.isEmpty)
+                    ListTile(title: Text(widget.noResultsLabel)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -13,6 +13,8 @@
 
 `NutritionProfile` contiene preferencias mínimas propias de nutrición y versiona cambios. Datos que pertenecen al perfil/entrenamiento existentes se consultan desde sus repositorios; las medidas se leen de `BodyMeasurementRepository`. `Food` y `Recipe` son catálogo curado y versionado; su acceso regional (`FoodAccess`) admite desconocido, confianza, procedencia y versión. El menú guarda las versiones del perfil, catálogo y objetivos que usó. `MealEntry` permite registrar alimento o receta sin exigir un menú.
 
+País de compra es una preferencia confirmada manualmente y distinta del idioma, unidades y zona horaria. La región es texto opcional y amplio. Si no hay país confirmado o cobertura, se resuelve catálogo general y se informa cobertura; nunca se solicitan coordenadas ni se interpreta locale como residencia.
+
 Flujo de casos de uso: perfil/agenda/medidas canónicos → validación de datos disponibles → objetivos solo si existe método aprobado y perfil suficiente → catálogo regional local → propuesta de menú con fallback ante datos desconocidos → registro y revisión. Persistencia se añade en la capa data (Drift/repositorios), UI solo depende de contratos/casos de uso. MVP local-first; no requiere IA remota, pagos ni servicios de precios en vivo.
 
 ## Reglas y seguridad
