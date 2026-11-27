@@ -1067,6 +1067,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your recipe library couldn\'t be saved. Please try again.';
 
   @override
+  String get nutritionRecipeSearchEmpty => 'No recipes match your search.';
+
+  @override
   String get nutritionProfileAllergies => 'Allergies';
 
   @override

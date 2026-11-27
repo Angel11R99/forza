@@ -1886,6 +1886,12 @@ abstract class AppLocalizations {
   /// **'Your recipe library couldn\'t be saved. Please try again.'**
   String get nutritionPrivateRecipeSaveError;
 
+  /// No description provided for @nutritionRecipeSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No recipes match your search.'**
+  String get nutritionRecipeSearchEmpty;
+
   /// No description provided for @nutritionProfileAllergies.
   ///
   /// In en, this message translates to:

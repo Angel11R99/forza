@@ -415,6 +415,7 @@
   "nutritionPrivateRecipeCannotPinTitle": "This recipe can't be pinned",
   "nutritionPrivateRecipeCannotPinBody": "The recipe does not meet your profile restrictions or safety data. Review its ingredients or your preferences before pinning it.",
   "nutritionPrivateRecipeSaveError": "Your recipe library couldn't be saved. Please try again.",
+  "nutritionRecipeSearchEmpty": "No recipes match your search.",
   "nutritionProfileAllergies": "Allergies",
   "nutritionProfileIntolerances": "Intolerances",
   "nutritionProfileExcluded": "Ingredients to avoid",

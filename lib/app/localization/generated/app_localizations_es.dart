@@ -1072,6 +1072,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo guardar tu biblioteca de recetas. Inténtalo de nuevo.';
 
   @override
+  String get nutritionRecipeSearchEmpty =>
+      'No hay recetas que coincidan con la búsqueda.';
+
+  @override
   String get nutritionProfileAllergies => 'Alergias';
 
   @override

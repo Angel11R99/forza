@@ -68,15 +68,42 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Recipes'));
     await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('nutrition-recipe-search')),
+      'bowl',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Banana bowl'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('nutrition-recipe-search')),
+      'not found',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Banana bowl'), findsNothing);
+    expect(find.text('No recipes match your search.'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('nutrition-recipe-search')),
+      '',
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Create recipe'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).at(0), 'Banana snack');
+    await tester.enterText(
+      find.byKey(const Key('private-recipe-title')),
+      'Banana snack',
+    );
     await tester.tap(find.byType(DropdownButtonFormField<String>).first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Banana').last);
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).at(1), '120');
-    await tester.enterText(find.byType(TextField).at(2), '2');
+    await tester.enterText(
+      find.byKey(const Key('private-recipe-amount-0')),
+      '120',
+    );
+    await tester.enterText(
+      find.byKey(const Key('private-recipe-servings')),
+      '2',
+    );
     await tester.tap(find.text('Save').last);
     await tester.pumpAndSettle();
 
@@ -112,7 +139,11 @@ void main() {
     expect(entries, hasLength(2));
     expect(
       entries.where((entry) => entry.nutrientEstimates['energyKcal'] == 54),
-      hasLength(2),
+      hasLength(1),
+    );
+    expect(
+      entries.where((entry) => entry.nutrientEstimates['energyKcal'] == 90),
+      hasLength(1),
     );
     await tester.tap(find.text('Week'));
     await tester.pumpAndSettle();

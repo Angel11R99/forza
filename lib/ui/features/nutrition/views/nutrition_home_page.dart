@@ -361,53 +361,10 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     final key = 'private:${recipe.id}';
     if (!_pendingRecipeLogs.add(key)) return;
     try {
-      final profile = _profile;
-      if (profile != null && profile.restrictions.isNotEmpty) {
-        final catalogFoods = {
-          for (final food in _catalog?.foods ?? const []) food.id: food,
-        };
-        final restricted = profile.restrictions
-            .where((item) => item.type != FoodRestrictionType.preference)
-            .map((item) => item.value.trim().toLowerCase())
-            .toSet();
-        final recipeFoods = recipe.ingredients
-            .map((item) => catalogFoods[item.foodId])
-            .toList();
-        final hasUnknownSafety = recipeFoods.any(
-          (food) =>
-              food == null ||
-              food.allergenKnowledge != AllergenKnowledge.reviewed,
-        );
-        final conflicts = recipeFoods.whereType<NutritionCatalogFood>().any(
-          (food) => food.allergens.any(
-            (allergen) => restricted.contains(allergen.trim().toLowerCase()),
-          ),
-        );
-        if (hasUnknownSafety || conflicts) {
-          final proceed = await showDialog<bool>(
-            context: context,
-            builder: (dialogContext) => AlertDialog(
-              title: Text(context.l10n.nutritionAllergyWarningTitle),
-              content: Text(
-                conflicts
-                    ? context.l10n.nutritionPrivateRecipeRestrictionConflict
-                    : context.l10n.nutritionPrivateRecipeRestrictionUnknown,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext, false),
-                  child: Text(context.l10n.commonCancel),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.pop(dialogContext, true),
-                  child: Text(context.l10n.nutritionPrivateRecipeLogAnyway),
-                ),
-              ],
-            ),
-          );
-          if (proceed != true || !mounted) return;
-        }
-      }
+      final safe = await _confirmRecipeSafety(
+        recipe.ingredients.map((item) => item.foodId),
+      );
+      if (!safe || !mounted) return;
       final choice = await showDialog<_MealLogChoice>(
         context: context,
         builder: (_) => const _MealLogConfirmDialog(initialServings: 1),
@@ -423,6 +380,10 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     final key = 'catalog:${meal.recipeId}';
     if (!_pendingRecipeLogs.add(key)) return;
     try {
+      final safe = await _confirmRecipeSafety(
+        meal.ingredients.map((item) => item.foodId),
+      );
+      if (!safe || !mounted) return;
       final choice = await showDialog<_MealLogChoice>(
         context: context,
         builder: (_) => _MealLogConfirmDialog(initialServings: meal.servings),
@@ -468,6 +429,51 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
     } finally {
       _pendingRecipeLogs.remove(key);
     }
+  }
+
+  Future<bool> _confirmRecipeSafety(Iterable<String> foodIds) async {
+    final restrictions = _profile?.restrictions
+        .where((item) => item.type != FoodRestrictionType.preference)
+        .map((item) => item.value.trim().toLowerCase())
+        .where((value) => value.isNotEmpty)
+        .toSet();
+    if (restrictions == null || restrictions.isEmpty) return true;
+    final catalogFoods = {
+      for (final food in _catalog?.foods ?? const []) food.id: food,
+    };
+    final recipeFoods = foodIds.map((id) => catalogFoods[id]).toList();
+    final hasUnknownSafety = recipeFoods.any(
+      (food) =>
+          food == null || food.allergenKnowledge != AllergenKnowledge.reviewed,
+    );
+    final conflicts = recipeFoods.whereType<NutritionCatalogFood>().any(
+      (food) => food.allergens.any(
+        (allergen) => restrictions.contains(allergen.trim().toLowerCase()),
+      ),
+    );
+    if (!hasUnknownSafety && !conflicts) return true;
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.nutritionAllergyWarningTitle),
+        content: Text(
+          conflicts
+              ? context.l10n.nutritionPrivateRecipeRestrictionConflict
+              : context.l10n.nutritionPrivateRecipeRestrictionUnknown,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(context.l10n.nutritionPrivateRecipeLogAnyway),
+          ),
+        ],
+      ),
+    );
+    return proceed == true && mounted;
   }
 
   Future<void> _logPrivateRecipe(
@@ -666,7 +672,6 @@ class _NutritionHomePageState extends State<NutritionHomePage> {
                 ),
                 _WeekTab(plan: plan, catalog: _catalog!),
                 _RecipesTab(
-                  plan: plan,
                   catalog: _catalog!,
                   repository: _privateRecipeRepository,
                   recipes: _privateRecipes,
@@ -1687,7 +1692,6 @@ class _WeekTab extends StatelessWidget {
 
 class _RecipesTab extends StatefulWidget {
   const _RecipesTab({
-    required this.plan,
     required this.catalog,
     required this.repository,
     required this.recipes,
@@ -1699,7 +1703,6 @@ class _RecipesTab extends StatefulWidget {
     required this.onLogPlannedMeal,
     required this.onQuickLog,
   });
-  final NutritionWeekPlan plan;
   final NutritionCatalog catalog;
   final PrivateNutritionRecipeRepository repository;
   final List<PrivateNutritionRecipe> recipes;
@@ -1716,6 +1719,14 @@ class _RecipesTab extends StatefulWidget {
 }
 
 class _RecipesTabState extends State<_RecipesTab> {
+  final _recipeSearch = TextEditingController();
+
+  @override
+  void dispose() {
+    _recipeSearch.dispose();
+    super.dispose();
+  }
+
   void _showSaveError() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.nutritionPrivateRecipeSaveError)),
@@ -1864,7 +1875,6 @@ class _RecipesTabState extends State<_RecipesTab> {
 
   @override
   Widget build(BuildContext context) {
-    final plan = widget.plan;
     final catalog = widget.catalog;
     final ownRecipes = [...widget.recipes]
       ..sort((a, b) {
@@ -1874,17 +1884,6 @@ class _RecipesTabState extends State<_RecipesTab> {
         return favoriteOrder != 0
             ? favoriteOrder
             : a.title.toLowerCase().compareTo(b.title.toLowerCase());
-      });
-    final recipes = <String, PlannedMeal>{};
-    for (final meal in plan.days.expand((day) => day.meals)) {
-      recipes.putIfAbsent(meal.recipeId, () => meal);
-    }
-    final planRecipes = recipes.values.toList()
-      ..sort((a, b) {
-        final aFavorite = widget.favoriteCatalogRecipeIds.contains(a.recipeId);
-        final bFavorite = widget.favoriteCatalogRecipeIds.contains(b.recipeId);
-        if (aFavorite != bFavorite) return aFavorite ? -1 : 1;
-        return a.recipeId.compareTo(b.recipeId);
       });
     final recentAt = <String, DateTime>{};
     for (final entry in widget.entries.where(
@@ -1899,6 +1898,58 @@ class _RecipesTabState extends State<_RecipesTab> {
     final recentRecipes =
         ownRecipes.where((recipe) => recentAt.containsKey(recipe.id)).toList()
           ..sort((a, b) => recentAt[b.id]!.compareTo(recentAt[a.id]!));
+    final query = _recipeSearch.text.trim().toLowerCase();
+    bool matches(String title, Iterable<String> ingredients) =>
+        query.isEmpty ||
+        title.toLowerCase().contains(query) ||
+        ingredients.any(
+          (ingredient) => ingredient.toLowerCase().contains(query),
+        );
+    final visibleOwnRecipes = ownRecipes
+        .where(
+          (recipe) => matches(
+            recipe.title,
+            recipe.ingredients.map(
+              (item) => _foodName(context, item.foodId, catalog),
+            ),
+          ),
+        )
+        .toList();
+    final visibleRecentRecipes = recentRecipes
+        .where(
+          (recipe) => matches(
+            recipe.title,
+            recipe.ingredients.map(
+              (item) => _foodName(context, item.foodId, catalog),
+            ),
+          ),
+        )
+        .toList();
+    final publicRecipes =
+        catalog.recipes
+            .map((recipe) => _plannedMealFromCatalogRecipe(recipe, catalog))
+            .where(
+              (meal) => matches(
+                _localizedRecipe(context, meal),
+                meal.ingredients.map(
+                  (item) => _foodName(context, item.foodId, catalog),
+                ),
+              ),
+            )
+            .toList()
+          ..sort((a, b) {
+            final aFavorite = widget.favoriteCatalogRecipeIds.contains(
+              a.recipeId,
+            );
+            final bFavorite = widget.favoriteCatalogRecipeIds.contains(
+              b.recipeId,
+            );
+            if (aFavorite != bFavorite) return aFavorite ? -1 : 1;
+            return _localizedRecipe(
+              context,
+              a,
+            ).compareTo(_localizedRecipe(context, b));
+          });
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.x4),
       children: [
@@ -1910,14 +1961,42 @@ class _RecipesTabState extends State<_RecipesTab> {
             label: Text(_es(context) ? 'Crear receta' : 'Create recipe'),
           ),
         ),
-        if (ownRecipes.isNotEmpty) ...[
+        const SizedBox(height: AppSpacing.x2),
+        TextField(
+          key: const Key('nutrition-recipe-search'),
+          controller: _recipeSearch,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.search_rounded),
+            hintText: _es(context)
+                ? 'Buscar receta o ingrediente'
+                : 'Search recipe or ingredient',
+            suffixIcon: _recipeSearch.text.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: _es(context) ? 'Borrar búsqueda' : 'Clear search',
+                    onPressed: () {
+                      _recipeSearch.clear();
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+          ),
+        ),
+        if (query.isNotEmpty &&
+            visibleOwnRecipes.isEmpty &&
+            publicRecipes.isEmpty) ...[
+          const SizedBox(height: AppSpacing.x3),
+          Text(context.l10n.nutritionRecipeSearchEmpty),
+        ],
+        if (visibleOwnRecipes.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.x3),
           Text(
             _es(context) ? 'Tus recetas' : 'Your recipes',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.x1),
-          for (final recipe in ownRecipes)
+          for (final recipe in visibleOwnRecipes)
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.x2),
               child: AppSurfaceCard(
@@ -2046,7 +2125,7 @@ class _RecipesTabState extends State<_RecipesTab> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.x1),
-          for (final recipe in recentRecipes.take(5))
+          for (final recipe in visibleRecentRecipes.take(5))
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(recipe.title),
@@ -2062,11 +2141,17 @@ class _RecipesTabState extends State<_RecipesTab> {
           const SizedBox(height: AppSpacing.x2),
         ],
         Text(
-          _es(context) ? 'Recetas del plan' : 'Plan recipes',
+          _es(context) ? 'Catálogo de recetas' : 'Recipe catalog',
           style: Theme.of(context).textTheme.titleMedium,
         ),
+        Text(
+          _es(context)
+              ? 'Disponible sin conexión. La disponibilidad en tu zona no está confirmada.'
+              : 'Available offline. Availability in your area is unconfirmed.',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
         const SizedBox(height: AppSpacing.x1),
-        for (final meal in planRecipes)
+        for (final meal in publicRecipes)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.x2),
             child: AppSurfaceCard(
@@ -2184,6 +2269,7 @@ class _PrivateRecipeEditorState extends State<_PrivateRecipeEditor> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            key: const Key('private-recipe-title'),
             controller: _title,
             decoration: InputDecoration(
               labelText: _es(context) ? 'Nombre' : 'Name',
@@ -2243,6 +2329,7 @@ class _PrivateRecipeEditorState extends State<_PrivateRecipeEditor> {
                     children: [
                       Expanded(
                         child: TextField(
+                          key: Key('private-recipe-amount-$index'),
                           controller: _ingredients[index].amount,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
@@ -2300,6 +2387,7 @@ class _PrivateRecipeEditorState extends State<_PrivateRecipeEditor> {
             ),
           ),
           TextField(
+            key: const Key('private-recipe-servings'),
             controller: _servings,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
@@ -2455,6 +2543,41 @@ NutritionCatalogRecipe _plannerRecipeFromPrivate(
     stepsEn: recipe.instructions,
     stepsEs: recipe.instructions,
     dietaryPatterns: dietaryPatterns,
+  );
+}
+
+PlannedMeal _plannedMealFromCatalogRecipe(
+  NutritionCatalogRecipe recipe,
+  NutritionCatalog catalog,
+) {
+  final foods = {for (final food in catalog.foods) food.id: food};
+  final ingredients = recipe.ingredients
+      .map(
+        (item) => PlannedIngredient(
+          foodId: item.foodId,
+          grams: item.grams / recipe.servings,
+        ),
+      )
+      .toList(growable: false);
+  final nutrients = <String, double?>{};
+  for (final code in nutritionNutrientCodes.keys) {
+    final amounts = recipe.ingredients.map((item) {
+      final per100g = foods[item.foodId]?.nutrient(code);
+      return per100g == null ? null : per100g * item.grams / 100;
+    });
+    nutrients[code] = amounts.any((amount) => amount == null)
+        ? null
+        : amounts.fold<double>(0, (sum, amount) => sum + amount!) /
+              recipe.servings;
+  }
+  return PlannedMeal(
+    id: 'catalog-${recipe.id}',
+    recipeId: recipe.id,
+    titleEn: recipe.titleEn,
+    titleEs: recipe.titleEs,
+    servings: 1,
+    ingredients: List.unmodifiable(ingredients),
+    nutrients: Map.unmodifiable(nutrients),
   );
 }
 

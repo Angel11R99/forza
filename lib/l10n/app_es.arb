@@ -415,6 +415,7 @@
   "nutritionPrivateRecipeCannotPinTitle": "No se puede fijar esta receta",
   "nutritionPrivateRecipeCannotPinBody": "La receta no cumple las restricciones o los datos de seguridad de tu perfil. Revisa los ingredientes o tus preferencias antes de fijarla.",
   "nutritionPrivateRecipeSaveError": "No se pudo guardar tu biblioteca de recetas. Inténtalo de nuevo.",
+  "nutritionRecipeSearchEmpty": "No hay recetas que coincidan con la búsqueda.",
   "nutritionProfileAllergies": "Alergias",
   "nutritionProfileIntolerances": "Intolerancias",
   "nutritionProfileExcluded": "Ingredientes que quieres evitar",
