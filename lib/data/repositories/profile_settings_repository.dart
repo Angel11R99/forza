@@ -35,11 +35,28 @@ class ProfileSettingsRepository {
   static const _lastSyncKeyPrefix = 'profile_cloud_sync_last_';
   static const _syncEnabledKeyPrefix = 'profile_cloud_sync_enabled_';
   static const _pendingSyncKeyPrefix = 'profile_cloud_sync_pending_';
+  static const _displayNameKeyPrefix = 'profile_display_name_';
 
   final ProfilePreferencesStorage _storage;
   final StreamController<void> _changes = StreamController<void>.broadcast();
 
   Stream<void> get changes => _changes.stream;
+
+  Future<String?> loadProfileDisplayName(String uid) async {
+    final value = (await _storage.read(_uidKey(_displayNameKeyPrefix, uid)))
+        ?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  Future<void> saveProfileDisplayName(String uid, String? name) async {
+    final normalized = name?.trim();
+    if (normalized != null &&
+        (normalized.isEmpty || normalized.runes.length > 80)) {
+      throw const FormatException('El nombre de perfil no es válido.');
+    }
+    await _storage.write(_uidKey(_displayNameKeyPrefix, uid), normalized ?? '');
+    if (!_changes.isClosed) _changes.add(null);
+  }
 
   Future<bool> isCloudSyncEnabled(String uid) async =>
       (await _storage.read(_uidKey(_syncEnabledKeyPrefix, uid))) == 'true';

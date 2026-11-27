@@ -73,9 +73,16 @@ class AppLanguagePage extends StatelessWidget {
 }
 
 class ProfileEditPage extends StatefulWidget {
-  const ProfileEditPage({super.key, required this.profile});
+  const ProfileEditPage({
+    super.key,
+    required this.profile,
+    required this.email,
+    required this.googleName,
+  });
 
   final ForzaProfile profile;
+  final String email;
+  final String? googleName;
 
   @override
   State<ProfileEditPage> createState() => _ProfileEditPageState();
@@ -86,12 +93,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   late final _nameController = TextEditingController(
     text: widget.profile.fullName,
   );
-  late final _goalController = TextEditingController(text: widget.profile.goal);
+  late bool _useGoogleName = widget.profile.useGoogleName;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _goalController.dispose();
     super.dispose();
   }
 
@@ -127,25 +133,46 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   TextFormField(
                     controller: _nameController,
                     textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
                       labelText: context.l10n.profileNameField,
                     ),
+                    onChanged: (_) {
+                      if (_useGoogleName) {
+                        setState(() => _useGoogleName = false);
+                      }
+                    },
                     validator: (value) => value == null || value.trim().isEmpty
                         ? context.l10n.profileNameRequired
+                        : value.trim().runes.length > 80
+                        ? context.l10n.profileNameTooLong
                         : null,
                   ),
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    context.l10n.profileNameLocalNote,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  if (widget.googleName?.trim().isNotEmpty == true) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () => setState(() {
+                          _useGoogleName = true;
+                          _nameController.text = widget.googleName!.trim();
+                        }),
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: Text(context.l10n.profileUseGoogleName),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.x3),
                   TextFormField(
-                    controller: _goalController,
-                    textCapitalization: TextCapitalization.sentences,
-                    textInputAction: TextInputAction.done,
+                    initialValue: widget.email,
+                    readOnly: true,
                     decoration: InputDecoration(
-                      labelText: context.l10n.profileGoalField,
+                      labelText: context.l10n.profileEmailField,
                     ),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? context.l10n.profileGoalRequired
-                        : null,
                   ),
                   const SizedBox(height: AppSpacing.x6),
                   FilledButton.icon(
@@ -166,11 +193,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     if (!_formKey.currentState!.validate()) return;
     final draft = ForzaProfile(
       fullName: _nameController.text.trim(),
-      goal: _goalController.text.trim(),
+      useGoogleName: _useGoogleName,
     );
     final confirmed = await Navigator.of(context).push<ForzaProfile>(
       MaterialPageRoute<ForzaProfile>(
-        builder: (_) => ProfileReviewPage(profile: draft),
+        builder: (_) => ProfileReviewPage(profile: draft, email: widget.email),
       ),
     );
     if (!mounted || confirmed == null) return;
@@ -594,9 +621,14 @@ class _PrivacyAccountPageState extends State<PrivacyAccountPage> {
 }
 
 class ProfileReviewPage extends StatelessWidget {
-  const ProfileReviewPage({super.key, required this.profile});
+  const ProfileReviewPage({
+    super.key,
+    required this.profile,
+    required this.email,
+  });
 
   final ForzaProfile profile;
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -645,8 +677,8 @@ class ProfileReviewPage extends StatelessWidget {
                       ),
                       const Divider(height: AppSpacing.x6),
                       _AccountValue(
-                        label: context.l10n.profileGoal,
-                        value: profile.goal,
+                        label: context.l10n.profileEmailField,
+                        value: email,
                       ),
                     ],
                   ),

@@ -1,8 +1,8 @@
 class ForzaProfile {
-  const ForzaProfile({required this.fullName, required this.goal});
+  const ForzaProfile({required this.fullName, this.useGoogleName = false});
 
   final String fullName;
-  final String goal;
+  final bool useGoogleName;
 }
 
 class TrainingSettings {

@@ -3296,6 +3296,24 @@ abstract class AppLocalizations {
   /// **'Enter your name.'**
   String get profileNameRequired;
 
+  /// No description provided for @profileNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be 80 characters or fewer.'**
+  String get profileNameTooLong;
+
+  /// No description provided for @profileUseGoogleName.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Google name'**
+  String get profileUseGoogleName;
+
+  /// No description provided for @profileNameLocalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This display name is saved on this device only.'**
+  String get profileNameLocalNote;
+
   /// No description provided for @profileEmailInvalid.
   ///
   /// In en, this message translates to:
