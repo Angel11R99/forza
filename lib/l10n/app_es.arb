@@ -138,13 +138,21 @@
   "exerciseInfoNoSupportingMuscles": "El catálogo no indica músculos secundarios.",
   "exerciseInfoMoreMuscles": "y {count} más",
   "@exerciseInfoBenefitStrength": {
-    "placeholders": {"muscle": {}}
+    "placeholders": {
+      "muscle": {}
+    }
   },
   "@exerciseInfoBenefitMobility": {
-    "placeholders": {"muscle": {}}
+    "placeholders": {
+      "muscle": {}
+    }
   },
   "@exerciseInfoMoreMuscles": {
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "@exerciseAnimationLabel": {
     "description": "Descripción accesible de la animación",
@@ -266,7 +274,9 @@
   "homeRecoveryDescription": "Hoy no tienes una sesión programada. Descansa y recupérate.",
   "@homeSessionAvailableOn": {
     "placeholders": {
-      "weekday": {"type": "String"}
+      "weekday": {
+        "type": "String"
+      }
     }
   },
   "homeWeeklySessionCount": "{done} de {target} sesiones",
@@ -308,7 +318,13 @@
   "activityActualRecord": "Registro real",
   "activityOutsideAppDataNote": "Se registró el entrenamiento, pero no hay series ni repeticiones guardadas.",
   "activitySetCount": "{count, plural, =1{1 serie registrada} other{{count} series registradas}}",
-  "@activitySetCount": {"placeholders": {"count": {"type": "int"}}},
+  "@activitySetCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "activityMoreActions": "Más acciones",
   "activityConfirmExternalTitle": "Registrar entrenamiento externo",
   "activityConfirmExternalMessage": "Se guardará como completado sin datos de series ni repeticiones. ¿Quieres continuar?",
@@ -342,6 +358,54 @@
   "profilePrivate": "Perfil privado",
   "profileVisible": "Perfil visible",
   "profileTraining": "Entrenamiento",
+  "nutritionProfileSection": "Nutrición",
+  "nutritionProfileTitle": "Perfil nutricional",
+  "nutritionProfileNotConfigured": "Opcional · personaliza tu alimentación",
+  "nutritionProfileConfigured": "Perfil opcional · {summary}",
+  "nutritionProfileIntro": "Las preferencias opcionales se guardan en este dispositivo. No prescriben una dieta ni cambian tu plan de entrenamiento.",
+  "nutritionProfilePersonalSection": "Sobre ti",
+  "nutritionProfileAge": "Edad (años)",
+  "nutritionProfileOptional": "Opcional · solo se usa si decides indicarlo",
+  "nutritionProfileAgeError": "Indica una edad de 13 a 120 años o déjalo vacío.",
+  "nutritionProfileHeight": "Estatura (cm)",
+  "nutritionProfileHeightHint": "Opcional · indícala solo si la conoces",
+  "nutritionProfileHeightError": "Indica una estatura de 100 a 250 cm o déjala vacía.",
+  "nutritionProfilePreferencesSection": "Preferencias alimentarias",
+  "nutritionProfileBodyType": "Somatotipo (opcional)",
+  "nutritionBodyTypeEctomorph": "Ectomorfo",
+  "nutritionBodyTypeMesomorph": "Mesomorfo",
+  "nutritionBodyTypeEndomorph": "Endomorfo",
+  "nutritionBodyTypeMixed": "Mixto",
+  "nutritionBodyTypeUnknown": "No lo sé",
+  "nutritionProfileDiet": "Patrón alimentario",
+  "nutritionProfileGoal": "Objetivo nutricional",
+  "nutritionProfileGoalUnset": "Sin indicar",
+  "nutritionGoalWellbeing": "Bienestar general",
+  "nutritionGoalTraining": "Apoyar mi entrenamiento",
+  "nutritionGoalGain": "Aumentar de peso",
+  "nutritionGoalLose": "Reducir peso",
+  "nutritionGoalMaintain": "Mantener el peso",
+  "nutritionProfileSomatotypeNote": "Los somatotipos son descriptivos; no son diagnósticos ni fórmulas de dieta. Déjalo en «No lo sé» si tienes dudas.",
+  "nutritionProfileDietAny": "Sin preferencia",
+  "nutritionProfileDietVegetarian": "Vegetariana",
+  "nutritionProfileDietVegan": "Vegana",
+  "nutritionProfileDietPescatarian": "Pescetariana",
+  "nutritionProfileBudget": "Presupuesto relativo",
+  "nutritionProfileBudgetLow": "Económico",
+  "nutritionProfileBudgetBalanced": "Equilibrado",
+  "nutritionProfileBudgetAny": "Sin preferencia",
+  "nutritionProfileCountry": "País de compra (código ISO)",
+  "nutritionProfileCountryHint": "Opcional · por ejemplo, CO o VE; no se infiere del idioma ni la ubicación",
+  "nutritionProfileCountryError": "Indica un código de dos letras o déjalo vacío.",
+  "nutritionProfileRestrictionsSection": "Seguridad y exclusiones",
+  "nutritionProfileAllergies": "Alergias",
+  "nutritionProfileIntolerances": "Intolerancias",
+  "nutritionProfileExcluded": "Ingredientes que quieres evitar",
+  "nutritionProfileListHint": "Opcional · separa cada elemento con comas; revisa siempre las etiquetas",
+  "nutritionProfilePrivacyNote": "Puedes omitir estos campos. No necesitas una cuenta. La edad y la estatura no se usan para calcular calorías ni macros.",
+  "nutritionProfileSaveError": "No se pudo guardar el perfil nutricional.",
+  "commonSave": "Guardar",
+  "commonSaving": "Guardando…",
   "profileMyPlan": "Mi plan de entrenamiento",
   "profilePlanSummary": "{goal} · {days} días · presupuesto ~{minutes} min",
   "profilePreferences": "Preferencias",
@@ -489,17 +553,62 @@
   "sessionProgressionTitle": "Sugerencia de progresión",
   "sessionProgressionNoHistory": "Aún no hay suficientes registros de este ejercicio. Completa las series y registra repeticiones y carga si usaste peso.",
   "sessionProgressionKeepBuilding": "Mantén el peso y la técnica; todavía no aumentes. Para sugerir más carga, esperamos {sessions} entrenamientos seguidos con al menos {repetitions} repeticiones en todas las series.",
-  "@sessionProgressionKeepBuilding": { "placeholders": { "sessions": { "type": "int" }, "repetitions": { "type": "int" } } },
+  "@sessionProgressionKeepBuilding": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "repetitions": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionReadyToIncrease": "Alcanzaste {repetitions} repeticiones en todas las series durante {sessions} entrenamientos seguidos. Si fue cómodo, sin dolor y con técnica estable, prueba el incremento de carga más pequeño disponible y vuelve al extremo bajo del rango.",
-  "@sessionProgressionReadyToIncrease": { "placeholders": { "repetitions": { "type": "int" }, "sessions": { "type": "int" } } },
+  "@sessionProgressionReadyToIncrease": {
+    "placeholders": {
+      "repetitions": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionBodyweightReady": "Completaste {repetitions} repeticiones en todas las series durante {sessions} entrenamientos seguidos. Si mantuviste una técnica estable, puedes probar una variante de peso corporal un poco más difícil.",
-  "@sessionProgressionBodyweightReady": { "placeholders": { "repetitions": { "type": "int" }, "sessions": { "type": "int" } } },
+  "@sessionProgressionBodyweightReady": {
+    "placeholders": {
+      "repetitions": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionHabitFocus": "Para crear el hábito, prioriza la constancia y la técnica. No hace falta aumentar la carga automáticamente.",
   "sessionProgressionReturningAfterBreak": "Ha pasado más de un mes desde que registraste este ejercicio. Retoma con una carga cómoda y completa nuevas sesiones antes de considerar un aumento.",
   "sessionProgressionTimedKeepBuilding": "Registra los segundos y conserva la técnica. Para sugerir una variante más difícil, esperamos {sessions} entrenamientos seguidos con {seconds} segundos en todas las series.",
-  "@sessionProgressionTimedKeepBuilding": { "placeholders": { "sessions": { "type": "int" }, "seconds": { "type": "int" } } },
+  "@sessionProgressionTimedKeepBuilding": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionTimedReadyToVary": "Completaste {seconds} segundos en todas las series durante {sessions} entrenamientos seguidos. Si mantuviste el control, puedes probar una variante un poco más difícil; no añadas peso.",
-  "@sessionProgressionTimedReadyToVary": { "placeholders": { "sessions": { "type": "int" }, "seconds": { "type": "int" } } },
+  "@sessionProgressionTimedReadyToVary": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "sessionProgressionTemplateNote": "Las sugerencias se basan en tus registros. El plan es una plantilla y no cambia automáticamente; tú decides si aplicarlas.",
   "onboardingSessionTime": "Presupuesto de tiempo por sesión",
   "onboardingSessionBudgetNote": "El plan ajusta el número de ejercicios a este presupuesto. El tiempo real varía según tu ritmo y el tiempo que dediques al calentamiento y la vuelta a la calma. El temporizador orientativo entre ejercicios es de 45 s.",
@@ -510,7 +619,13 @@
   "onboardingAvoidMovementTitle": "Movimientos que prefieres evitar (opcional)",
   "onboardingAvoidMovementDescription": "Selecciona ejercicios que prefieres no incluir. Esta preferencia no es un diagnóstico médico; consulta a un profesional si tienes dudas de salud.",
   "onboardingAvoidedMovementSummary": "Movimientos excluidos: {movements}",
-  "@onboardingAvoidedMovementSummary": { "placeholders": { "movements": { "type": "String" } } },
+  "@onboardingAvoidedMovementSummary": {
+    "placeholders": {
+      "movements": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingAvoidedMovementApplied": "La rutina prioriza opciones compatibles cuando están disponibles. Revisa cada ejercicio antes de empezar.",
   "onboardingNoCompatibleExercises": "No hay ejercicios compatibles con el equipo y las exclusiones elegidas. Ajusta tus preferencias para generar una rutina.",
   "onboardingPreviewTitle": "Así queda tu semana",
@@ -522,11 +637,35 @@
   "onboardingReturnToPreview": "Volver al resumen del plan",
   "onboardingEmptySessionConflict": "Al menos una sesión quedó sin ejercicios compatibles. Ajusta los días, el equipo o los movimientos a evitar antes de crear el plan.",
   "onboardingSessionSummary": "{count, plural, =1{1 ejercicio} other{{count} ejercicios}} · ~{minutes} min estimados",
-  "@onboardingSessionSummary": { "placeholders": { "count": { "type": "int" }, "minutes": { "type": "int" } } },
+  "@onboardingSessionSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "onboardingTimedPrescription": "{sets} series · 20–40 segundos",
-  "@onboardingTimedPrescription": { "placeholders": { "sets": { "type": "int" } } },
+  "@onboardingTimedPrescription": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      }
+    }
+  },
   "onboardingRepPrescription": "{sets} series · {target}",
-  "@onboardingRepPrescription": { "placeholders": { "sets": { "type": "int" }, "target": { "type": "String" } } },
+  "@onboardingRepPrescription": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingStrengthRepRange": "6–8 repeticiones",
   "onboardingMuscleRepRange": "8–12 repeticiones",
   "onboardingHabitRepRange": "8–12 repeticiones a ritmo cómodo",
@@ -565,9 +704,24 @@
   "sessionAddExternalLoad": "Añadir carga externa",
   "sessionRemoveExternalLoad": "Quitar carga externa",
   "sessionSetCountSummary": "Recomendadas: {recommended} · Para esta sesión: {planned}",
-  "@sessionSetCountSummary": {"placeholders": {"recommended": {"type": "int"}, "planned": {"type": "int"}}},
+  "@sessionSetCountSummary": {
+    "placeholders": {
+      "recommended": {
+        "type": "int"
+      },
+      "planned": {
+        "type": "int"
+      }
+    }
+  },
   "sessionAdditionalSet": "Serie adicional {number}",
-  "@sessionAdditionalSet": {"placeholders": {"number": {"type": "int"}}},
+  "@sessionAdditionalSet": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "sessionAddSet": "Añadir serie",
   "sessionRemovePendingSet": "Quitar última serie",
   "sessionRemoveCompletedSet": "Eliminar serie completada",
@@ -615,7 +769,13 @@
   "progressExerciseCatalogRetry": "Reintentar carga del catálogo",
   "progressExerciseCatalogLoading": "Cargando ejercicios…",
   "progressGoalExerciseNeedsResolution": "El objetivo antiguo «{name}» necesita que elijas el ejercicio correcto para evitar mezclar marcas.",
-  "@progressGoalExerciseNeedsResolution": { "placeholders": { "name": { "type": "String" } } },
+  "@progressGoalExerciseNeedsResolution": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "progressExerciseHint": "Ej. Sentadilla goblet",
   "progressSaveGoal": "Guardar objetivo",
   "progressExerciseCount": "{count} ejercicios",
@@ -718,9 +878,30 @@
   "progressGoToActivity": "Ir a Actividad",
   "progressNoSetData": "Sin series registradas",
   "progressWeightChange": "Cambio desde la medición anterior: {change} kg",
-  "@progressWeightChange": {"placeholders": {"change": {"type": "String"}}},
+  "@progressWeightChange": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
   "progressRecentRecord": "Marca reciente · {exercise}: {value} {unit} · {date}",
-  "@progressRecentRecord": {"placeholders": {"exercise": {"type": "String"}, "value": {"type": "String"}, "unit": {"type": "String"}, "date": {"type": "String"}}},
+  "@progressRecentRecord": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "progressSessions": "sesiones",
   "progressTimeTotal": "{hours} h {minutes} min",
   "progressSetsAndReps": "{sets} series · {reps} reps",
@@ -749,12 +930,33 @@
   "progressStrengthDescription": "Compara la mayor carga registrada por sesión para cada ejercicio.",
   "progressWorkingWeight": "Peso de trabajo (kg)",
   "progressStrengthChartSummary": "La carga pasó de {start} a {current} kilogramos en {sessions} sesiones registradas.",
-  "@progressStrengthChartSummary": { "placeholders": { "start": { "type": "String" }, "current": { "type": "String" }, "sessions": { "type": "int" } } },
+  "@progressStrengthChartSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
   "progressStrengthMetric": "Mayor carga con peso registrada por sesión (kg). Las series sin carga no se incluyen.",
   "progressStrengthSinglePoint": "Solo hay una sesión con carga registrada para este ejercicio.",
   "progressStrengthEmpty": "No hay series con carga para este periodo. Registra el peso usado en tus series durante un entrenamiento.",
   "progressStrengthChange": "Cambio entre la primera y la última sesión: {sign}{change} kg.",
-  "@progressStrengthChange": { "placeholders": { "sign": { "type": "String" }, "change": { "type": "String" } } },
+  "@progressStrengthChange": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
+  },
   "progressPeriodLabel": "Periodo",
   "progressPeriod30Days": "30 días",
   "progressPeriod90Days": "90 días",
@@ -824,7 +1026,13 @@
   "sessionPreparationDescription": "Tómate un momento para preparar tu espacio y revisar la sesión de hoy.",
   "sessionDraftReviewTitle": "Revisar entrenamiento guardado",
   "sessionDraftReviewDateMismatch": "Hay un entrenamiento guardado del {date}. Puedes retomarlo con la rutina original o descartarlo para iniciar la sesión seleccionada.",
-  "@sessionDraftReviewDateMismatch": { "placeholders": { "date": { "type": "String" } } },
+  "@sessionDraftReviewDateMismatch": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "sessionDraftReviewLegacy": "Este borrador es de una versión anterior y no guardó la rutina exacta. Puedes continuar usando la rutina actual; tus registros parciales se conservarán. También puedes descartarlo.",
   "sessionDraftReviewCorrupt": "No se puede leer el borrador guardado. Se conservará hasta que elijas descartarlo para iniciar una sesión nueva.",
   "sessionContinueSavedWorkout": "Continuar entrenamiento guardado",
@@ -838,7 +1046,16 @@
   "sessionExerciseHeadline": "Sigue tu sesión",
   "sessionExerciseCountProgress": "Ejercicio {current} de {total}",
   "sessionSetsProgress": "{current} de {total} series completadas",
-  "@sessionSetsProgress": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "@sessionSetsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "sessionViewRoutine": "Ver rutina",
   "sessionRoutineTitle": "Rutina de esta sesión",
   "sessionRoutineDescription": "Consulta todos los ejercicios. Puedes abrir el actual o revisar los anteriores; los siguientes se habilitan al avanzar.",
@@ -856,7 +1073,13 @@
   "sessionRestBetweenExercises": "Cambio de ejercicio",
   "sessionRestDuration": "Duración del descanso",
   "sessionNextSetAfterRest": "Siguiente: serie {number}",
-  "@sessionNextSetAfterRest": { "placeholders": { "number": { "type": "int" } } },
+  "@sessionNextSetAfterRest": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "sessionStartWhenReady": "Empezar cuando estés listo",
   "sessionBeforeExercise": "Antes de {exercise}",
   "sessionTimerNote": "El temporizador es orientativo y solo corre mientras esta pantalla está activa.",

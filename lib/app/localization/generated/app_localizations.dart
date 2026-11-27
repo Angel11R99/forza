@@ -1538,6 +1538,294 @@ abstract class AppLocalizations {
   /// **'Training'**
   String get profileTraining;
 
+  /// No description provided for @nutritionProfileSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get nutritionProfileSection;
+
+  /// No description provided for @nutritionProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition profile'**
+  String get nutritionProfileTitle;
+
+  /// No description provided for @nutritionProfileNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional · personalize nutrition'**
+  String get nutritionProfileNotConfigured;
+
+  /// No description provided for @nutritionProfileConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional profile · {summary}'**
+  String nutritionProfileConfigured(Object summary);
+
+  /// No description provided for @nutritionProfileIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional preferences are saved on this device. They do not prescribe a diet or change your training plan.'**
+  String get nutritionProfileIntro;
+
+  /// No description provided for @nutritionProfilePersonalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get nutritionProfilePersonalSection;
+
+  /// No description provided for @nutritionProfileAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age (years)'**
+  String get nutritionProfileAge;
+
+  /// No description provided for @nutritionProfileOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional · only used if you choose to provide it'**
+  String get nutritionProfileOptional;
+
+  /// No description provided for @nutritionProfileAgeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an age from 13 to 120, or leave it blank.'**
+  String get nutritionProfileAgeError;
+
+  /// No description provided for @nutritionProfileHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (cm)'**
+  String get nutritionProfileHeight;
+
+  /// No description provided for @nutritionProfileHeightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional · enter only if you know it'**
+  String get nutritionProfileHeightHint;
+
+  /// No description provided for @nutritionProfileHeightError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a height from 100 to 250 cm, or leave it blank.'**
+  String get nutritionProfileHeightError;
+
+  /// No description provided for @nutritionProfilePreferencesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Food preferences'**
+  String get nutritionProfilePreferencesSection;
+
+  /// No description provided for @nutritionProfileBodyType.
+  ///
+  /// In en, this message translates to:
+  /// **'Somatotype (optional)'**
+  String get nutritionProfileBodyType;
+
+  /// No description provided for @nutritionBodyTypeEctomorph.
+  ///
+  /// In en, this message translates to:
+  /// **'Ectomorph'**
+  String get nutritionBodyTypeEctomorph;
+
+  /// No description provided for @nutritionBodyTypeMesomorph.
+  ///
+  /// In en, this message translates to:
+  /// **'Mesomorph'**
+  String get nutritionBodyTypeMesomorph;
+
+  /// No description provided for @nutritionBodyTypeEndomorph.
+  ///
+  /// In en, this message translates to:
+  /// **'Endomorph'**
+  String get nutritionBodyTypeEndomorph;
+
+  /// No description provided for @nutritionBodyTypeMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get nutritionBodyTypeMixed;
+
+  /// No description provided for @nutritionBodyTypeUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'I don\'t know'**
+  String get nutritionBodyTypeUnknown;
+
+  /// No description provided for @nutritionProfileDiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Eating pattern'**
+  String get nutritionProfileDiet;
+
+  /// No description provided for @nutritionProfileGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition goal'**
+  String get nutritionProfileGoal;
+
+  /// No description provided for @nutritionProfileGoalUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get nutritionProfileGoalUnset;
+
+  /// No description provided for @nutritionGoalWellbeing.
+  ///
+  /// In en, this message translates to:
+  /// **'General wellbeing'**
+  String get nutritionGoalWellbeing;
+
+  /// No description provided for @nutritionGoalTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Support my training'**
+  String get nutritionGoalTraining;
+
+  /// No description provided for @nutritionGoalGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain weight'**
+  String get nutritionGoalGain;
+
+  /// No description provided for @nutritionGoalLose.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get nutritionGoalLose;
+
+  /// No description provided for @nutritionGoalMaintain.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain weight'**
+  String get nutritionGoalMaintain;
+
+  /// No description provided for @nutritionProfileSomatotypeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Somatotypes are descriptive and are not diagnoses or diet formulas. Leave this as unknown if unsure.'**
+  String get nutritionProfileSomatotypeNote;
+
+  /// No description provided for @nutritionProfileDietAny.
+  ///
+  /// In en, this message translates to:
+  /// **'No preference'**
+  String get nutritionProfileDietAny;
+
+  /// No description provided for @nutritionProfileDietVegetarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian'**
+  String get nutritionProfileDietVegetarian;
+
+  /// No description provided for @nutritionProfileDietVegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
+  String get nutritionProfileDietVegan;
+
+  /// No description provided for @nutritionProfileDietPescatarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Pescatarian'**
+  String get nutritionProfileDietPescatarian;
+
+  /// No description provided for @nutritionProfileBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Relative budget'**
+  String get nutritionProfileBudget;
+
+  /// No description provided for @nutritionProfileBudgetLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Economical'**
+  String get nutritionProfileBudgetLow;
+
+  /// No description provided for @nutritionProfileBudgetBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get nutritionProfileBudgetBalanced;
+
+  /// No description provided for @nutritionProfileBudgetAny.
+  ///
+  /// In en, this message translates to:
+  /// **'No preference'**
+  String get nutritionProfileBudgetAny;
+
+  /// No description provided for @nutritionProfileCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country of purchase (ISO code)'**
+  String get nutritionProfileCountry;
+
+  /// No description provided for @nutritionProfileCountryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional · for example, CO or VE; not inferred from language or location'**
+  String get nutritionProfileCountryHint;
+
+  /// No description provided for @nutritionProfileCountryError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a two-letter country code or leave it blank.'**
+  String get nutritionProfileCountryError;
+
+  /// No description provided for @nutritionProfileRestrictionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety and exclusions'**
+  String get nutritionProfileRestrictionsSection;
+
+  /// No description provided for @nutritionProfileAllergies.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies'**
+  String get nutritionProfileAllergies;
+
+  /// No description provided for @nutritionProfileIntolerances.
+  ///
+  /// In en, this message translates to:
+  /// **'Intolerances'**
+  String get nutritionProfileIntolerances;
+
+  /// No description provided for @nutritionProfileExcluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients to avoid'**
+  String get nutritionProfileExcluded;
+
+  /// No description provided for @nutritionProfileListHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional · separate items with commas; review food labels every time'**
+  String get nutritionProfileListHint;
+
+  /// No description provided for @nutritionProfilePrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip these fields. No account is required. Age and height are not used to calculate calorie or macro targets.'**
+  String get nutritionProfilePrivacyNote;
+
+  /// No description provided for @nutritionProfileSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the nutrition profile.'**
+  String get nutritionProfileSaveError;
+
+  /// No description provided for @commonSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
+  /// No description provided for @commonSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get commonSaving;
+
   /// No description provided for @profileMyPlan.
   ///
   /// In en, this message translates to:

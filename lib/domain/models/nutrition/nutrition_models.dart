@@ -16,6 +16,8 @@ enum RelativeFoodCost { unknown, low, moderate, high }
 
 enum DietaryPattern { unrestricted, vegetarian, vegan, pescatarian }
 
+enum BodyType { ectomorph, mesomorph, endomorph, mixed, unknown }
+
 enum FoodRestrictionType { allergy, intolerance, preference, excluded }
 
 class NutritionProfile {
@@ -24,6 +26,9 @@ class NutritionProfile {
     required this.version,
     required this.updatedAt,
     this.goal,
+    this.ageYears,
+    this.heightCm,
+    this.bodyType = BodyType.unknown,
     this.countryCode,
     this.mealsPerDay,
     this.dietaryPattern = DietaryPattern.unrestricted,
@@ -37,6 +42,9 @@ class NutritionProfile {
   final int version;
   final DateTime updatedAt;
   final NutritionGoal? goal;
+  final int? ageYears;
+  final double? heightCm;
+  final BodyType bodyType;
   final String? countryCode;
   final int? mealsPerDay;
   final DietaryPattern dietaryPattern;
@@ -49,8 +57,95 @@ class NutritionProfile {
       id.trim().isNotEmpty &&
       version > 0 &&
       (mealsPerDay == null || (mealsPerDay! >= 1 && mealsPerDay! <= 10)) &&
+      (ageYears == null || (ageYears! >= 13 && ageYears! <= 120)) &&
+      (heightCm == null ||
+          (heightCm!.isFinite && heightCm! >= 100 && heightCm! <= 250)) &&
       (kitchenMinutes == null || kitchenMinutes! >= 0) &&
       (countryCode == null || RegExp(r'^[A-Za-z]{2}$').hasMatch(countryCode!));
+
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'version': version,
+    'updatedAt': updatedAt.toUtc().toIso8601String(),
+    'goal': goal?.name,
+    'ageYears': ageYears,
+    'heightCm': heightCm,
+    'bodyType': bodyType.name,
+    'countryCode': countryCode,
+    'mealsPerDay': mealsPerDay,
+    'dietaryPattern': dietaryPattern.name,
+    'restrictions': restrictions
+        .map((item) => {'type': item.type.name, 'value': item.value})
+        .toList(),
+    'unavailableFoodIds': unavailableFoodIds,
+    'kitchenMinutes': kitchenMinutes,
+    'budget': budget.name,
+  };
+
+  factory NutritionProfile.fromJson(Map<String, Object?> json) {
+    T? enumValue<T extends Enum>(List<T> values, Object? value) {
+      if (value is! String) return null;
+      for (final item in values) {
+        if (item.name == value) return item;
+      }
+      return null;
+    }
+
+    final updatedAt = json['updatedAt'];
+    final rawRestrictions = json['restrictions'];
+    final rawUnavailable = json['unavailableFoodIds'];
+    if (updatedAt is! String ||
+        rawRestrictions is! List ||
+        (rawUnavailable != null && rawUnavailable is! List)) {
+      throw const FormatException('El perfil nutricional no es válido.');
+    }
+    final restrictions = <FoodRestriction>[];
+    for (final raw in rawRestrictions) {
+      if (raw is! Map) throw const FormatException('Restricción no válida.');
+      final item = Map<String, Object?>.from(raw);
+      final type = enumValue(FoodRestrictionType.values, item['type']);
+      final value = item['value'];
+      if (type == null || value is! String) {
+        throw const FormatException('Restricción no válida.');
+      }
+      restrictions.add(FoodRestriction(type: type, value: value));
+    }
+    final date = DateTime.tryParse(updatedAt);
+    final id = json['id'];
+    final version = json['version'];
+    final height = json['heightCm'];
+    final age = json['ageYears'];
+    final meals = json['mealsPerDay'];
+    final kitchen = json['kitchenMinutes'];
+    final unavailable = rawUnavailable == null
+        ? const <String>[]
+        : (rawUnavailable as List).whereType<String>().toList(growable: false);
+    final profile = NutritionProfile(
+      id: id is String ? id : '',
+      version: version is int ? version : 0,
+      updatedAt: date ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      goal: enumValue(NutritionGoal.values, json['goal']),
+      ageYears: age is int ? age : null,
+      heightCm: height is num ? height.toDouble() : null,
+      bodyType:
+          enumValue(BodyType.values, json['bodyType']) ?? BodyType.unknown,
+      countryCode: json['countryCode'] as String?,
+      mealsPerDay: meals is int ? meals : null,
+      dietaryPattern:
+          enumValue(DietaryPattern.values, json['dietaryPattern']) ??
+          DietaryPattern.unrestricted,
+      restrictions: List.unmodifiable(restrictions),
+      unavailableFoodIds: List.unmodifiable(unavailable),
+      kitchenMinutes: kitchen is int ? kitchen : null,
+      budget:
+          enumValue(RelativeFoodCost.values, json['budget']) ??
+          RelativeFoodCost.moderate,
+    );
+    if (date == null || !profile.isValid) {
+      throw const FormatException('El perfil nutricional no es válido.');
+    }
+    return profile;
+  }
 }
 
 class NutritionProvenance {

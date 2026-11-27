@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../ui/features/profile/models/profile_settings.dart';
+import '../../domain/models/nutrition/nutrition_models.dart';
 
 enum CloudSyncFrequency { onChange, daily, weekly, monthly, manual }
 
@@ -33,6 +34,7 @@ class ProfileSettingsRepository {
   static const _appPreferencesKey = 'profile_app_preferences_v1';
   static const _notificationSettingsKey = 'profile_notifications_v1';
   static const _privacySettingsKey = 'profile_privacy_v1';
+  static const _nutritionProfileKey = 'nutrition_profile_v1';
   static const _syncOwnerKey = 'profile_cloud_sync_owner_v1';
   static const _lastSyncKeyPrefix = 'profile_cloud_sync_last_';
   static const _syncEnabledKeyPrefix = 'profile_cloud_sync_enabled_';
@@ -44,6 +46,24 @@ class ProfileSettingsRepository {
   final StreamController<void> _changes = StreamController<void>.broadcast();
 
   Stream<void> get changes => _changes.stream;
+
+  Future<NutritionProfile?> loadNutritionProfile() async {
+    final json = await _read(_nutritionProfileKey);
+    return json == null ? null : NutritionProfile.fromJson(json);
+  }
+
+  Future<void> saveNutritionProfile(NutritionProfile profile) async {
+    if (!profile.isValid) {
+      throw const FormatException('El perfil nutricional no es válido.');
+    }
+    await _storage.write(_nutritionProfileKey, jsonEncode(profile.toJson()));
+    if (!_changes.isClosed) _changes.add(null);
+  }
+
+  Future<void> clearNutritionProfile() async {
+    await _storage.write(_nutritionProfileKey, '');
+    if (!_changes.isClosed) _changes.add(null);
+  }
 
   Future<String?> loadProfileDisplayName(String uid) async {
     final value = (await _storage.read(_uidKey(_displayNameKeyPrefix, uid)))
@@ -217,6 +237,7 @@ class ProfileSettingsRepository {
   Future<Map<String, Object?>?> _read(String key) async {
     final value = await _storage.read(key);
     if (value == null) return null;
+    if (value == 'null' || value.isEmpty) return null;
     try {
       final decoded = jsonDecode(value);
       if (decoded is! Map) throw const FormatException();
