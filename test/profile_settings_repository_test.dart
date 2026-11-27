@@ -131,6 +131,37 @@ void main() {
     expect(await repository.hasPendingCloudSync('uid-a'), isFalse);
     expect(await repository.lastCloudSync('uid-a'), DateTime.utc(2026, 1, 1));
   });
+
+  test(
+    'cloud sync frequency persists independently for each account',
+    () async {
+      final repository = ProfileSettingsRepository(
+        storage: _MemoryProfilePreferencesStorage(),
+      );
+
+      expect(
+        await repository.cloudSyncFrequency('uid-a'),
+        CloudSyncFrequency.onChange,
+      );
+      await repository.setCloudSyncFrequency(
+        'uid-a',
+        CloudSyncFrequency.manual,
+      );
+      await repository.setCloudSyncFrequency(
+        'uid-b',
+        CloudSyncFrequency.weekly,
+      );
+
+      expect(
+        await repository.cloudSyncFrequency('uid-a'),
+        CloudSyncFrequency.manual,
+      );
+      expect(
+        await repository.cloudSyncFrequency('uid-b'),
+        CloudSyncFrequency.weekly,
+      );
+    },
+  );
 }
 
 class _MemoryProfilePreferencesStorage implements ProfilePreferencesStorage {

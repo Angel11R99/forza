@@ -1973,7 +1973,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupDescription.
   ///
   /// In en, this message translates to:
-  /// **'The file includes your plan, workout history and sets, schedule, goals, active workout, and appearance. It is saved as JSON wherever you choose.'**
+  /// **'The file includes your plan, workout history and sets, schedule, goals, saved measurements, active workout, appearance, and preferences. It is saved as JSON wherever you choose. As a guest, your data stays on this device; sign in with Google from Profile to enable cloud sync. The file is independent of that sync.'**
   String get backupDescription;
 
   /// No description provided for @backupExport.
@@ -3481,6 +3481,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sync failed. You can try again.'**
   String get cloudSyncStatusFailed;
+
+  /// No description provided for @cloudSyncAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected account'**
+  String get cloudSyncAccount;
+
+  /// No description provided for @cloudSyncStatusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline. Changes are pending until the connection returns.'**
+  String get cloudSyncStatusOffline;
+
+  /// No description provided for @cloudSyncFrequency.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync frequency'**
+  String get cloudSyncFrequency;
+
+  /// No description provided for @cloudSyncFrequencyChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'When changes are detected'**
+  String get cloudSyncFrequencyChanges;
+
+  /// No description provided for @cloudSyncFrequencyDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get cloudSyncFrequencyDaily;
+
+  /// No description provided for @cloudSyncFrequencyWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get cloudSyncFrequencyWeekly;
+
+  /// No description provided for @cloudSyncFrequencyMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get cloudSyncFrequencyMonthly;
+
+  /// No description provided for @cloudSyncFrequencyManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual only'**
+  String get cloudSyncFrequencyManual;
+
+  /// No description provided for @cloudSyncFrequencyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic intervals are targets while the app can run and a connection is available. The OS may pause it; sync is not guaranteed while the app is closed. Manual only never uploads changes automatically.'**
+  String get cloudSyncFrequencyNote;
+
+  /// No description provided for @cloudSyncFrequencySaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the frequency. Try again.'**
+  String get cloudSyncFrequencySaveFailed;
+
+  /// No description provided for @cloudSyncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get cloudSyncNow;
+
+  /// No description provided for @cloudSyncIncludedHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Included data'**
+  String get cloudSyncIncludedHeading;
+
+  /// No description provided for @cloudSyncIncludedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Training plan and days, schedule, workout and set history, goals, saved measurements, active session, appearance, language and preferences, reminders, and privacy settings. Local file export and import remain available separately under Backup.'**
+  String get cloudSyncIncludedDescription;
 
   /// No description provided for @cloudSyncLastSync.
   ///

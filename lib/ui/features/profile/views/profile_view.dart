@@ -506,6 +506,7 @@ class _ProfileViewState extends State<ProfileView> {
           service: service,
           settingsRepository: widget.profileSettingsRepository,
           uid: account.providerUserId,
+          account: account,
         ),
       ),
     );
@@ -520,6 +521,7 @@ String _cloudSyncSubtitle(BuildContext context, CloudSyncPhase phase) =>
       CloudSyncPhase.synced => context.l10n.cloudSyncStatusSynced,
       CloudSyncPhase.pending => context.l10n.cloudSyncStatusPending,
       CloudSyncPhase.failed => context.l10n.cloudSyncStatusFailed,
+      CloudSyncPhase.offline => context.l10n.cloudSyncStatusOffline,
     };
 
 class _AccountIdentityCard extends StatelessWidget {
