@@ -10,14 +10,16 @@ import 'package:forza/data/repositories/profile_settings_repository.dart';
 import 'package:forza/data/repositories/training_schedule_repository.dart';
 import 'package:forza/data/repositories/training_settings_repository.dart';
 import 'package:forza/data/repositories/workout_log_repository.dart';
+import 'package:forza/ui/features/profile/models/profile_settings.dart';
 
 void main() {
   late AppDatabase database;
   late BackupRepository repository;
+  late ProfileSettingsRepository profileSettings;
 
   setUp(() {
     database = AppDatabase(NativeDatabase.memory());
-    final profileSettings = ProfileSettingsRepository(
+    profileSettings = ProfileSettingsRepository(
       storage: _MemoryProfilePreferencesStorage(),
     );
     final workoutLog = WorkoutLogRepository(database: database);
@@ -36,6 +38,25 @@ void main() {
 
   Future<String> emptyBackup() =>
       repository.exportJson(appearanceMode: 'system');
+
+  test(
+    'navigation label preference survives backup export and restore',
+    () async {
+      await profileSettings.saveAppPreferences(
+        const AppPreferences(showNavigationLabels: false),
+      );
+
+      final backup = repository.validate(await emptyBackup());
+      expect(backup.appPreferences.showNavigationLabels, isFalse);
+
+      await profileSettings.saveAppPreferences(const AppPreferences());
+      await repository.restore(backup);
+      expect(
+        (await profileSettings.loadAppPreferences()).showNavigationLabels,
+        isFalse,
+      );
+    },
+  );
 
   test(
     'a local deletion is propagated over an unchanged cloud record',

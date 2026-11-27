@@ -649,6 +649,8 @@
   "profileNameTooLong": "El nombre no puede superar 80 caracteres.",
   "profileUseGoogleName": "Usar nombre de Google",
   "profileNameLocalNote": "Este nombre visible se guarda solo en este dispositivo.",
+  "profileShowNavigationLabels": "Mostrar etiquetas de navegación",
+  "profileShowNavigationLabelsHint": "Muestra el nombre de cada sección bajo su icono.",
   "profileEmailInvalid": "Ingresa un correo válido.",
   "profileGoalRequired": "Escribe un objetivo.",
   "settingsThemeDescription": "Puedes seguir el tema del dispositivo o elegir uno para FORZA.",

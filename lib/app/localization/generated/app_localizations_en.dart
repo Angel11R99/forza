@@ -1911,6 +1911,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'This display name is saved on this device only.';
 
   @override
+  String get profileShowNavigationLabels => 'Show navigation labels';
+
+  @override
+  String get profileShowNavigationLabelsHint =>
+      'Show each section name below its icon.';
+
+  @override
   String get profileEmailInvalid => 'Enter a valid email address.';
 
   @override

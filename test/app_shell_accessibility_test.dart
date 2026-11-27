@@ -17,6 +17,7 @@ import 'package:forza/data/repositories/training_settings_repository.dart';
 import 'package:forza/ui/core/view_models/app_shell_view_model.dart';
 import 'package:forza/ui/core/widgets/app_scaffold.dart';
 import 'package:forza/ui/features/profile/models/profile_settings.dart';
+
 import 'support/shared_preferences_async_test_setup.dart';
 
 void main() {
@@ -131,6 +132,127 @@ void main() {
       await database.close();
     },
   );
+
+  testWidgets('navigation labels hide, persist, and remain semantic', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final database = AppDatabase(NativeDatabase.memory());
+    final settingsRepository = TrainingSettingsRepository(database: database);
+    await settingsRepository.save(const TrainingSettings());
+    await settingsRepository.completeSetup();
+    await database
+        .into(database.appMetadata)
+        .insert(
+          AppMetadataCompanion.insert(
+            key: LegacySharedPreferencesMigration.migrationKey,
+            value: 'true',
+          ),
+        );
+    final profileSettingsRepository = ProfileSettingsRepository(
+      storage: _MemoryProfileSettingsStorage(),
+    );
+    final appearance = AppearanceController(
+      preferences: _MemoryAppearancePreferences(),
+    );
+    final localeController = LocaleController(
+      repository: LocaleRepository(_MemoryLocalePreferences()),
+    );
+
+    AppShellViewModel createViewModel() => AppShellViewModel(
+      database: database,
+      settingsRepository: settingsRepository,
+    );
+
+    Widget app(AppShellViewModel viewModel) => MaterialApp(
+      locale: const Locale('es'),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      home: MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: AppScaffold(
+          initialIndex: 4,
+          appearance: appearance,
+          localeController: localeController,
+          profileSettingsRepository: profileSettingsRepository,
+          viewModel: viewModel,
+        ),
+      ),
+    );
+
+    Future<void> pumpVisibleState() async {
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
+    final viewModel = createViewModel();
+    await viewModel.restore();
+    final semanticsHandle = tester.ensureSemantics();
+    await tester.pumpWidget(app(viewModel));
+    await pumpVisibleState();
+
+    expect(find.text('Inicio'), findsOneWidget);
+    await tester.ensureVisible(find.text('Apariencia'));
+    await pumpVisibleState();
+    await tester.tap(find.text('Apariencia'));
+    await pumpVisibleState();
+    expect(find.text('Mostrar etiquetas de navegación'), findsOneWidget);
+    await tester.tap(find.text('Mostrar etiquetas de navegación'));
+    await pumpVisibleState();
+    expect(
+      (await profileSettingsRepository.loadAppPreferences())
+          .showNavigationLabels,
+      isFalse,
+    );
+
+    await tester.state<NavigatorState>(find.byType(Navigator).first).maybePop();
+    await pumpVisibleState();
+    expect(find.text('Inicio'), findsNothing);
+    final homeDestination = find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.label == 'Inicio',
+    );
+    expect(homeDestination, findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is Tooltip && widget.message == 'Inicio',
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(homeDestination);
+    await pumpVisibleState();
+    expect(
+      homeDestination.evaluate().single.widget,
+      isA<Semantics>().having(
+        (semantics) => semantics.properties.selected,
+        'selected',
+        true,
+      ),
+    );
+    expect(tester.takeException(), isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    final restoredViewModel = createViewModel();
+    await restoredViewModel.restore();
+    await tester.pumpWidget(app(restoredViewModel));
+    await pumpVisibleState();
+    expect(find.text('Inicio'), findsNothing);
+    expect(homeDestination, findsOneWidget);
+
+    semanticsHandle.dispose();
+    await tester.pumpWidget(const SizedBox.shrink());
+    localeController.dispose();
+    appearance.dispose();
+    await database.close();
+  });
 }
 
 class _MemoryAppearancePreferences implements AppearancePreferences {
@@ -150,9 +272,11 @@ class _MemoryLocalePreferences implements LocalePreferences {
 }
 
 class _MemoryProfileSettingsStorage implements ProfilePreferencesStorage {
-  @override
-  Future<String?> read(String key) async => null;
+  final values = <String, String>{};
 
   @override
-  Future<void> write(String key, String value) async {}
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async => values[key] = value;
 }

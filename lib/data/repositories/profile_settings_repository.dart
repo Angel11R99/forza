@@ -105,9 +105,11 @@ class ProfileSettingsRepository {
     final unit = json['weightUnit'];
     final weekStart = json['weekStartsOn'];
     final haptics = json['hapticsEnabled'];
+    final showNavigationLabels = json['showNavigationLabels'];
     if (!const {'kg', 'lb'}.contains(unit) ||
         !const {'Lunes', 'Domingo'}.contains(weekStart) ||
-        haptics is! bool) {
+        haptics is! bool ||
+        (showNavigationLabels != null && showNavigationLabels is! bool)) {
       throw const FormatException(
         'Las preferencias de la aplicación no son válidas.',
       );
@@ -116,6 +118,7 @@ class ProfileSettingsRepository {
       weightUnit: unit as String,
       weekStartsOn: weekStart as String,
       hapticsEnabled: haptics,
+      showNavigationLabels: showNavigationLabels as bool? ?? true,
     );
   }
 
@@ -128,6 +131,7 @@ class ProfileSettingsRepository {
       'weightUnit': preferences.weightUnit,
       'weekStartsOn': preferences.weekStartsOn,
       'hapticsEnabled': preferences.hapticsEnabled,
+      'showNavigationLabels': preferences.showNavigationLabels,
     });
   }
 

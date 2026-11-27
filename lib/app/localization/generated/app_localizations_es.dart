@@ -1920,6 +1920,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Este nombre visible se guarda solo en este dispositivo.';
 
   @override
+  String get profileShowNavigationLabels => 'Mostrar etiquetas de navegación';
+
+  @override
+  String get profileShowNavigationLabelsHint =>
+      'Muestra el nombre de cada sección bajo su icono.';
+
+  @override
   String get profileEmailInvalid => 'Ingresa un correo válido.';
 
   @override

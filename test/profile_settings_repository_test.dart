@@ -13,6 +13,7 @@ void main() {
       expect(defaultPreferences.weightUnit, 'kg');
       expect(defaultPreferences.weekStartsOn, 'Lunes');
       expect(defaultPreferences.hapticsEnabled, isTrue);
+      expect(defaultPreferences.showNavigationLabels, isTrue);
       final defaultNotifications = await firstRepository.loadNotifications();
       expect(defaultNotifications.workoutReminders, isFalse);
       expect(defaultNotifications.reminderHour, 18);
@@ -26,6 +27,7 @@ void main() {
         weightUnit: 'lb',
         weekStartsOn: 'Domingo',
         hapticsEnabled: false,
+        showNavigationLabels: false,
       );
       const notifications = NotificationSettings(
         workoutReminders: true,
@@ -50,6 +52,7 @@ void main() {
       expect(restoredAppPreferences.weightUnit, 'lb');
       expect(restoredAppPreferences.weekStartsOn, 'Domingo');
       expect(restoredAppPreferences.hapticsEnabled, isFalse);
+      expect(restoredAppPreferences.showNavigationLabels, isFalse);
       expect(restoredNotifications.workoutReminders, isTrue);
       expect(restoredNotifications.reminderHour, 7);
       expect(restoredNotifications.reminderMinute, 35);
@@ -74,6 +77,18 @@ void main() {
       expect(notifications.reminderMinute, 15);
     },
   );
+
+  test('older app preferences default navigation labels to visible', () async {
+    final storage = _MemoryProfilePreferencesStorage()
+      ..values['profile_app_preferences_v1'] =
+          '{"weightUnit":"kg","weekStartsOn":"Lunes",'
+          '"hapticsEnabled":true}';
+    final repository = ProfileSettingsRepository(storage: storage);
+
+    final preferences = await repository.loadAppPreferences();
+
+    expect(preferences.showNavigationLabels, isTrue);
+  });
 
   test('does not turn malformed saved preferences into defaults', () async {
     final storage = _MemoryProfilePreferencesStorage()

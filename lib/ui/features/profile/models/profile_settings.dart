@@ -35,11 +35,13 @@ class AppPreferences {
     this.weightUnit = 'kg',
     this.weekStartsOn = 'Lunes',
     this.hapticsEnabled = true,
+    this.showNavigationLabels = true,
   });
 
   final String weightUnit;
   final String weekStartsOn;
   final bool hapticsEnabled;
+  final bool showNavigationLabels;
 }
 
 class NotificationSettings {
