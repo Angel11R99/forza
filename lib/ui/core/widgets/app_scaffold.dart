@@ -679,34 +679,37 @@ class _AppScaffoldState extends State<AppScaffold>
   }
 
   Widget _buildBottomNavigationBar() {
-    final width = MediaQuery.sizeOf(context).width;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final showLabels =
-        _preferences.showNavigationLabels &&
-        (width >= 420 || textScale <= 1.3);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final showLabels =
+            _preferences.showNavigationLabels &&
+            (constraints.maxWidth >= 420 || textScale <= 1.3);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        border: Border(top: BorderSide(color: context.appColors.divider)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            for (var index = 0; index < _destinations.length; index++)
-              Expanded(
-                child: _BottomNavigationDestination(
-                  destination: _destinations[index],
-                  label: _destinationLabel(context, index),
-                  selected: index == _selectedIndex,
-                  showLabel: showLabels,
-                  onTap: () => _selectDestination(index),
-                ),
-              ),
-          ],
-        ),
-      ),
+        return Container(
+          decoration: BoxDecoration(
+            color: context.appColors.surface,
+            border: Border(top: BorderSide(color: context.appColors.divider)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Row(
+              children: [
+                for (var index = 0; index < _destinations.length; index++)
+                  Expanded(
+                    child: _BottomNavigationDestination(
+                      destination: _destinations[index],
+                      label: _destinationLabel(context, index),
+                      selected: index == _selectedIndex,
+                      showLabel: showLabels,
+                      onTap: () => _selectDestination(index),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
