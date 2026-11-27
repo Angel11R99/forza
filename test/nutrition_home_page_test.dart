@@ -70,6 +70,101 @@ void main() {
     },
   );
 
+  testWidgets('preference draft is applied only after accepting its preview', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = ProfileSettingsRepository(storage: _MemoryStorage());
+    await repository.saveNutritionProfile(
+      NutritionProfile(
+        id: 'review-preview-profile',
+        version: 1,
+        updatedAt: DateTime.now(),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        theme: AppTheme.light,
+        localizationsDelegates: [
+          ...AppLocalizations.localizationsDelegates,
+          ...GlobalMaterialLocalizations.delegates,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: NutritionHomePage(
+          profileRepository: repository,
+          reviewRepository: NutritionReviewRepository(
+            storage: _MemoryStorage(),
+          ),
+          trainingSettings: const TrainingSettings(),
+          catalogRepository: NutritionCatalogRepository(
+            loadAsset: () async => _catalogJson,
+          ),
+          mealLogRepository: NutritionMealLogRepository(
+            storage: _MealLogMemoryStorage(),
+          ),
+          hydrationRepository: HydrationRepository(
+            storage: _HydrationMemoryStorage(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Review your plan'));
+    await tester.pumpAndSettle();
+    final reviewScroll = find
+        .ancestor(
+          of: find.byType(DropdownButtonFormField<String>).first,
+          matching: find.byType(Scrollable),
+        )
+        .last;
+    await tester.scrollUntilVisible(
+      find.text('Preview preference changes'),
+      300,
+      scrollable: reviewScroll,
+    );
+    await tester.tap(find.text('Preview preference changes'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).first, '35');
+    final profileScroll = find
+        .ancestor(
+          of: find.byType(TextFormField).first,
+          matching: find.byType(Scrollable),
+        )
+        .last;
+    await tester.scrollUntilVisible(
+      find.text('Save'),
+      400,
+      scrollable: profileScroll,
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect((await repository.loadNutritionProfile())?.version, 1);
+    await tester.scrollUntilVisible(
+      find.text('Plan preview'),
+      300,
+      scrollable: reviewScroll,
+    );
+    expect(find.text('Plan preview'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Accept preview'),
+      300,
+      scrollable: reviewScroll,
+    );
+    await tester.tap(find.text('Accept preview'));
+    await tester.pumpAndSettle();
+
+    final saved = await repository.loadNutritionProfile();
+    expect(saved?.version, 2);
+    expect(saved?.ageYears, 35);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'nutrition tabs fit 320 dp at 2x text in both locales and themes',
     (tester) async {
