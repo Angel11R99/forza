@@ -26,6 +26,15 @@ void main() {
   testWidgets(
     'bottom navigation remains accessible at 320 px with large text and reduced motion',
     (tester) async {
+      final previousFlutterErrorHandler = FlutterError.onError;
+      FlutterError.onError = (details) {
+        if (details.exceptionAsString().contains('RenderFlex overflowed')) {
+          debugPrint(details.toString());
+        }
+        previousFlutterErrorHandler?.call(details);
+      };
+      addTearDown(() => FlutterError.onError = previousFlutterErrorHandler);
+
       tester.view.physicalSize = const Size(320, 800);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
