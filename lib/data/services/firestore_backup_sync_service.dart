@@ -85,6 +85,7 @@ class FirestoreBackupSyncService extends ChangeNotifier
   CloudSyncStatus get status => _status;
 
   void start() {
+    if (_isDisposed || _authSubscription != null) return;
     _databaseChanges = database
         .customSelect(
           'SELECT 1',
@@ -285,9 +286,13 @@ class FirestoreBackupSyncService extends ChangeNotifier
       }
 
       if (_isDisposed || _auth.currentUser?.uid != uid) return;
+      await _manifestChanges?.cancel();
+      if (_isDisposed || _auth.currentUser?.uid != uid) return;
       _manifestChanges = manifest.snapshots().listen((snapshot) {
         final data = snapshot.data();
-        if (snapshot.exists && data != null && data['writer'] != _writerId) {
+        if (!snapshot.metadata.isFromCache &&
+            !snapshot.metadata.hasPendingWrites &&
+            snapshot.exists && data != null && data['writer'] != _writerId) {
           unawaited(_handleRemoteSnapshot(uid, data));
         }
       });
@@ -472,7 +477,12 @@ class FirestoreBackupSyncService extends ChangeNotifier
 
   Future<void> _uploadLocal() async {
     final user = _auth.currentUser;
-    if (user == null || _isDisposed || _isApplyingCloud) return;
+    if (user == null || _isDisposed || _isApplyingCloud ||
+        _isSwitchingLocalAccount) return;
+    if (_isSyncing) {
+      _rescheduleAfterSync = true;
+      return;
+    }
     _isSyncing = true;
     _setStatus(
       CloudSyncStatus(
@@ -482,6 +492,7 @@ class FirestoreBackupSyncService extends ChangeNotifier
     );
     try {
       if (!await profileSettingsRepository.isCloudSyncEnabled(user.uid)) return;
+      if (_auth.currentUser?.uid != user.uid || _isDisposed) return;
       final manifest = _manifest(user.uid);
       final cloudDocument = await manifest.get(
         const GetOptions(source: Source.server),
